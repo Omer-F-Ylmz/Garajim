@@ -38,6 +38,22 @@ Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer 
 
 E-posta bildirimlerinin gerçekten gönderilmesi için `appsettings.json` içindeki `Smtp` alanlarını doldurun (Gmail için uygulama şifresi gerekir). Boş bırakılırsa job çalışır ama e-posta göndermeden geçer.
 
+## Güvenlik
+
+`appsettings.json` içindeki `Jwt:Key` ve `Smtp` değerleri **yalnızca geliştirme ortamı içindir**; repoda açık durdukları için gizli kabul edilmezler.
+
+Canlı ortamda bu değerleri ortam değişkeniyle geçin — ASP.NET Core'da iç içe anahtarlar `__` (iki alt çizgi) ile ayrılır:
+
+```
+Jwt__Key=<en az 32 karakterlik, rastgele üretilmiş anahtar>
+Smtp__Host=smtp.ornek.com
+Smtp__User=...
+Smtp__Password=...
+Smtp__From=...
+```
+
+Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, dosyayı düzenlemeniz gerekmez. Prod'a çıkarken `Jwt__Key` mutlaka yeni ve rastgele bir değerle verilmelidir; varsayılan anahtarla üretilen token'lar herkes tarafından taklit edilebilir.
+
 ## Uç Noktalar
 
 - `POST /api/auth/register`, `POST /api/auth/login`
