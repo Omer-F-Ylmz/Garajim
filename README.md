@@ -1,5 +1,7 @@
 # Garajım
 
+[![CI](https://github.com/Omer-F-Ylmz/Garajim/actions/workflows/ci.yml/badge.svg)](https://github.com/Omer-F-Ylmz/Garajim/actions/workflows/ci.yml)
+
 Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer masraflarını kaydeder; muayene, sigorta, kasko, MTV gibi tarihleri yaklaşınca e-posta ile hatırlatır; masraf raporları ve yakıt tüketim istatistikleri üretir.
 
 ## Teknolojiler
@@ -30,6 +32,28 @@ Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer 
    dotnet run --project Garajim.API
    ```
 6. Swagger: https://localhost:7200/swagger — Hangfire paneli: https://localhost:7200/hangfire
+
+## Docker
+
+Çok aşamalı `Dockerfile`, API'yi `sdk:8.0` imajında publish edip `aspnet:8.0` imajında 8080 portunda çalıştırır.
+
+```
+docker build -t garajim-api .
+```
+
+Bağlantı cümlesi ve diğer gizli değerler ortam değişkeniyle verilir (bkz. [Güvenlik](#güvenlik)):
+
+```
+docker run -d -p 8080:8080 \
+  -e "ConnectionStrings__Default=Server=host.docker.internal,1433;Database=GarajimDb;User Id=sa;Password=Guclu_Parola1;TrustServerCertificate=True" \
+  -e "Jwt__Key=en-az-32-karakterlik-rastgele-uretilmis-anahtar" \
+  --name garajim-api garajim-api
+```
+
+İki not:
+
+- Konteyner `Production` ortamında başlar, Swagger yalnızca `Development`'ta açıktır. Arayüzü görmek için komuta `-e ASPNETCORE_ENVIRONMENT=Development` ekleyin, ardından <http://localhost:8080/swagger>.
+- Konteyner migration çalıştırmaz; şemanın kurulu olması gerekir. LocalDB konteynerden erişilemediği için gerçek bir SQL Server örneği (örneğin `mcr.microsoft.com/mssql/server:2022-latest`) kullanın ve `dotnet ef database update` komutunu ona karşı bir kez çalıştırın.
 
 ## Kullanım
 
@@ -163,6 +187,6 @@ Alan değerleri veri setindeki yazımla aynı olmalıdır:
 
 - [x] Aşama 1: Katmanlı API iskeleti — auth, araç, bakım/yakıt/masraf, hatırlatma, rapor, Hangfire job
 - [x] Aşama 2: ML.NET ile ikinci el fiyat tahmin modülü — FastTree regresyon, `POST /api/price/estimate`
-- [ ] Aşama 3: xUnit testleri
-- [ ] Aşama 4: Docker + GitHub Actions CI
+- [x] Aşama 3: xUnit testleri — birim (Moq) + entegrasyon (SQLite in-memory), 63 test
+- [x] Aşama 4: Docker + GitHub Actions CI
 - [ ] Aşama 5: Canlıya çıkış (ücretsiz hosting) + README'ye demo linki
