@@ -118,6 +118,8 @@ Aynı iki örnek için iki modelin tahmini:
 | 2018 Renault Clio, 120.000 km, Benzin, Düz, Hatchback/5 | 704.170 TL | 684.420 TL |
 | 2015 Volkswagen Passat, 200.000 km, Dizel, Otomatik, Sedan | 1.325.954 TL | 1.256.138 TL |
 
+Tahmin log-uzayında yapılıp geri çevrildiği için medyan piyasa fiyatına yakındır; bu, uç ilanlara dirençli olması için bilinçli bir tercihtir.
+
 ### Kullanım
 
 `POST /api/price/estimate` — token gerektirir.
