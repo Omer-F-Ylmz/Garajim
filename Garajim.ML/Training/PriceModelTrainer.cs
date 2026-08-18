@@ -6,8 +6,10 @@ namespace Garajim.ML.Training
 {
     public class PriceModelTrainer
     {
-        public const string LabelColumn = nameof(CarPriceInput.Fiyat);
+        public const string PriceColumn = nameof(CarPriceInput.Fiyat);
+        public const string LogPriceColumn = nameof(CarPriceInput.LogFiyat);
         public const string FeatureColumn = "Features";
+        public const string ScoreColumn = "Score";
 
         private readonly MLContext _mlContext;
 
@@ -16,24 +18,44 @@ namespace Garajim.ML.Training
             _mlContext = new MLContext(seed);
         }
 
-        public PriceModelResult Train(IEnumerable<CarPriceInput> samples, double testFraction = 0.2)
+        public DataOperationsCatalog.TrainTestData Split(IEnumerable<CarPriceInput> samples, double testFraction = 0.2)
         {
             var data = _mlContext.Data.LoadFromEnumerable(samples);
-            var split = _mlContext.Data.TrainTestSplit(data, testFraction, seed: 42);
+            return _mlContext.Data.TrainTestSplit(data, testFraction, seed: 42);
+        }
 
-            var model = BuildPipeline().Fit(split.TrainSet);
+        public PriceModelResult Train(DataOperationsCatalog.TrainTestData split, PriceTarget target)
+        {
+            var labelColumn = target == PriceTarget.Log ? LogPriceColumn : PriceColumn;
+
+            var model = BuildPipeline(labelColumn).Fit(split.TrainSet);
             var scored = model.Transform(split.TestSet);
-            var metrics = _mlContext.Regression.Evaluate(scored, labelColumnName: LabelColumn);
+
+            var rSquared = _mlContext.Regression.Evaluate(scored, labelColumnName: labelColumn).RSquared;
+            var scores = scored.GetColumn<float>(ScoreColumn).ToArray();
+            var actual = scored.GetColumn<float>(PriceColumn).ToArray();
+
+            double absoluteTotal = 0;
+            double squaredTotal = 0;
+
+            for (var i = 0; i < scores.Length; i++)
+            {
+                var predicted = target == PriceTarget.Log ? PriceScale.FromLog(scores[i]) : scores[i];
+                var error = predicted - actual[i];
+                absoluteTotal += Math.Abs(error);
+                squaredTotal += (double)error * error;
+            }
 
             return new PriceModelResult
             {
+                Target = target,
                 Model = model,
                 TrainSchema = split.TrainSet.Schema,
-                RSquared = metrics.RSquared,
-                MeanAbsoluteError = metrics.MeanAbsoluteError,
-                RootMeanSquaredError = metrics.RootMeanSquaredError,
-                TrainRowCount = CountRows(split.TrainSet),
-                TestRowCount = CountRows(split.TestSet)
+                RSquared = rSquared,
+                MeanAbsoluteErrorTl = scores.Length == 0 ? 0 : absoluteTotal / scores.Length,
+                RootMeanSquaredErrorTl = scores.Length == 0 ? 0 : Math.Sqrt(squaredTotal / scores.Length),
+                TrainRowCount = CountRows(split.TrainSet, PriceColumn),
+                TestRowCount = scores.Length
             };
         }
 
@@ -53,7 +75,13 @@ namespace Garajim.ML.Training
             return _mlContext.Model.CreatePredictionEngine<CarPriceInput, CarPricePrediction>(model);
         }
 
-        private IEstimator<ITransformer> BuildPipeline()
+        public float Predict(PredictionEngine<CarPriceInput, CarPricePrediction> engine, CarPriceInput input, PriceTarget target)
+        {
+            var score = engine.Predict(input).LogFiyat;
+            return target == PriceTarget.Log ? PriceScale.FromLog(score) : score;
+        }
+
+        private IEstimator<ITransformer> BuildPipeline(string labelColumn)
         {
             var encoded = new[]
             {
@@ -75,7 +103,7 @@ namespace Garajim.ML.Training
                     nameof(CarPriceInput.Yil),
                     nameof(CarPriceInput.Kilometre)))
                 .Append(_mlContext.Regression.Trainers.FastTree(
-                    labelColumnName: LabelColumn,
+                    labelColumnName: labelColumn,
                     featureColumnName: FeatureColumn,
                     numberOfLeaves: 64,
                     numberOfTrees: 400,
@@ -83,7 +111,7 @@ namespace Garajim.ML.Training
                     learningRate: 0.1));
         }
 
-        private static long CountRows(IDataView view)
+        private static long CountRows(IDataView view, string column)
         {
             var count = view.GetRowCount();
             if (count.HasValue)
@@ -91,7 +119,7 @@ namespace Garajim.ML.Training
                 return count.Value;
             }
 
-            return view.GetColumn<float>(LabelColumn).LongCount();
+            return view.GetColumn<float>(column).LongCount();
         }
     }
 }

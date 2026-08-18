@@ -54,15 +54,16 @@ namespace Garajim.API.Controllers
             };
 
             var prediction = _predictionEnginePool.Predict(ModelName, input);
+            var tahminiFiyat = PriceScale.FromLog(prediction.LogFiyat);
 
-            if (float.IsNaN(prediction.TahminiFiyat) || float.IsInfinity(prediction.TahminiFiyat) || prediction.TahminiFiyat <= 0)
+            if (float.IsNaN(tahminiFiyat) || float.IsInfinity(tahminiFiyat) || tahminiFiyat <= 0)
             {
                 return BadRequest(new ErrorDataResult<PriceEstimateResultDto>(Messages.PriceEstimateFailed));
             }
 
             var result = new PriceEstimateResultDto
             {
-                TahminiFiyat = Math.Round((decimal)prediction.TahminiFiyat),
+                TahminiFiyat = Math.Round((decimal)tahminiFiyat),
                 ParaBirimi = "TL",
                 Marka = input.Marka,
                 Seri = input.Seri,

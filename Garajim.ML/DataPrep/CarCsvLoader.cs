@@ -72,7 +72,8 @@ namespace Garajim.ML.DataPrep
                     YakitTipi = yakitTipi,
                     VitesTipi = vitesTipi,
                     KasaTipi = kasaTipi,
-                    Fiyat = fiyat
+                    Fiyat = fiyat,
+                    LogFiyat = PriceScale.ToLog(fiyat)
                 };
 
                 if (!seen.Add(BuildKey(sample)))

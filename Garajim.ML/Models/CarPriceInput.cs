@@ -17,5 +17,7 @@ namespace Garajim.ML.Models
         public string KasaTipi { get; set; }
 
         public float Fiyat { get; set; }
+
+        public float LogFiyat { get; set; }
     }
 }

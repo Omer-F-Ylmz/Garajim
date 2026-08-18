@@ -96,19 +96,27 @@ Eğitim, modeli `Garajim.API/MLModels/price-model.zip` olarak yazar; API açıl�
 | | |
 |---|---|
 | Algoritma | FastTree regresyon (400 ağaç, 64 yaprak) |
+| Hedef | `log(fiyat)` — tahmin `exp` ile TL'ye geri çevrilir |
 | Özellikler | marka, seri, yıl, kilometre, yakıt tipi, vites tipi, kasa tipi |
 | Kategorik kodlama | OneHotEncoding (59 marka, 423 seri) |
 | Ayrım | %80 eğitim (41.101 satır) / %20 test (10.210 satır) |
 
-Test setindeki metrikler:
+Fiyat dağılımı sağa çok çarpık olduğu için model doğrudan TL yerine `log(fiyat)` üzerinde eğitilir. Aşağıdaki iki kolon, aynı veri ve aynı ayrım üzerinde yalnızca hedef kolonu değiştirilerek eğitilmiş iki modelin test seti sonuçlarıdır (`Garajim.ML.Trainer` her çalıştığında ikisini de eğitip karşılaştırır, kaydettiği model `log(fiyat)` hedefli olandır):
 
-| Metrik | Değer |
-|---|---|
-| R² | 0,6534 |
-| MAE | 95.762 TL |
-| RMSE | 460.661 TL |
+| Metrik | hedef = fiyat (TL) | hedef = log(fiyat) |
+|---|---|---|
+| R² (hedefin kendi ölçeğinde) | 0,6534 | 0,9444 |
+| MAE | 95.762 TL | **81.941 TL** |
+| RMSE | 460.661 TL | **450.541 TL** |
 
-MAE ile RMSE arasındaki fark, veri setindeki az sayıdaki çok yüksek fiyatlı ilanın karesel hatayı yukarı çekmesinden kaynaklanır.
+İki R² değeri farklı ölçeklerde olduğu için doğrudan kıyaslanamaz; kıyaslanabilir olanlar TL'ye geri çevrilmiş MAE ve RMSE. Log hedefi tipik hatayı %14,4 düşürüyor (95.762 → 81.941 TL), RMSE'deki iyileşme ise %2,2'de kalıyor: karesel hata hâlâ veri setindeki az sayıdaki çok yüksek fiyatlı ilan tarafından belirleniyor.
+
+Aynı iki örnek için iki modelin tahmini:
+
+| Araç | hedef = fiyat (TL) | hedef = log(fiyat) |
+|---|---|---|
+| 2018 Renault Clio, 120.000 km, Benzin, Düz, Hatchback/5 | 704.170 TL | 684.420 TL |
+| 2015 Volkswagen Passat, 200.000 km, Dizel, Otomatik, Sedan | 1.325.954 TL | 1.256.138 TL |
 
 ### Kullanım
 
@@ -131,7 +139,7 @@ Yanıt:
 ```json
 {
   "data": {
-    "tahminiFiyat": 704170,
+    "tahminiFiyat": 684420,
     "paraBirimi": "TL",
     "marka": "Renault",
     "seri": "Clio",
