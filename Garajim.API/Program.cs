@@ -1,15 +1,18 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Garajim.API.Controllers;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Jobs;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
+using Garajim.ML.Models;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ML;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -34,6 +37,12 @@ builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<IEmailService, SmtpEmailManager>();
 builder.Services.AddScoped<ReminderNotificationJob>();
+
+builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
+    .FromFile(
+        modelName: PricePredictionController.ModelName,
+        filePath: "MLModels/price-model.zip",
+        watchForChanges: true);
 
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

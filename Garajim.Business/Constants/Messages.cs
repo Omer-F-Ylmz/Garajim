@@ -21,5 +21,10 @@ namespace Garajim.Business.Constants
         public const string ReminderDateOrKmRequired = "Hatırlatma için tarih veya kilometre bilgisinden en az biri gerekli.";
         public const string NotEnoughFuelData = "Tüketim hesabı için kilometre bilgisi olan en az iki yakıt kaydı gerekli.";
         public const string InvalidValue = "Geçersiz değer.";
+        public const string PriceEstimated = "Fiyat tahmini üretildi.";
+        public const string PriceInputRequired = "Marka, seri, yakıt tipi, vites tipi ve kasa tipi zorunludur.";
+        public const string PriceYearOutOfRange = "Yıl 1990 ile içinde bulunulan yıldan sonraki yıl arasında olmalıdır.";
+        public const string PriceKilometreOutOfRange = "Kilometre 0 ile 2.000.000 arasında olmalıdır.";
+        public const string PriceEstimateFailed = "Fiyat tahmini üretilemedi.";
     }
 }

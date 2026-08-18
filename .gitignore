@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+## Egitim verisi (Kaggle veri seti repoya girmez)
+Garajim.ML/Data/*.csv
+
 ## Claude Code local settings
 .claude/
 
