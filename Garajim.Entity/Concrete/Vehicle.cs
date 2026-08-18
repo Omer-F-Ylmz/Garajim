@@ -1,0 +1,18 @@
+using Garajim.Core.Entities;
+using Garajim.Entity.Enums;
+
+namespace Garajim.Entity.Concrete
+{
+    public class Vehicle : IEntity
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string Plate { get; set; }
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
+        public int CurrentKm { get; set; }
+        public FuelType FuelType { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+}

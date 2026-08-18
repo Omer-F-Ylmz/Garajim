@@ -1,0 +1,66 @@
+using Garajim.Business.Abstract;
+using Garajim.Business.Constants;
+using Garajim.Core.Utilities.Results;
+using Garajim.Core.Utilities.Security;
+using Garajim.Dal.Abstract;
+using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
+using Microsoft.Extensions.Configuration;
+
+namespace Garajim.Business.Concrete
+{
+    public class AuthManager : IAuthService
+    {
+        private readonly IUserDal _userDal;
+        private readonly IConfiguration _configuration;
+
+        public AuthManager(IUserDal userDal, IConfiguration configuration)
+        {
+            _userDal = userDal;
+            _configuration = configuration;
+        }
+
+        public async Task<IDataResult<TokenDto>> RegisterAsync(RegisterDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.FullName) ||
+                string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
+                return new ErrorDataResult<TokenDto>(Messages.InvalidValue);
+            var email = dto.Email.Trim().ToLowerInvariant();
+            if (await _userDal.AnyAsync(u => u.Email == email))
+                return new ErrorDataResult<TokenDto>(Messages.EmailAlreadyExists);
+            HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
+            var user = new AppUser
+            {
+                Email = email,
+                FullName = dto.FullName.Trim(),
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _userDal.AddAsync(user);
+            return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.RegisterSuccess);
+        }
+
+        public async Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto)
+        {
+            var email = (dto.Email ?? string.Empty).Trim().ToLowerInvariant();
+            var user = await _userDal.GetAsync(u => u.Email == email);
+            if (user == null || !HashingHelper.VerifyPasswordHash(dto.Password ?? string.Empty, user.PasswordHash, user.PasswordSalt))
+                return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
+            return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.LoginSuccess);
+        }
+
+        private TokenDto CreateTokenDto(AppUser user)
+        {
+            var token = JwtTokenHelper.CreateToken(
+                user.Id,
+                user.Email,
+                user.FullName,
+                _configuration["Jwt:Key"],
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                int.Parse(_configuration["Jwt:ExpireDays"]));
+            return new TokenDto { Token = token, Email = user.Email, FullName = user.FullName };
+        }
+    }
+}
