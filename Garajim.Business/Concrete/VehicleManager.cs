@@ -35,7 +35,7 @@ namespace Garajim.Business.Concrete
         {
             if (string.IsNullOrWhiteSpace(dto.Plate) || string.IsNullOrWhiteSpace(dto.Brand) ||
                 string.IsNullOrWhiteSpace(dto.Model) || dto.Year < 1950 ||
-                dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0)
+                dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var plate = dto.Plate.Trim().ToUpperInvariant().Replace(" ", "");
             if (await _vehicleDal.AnyAsync(v => v.UserId == userId && v.Plate == plate))
@@ -61,7 +61,7 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorResult(Messages.VehicleNotFound);
             if (string.IsNullOrWhiteSpace(dto.Brand) || string.IsNullOrWhiteSpace(dto.Model) ||
-                dto.Year < 1950 || dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0)
+                dto.Year < 1950 || dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorResult(Messages.InvalidValue);
             vehicle.Brand = dto.Brand.Trim();
             vehicle.Model = dto.Model.Trim();

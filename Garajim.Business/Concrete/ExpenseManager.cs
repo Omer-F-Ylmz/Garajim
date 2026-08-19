@@ -33,7 +33,7 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
             if (vehicle == null)
                 return new ErrorDataResult<ExpenseDto>(Messages.VehicleNotFound);
-            if (dto.Amount < 0)
+            if (dto.Amount < 0 || !Enum.IsDefined(dto.Category))
                 return new ErrorDataResult<ExpenseDto>(Messages.InvalidValue);
             var record = new ExpenseRecord
             {

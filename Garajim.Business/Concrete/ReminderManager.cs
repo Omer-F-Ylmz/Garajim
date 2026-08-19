@@ -44,6 +44,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
             if (vehicle == null)
                 return new ErrorDataResult<ReminderDto>(Messages.VehicleNotFound);
+            if (!Enum.IsDefined(dto.Type))
+                return new ErrorDataResult<ReminderDto>(Messages.InvalidValue);
             if (dto.DueDate == null && dto.DueKm == null)
                 return new ErrorDataResult<ReminderDto>(Messages.ReminderDateOrKmRequired);
             var reminder = new Reminder
