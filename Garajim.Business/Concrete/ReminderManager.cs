@@ -46,6 +46,8 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ReminderDto>(Messages.VehicleNotFound);
             if (!Enum.IsDefined(dto.Type))
                 return new ErrorDataResult<ReminderDto>(Messages.InvalidValue);
+            if (dto.DueKm.HasValue && dto.DueKm.Value <= 0)
+                return new ErrorDataResult<ReminderDto>(Messages.InvalidValue);
             if (dto.DueDate == null && dto.DueKm == null)
                 return new ErrorDataResult<ReminderDto>(Messages.ReminderDateOrKmRequired);
             var reminder = new Reminder

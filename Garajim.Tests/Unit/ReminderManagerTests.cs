@@ -92,6 +92,44 @@ namespace Garajim.Tests.Unit
             Assert.Null(eklenen.DueDate);
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(-150000)]
+        public async Task AddAsync_SifirVeyaNegatifKilometreReddedilir(int dueKm)
+        {
+            AracSahibiOlarakAyarla();
+
+            var result = await CreateManager().AddAsync(UserId, new ReminderCreateDto
+            {
+                VehicleId = VehicleId,
+                Type = ReminderType.PeriyodikBakim,
+                DueKm = dueKm
+            });
+
+            Assert.False(result.Success);
+            Assert.Equal(Messages.InvalidValue, result.Message);
+            _reminderDal.Verify(d => d.AddAsync(It.IsAny<Reminder>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddAsync_TarihVarkenNegatifKilometreYineDeReddedilir()
+        {
+            AracSahibiOlarakAyarla();
+
+            var result = await CreateManager().AddAsync(UserId, new ReminderCreateDto
+            {
+                VehicleId = VehicleId,
+                Type = ReminderType.Muayene,
+                DueDate = DateTime.UtcNow.Date.AddDays(30),
+                DueKm = -5
+            });
+
+            Assert.False(result.Success);
+            Assert.Equal(Messages.InvalidValue, result.Message);
+            _reminderDal.Verify(d => d.AddAsync(It.IsAny<Reminder>()), Times.Never);
+        }
+
         [Fact]
         public async Task AddAsync_BaskaKullanicininAracinaHatirlatmaEklenemez()
         {
