@@ -8,5 +8,6 @@ namespace Garajim.Dal.Abstract
     {
         Task<decimal> GetTotalCostAsync(int vehicleId, DateTime start, DateTime end);
         Task<List<MonthlyCostDto>> GetMonthlyTotalsAsync(int vehicleId);
+        Task<List<MaintenanceRecord>> GetRecentAsync(int vehicleId, int limit);
     }
 }

@@ -28,5 +28,15 @@ namespace Garajim.Dal.Concrete
                 .Select(g => new MonthlyCostDto { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(x => x.TotalCost) })
                 .ToListAsync();
         }
+        public async Task<List<FuelRecord>> GetRecentAsync(int vehicleId, int limit)
+        {
+            return await Context.FuelRecords
+                .AsNoTracking()
+                .Where(f => f.VehicleId == vehicleId)
+                .OrderByDescending(f => f.Date)
+                .ThenByDescending(f => f.Id)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }

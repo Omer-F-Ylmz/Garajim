@@ -23,8 +23,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
             if (vehicle == null)
                 return new ErrorDataResult<List<ReminderDto>>(Messages.VehicleNotFound);
-            var reminders = await _reminderDal.GetListAsync(r => r.VehicleId == vehicleId);
-            var list = reminders.OrderBy(r => r.IsCompleted).ThenBy(r => r.DueDate).Select(MapToDto).ToList();
+            var reminders = await _reminderDal.GetListForVehicleAsync(vehicleId, QueryLimits.MaxListSize);
+            var list = reminders.Select(MapToDto).ToList();
             return new SuccessDataResult<List<ReminderDto>>(list);
         }
 

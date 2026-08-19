@@ -9,5 +9,6 @@ namespace Garajim.Dal.Abstract
         Task<List<ReminderDueDto>> GetDueListAsync(DateTime dueLimit, DateTime notifyBefore);
         Task<bool> TryClaimNotificationAsync(int reminderId, DateTime now, DateTime notifyBefore);
         Task<List<UpcomingReminderDto>> GetUpcomingForUserAsync(int userId, DateTime limit);
+        Task<List<Reminder>> GetListForVehicleAsync(int vehicleId, int limit);
     }
 }

@@ -23,8 +23,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
             if (vehicle == null)
                 return new ErrorDataResult<List<MaintenanceDto>>(Messages.VehicleNotFound);
-            var records = await _maintenanceDal.GetListAsync(m => m.VehicleId == vehicleId);
-            var list = records.OrderByDescending(m => m.Date).Select(MapToDto).ToList();
+            var records = await _maintenanceDal.GetRecentAsync(vehicleId, QueryLimits.MaxListSize);
+            var list = records.Select(MapToDto).ToList();
             return new SuccessDataResult<List<MaintenanceDto>>(list);
         }
 

@@ -64,5 +64,15 @@ namespace Garajim.Dal.Concrete
                         };
             return await query.ToListAsync();
         }
+        public async Task<List<Reminder>> GetListForVehicleAsync(int vehicleId, int limit)
+        {
+            return await Context.Reminders
+                .AsNoTracking()
+                .Where(r => r.VehicleId == vehicleId)
+                .OrderBy(r => r.IsCompleted)
+                .ThenBy(r => r.DueDate)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }

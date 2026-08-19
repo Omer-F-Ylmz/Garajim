@@ -38,5 +38,15 @@ namespace Garajim.Dal.Concrete
                 .ToListAsync();
             return totals.Select(t => new CategoryTotalDto { Category = t.Category.ToString(), Total = t.Total }).ToList();
         }
+        public async Task<List<ExpenseRecord>> GetRecentAsync(int vehicleId, int limit)
+        {
+            return await Context.ExpenseRecords
+                .AsNoTracking()
+                .Where(e => e.VehicleId == vehicleId)
+                .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }

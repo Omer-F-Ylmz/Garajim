@@ -23,8 +23,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
             if (vehicle == null)
                 return new ErrorDataResult<List<FuelDto>>(Messages.VehicleNotFound);
-            var records = await _fuelDal.GetListAsync(f => f.VehicleId == vehicleId);
-            var list = records.OrderByDescending(f => f.Date).Select(MapToDto).ToList();
+            var records = await _fuelDal.GetRecentAsync(vehicleId, QueryLimits.MaxListSize);
+            var list = records.Select(MapToDto).ToList();
             return new SuccessDataResult<List<FuelDto>>(list);
         }
 
