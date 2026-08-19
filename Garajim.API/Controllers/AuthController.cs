@@ -1,13 +1,17 @@
 using Garajim.Business.Abstract;
 using Garajim.Entity.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Garajim.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting(AuthController.RateLimitPolicy)]
     public class AuthController : ControllerBase
     {
+        public const string RateLimitPolicy = "auth";
+
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService)

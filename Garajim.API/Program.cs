@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Garajim.API.Controllers;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
+using Garajim.Business.Constants;
 using Garajim.Business.Jobs;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete;
@@ -11,6 +13,7 @@ using Garajim.Dal.Concrete.Context;
 using Garajim.ML.Models;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ML;
 using Microsoft.IdentityModel.Tokens;
@@ -74,6 +77,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy(AuthController.RateLimitPolicy, httpContext =>
+    {
+        var rateLimitConfiguration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
+        var permitLimit = rateLimitConfiguration.GetValue("RateLimiting:AuthPermitPerMinute", 10);
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "bilinmeyen",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json; charset=utf-8";
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new { data = (object)null, success = false, message = Messages.TooManyRequests },
+            cancellationToken);
+    };
+});
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -121,6 +152,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

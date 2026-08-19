@@ -26,5 +26,6 @@ namespace Garajim.Business.Constants
         public const string PriceYearOutOfRange = "Yıl 1990 ile içinde bulunulan yıldan sonraki yıl arasında olmalıdır.";
         public const string PriceKilometreOutOfRange = "Kilometre 0 ile 2.000.000 arasında olmalıdır.";
         public const string PriceEstimateFailed = "Fiyat tahmini üretilemedi.";
+        public const string TooManyRequests = "Çok fazla deneme yaptınız, lütfen bir dakika sonra tekrar deneyin.";
     }
 }
