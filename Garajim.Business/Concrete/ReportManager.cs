@@ -28,7 +28,9 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ExpenseSummaryDto>(Messages.VehicleNotFound);
             if (end < start)
                 return new ErrorDataResult<ExpenseSummaryDto>(Messages.InvalidValue);
-            var endInclusive = end.Date.AddDays(1).AddTicks(-1);
+            var endInclusive = end.Date >= DateTime.MaxValue.Date
+                ? DateTime.MaxValue
+                : end.Date.AddDays(1).AddTicks(-1);
             var totalFuel = await _fuelDal.GetTotalCostAsync(vehicleId, start, endInclusive);
             var totalMaintenance = await _maintenanceDal.GetTotalCostAsync(vehicleId, start, endInclusive);
             var categories = await _expenseDal.GetCategoryTotalsAsync(vehicleId, start, endInclusive);

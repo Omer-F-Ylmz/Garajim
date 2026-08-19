@@ -1,0 +1,81 @@
+using System.Linq.Expressions;
+using Garajim.Business.Concrete;
+using Garajim.Business.Constants;
+using Garajim.Dal.Abstract;
+using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
+using Moq;
+
+namespace Garajim.Tests.Unit
+{
+    public class ReportDateRangeTests
+    {
+        private const int UserId = 7;
+        private const int VehicleId = 3;
+
+        private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
+        private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
+        private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
+
+        private ReportManager CreateManager()
+        {
+            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+                .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123" });
+            _fuelDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(100m);
+            _maintenanceDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(200m);
+            _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new List<CategoryTotalDto>());
+
+            return new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+        }
+
+        [Fact]
+        public async Task GetSummaryAsync_BitisBaslangictanKucukseInvalidValueDoner()
+        {
+            var result = await CreateManager().GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 5, 1), new DateTime(2026, 4, 30));
+
+            Assert.False(result.Success);
+            Assert.Equal(Messages.InvalidValue, result.Message);
+        }
+
+        [Fact]
+        public async Task GetSummaryAsync_AyniGunAraligiCalisir()
+        {
+            var gun = new DateTime(2026, 5, 1);
+
+            var result = await CreateManager().GetSummaryAsync(UserId, VehicleId, gun, gun);
+
+            Assert.True(result.Success);
+            Assert.Equal(300m, result.Data.GrandTotal);
+        }
+
+        [Fact]
+        public async Task GetSummaryAsync_AyniGunAraliginda_BitisGunSonunaKadarGenisletilir()
+        {
+            DateTime kullanilanBitis = default;
+            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+                .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123" });
+            _fuelDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Callback<int, DateTime, DateTime>((_, __, end) => kullanilanBitis = end)
+                .ReturnsAsync(0m);
+            _maintenanceDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(0m);
+            _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new List<CategoryTotalDto>());
+
+            var manager = new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            await manager.GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 5, 1), new DateTime(2026, 5, 1));
+
+            Assert.Equal(new DateTime(2026, 5, 1, 23, 59, 59), kullanilanBitis, TimeSpan.FromSeconds(1));
+        }
+
+        [Fact]
+        public async Task GetSummaryAsync_EnBuyukTarihIleCagrildigindaPatlamaz()
+        {
+            var result = await CreateManager().GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 1, 1), DateTime.MaxValue.Date);
+
+            Assert.True(result.Success);
+            Assert.Equal(300m, result.Data.GrandTotal);
+        }
+    }
+}
