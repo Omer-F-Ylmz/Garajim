@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
@@ -27,6 +28,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Garajim.Business\Garajim.Business.csproj" />
     <ProjectReference Include="..\Garajim.Dal\Garajim.Dal.csproj" />
+    <ProjectReference Include="..\Garajim.API\Garajim.API.csproj" />
+    <ProjectReference Include="..\Garajim.ML\Garajim.ML.csproj" />
   </ItemGroup>
 
 </Project>

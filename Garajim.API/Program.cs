@@ -44,12 +44,17 @@ builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
         filePath: "MLModels/price-model.zip",
         watchForChanges: true);
 
-builder.Services.AddHangfire(config => config
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(connectionString));
-builder.Services.AddHangfireServer();
+var useBackgroundJobs = builder.Configuration.GetValue("UseBackgroundJobs", true);
+
+if (useBackgroundJobs)
+{
+    builder.Services.AddHangfire(config => config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(connectionString));
+    builder.Services.AddHangfireServer();
+}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -111,16 +116,28 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHangfireDashboard("/hangfire");
+
+if (useBackgroundJobs)
+{
+    app.UseHangfireDashboard("/hangfire");
+}
+
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+if (useBackgroundJobs)
 {
-    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-    recurringJobManager.AddOrUpdate<ReminderNotificationJob>(
-        "reminder-notifications",
-        job => job.RunAsync(),
-        Cron.Daily(6));
+    using (var scope = app.Services.CreateScope())
+    {
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        recurringJobManager.AddOrUpdate<ReminderNotificationJob>(
+            "reminder-notifications",
+            job => job.RunAsync(),
+            Cron.Daily(6));
+    }
 }
 
 app.Run();
+
+public partial class Program
+{
+}
