@@ -28,3 +28,28 @@ jobs:
 
       - name: Docker imajı build (push edilmez)
         run: docker build -t garajim-api:ci .
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: .NET 8 kurulumu
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore Garajim.sln
+
+      - name: Zafiyetli paket taraması
+        run: |
+          dotnet list Garajim.sln package --vulnerable --include-transitive > vulnerable.txt 2>&1
+          cat vulnerable.txt
+          if grep -qE "has the following vulnerable packages|güvenlik açığı olan paketlere sahip" vulnerable.txt; then
+            echo "::error::Zafiyetli NuGet paketi bulundu."
+            exit 1
+          fi
+          echo "Zafiyetli paket yok."
