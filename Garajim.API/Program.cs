@@ -105,6 +105,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
+{
+    using (var migrationScope = app.Services.CreateScope())
+    {
+        migrationScope.ServiceProvider.GetRequiredService<GarajimDbContext>().Database.Migrate();
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -117,7 +125,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (useBackgroundJobs)
+if (useBackgroundJobs && app.Environment.IsDevelopment())
 {
     app.UseHangfireDashboard("/hangfire");
 }

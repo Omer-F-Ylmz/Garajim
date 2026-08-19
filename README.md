@@ -31,7 +31,9 @@ Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer 
    ```
    dotnet run --project Garajim.API
    ```
-6. Swagger: https://localhost:7200/swagger — Hangfire paneli: https://localhost:7200/hangfire
+6. Arayüz: https://localhost:7200 — Swagger: https://localhost:7200/swagger — Hangfire paneli: https://localhost:7200/hangfire
+
+Swagger ve Hangfire paneli **yalnızca `Development` ortamında** açılır; `Production`'da ikisi de map'lenmez, `/hangfire` adresi 404 döner.
 
 ## Docker
 
@@ -50,10 +52,25 @@ docker run -d -p 8080:8080 \
   --name garajim-api garajim-api
 ```
 
-İki not:
+Üç not:
 
-- Konteyner `Production` ortamında başlar, Swagger yalnızca `Development`'ta açıktır. Arayüzü görmek için komuta `-e ASPNETCORE_ENVIRONMENT=Development` ekleyin, ardından <http://localhost:8080/swagger>.
-- Konteyner migration çalıştırmaz; şemanın kurulu olması gerekir. LocalDB konteynerden erişilemediği için gerçek bir SQL Server örneği (örneğin `mcr.microsoft.com/mssql/server:2022-latest`) kullanın ve `dotnet ef database update` komutunu ona karşı bir kez çalıştırın.
+- Konteyner `Production` ortamında başlar; Swagger ve Hangfire paneli bu ortamda kapalıdır. Arayüzü görmek için komuta `-e ASPNETCORE_ENVIRONMENT=Development` ekleyin, ardından <http://localhost:8080/swagger>. Kök adresteki web arayüzü her ortamda çalışır.
+- LocalDB konteynerden erişilemez; gerçek bir SQL Server örneği (örneğin `mcr.microsoft.com/mssql/server:2022-latest`) kullanın.
+- Şema kurulumu için iki yol var: `dotnet ef database update` komutunu hedef sunucuya karşı bir kez çalıştırmak ya da aşağıdaki açılışta migration seçeneği.
+
+### Açılışta migration
+
+Paylaşımlı hosting gibi CLI erişiminin olmadığı ortamlarda uygulama açılışta `Database.Migrate()` çalıştırabilir. Varsayılan **kapalıdır**; açmak için:
+
+```
+docker run -d -p 8080:8080 \
+  -e "ApplyMigrationsAtStartup=true" \
+  -e "ConnectionStrings__Default=Server=sunucu,1433;Database=GarajimDb;User Id=garajim;Password=...;TrustServerCertificate=True" \
+  -e "Jwt__Key=en-az-32-karakterlik-rastgele-uretilmis-anahtar" \
+  --name garajim-api garajim-api
+```
+
+Bayrak açıkken bekleyen tüm migration'lar uygulanır, veritabanı yoksa oluşturulur. Birden fazla örnek aynı anda açılıyorsa migration'ı tek örnekte çalıştırmak daha güvenlidir; şema kurulduktan sonra bayrağı kapatmanız önerilir.
 
 ## Kullanım
 
@@ -189,4 +206,5 @@ Alan değerleri veri setindeki yazımla aynı olmalıdır:
 - [x] Aşama 2: ML.NET ile ikinci el fiyat tahmin modülü — FastTree regresyon, `POST /api/price/estimate`
 - [x] Aşama 3: xUnit testleri — birim (Moq) + entegrasyon (SQLite in-memory), 63 test
 - [x] Aşama 4: Docker + GitHub Actions CI
+- [x] Aşama 4b: wwwroot altında tek sayfalık web arayüzü (framework yok, koyu tema)
 - [ ] Aşama 5: Canlıya çıkış (ücretsiz hosting) + README'ye demo linki
