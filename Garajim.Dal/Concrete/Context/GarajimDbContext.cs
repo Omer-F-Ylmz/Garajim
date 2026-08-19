@@ -39,6 +39,7 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(m => m.Cost).HasPrecision(18, 2);
                 entity.Property(m => m.ServiceName).HasMaxLength(150);
                 entity.Property(m => m.Note).HasMaxLength(500);
+                entity.HasIndex(m => new { m.VehicleId, m.Date });
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(m => m.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -46,6 +47,7 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.Property(f => f.Liters).HasPrecision(9, 2);
                 entity.Property(f => f.TotalCost).HasPrecision(18, 2);
+                entity.HasIndex(f => new { f.VehicleId, f.Date });
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(f => f.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -53,12 +55,14 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.Property(e => e.Amount).HasPrecision(18, 2);
                 entity.Property(e => e.Note).HasMaxLength(500);
+                entity.HasIndex(e => new { e.VehicleId, e.Date });
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Reminder>(entity =>
             {
                 entity.Property(r => r.Note).HasMaxLength(500);
+                entity.HasIndex(r => new { r.VehicleId, r.IsCompleted, r.DueDate });
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
         }
