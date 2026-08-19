@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Garajim.API.Controllers;
@@ -14,9 +15,11 @@ using Garajim.ML.Models;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ML;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +79,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -150,8 +162,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseResponseCompression();
+
 app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = context =>
+    {
+        var headers = context.Context.Response.GetTypedHeaders();
+        var htmlDosyasi = context.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase);
+
+        headers.CacheControl = htmlDosyasi
+            ? new CacheControlHeaderValue { NoCache = true, MustRevalidate = true }
+            : new CacheControlHeaderValue { Public = true, MaxAge = TimeSpan.FromHours(1) };
+    }
+});
 
 app.UseRateLimiter();
 
