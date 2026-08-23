@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Garajim.API.Controllers;
+using Garajim.API.Startup;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
@@ -26,6 +27,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
+
+ProductionConfigurationGuard.Validate(builder.Configuration, builder.Environment);
 
 builder.Services.AddDbContext<GarajimDbContext>(options => options.UseSqlServer(connectionString));
 
