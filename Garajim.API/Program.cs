@@ -187,7 +187,36 @@ if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
 {
     using (var migrationScope = app.Services.CreateScope())
     {
-        migrationScope.ServiceProvider.GetRequiredService<GarajimDbContext>().Database.Migrate();
+        var migrationLogger = migrationScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        var migrationContext = migrationScope.ServiceProvider.GetRequiredService<GarajimDbContext>();
+
+        try
+        {
+            var bekleyenler = migrationContext.Database.GetPendingMigrations().ToList();
+
+            if (bekleyenler.Count == 0)
+            {
+                migrationLogger.LogInformation("ApplyMigrationsAtStartup açık, bekleyen migration yok.");
+            }
+            else
+            {
+                migrationLogger.LogInformation(
+                    "ApplyMigrationsAtStartup açık, {Adet} migration uygulanıyor: {Migrationlar}",
+                    bekleyenler.Count,
+                    string.Join(", ", bekleyenler));
+
+                migrationContext.Database.Migrate();
+
+                migrationLogger.LogInformation("Migration tamamlandı, veritabanı şeması güncel.");
+            }
+        }
+        catch (Exception migrationException)
+        {
+            migrationLogger.LogCritical(
+                migrationException,
+                "Migration uygulanamadı. ConnectionStrings__Default değerinin doğru sunucuyu gösterdiğini ve kullanıcının şema değiştirme yetkisi olduğunu doğrulayın. Uygulama başlatılmıyor.");
+            throw;
+        }
     }
 }
 
