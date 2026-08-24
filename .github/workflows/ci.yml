@@ -29,6 +29,31 @@ jobs:
       - name: Docker imajı build (push edilmez)
         run: docker build -t garajim-api:ci .
 
+      - name: Docker imajını çalıştır ve kök adresi doğrula
+        run: |
+          docker run -d --name garajim-smoke -p 8080:8080 \
+            -e ASPNETCORE_ENVIRONMENT=Production \
+            -e "ConnectionStrings__Default=Server=ci-dummy,1433;Database=GarajimDb;User Id=ci;Password=ci-parola;TrustServerCertificate=True" \
+            -e "Jwt__Key=ci-ortami-icin-en-az-32-baytlik-sahte-imzalama-anahtari" \
+            -e UseBackgroundJobs=false \
+            garajim-api:ci
+
+          for deneme in $(seq 1 20); do
+            kod=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
+            if [ "$kod" = "200" ]; then
+              swagger=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/swagger/index.html || true)
+              echo "Kök adres 200 döndü ($deneme. deneme), Swagger: $swagger"
+              docker rm -f garajim-smoke > /dev/null
+              exit 0
+            fi
+            sleep 3
+          done
+
+          echo "::error::Konteyner 60 saniye içinde kök adrese 200 dönmedi. İmaj build oluyor ama çalışmıyor."
+          docker logs garajim-smoke || true
+          docker rm -f garajim-smoke > /dev/null || true
+          exit 1
+
   security:
     runs-on: ubuntu-latest
 

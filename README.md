@@ -100,10 +100,10 @@ Bayrak açıkken bekleyen tüm migration'lar uygulanır, veritabanı yoksa oluş
 Yayın çıktısı, hosting modeli **InProcess**, platform **x64**, framework-dependent (sunucuda .NET 8 kurulu):
 
 ```
-dotnet publish Garajim.API -c Release -o publish
+dotnet publish Garajim.API -c Release -r win-x64 -o publish
 ```
 
-Hosting modeli ve platform `Garajim.API.csproj` içinde sabit olduğu için ek bayrak gerekmez; üretilen `web.config` `hostingModel="InProcess"` ile çıkar. `publish` klasörünün içeriği site kök dizinine kopyalanır.
+Hedef platform bilinçli olarak csproj'da değil yayın komutunda belirtilir; proje dosyası platformdan bağımsızdır ve aynı proje `-r linux-x64` ile konteyner için de yayınlanabilir (`Dockerfile` bunu yapar). Hosting modeli `InProcess` csproj'da sabittir, üretilen `web.config` bu değerle çıkar. `publish` klasörünün içeriği site kök dizinine kopyalanır.
 
 Sunucuda tanımlanması gereken ortam değişkenleri:
 
