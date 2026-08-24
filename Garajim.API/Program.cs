@@ -220,11 +220,8 @@ if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
     }
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseResponseCompression();
 
