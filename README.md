@@ -4,6 +4,28 @@
 
 Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer masraflarını kaydeder; muayene, sigorta, kasko, MTV gibi tarihleri yaklaşınca e-posta ile hatırlatır; masraf raporları ve yakıt tüketim istatistikleri üretir.
 
+## Canlı demo
+
+**<https://garajim.runasp.net>** — Swagger: <https://garajim.runasp.net/swagger>
+
+Hazır demo hesabıyla girebilirsiniz:
+
+| | |
+|---|---|
+| E-posta | `demo@garajim.app` |
+| Şifre | `Demo1234!` |
+
+Hesapta bir araç (`34DEMO34`), iki bakım, üç yakıt, iki masraf kaydı ve yaklaşan bir muayene hatırlatması hazır gelir; raporlar ve fiyat tahmini ilk girişte doluyken görünür. Kendi hesabınızı açıp sıfırdan da deneyebilirsiniz.
+
+### Bilinen sınırlar
+
+Ücretsiz paylaşımlı hosting (MonsterASP.NET, 256 MB) üzerinde çalışıyor. Portföy demosu olduğu için aşağıdakiler bilinçli kabul edilmiş sınırlardır:
+
+- **İlk açılışta gecikme.** Uygulama havuzu bir süre istek almazsa durduruluyor; sonraki ilk istek uygulamayı yeniden başlattığı için birkaç saniye sürebilir. Ayrıca fiyat tahmini modeli ilk tahmin isteğinde yükleniyor: o istek ölçümlerde ~385 ms, sonrakiler 1-2 ms.
+- **Hatırlatma e-postaları uykuya bağlı.** Günlük Hangfire job'ı 06:00 için kayıtlı, ama uygulama havuzu o saatte uykudaysa job tetiklenmeyebilir. Bu, ücretsiz katmanın doğal sonucu; kodda buna karşı bir zorlama yapılmadı. Hatırlatmaların kendisi arayüzde her zaman görünür, yalnızca e-posta gönderimi garanti değildir.
+- **SMTP kapalı.** `Smtp` ayarları boş bırakıldığı için e-posta gönderilmiyor; job çalışır ama gönderim adımını atlar. Demo hesabıyla e-posta beklemeyin.
+- **Veri kalıcı ama demo.** Demo hesabına eklediğiniz kayıtlar veritabanında kalır; başkaları da aynı hesabı kullanabilir.
+
 ## Teknolojiler
 
 - ASP.NET Core 8 Web API (katmanlı mimari: Core / Entity / Dal / Business / API / ML)
@@ -17,7 +39,7 @@ Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer 
 ## Kurulum
 
 1. Gereksinimler: .NET 8 SDK ve SQL Server (LocalDB yeterli).
-2. `Garajim.API/appsettings.json` içindeki `ConnectionStrings:Default` değerini kendi ortamınıza göre düzenleyin (varsayılan LocalDB ile çalışır).
+2. Geliştirme değerleri `Garajim.API/appsettings.Development.json` dosyasındadır ve varsayılan olarak LocalDB ile çalışır; başka bir sunucu kullanacaksanız `ConnectionStrings:Default` değerini orada düzenleyin. `appsettings.json` içindeki aynı alanlar bilerek boştur — üretimde ortam değişkeninden gelirler.
 3. EF aracını kurun (bir kez):
    ```
    dotnet tool install --global dotnet-ef
@@ -33,7 +55,7 @@ Araç bakım ve masraf takip API'si. Araçlarınızın bakım, yakıt ve diğer 
    ```
 6. Arayüz: https://localhost:7200 — Swagger: https://localhost:7200/swagger — Hangfire paneli: https://localhost:7200/hangfire
 
-Swagger ve Hangfire paneli **yalnızca `Development` ortamında** açılır; `Production`'da ikisi de map'lenmez, `/hangfire` adresi 404 döner.
+Swagger **her ortamda** açıktır (canlı demo için bilinçli tercih). Hangfire paneli **yalnızca `Development` ortamında** map'lenir; `Production`'da `/hangfire` adresi 404 döner.
 
 ## Docker
 
@@ -52,9 +74,10 @@ docker run -d -p 8080:8080 \
   --name garajim-api garajim-api
 ```
 
-Üç not:
+Dört not:
 
-- Konteyner `Production` ortamında başlar; Swagger ve Hangfire paneli bu ortamda kapalıdır. Arayüzü görmek için komuta `-e ASPNETCORE_ENVIRONMENT=Development` ekleyin, ardından <http://localhost:8080/swagger>. Kök adresteki web arayüzü her ortamda çalışır.
+- Konteyner `Production` ortamında başlar. Kök adresteki web arayüzü ve <http://localhost:8080/swagger> her ortamda çalışır; Hangfire paneli yalnızca `Development`'ta açılır.
+- `Production`'da `ConnectionStrings__Default` ve `Jwt__Key` zorunludur: boş, yer tutucu ya da LocalDB'yi gösteren bir bağlantı cümlesinde uygulama hangi değişkenin eksik olduğunu söyleyip başlamayı reddeder.
 - LocalDB konteynerden erişilemez; gerçek bir SQL Server örneği (örneğin `mcr.microsoft.com/mssql/server:2022-latest`) kullanın.
 - Şema kurulumu için iki yol var: `dotnet ef database update` komutunu hedef sunucuya karşı bir kez çalıştırmak ya da aşağıdaki açılışta migration seçeneği.
 
@@ -72,6 +95,30 @@ docker run -d -p 8080:8080 \
 
 Bayrak açıkken bekleyen tüm migration'lar uygulanır, veritabanı yoksa oluşturulur. Birden fazla örnek aynı anda açılıyorsa migration'ı tek örnekte çalıştırmak daha güvenlidir; şema kurulduktan sonra bayrağı kapatmanız önerilir.
 
+## Yayına alma (IIS / MonsterASP.NET)
+
+Yayın çıktısı, hosting modeli **InProcess**, platform **x64**, framework-dependent (sunucuda .NET 8 kurulu):
+
+```
+dotnet publish Garajim.API -c Release -o publish
+```
+
+Hosting modeli ve platform `Garajim.API.csproj` içinde sabit olduğu için ek bayrak gerekmez; üretilen `web.config` `hostingModel="InProcess"` ile çıkar. `publish` klasörünün içeriği site kök dizinine kopyalanır.
+
+Sunucuda tanımlanması gereken ortam değişkenleri:
+
+```
+ASPNETCORE_ENVIRONMENT=Production
+ConnectionStrings__Default=<uzak MSSQL bağlantı cümlesi>
+Jwt__Key=<en az 32 baytlık rastgele anahtar>
+ApplyMigrationsAtStartup=true
+DemoSeed__Enabled=true
+```
+
+Bağlantı cümlesi anahtarının adı **`Default`**'tur (`DefaultConnection` değil). `Production`'da bu iki değer boş, yer tutucu ya da LocalDB'yi gösteriyorsa uygulama başlamaz ve hangi değişkenin eksik olduğunu log'a yazar.
+
+`ApplyMigrationsAtStartup=true` iken uygulama açılışta bekleyen migration'ları uygular; boş veritabanına şema kurulumu için CLI erişimi gerekmez. Hangfire kendi tablolarını ilk açılışta zaten oluşturur. `DemoSeed__Enabled=true` demo hesabını bir kez oluşturur, ikinci açılışta hiçbir şey eklemez.
+
 ## Kullanım
 
 1. `POST /api/auth/register` ile kayıt olun, dönen token'ı kopyalayın.
@@ -82,7 +129,9 @@ E-posta bildirimlerinin gerçekten gönderilmesi için `appsettings.json` içind
 
 ## Güvenlik
 
-`appsettings.json` içindeki `Jwt:Key` ve `Smtp` değerleri **yalnızca geliştirme ortamı içindir**; repoda açık durdukları için gizli kabul edilmezler.
+`appsettings.json` içindeki `ConnectionStrings:Default` ve `Jwt:Key` alanları **boştur**; üretimde ortam değişkeninden gelmeleri beklenir. `appsettings.Development.json` ve `Smtp` alanlarındaki değerler **yalnızca geliştirme ortamı içindir**; repoda açık durdukları için gizli kabul edilmezler.
+
+`Production` ortamında bağlantı cümlesi veya imzalama anahtarı boş, yer tutucu ya da LocalDB'yi gösteriyorsa uygulama sessizce bir varsayılana düşmez; hangi ortam değişkeninin eksik olduğunu söyleyip başlamayı reddeder.
 
 Canlı ortamda bu değerleri ortam değişkeniyle geçin — ASP.NET Core'da iç içe anahtarlar `__` (iki alt çizgi) ile ayrılır:
 
@@ -207,4 +256,4 @@ Alan değerleri veri setindeki yazımla aynı olmalıdır:
 - [x] Aşama 3: xUnit testleri — birim (Moq) + entegrasyon (SQLite in-memory), 63 test
 - [x] Aşama 4: Docker + GitHub Actions CI
 - [x] Aşama 4b: wwwroot altında tek sayfalık web arayüzü (framework yok, koyu tema)
-- [ ] Aşama 5: Canlıya çıkış (ücretsiz hosting) + README'ye demo linki
+- [x] Aşama 5: Canlıya çıkış — MonsterASP.NET, <https://garajim.runasp.net>
