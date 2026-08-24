@@ -10,6 +10,7 @@ using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Business.Jobs;
+using Garajim.Business.Seed;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
@@ -48,6 +49,7 @@ builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<IEmailService, SmtpEmailManager>();
 builder.Services.AddScoped<ReminderNotificationJob>();
+builder.Services.AddScoped<DemoDataSeeder>();
 
 builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
     .FromFile(
@@ -216,6 +218,29 @@ if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
                 migrationException,
                 "Migration uygulanamadı. ConnectionStrings__Default değerinin doğru sunucuyu gösterdiğini ve kullanıcının şema değiştirme yetkisi olduğunu doğrulayın. Uygulama başlatılmıyor.");
             throw;
+        }
+    }
+}
+
+if (builder.Configuration.GetValue("DemoSeed:Enabled", false))
+{
+    using (var seedScope = app.Services.CreateScope())
+    {
+        var seedLogger = seedScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
+            var eklendi = await seedScope.ServiceProvider.GetRequiredService<DemoDataSeeder>().RunAsync();
+
+            seedLogger.LogInformation(
+                eklendi
+                    ? "DemoSeed:Enabled açık, demo verisi oluşturuldu ({Eposta})."
+                    : "DemoSeed:Enabled açık, demo verisi zaten mevcut ({Eposta}), atlandı.",
+                DemoDataSeeder.DemoEmail);
+        }
+        catch (Exception seedException)
+        {
+            seedLogger.LogError(seedException, "Demo verisi oluşturulamadı. Uygulama demo verisi olmadan devam ediyor.");
         }
     }
 }
