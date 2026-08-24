@@ -55,7 +55,7 @@ builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
     .FromFile(
         modelName: PricePredictionController.ModelName,
         filePath: "MLModels/price-model.zip",
-        watchForChanges: true);
+        watchForChanges: builder.Environment.IsDevelopment());
 
 var useBackgroundJobs = builder.Configuration.GetValue("UseBackgroundJobs", true);
 
