@@ -20,6 +20,12 @@ Garajim.ML/Data/*.csv
 appsettings.Development.local.json
 secrets.json
 
+## Yayin profilleri (Web Deploy kimlik bilgisi icerir)
+**/Properties/PublishProfiles/
+*.publishSettings
+*.pubxml
+*.pubxml.user
+
 ## Test & publish output
 [Tt]est[Rr]esult*/
 publish/
