@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Garajım">
+  <mask id="g">
+    <rect width="64" height="64" fill="black"/>
+    <path d="M12 55 L12 30 A20 20 0 0 1 52 30 L52 55 Z" fill="white"/>
+    <rect x="20" y="29" width="24" height="4.6" rx="2.3" fill="black"/>
+    <rect x="20" y="38" width="24" height="4.6" rx="2.3" fill="black"/>
+    <rect x="20" y="47" width="24" height="4.6" rx="2.3" fill="black"/>
+  </mask>
+  <rect width="64" height="64" fill="currentColor" mask="url(#g)"/>
+</svg>

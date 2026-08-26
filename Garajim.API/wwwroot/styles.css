@@ -80,16 +80,19 @@ h3 {
 }
 
 .brand-mark {
-    width: 12px;
-    height: 26px;
-    background: linear-gradient(180deg, var(--accent), #b2450a);
-    border-radius: 3px;
+    width: 30px;
+    height: 30px;
+    flex: none;
     display: inline-block;
+    color: var(--accent);
+    background-color: currentColor;
+    -webkit-mask: url("garajim-logo.svg") no-repeat center / contain;
+    mask: url("garajim-logo.svg") no-repeat center / contain;
 }
 
 .brand.small .brand-mark {
-    height: 20px;
-    width: 9px;
+    width: 22px;
+    height: 22px;
 }
 
 .brand-name {
