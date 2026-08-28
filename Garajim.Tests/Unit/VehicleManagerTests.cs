@@ -74,7 +74,7 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public async Task AddAsync_PlakaTekilligiSadeceAyniKullaniciIcindir()
+        public async Task AddAsync_PlakaTekilligiSirketGenelindeUygulanir()
         {
             Expression<Func<Vehicle, bool>> mukerrerKontrolu = null;
             _vehicleDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
@@ -89,7 +89,7 @@ namespace Garajim.Tests.Unit
 
             var kontrol = mukerrerKontrolu.Compile();
             Assert.True(kontrol(new Vehicle { UserId = UserId, Plate = "34ABC123" }));
-            Assert.False(kontrol(new Vehicle { UserId = UserId + 1, Plate = "34ABC123" }));
+            Assert.True(kontrol(new Vehicle { UserId = UserId + 1, Plate = "34ABC123" }));
             Assert.False(kontrol(new Vehicle { UserId = UserId, Plate = "34ABC124" }));
         }
 

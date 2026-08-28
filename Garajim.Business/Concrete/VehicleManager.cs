@@ -42,7 +42,7 @@ namespace Garajim.Business.Concrete
                 dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var plate = dto.Plate.Trim().ToUpperInvariant().Replace(" ", "");
-            if (await _vehicleDal.AnyAsync(v => v.UserId == userId && v.Plate == plate))
+            if (await _vehicleDal.AnyAsync(v => v.Plate == plate))
                 return new ErrorDataResult<VehicleDto>(Messages.PlateAlreadyExists);
             var owner = await _userDal.GetAsync(u => u.Id == userId);
             if (owner == null)
