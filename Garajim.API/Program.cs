@@ -268,9 +268,12 @@ app.UseStaticFiles(new StaticFileOptions
     OnPrepareResponse = context =>
     {
         var headers = context.Context.Response.GetTypedHeaders();
-        var htmlDosyasi = context.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase);
+        var ad = context.File.Name;
+        var surumsuz = ad.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+            || ad.EndsWith(".js", StringComparison.OrdinalIgnoreCase)
+            || ad.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
 
-        headers.CacheControl = htmlDosyasi
+        headers.CacheControl = surumsuz
             ? new CacheControlHeaderValue { NoCache = true, MustRevalidate = true }
             : new CacheControlHeaderValue { Public = true, MaxAge = TimeSpan.FromHours(1) };
     }
