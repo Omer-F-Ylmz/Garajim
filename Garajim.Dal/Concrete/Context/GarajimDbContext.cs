@@ -1,3 +1,4 @@
+using Garajim.Core.Multitenancy;
 using Garajim.Entity.Concrete;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,24 +6,39 @@ namespace Garajim.Dal.Concrete.Context
 {
     public class GarajimDbContext : DbContext
     {
-        public GarajimDbContext(DbContextOptions<GarajimDbContext> options) : base(options)
+        private readonly ITenantProvider _tenantProvider;
+
+        public GarajimDbContext(DbContextOptions<GarajimDbContext> options, ITenantProvider tenantProvider) : base(options)
         {
+            _tenantProvider = tenantProvider;
         }
 
+        public int? CurrentCompanyId => _tenantProvider?.CompanyId;
+
+        public DbSet<Company> Companies { get; set; }
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
         public DbSet<FuelRecord> FuelRecords { get; set; }
         public DbSet<ExpenseRecord> ExpenseRecords { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<VehicleAssignment> VehicleAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.Property(c => c.Name).HasMaxLength(150).IsRequired();
+            });
+
             modelBuilder.Entity<AppUser>(entity =>
             {
                 entity.Property(u => u.Email).HasMaxLength(200).IsRequired();
                 entity.Property(u => u.FullName).HasMaxLength(100).IsRequired();
                 entity.HasIndex(u => u.Email).IsUnique();
+                entity.HasIndex(u => u.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(u => u.CompanyId).OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Vehicle>(entity =>
@@ -31,6 +47,8 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(v => v.Brand).HasMaxLength(100).IsRequired();
                 entity.Property(v => v.Model).HasMaxLength(100).IsRequired();
                 entity.HasIndex(v => new { v.UserId, v.Plate }).IsUnique();
+                entity.HasIndex(v => v.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(v => v.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<AppUser>().WithMany().HasForeignKey(v => v.UserId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -40,6 +58,8 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(m => m.ServiceName).HasMaxLength(150);
                 entity.Property(m => m.Note).HasMaxLength(500);
                 entity.HasIndex(m => new { m.VehicleId, m.Date });
+                entity.HasIndex(m => m.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(m => m.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(m => m.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -48,6 +68,8 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(f => f.Liters).HasPrecision(9, 2);
                 entity.Property(f => f.TotalCost).HasPrecision(18, 2);
                 entity.HasIndex(f => new { f.VehicleId, f.Date });
+                entity.HasIndex(f => f.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(f => f.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(f => f.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -56,6 +78,8 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(e => e.Amount).HasPrecision(18, 2);
                 entity.Property(e => e.Note).HasMaxLength(500);
                 entity.HasIndex(e => new { e.VehicleId, e.Date });
+                entity.HasIndex(e => e.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -63,7 +87,28 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.Property(r => r.Note).HasMaxLength(500);
                 entity.HasIndex(r => new { r.VehicleId, r.IsCompleted, r.DueDate });
+                entity.HasIndex(r => r.CompanyId);
+                entity.HasOne<Company>().WithMany().HasForeignKey(r => r.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Document>(entity =>
+            {
+                entity.Property(d => d.OriginalName).HasMaxLength(260).IsRequired();
+                entity.Property(d => d.StoredName).HasMaxLength(100).IsRequired();
+                entity.Property(d => d.ContentType).HasMaxLength(120).IsRequired();
+                entity.HasIndex(d => d.CompanyId);
+                entity.HasIndex(d => d.StoredName).IsUnique();
+                entity.HasOne<Company>().WithMany().HasForeignKey(d => d.CompanyId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<VehicleAssignment>(entity =>
+            {
+                entity.HasIndex(a => a.CompanyId);
+                entity.HasIndex(a => new { a.VehicleId, a.EndDate });
+                entity.HasIndex(a => new { a.UserId, a.EndDate });
+                entity.HasOne<Company>().WithMany().HasForeignKey(a => a.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

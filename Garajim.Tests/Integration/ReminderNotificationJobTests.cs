@@ -39,7 +39,7 @@ namespace Garajim.Tests.Integration
 
             var reminder = new Reminder
             {
-                VehicleId = arac.Id,
+                CompanyId = arac.CompanyId, VehicleId = arac.Id,
                 Type = ReminderType.Muayene,
                 DueDate = DateTime.UtcNow.Date.AddDays(gunSonra),
                 IsCompleted = isCompleted,

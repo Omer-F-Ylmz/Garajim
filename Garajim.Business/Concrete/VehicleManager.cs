@@ -10,10 +10,12 @@ namespace Garajim.Business.Concrete
     public class VehicleManager : IVehicleService
     {
         private readonly IVehicleDal _vehicleDal;
+        private readonly IUserDal _userDal;
 
-        public VehicleManager(IVehicleDal vehicleDal)
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal)
         {
             _vehicleDal = vehicleDal;
+            _userDal = userDal;
         }
 
         public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId)
@@ -40,8 +42,12 @@ namespace Garajim.Business.Concrete
             var plate = dto.Plate.Trim().ToUpperInvariant().Replace(" ", "");
             if (await _vehicleDal.AnyAsync(v => v.UserId == userId && v.Plate == plate))
                 return new ErrorDataResult<VehicleDto>(Messages.PlateAlreadyExists);
+            var owner = await _userDal.GetAsync(u => u.Id == userId);
+            if (owner == null)
+                return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var vehicle = new Vehicle
             {
+                CompanyId = owner.CompanyId,
                 UserId = userId,
                 Plate = plate,
                 Brand = dto.Brand.Trim(),

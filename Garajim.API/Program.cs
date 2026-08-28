@@ -7,6 +7,7 @@ using System.Threading.RateLimiting;
 using Garajim.API.Controllers;
 using Garajim.API.Startup;
 using Garajim.Business.Abstract;
+using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Business.Jobs;
@@ -31,8 +32,12 @@ var connectionString = builder.Configuration.GetConnectionString("Default");
 
 ProductionConfigurationGuard.Validate(builder.Configuration, builder.Environment);
 
+builder.Services.AddScoped<TenantContext>();
+builder.Services.AddScoped<ITenantProvider>(provider => provider.GetRequiredService<TenantContext>());
+
 builder.Services.AddDbContext<GarajimDbContext>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped<ICompanyDal, EfCompanyDal>();
 builder.Services.AddScoped<IUserDal, EfUserDal>();
 builder.Services.AddScoped<IVehicleDal, EfVehicleDal>();
 builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();

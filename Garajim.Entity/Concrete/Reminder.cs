@@ -6,6 +6,7 @@ namespace Garajim.Entity.Concrete
     public class Reminder : IEntity
     {
         public int Id { get; set; }
+        public int CompanyId { get; set; }
         public int VehicleId { get; set; }
         public ReminderType Type { get; set; }
         public DateTime? DueDate { get; set; }

@@ -14,10 +14,13 @@ namespace Garajim.Tests.Unit
         private const int UserId = 7;
 
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
 
         private VehicleManager CreateManager()
         {
-            return new VehicleManager(_vehicleDal.Object);
+            _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
+                .ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
+            return new VehicleManager(_vehicleDal.Object, _userDal.Object);
         }
 
         private static VehicleCreateDto ValidDto()

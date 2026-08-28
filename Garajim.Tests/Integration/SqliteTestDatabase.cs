@@ -1,3 +1,4 @@
+using Garajim.Core.Multitenancy;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
 using Garajim.Entity.Concrete;
@@ -21,9 +22,14 @@ namespace Garajim.Tests.Integration
                 .EnableSensitiveDataLogging()
                 .Options;
 
-            Context = new SqliteGarajimDbContext(options);
+            Tenant = new TenantContext();
+            Context = new SqliteGarajimDbContext(options, Tenant);
             Context.Database.EnsureCreated();
 
+            VarsayilanSirket = SirketEkle("Varsayılan Şirket");
+            Tenant.SetCompany(VarsayilanSirket.Id);
+
+            CompanyDal = new EfCompanyDal(Context);
             UserDal = new EfUserDal(Context);
             VehicleDal = new EfVehicleDal(Context);
             MaintenanceDal = new EfMaintenanceDal(Context);
@@ -33,6 +39,14 @@ namespace Garajim.Tests.Integration
         }
 
         public GarajimDbContext Context { get; }
+
+        public TenantContext Tenant { get; }
+
+        public Company VarsayilanSirket { get; }
+
+        public int CompanyId => VarsayilanSirket.Id;
+
+        public EfCompanyDal CompanyDal { get; }
 
         public EfUserDal UserDal { get; }
 
@@ -46,10 +60,30 @@ namespace Garajim.Tests.Integration
 
         public EfReminderDal ReminderDal { get; }
 
+        public Company SirketEkle(string ad)
+        {
+            var company = new Company
+            {
+                Name = ad,
+                PlanType = PlanType.Standart,
+                CreatedAt = new DateTime(2026, 1, 1)
+            };
+
+            Context.Companies.Add(company);
+            Context.SaveChanges();
+            return company;
+        }
+
         public AppUser KullaniciEkle(string email)
+        {
+            return KullaniciEkle(email, CompanyId);
+        }
+
+        public AppUser KullaniciEkle(string email, int companyId)
         {
             var user = new AppUser
             {
+                CompanyId = companyId,
                 Email = email,
                 FullName = email,
                 PasswordHash = new byte[] { 1, 2, 3 },
@@ -64,8 +98,15 @@ namespace Garajim.Tests.Integration
 
         public Vehicle AracEkle(int userId, string plaka, int currentKm = 100000)
         {
+            var companyId = Context.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => u.CompanyId).Single();
+            return AracEkle(userId, plaka, companyId, currentKm);
+        }
+
+        public Vehicle AracEkle(int userId, string plaka, int companyId, int currentKm = 100000)
+        {
             var vehicle = new Vehicle
             {
+                CompanyId = companyId,
                 UserId = userId,
                 Plate = plaka,
                 Brand = "Renault",

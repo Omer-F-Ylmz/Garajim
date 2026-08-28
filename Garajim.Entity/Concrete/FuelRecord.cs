@@ -5,6 +5,7 @@ namespace Garajim.Entity.Concrete
     public class FuelRecord : IEntity
     {
         public int Id { get; set; }
+        public int CompanyId { get; set; }
         public int VehicleId { get; set; }
         public DateTime Date { get; set; }
         public decimal Liters { get; set; }

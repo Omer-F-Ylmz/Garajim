@@ -1,3 +1,4 @@
+using Garajim.Core.Multitenancy;
 using Garajim.Dal.Concrete.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -9,7 +10,7 @@ namespace Garajim.Tests.Integration
         private static readonly ValueConverter<decimal, double> DecimalToDouble =
             new ValueConverter<decimal, double>(value => (double)value, value => (decimal)value);
 
-        public SqliteGarajimDbContext(DbContextOptions<GarajimDbContext> options) : base(options)
+        public SqliteGarajimDbContext(DbContextOptions<GarajimDbContext> options, ITenantProvider tenantProvider) : base(options, tenantProvider)
         {
         }
 

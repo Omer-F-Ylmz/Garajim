@@ -6,6 +6,7 @@ namespace Garajim.Entity.Concrete
     public class Vehicle : IEntity
     {
         public int Id { get; set; }
+        public int CompanyId { get; set; }
         public int UserId { get; set; }
         public string Plate { get; set; }
         public string Brand { get; set; }

@@ -6,6 +6,7 @@ namespace Garajim.Entity.Concrete
     public class MaintenanceRecord : IEntity
     {
         public int Id { get; set; }
+        public int CompanyId { get; set; }
         public int VehicleId { get; set; }
         public MaintenanceType Type { get; set; }
         public DateTime Date { get; set; }

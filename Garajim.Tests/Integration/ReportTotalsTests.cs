@@ -18,19 +18,19 @@ namespace Garajim.Tests.Integration
             _arac = _db.AracEkle(_userId, "34AAA111");
 
             _db.Context.FuelRecords.AddRange(
-                new FuelRecord { VehicleId = _arac.Id, Date = new DateTime(2026, 3, 1), Km = 100500, Liters = 40m, TotalCost = 1800m },
-                new FuelRecord { VehicleId = _arac.Id, Date = new DateTime(2026, 3, 15), Km = 101000, Liters = 30m, TotalCost = 1350m },
-                new FuelRecord { VehicleId = _arac.Id, Date = new DateTime(2026, 4, 10), Km = 101800, Liters = 45m, TotalCost = 2050m });
+                new FuelRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Date = new DateTime(2026, 3, 1), Km = 100500, Liters = 40m, TotalCost = 1800m },
+                new FuelRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Date = new DateTime(2026, 3, 15), Km = 101000, Liters = 30m, TotalCost = 1350m },
+                new FuelRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Date = new DateTime(2026, 4, 10), Km = 101800, Liters = 45m, TotalCost = 2050m });
 
             _db.Context.MaintenanceRecords.AddRange(
-                new MaintenanceRecord { VehicleId = _arac.Id, Type = MaintenanceType.PeriyodikBakim, Date = new DateTime(2026, 3, 20), Km = 101200, Cost = 5000m },
-                new MaintenanceRecord { VehicleId = _arac.Id, Type = MaintenanceType.LastikDegisimi, Date = new DateTime(2026, 4, 5), Km = 101600, Cost = 8000m });
+                new MaintenanceRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = MaintenanceType.PeriyodikBakim, Date = new DateTime(2026, 3, 20), Km = 101200, Cost = 5000m },
+                new MaintenanceRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = MaintenanceType.LastikDegisimi, Date = new DateTime(2026, 4, 5), Km = 101600, Cost = 8000m });
 
             _db.Context.ExpenseRecords.AddRange(
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 3, 2), Amount = 12000m },
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 3, 8), Amount = 300m },
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 3, 31, 22, 30, 0), Amount = 200m },
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Mtv, Date = new DateTime(2026, 5, 1), Amount = 4000m });
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 3, 2), Amount = 12000m },
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 3, 8), Amount = 300m },
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 3, 31, 22, 30, 0), Amount = 200m },
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Mtv, Date = new DateTime(2026, 5, 1), Amount = 4000m });
 
             _db.Context.SaveChanges();
         }

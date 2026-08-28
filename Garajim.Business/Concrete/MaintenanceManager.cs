@@ -37,6 +37,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<MaintenanceDto>(Messages.InvalidValue);
             var record = new MaintenanceRecord
             {
+                CompanyId = vehicle.CompanyId,
                 VehicleId = dto.VehicleId,
                 Type = dto.Type,
                 Date = dto.Date,

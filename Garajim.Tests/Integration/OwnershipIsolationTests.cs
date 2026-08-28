@@ -28,7 +28,7 @@ namespace Garajim.Tests.Integration
 
             _bakimA = new MaintenanceRecord
             {
-                VehicleId = _aracA.Id,
+                CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id,
                 Type = MaintenanceType.PeriyodikBakim,
                 Date = new DateTime(2026, 3, 1),
                 Km = 105000,
@@ -37,7 +37,7 @@ namespace Garajim.Tests.Integration
             };
             _yakitA = new FuelRecord
             {
-                VehicleId = _aracA.Id,
+                CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id,
                 Date = new DateTime(2026, 3, 2),
                 Km = 106000,
                 Liters = 40m,
@@ -45,14 +45,14 @@ namespace Garajim.Tests.Integration
             };
             _masrafA = new ExpenseRecord
             {
-                VehicleId = _aracA.Id,
+                CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id,
                 Category = ExpenseCategory.Kasko,
                 Date = new DateTime(2026, 3, 3),
                 Amount = 12000m
             };
             _hatirlatmaA = new Reminder
             {
-                VehicleId = _aracA.Id,
+                CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id,
                 Type = ReminderType.Muayene,
                 DueDate = DateTime.UtcNow.Date.AddDays(10),
                 IsCompleted = false,
@@ -69,7 +69,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleManager_BaskaKullanicininAracinaErisemez()
         {
-            var manager = new VehicleManager(_db.VehicleDal);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal);
 
             var getir = await manager.GetByIdAsync(_kullaniciB, _aracA.Id);
             var listele = await manager.GetAllAsync(_kullaniciB);
@@ -200,7 +200,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task Sahibi_KendiKayitlarinaErisebilir()
         {
-            var vehicleManager = new VehicleManager(_db.VehicleDal);
+            var vehicleManager = new VehicleManager(_db.VehicleDal, _db.UserDal);
             var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
             var reminderManager = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
 

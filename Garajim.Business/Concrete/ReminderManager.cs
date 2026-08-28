@@ -52,6 +52,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ReminderDto>(Messages.ReminderDateOrKmRequired);
             var reminder = new Reminder
             {
+                CompanyId = vehicle.CompanyId,
                 VehicleId = dto.VehicleId,
                 Type = dto.Type,
                 DueDate = dto.DueDate,

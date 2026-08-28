@@ -12,7 +12,7 @@ namespace Garajim.Tests.Integration
 
         private DemoDataSeeder CreateSeeder()
         {
-            return new DemoDataSeeder(_db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal);
+            return new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal);
         }
 
         [Fact]

@@ -13,6 +13,7 @@ namespace Garajim.Tests.Unit
     public class AuthManagerTests
     {
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>(MockBehavior.Strict);
+        private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
 
         private AuthManager CreateManager()
         {
@@ -26,7 +27,7 @@ namespace Garajim.Tests.Unit
                 })
                 .Build();
 
-            return new AuthManager(_userDal.Object, configuration);
+            return new AuthManager(_userDal.Object, _companyDal.Object, configuration);
         }
 
         [Theory]

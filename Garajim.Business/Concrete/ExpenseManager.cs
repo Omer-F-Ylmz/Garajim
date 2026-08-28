@@ -37,6 +37,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ExpenseDto>(Messages.InvalidValue);
             var record = new ExpenseRecord
             {
+                CompanyId = vehicle.CompanyId,
                 VehicleId = dto.VehicleId,
                 Category = dto.Category,
                 Date = dto.Date,

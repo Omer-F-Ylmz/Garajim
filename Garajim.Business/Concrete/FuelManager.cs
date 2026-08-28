@@ -37,6 +37,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<FuelDto>(Messages.InvalidValue);
             var record = new FuelRecord
             {
+                CompanyId = vehicle.CompanyId,
                 VehicleId = dto.VehicleId,
                 Date = dto.Date,
                 Liters = dto.Liters,

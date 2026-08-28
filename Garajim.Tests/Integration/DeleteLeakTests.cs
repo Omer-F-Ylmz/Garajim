@@ -25,10 +25,10 @@ namespace Garajim.Tests.Integration
             _kullaniciB = _db.KullaniciEkle("b@garajim.local").Id;
             _aracA = _db.AracEkle(_kullaniciA, "34AAA111");
 
-            _bakimA = new MaintenanceRecord { VehicleId = _aracA.Id, Type = MaintenanceType.PeriyodikBakim, Date = new DateTime(2026, 3, 1), Km = 105000, Cost = 5000m };
-            _yakitA = new FuelRecord { VehicleId = _aracA.Id, Date = new DateTime(2026, 3, 2), Km = 106000, Liters = 40m, TotalCost = 1800m };
-            _masrafA = new ExpenseRecord { VehicleId = _aracA.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 3, 3), Amount = 12000m };
-            _hatirlatmaA = new Reminder { VehicleId = _aracA.Id, Type = ReminderType.Muayene, DueDate = new DateTime(2026, 9, 1), CreatedAt = new DateTime(2026, 1, 1) };
+            _bakimA = new MaintenanceRecord { CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id, Type = MaintenanceType.PeriyodikBakim, Date = new DateTime(2026, 3, 1), Km = 105000, Cost = 5000m };
+            _yakitA = new FuelRecord { CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id, Date = new DateTime(2026, 3, 2), Km = 106000, Liters = 40m, TotalCost = 1800m };
+            _masrafA = new ExpenseRecord { CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 3, 3), Amount = 12000m };
+            _hatirlatmaA = new Reminder { CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id, Type = ReminderType.Muayene, DueDate = new DateTime(2026, 9, 1), CreatedAt = new DateTime(2026, 1, 1) };
 
             _db.Context.MaintenanceRecords.Add(_bakimA);
             _db.Context.FuelRecords.Add(_yakitA);
@@ -93,7 +93,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleDelete_YabanciAracVeOlmayanAracAyniMesajiDoner()
         {
-            var manager = new VehicleManager(_db.VehicleDal);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _aracA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -109,7 +109,7 @@ namespace Garajim.Tests.Integration
             var fuel = new FuelManager(_db.FuelDal, _db.VehicleDal);
             var expense = new ExpenseManager(_db.ExpenseDal, _db.VehicleDal);
             var reminder = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
-            var vehicle = new VehicleManager(_db.VehicleDal);
+            var vehicle = new VehicleManager(_db.VehicleDal, _db.UserDal);
 
             await maintenance.DeleteAsync(_kullaniciB, _bakimA.Id);
             await fuel.DeleteAsync(_kullaniciB, _yakitA.Id);

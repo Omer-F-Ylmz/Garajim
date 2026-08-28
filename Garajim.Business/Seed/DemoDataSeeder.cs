@@ -10,7 +10,9 @@ namespace Garajim.Business.Seed
         public const string DemoEmail = "demo@garajim.app";
         public const string DemoPassword = "Demo1234!";
         public const string DemoPlate = "34DEMO34";
+        public const string DemoCompanyName = "Garajım Demo";
 
+        private readonly ICompanyDal _companyDal;
         private readonly IUserDal _userDal;
         private readonly IVehicleDal _vehicleDal;
         private readonly IMaintenanceDal _maintenanceDal;
@@ -19,6 +21,7 @@ namespace Garajim.Business.Seed
         private readonly IReminderDal _reminderDal;
 
         public DemoDataSeeder(
+            ICompanyDal companyDal,
             IUserDal userDal,
             IVehicleDal vehicleDal,
             IMaintenanceDal maintenanceDal,
@@ -26,6 +29,7 @@ namespace Garajim.Business.Seed
             IExpenseDal expenseDal,
             IReminderDal reminderDal)
         {
+            _companyDal = companyDal;
             _userDal = userDal;
             _vehicleDal = vehicleDal;
             _maintenanceDal = maintenanceDal;
@@ -43,9 +47,18 @@ namespace Garajim.Business.Seed
 
             var bugun = DateTime.UtcNow.Date;
 
+            var company = new Company
+            {
+                Name = DemoCompanyName,
+                PlanType = PlanType.Standart,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _companyDal.AddAsync(company);
+
             HashingHelper.CreatePasswordHash(DemoPassword, out var passwordHash, out var passwordSalt);
             var demoUser = new AppUser
             {
+                CompanyId = company.Id,
                 Email = DemoEmail,
                 FullName = "Demo Kullanıcı",
                 PasswordHash = passwordHash,
@@ -56,6 +69,7 @@ namespace Garajim.Business.Seed
 
             var vehicle = new Vehicle
             {
+                CompanyId = company.Id,
                 UserId = demoUser.Id,
                 Plate = DemoPlate,
                 Brand = "Renault",
@@ -69,6 +83,7 @@ namespace Garajim.Business.Seed
 
             await _maintenanceDal.AddAsync(new MaintenanceRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Type = MaintenanceType.PeriyodikBakim,
                 Date = bugun.AddDays(-120),
@@ -79,6 +94,7 @@ namespace Garajim.Business.Seed
             });
             await _maintenanceDal.AddAsync(new MaintenanceRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Type = MaintenanceType.LastikDegisimi,
                 Date = bugun.AddDays(-45),
@@ -90,6 +106,7 @@ namespace Garajim.Business.Seed
 
             await _fuelDal.AddAsync(new FuelRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-38),
                 Km = 120900,
@@ -98,6 +115,7 @@ namespace Garajim.Business.Seed
             });
             await _fuelDal.AddAsync(new FuelRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-20),
                 Km = 121500,
@@ -106,6 +124,7 @@ namespace Garajim.Business.Seed
             });
             await _fuelDal.AddAsync(new FuelRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-5),
                 Km = 122000,
@@ -115,6 +134,7 @@ namespace Garajim.Business.Seed
 
             await _expenseDal.AddAsync(new ExpenseRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Category = ExpenseCategory.Kasko,
                 Date = bugun.AddDays(-90),
@@ -123,6 +143,7 @@ namespace Garajim.Business.Seed
             });
             await _expenseDal.AddAsync(new ExpenseRecord
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Category = ExpenseCategory.Otopark,
                 Date = bugun.AddDays(-12),
@@ -132,6 +153,7 @@ namespace Garajim.Business.Seed
 
             await _reminderDal.AddAsync(new Reminder
             {
+                CompanyId = company.Id,
                 VehicleId = vehicle.Id,
                 Type = ReminderType.Muayene,
                 DueDate = bugun.AddDays(21),

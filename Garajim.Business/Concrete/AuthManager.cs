@@ -5,6 +5,7 @@ using Garajim.Core.Utilities.Security;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 using Microsoft.Extensions.Configuration;
 
 namespace Garajim.Business.Concrete
@@ -12,11 +13,13 @@ namespace Garajim.Business.Concrete
     public class AuthManager : IAuthService
     {
         private readonly IUserDal _userDal;
+        private readonly ICompanyDal _companyDal;
         private readonly IConfiguration _configuration;
 
-        public AuthManager(IUserDal userDal, IConfiguration configuration)
+        public AuthManager(IUserDal userDal, ICompanyDal companyDal, IConfiguration configuration)
         {
             _userDal = userDal;
+            _companyDal = companyDal;
             _configuration = configuration;
         }
 
@@ -29,10 +32,19 @@ namespace Garajim.Business.Concrete
             if (await _userDal.AnyAsync(u => u.Email == email))
                 return new ErrorDataResult<TokenDto>(Messages.EmailAlreadyExists);
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
+            var fullName = dto.FullName.Trim();
+            var company = new Company
+            {
+                Name = fullName.Length > 150 ? fullName.Substring(0, 150) : fullName,
+                PlanType = PlanType.Standart,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _companyDal.AddAsync(company);
             var user = new AppUser
             {
+                CompanyId = company.Id,
                 Email = email,
-                FullName = dto.FullName.Trim(),
+                FullName = fullName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 CreatedAt = DateTime.UtcNow

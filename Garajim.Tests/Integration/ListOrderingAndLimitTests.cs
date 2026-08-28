@@ -24,7 +24,7 @@ namespace Garajim.Tests.Integration
             {
                 _db.Context.MaintenanceRecords.Add(new MaintenanceRecord
                 {
-                    VehicleId = _arac.Id,
+                    CompanyId = _arac.CompanyId, VehicleId = _arac.Id,
                     Type = MaintenanceType.PeriyodikBakim,
                     Date = new DateTime(2020, 1, 1).AddDays(i),
                     Km = 100000 + i,
@@ -65,11 +65,11 @@ namespace Garajim.Tests.Integration
         public async Task YakitVeMasrafListeleriEnYeniKayittanBaslar()
         {
             _db.Context.FuelRecords.AddRange(
-                new FuelRecord { VehicleId = _arac.Id, Date = new DateTime(2026, 1, 5), Km = 101000, Liters = 40m, TotalCost = 1800m },
-                new FuelRecord { VehicleId = _arac.Id, Date = new DateTime(2026, 3, 5), Km = 102000, Liters = 30m, TotalCost = 1400m });
+                new FuelRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Date = new DateTime(2026, 1, 5), Km = 101000, Liters = 40m, TotalCost = 1800m },
+                new FuelRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Date = new DateTime(2026, 3, 5), Km = 102000, Liters = 30m, TotalCost = 1400m });
             _db.Context.ExpenseRecords.AddRange(
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 1, 8), Amount = 200m },
-                new ExpenseRecord { VehicleId = _arac.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 4, 8), Amount = 12000m });
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Otopark, Date = new DateTime(2026, 1, 8), Amount = 200m },
+                new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 4, 8), Amount = 12000m });
             _db.Context.SaveChanges();
 
             var fuel = await new FuelManager(_db.FuelDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
@@ -83,9 +83,9 @@ namespace Garajim.Tests.Integration
         public async Task HatirlatmaListesiOnceBekleyenSonraTarihSirasinda()
         {
             _db.Context.Reminders.AddRange(
-                new Reminder { VehicleId = _arac.Id, Type = ReminderType.Kasko, DueDate = new DateTime(2026, 2, 1), IsCompleted = true, CreatedAt = new DateTime(2026, 1, 1) },
-                new Reminder { VehicleId = _arac.Id, Type = ReminderType.Muayene, DueDate = new DateTime(2026, 9, 1), IsCompleted = false, CreatedAt = new DateTime(2026, 1, 1) },
-                new Reminder { VehicleId = _arac.Id, Type = ReminderType.Mtv, DueDate = new DateTime(2026, 5, 1), IsCompleted = false, CreatedAt = new DateTime(2026, 1, 1) });
+                new Reminder { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = ReminderType.Kasko, DueDate = new DateTime(2026, 2, 1), IsCompleted = true, CreatedAt = new DateTime(2026, 1, 1) },
+                new Reminder { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = ReminderType.Muayene, DueDate = new DateTime(2026, 9, 1), IsCompleted = false, CreatedAt = new DateTime(2026, 1, 1) },
+                new Reminder { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = ReminderType.Mtv, DueDate = new DateTime(2026, 5, 1), IsCompleted = false, CreatedAt = new DateTime(2026, 1, 1) });
             _db.Context.SaveChanges();
 
             var result = await new ReminderManager(_db.ReminderDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
