@@ -38,4 +38,15 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <MsDeploySkipRules Include="AppDataKlasoruSilinmesin">
+      <ObjectName>dirPath</ObjectName>
+      <AbsolutePath>App_Data</AbsolutePath>
+    </MsDeploySkipRules>
+    <MsDeploySkipRules Include="AppDataDosyalariSilinmesin">
+      <ObjectName>filePath</ObjectName>
+      <AbsolutePath>App_Data\\.*</AbsolutePath>
+    </MsDeploySkipRules>
+  </ItemGroup>
+
 </Project>
