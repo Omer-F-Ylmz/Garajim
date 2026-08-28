@@ -106,6 +106,7 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.HasIndex(a => a.CompanyId);
                 entity.HasIndex(a => new { a.VehicleId, a.EndDate });
+                entity.HasIndex(a => a.VehicleId).IsUnique().HasFilter("[EndDate] IS NULL");
                 entity.HasIndex(a => new { a.UserId, a.EndDate });
                 entity.HasOne<Company>().WithMany().HasForeignKey(a => a.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);

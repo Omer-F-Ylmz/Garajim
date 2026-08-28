@@ -34,5 +34,11 @@ namespace Garajim.Business.Constants
         public const string UserDeactivated = "Kullanıcı pasifleştirildi.";
         public const string CannotManageSelf = "Kendi hesabınız üzerinde bu işlemi yapamazsınız.";
         public const string LastOwnerRequired = "Şirkette en az bir Owner kalmalıdır.";
+        public const string AssignmentAlreadyActive = "Bu araçta zaten aktif bir zimmet var; önce devredin veya sonlandırın.";
+        public const string AssignmentNotFound = "Araçta aktif zimmet bulunamadı.";
+        public const string AssignmentSameDriver = "Araç zaten bu sürücüye zimmetli.";
+        public const string AssignmentCreated = "Zimmet oluşturuldu.";
+        public const string AssignmentTransferred = "Zimmet devredildi.";
+        public const string AssignmentEnded = "Zimmet sonlandırıldı.";
     }
 }
