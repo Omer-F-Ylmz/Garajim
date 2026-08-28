@@ -98,11 +98,17 @@ namespace Garajim.Tests.Integration
 
         public Vehicle AracEkle(int userId, string plaka, int currentKm = 100000)
         {
-            var companyId = Context.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => u.CompanyId).Single();
-            return AracEkle(userId, plaka, companyId, currentKm);
+            var companyId = Context.Users
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => u.CompanyId)
+                .Single();
+
+            return AracEkleSirketle(userId, plaka, companyId, currentKm);
         }
 
-        public Vehicle AracEkle(int userId, string plaka, int companyId, int currentKm = 100000)
+        public Vehicle AracEkleSirketle(int userId, string plaka, int companyId, int currentKm = 100000)
         {
             var vehicle = new Vehicle
             {

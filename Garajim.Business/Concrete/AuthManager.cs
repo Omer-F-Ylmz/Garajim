@@ -29,7 +29,7 @@ namespace Garajim.Business.Concrete
                 string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
                 return new ErrorDataResult<TokenDto>(Messages.InvalidValue);
             var email = dto.Email.Trim().ToLowerInvariant();
-            if (await _userDal.AnyAsync(u => u.Email == email))
+            if (await _userDal.ExistsForRegistrationAsync(email))
                 return new ErrorDataResult<TokenDto>(Messages.EmailAlreadyExists);
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
             var fullName = dto.FullName.Trim();
@@ -56,7 +56,7 @@ namespace Garajim.Business.Concrete
         public async Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto)
         {
             var email = (dto.Email ?? string.Empty).Trim().ToLowerInvariant();
-            var user = await _userDal.GetAsync(u => u.Email == email);
+            var user = await _userDal.GetForAuthenticationAsync(email);
             if (user == null || !HashingHelper.VerifyPasswordHash(dto.Password ?? string.Empty, user.PasswordHash, user.PasswordSalt))
                 return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
             return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.LoginSuccess);
@@ -66,6 +66,7 @@ namespace Garajim.Business.Concrete
         {
             var token = JwtTokenHelper.CreateToken(
                 user.Id,
+                user.CompanyId,
                 user.Email,
                 user.FullName,
                 _configuration["Jwt:Key"],

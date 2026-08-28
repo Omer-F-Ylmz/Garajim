@@ -20,16 +20,16 @@ namespace Garajim.Tests.Integration
         {
             var eklendi = await CreateSeeder().RunAsync();
 
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
-            var arac = await _db.Context.Vehicles.AsNoTracking().SingleAsync(v => v.UserId == kullanici.Id);
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync(v => v.UserId == kullanici.Id);
 
             Assert.True(eklendi);
             Assert.Equal("Demo Kullanıcı", kullanici.FullName);
             Assert.Equal(DemoDataSeeder.DemoPlate, arac.Plate);
-            Assert.Equal(2, await _db.Context.MaintenanceRecords.CountAsync(m => m.VehicleId == arac.Id));
-            Assert.Equal(3, await _db.Context.FuelRecords.CountAsync(f => f.VehicleId == arac.Id));
-            Assert.Equal(2, await _db.Context.ExpenseRecords.CountAsync(e => e.VehicleId == arac.Id));
-            Assert.Equal(1, await _db.Context.Reminders.CountAsync(r => r.VehicleId == arac.Id));
+            Assert.Equal(2, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync(m => m.VehicleId == arac.Id));
+            Assert.Equal(3, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync(f => f.VehicleId == arac.Id));
+            Assert.Equal(2, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync(e => e.VehicleId == arac.Id));
+            Assert.Equal(1, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync(r => r.VehicleId == arac.Id));
         }
 
         [Fact]
@@ -41,19 +41,19 @@ namespace Garajim.Tests.Integration
 
             Assert.False(ikinciSonuc);
             Assert.False(ucuncuSonuc);
-            Assert.Equal(1, await _db.Context.Users.CountAsync());
-            Assert.Equal(1, await _db.Context.Vehicles.CountAsync());
-            Assert.Equal(2, await _db.Context.MaintenanceRecords.CountAsync());
-            Assert.Equal(3, await _db.Context.FuelRecords.CountAsync());
-            Assert.Equal(2, await _db.Context.ExpenseRecords.CountAsync());
-            Assert.Equal(1, await _db.Context.Reminders.CountAsync());
+            Assert.Equal(1, await _db.Context.Users.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(1, await _db.Context.Vehicles.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(3, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(1, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync());
         }
 
         [Fact]
         public async Task DemoKullanicisiBelgelenenSifreyleGirisYapabilir()
         {
             await CreateSeeder().RunAsync();
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
 
             var dogru = HashingHelper.VerifyPasswordHash(DemoDataSeeder.DemoPassword, kullanici.PasswordHash, kullanici.PasswordSalt);
             var yanlis = HashingHelper.VerifyPasswordHash("baska-sifre", kullanici.PasswordHash, kullanici.PasswordSalt);
@@ -66,7 +66,8 @@ namespace Garajim.Tests.Integration
         public async Task DemoHatirlatmasiYaklasanlarListesindeGorunur()
         {
             await CreateSeeder().RunAsync();
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            _db.Tenant.SetCompany(kullanici.CompanyId);
             var manager = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
 
             var yaklasan = await manager.GetUpcomingAsync(kullanici.Id, 30);
@@ -80,8 +81,9 @@ namespace Garajim.Tests.Integration
         public async Task DemoVerisiRaporlariBesler()
         {
             await CreateSeeder().RunAsync();
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
-            var arac = await _db.Context.Vehicles.AsNoTracking().SingleAsync();
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+            _db.Tenant.SetCompany(kullanici.CompanyId);
             var manager = new ReportManager(_db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal);
 
             var ozet = await manager.GetSummaryAsync(kullanici.Id, arac.Id, DateTime.UtcNow.Date.AddYears(-1), DateTime.UtcNow.Date);

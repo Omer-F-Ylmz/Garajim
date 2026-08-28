@@ -36,7 +36,7 @@ namespace Garajim.Tests.Integration
                 Password = "gizli123"
             });
 
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == "yeni@garajim.local");
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == "yeni@garajim.local");
             var sirket = await _db.Context.Companies.AsNoTracking().SingleAsync(c => c.Id == kullanici.CompanyId);
 
             Assert.True(sonuc.Success);
@@ -53,8 +53,8 @@ namespace Garajim.Tests.Integration
             await manager.RegisterAsync(new RegisterDto { Email = "bir@garajim.local", FullName = "Bir Kişi", Password = "gizli123" });
             await manager.RegisterAsync(new RegisterDto { Email = "iki@garajim.local", FullName = "İki Kişi", Password = "gizli123" });
 
-            var birinci = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == "bir@garajim.local");
-            var ikinci = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == "iki@garajim.local");
+            var birinci = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == "bir@garajim.local");
+            var ikinci = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == "iki@garajim.local");
 
             Assert.NotEqual(birinci.CompanyId, ikinci.CompanyId);
         }
@@ -75,7 +75,7 @@ namespace Garajim.Tests.Integration
                 FuelType = FuelType.Benzin
             });
 
-            var arac = await _db.Context.Vehicles.AsNoTracking().SingleAsync(v => v.Id == sonuc.Data.Id);
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync(v => v.Id == sonuc.Data.Id);
 
             Assert.True(sonuc.Success);
             Assert.Equal(kullanici.CompanyId, arac.CompanyId);
@@ -117,10 +117,10 @@ namespace Garajim.Tests.Integration
                 DueDate = new DateTime(2026, 9, 1)
             });
 
-            var bakim = await _db.Context.MaintenanceRecords.AsNoTracking().SingleAsync();
-            var yakit = await _db.Context.FuelRecords.AsNoTracking().SingleAsync();
-            var masraf = await _db.Context.ExpenseRecords.AsNoTracking().SingleAsync();
-            var hatirlatma = await _db.Context.Reminders.AsNoTracking().SingleAsync();
+            var bakim = await _db.Context.MaintenanceRecords.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+            var yakit = await _db.Context.FuelRecords.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+            var masraf = await _db.Context.ExpenseRecords.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+            var hatirlatma = await _db.Context.Reminders.IgnoreQueryFilters().AsNoTracking().SingleAsync();
 
             Assert.Equal(arac.CompanyId, bakim.CompanyId);
             Assert.Equal(arac.CompanyId, yakit.CompanyId);
@@ -135,9 +135,9 @@ namespace Garajim.Tests.Integration
 
             var eklendi = await seeder.RunAsync();
 
-            var kullanici = await _db.Context.Users.AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
             var sirket = await _db.Context.Companies.AsNoTracking().SingleAsync(c => c.Id == kullanici.CompanyId);
-            var arac = await _db.Context.Vehicles.AsNoTracking().SingleAsync(v => v.CompanyId == sirket.Id);
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync(v => v.CompanyId == sirket.Id);
 
             Assert.True(eklendi);
             Assert.Equal(DemoDataSeeder.DemoCompanyName, sirket.Name);

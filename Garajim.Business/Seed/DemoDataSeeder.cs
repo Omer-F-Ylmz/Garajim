@@ -40,7 +40,7 @@ namespace Garajim.Business.Seed
 
         public async Task<bool> RunAsync()
         {
-            if (await _userDal.AnyAsync(u => u.Email == DemoEmail))
+            if (await _userDal.ExistsForRegistrationAsync(DemoEmail))
             {
                 return false;
             }

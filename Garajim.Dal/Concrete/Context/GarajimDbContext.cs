@@ -110,6 +110,15 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<Company>().WithMany().HasForeignKey(a => a.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<AppUser>().HasQueryFilter(u => u.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<Vehicle>().HasQueryFilter(v => v.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<MaintenanceRecord>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<FuelRecord>().HasQueryFilter(f => f.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<ExpenseRecord>().HasQueryFilter(e => e.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<Reminder>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<Document>().HasQueryFilter(d => d.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<VehicleAssignment>().HasQueryFilter(a => a.CompanyId == CurrentCompanyId);
         }
     }
 }

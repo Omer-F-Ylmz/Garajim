@@ -273,6 +273,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseRateLimiter();
 
 app.UseAuthentication();
+app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthorization();
 
 if (useBackgroundJobs && app.Environment.IsDevelopment())

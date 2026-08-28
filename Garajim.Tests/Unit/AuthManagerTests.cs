@@ -52,7 +52,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task RegisterAsync_AltiKarakterlikSifreKabulEdilir()
         {
-            _userDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<AppUser, bool>>>())).ReturnsAsync(false);
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(false);
             _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
 
             var result = await CreateManager().RegisterAsync(new RegisterDto
@@ -73,10 +73,10 @@ namespace Garajim.Tests.Unit
         public async Task RegisterAsync_EpostaKucukHarfeCevrilipKirpilir(string girilen, string beklenen)
         {
             AppUser eklenen = null;
-            Expression<Func<AppUser, bool>> mukerrerKontrolu = null;
+            string aranan = null;
 
-            _userDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
-                .Callback<Expression<Func<AppUser, bool>>>(predicate => mukerrerKontrolu = predicate)
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>()))
+                .Callback<string>(deger => aranan = deger)
                 .ReturnsAsync(false);
             _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>()))
                 .Callback<AppUser>(user => eklenen = user)
@@ -94,15 +94,13 @@ namespace Garajim.Tests.Unit
             Assert.Equal("Test Kullanıcı", eklenen.FullName);
             Assert.Equal(beklenen, result.Data.Email);
 
-            var kontrol = mukerrerKontrolu.Compile();
-            Assert.True(kontrol(new AppUser { Email = beklenen }));
-            Assert.False(kontrol(new AppUser { Email = girilen }));
+            Assert.Equal(beklenen, aranan);
         }
 
         [Fact]
         public async Task RegisterAsync_AyniEpostaIkinciKezKaydedilemez()
         {
-            _userDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<AppUser, bool>>>())).ReturnsAsync(true);
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(true);
 
             var result = await CreateManager().RegisterAsync(new RegisterDto
             {
@@ -129,9 +127,9 @@ namespace Garajim.Tests.Unit
                 PasswordSalt = salt
             };
 
-            Expression<Func<AppUser, bool>> arama = null;
-            _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
-                .Callback<Expression<Func<AppUser, bool>>>(predicate => arama = predicate)
+            string aranan = null;
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
+                .Callback<string>(deger => aranan = deger)
                 .ReturnsAsync(kayitliKullanici);
 
             var result = await CreateManager().LoginAsync(new LoginDto
@@ -142,14 +140,14 @@ namespace Garajim.Tests.Unit
 
             Assert.True(result.Success);
             Assert.Equal(Messages.LoginSuccess, result.Message);
-            Assert.True(arama.Compile()(kayitliKullanici));
+            Assert.Equal("kullanici@garajim.local", aranan);
         }
 
         [Fact]
         public async Task LoginAsync_YanlisSifreIcinHataDoner()
         {
             HashingHelper.CreatePasswordHash("gizli123", out var hash, out var salt);
-            _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AppUser { Id = 5, Email = "kullanici@garajim.local", PasswordHash = hash, PasswordSalt = salt });
 
             var result = await CreateManager().LoginAsync(new LoginDto
@@ -165,7 +163,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task LoginAsync_KullaniciYoksaHataDoner()
         {
-            _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>())).ReturnsAsync((AppUser)null);
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>())).ReturnsAsync((AppUser)null);
 
             var result = await CreateManager().LoginAsync(new LoginDto { Email = "yok@garajim.local", Password = "gizli123" });
 
