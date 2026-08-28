@@ -25,8 +25,10 @@ namespace Garajim.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] int? vehicleId, [FromForm] int? maintenanceRecordId)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Upload([FromForm] DocumentUploadForm form)
         {
+            var file = form?.File;
             if (file == null || file.Length == 0)
                 return BadRequest(new Core.Utilities.Results.ErrorDataResult<DocumentDto>(Messages.InvalidValue));
 
@@ -35,8 +37,8 @@ namespace Garajim.API.Controllers
 
             var result = await _documentService.UploadAsync(CurrentUserId, new DocumentUploadDto
             {
-                VehicleId = vehicleId,
-                MaintenanceRecordId = maintenanceRecordId,
+                VehicleId = form.VehicleId,
+                MaintenanceRecordId = form.MaintenanceRecordId,
                 FileName = file.FileName,
                 Content = stream.ToArray()
             });

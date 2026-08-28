@@ -9,6 +9,8 @@ namespace Garajim.Business.Seed
     {
         public const string DemoEmail = "demo@garajim.app";
         public const string DemoPassword = "Demo1234!";
+        public const string DemoDriverEmail = "surucu@garajim.app";
+        public const string DemoDriverPassword = "Surucu1234!";
         public const string DemoPlate = "34DEMO34";
         public const string DemoCompanyName = "Garajım Demo";
 
@@ -19,6 +21,7 @@ namespace Garajim.Business.Seed
         private readonly IFuelDal _fuelDal;
         private readonly IExpenseDal _expenseDal;
         private readonly IReminderDal _reminderDal;
+        private readonly IVehicleAssignmentDal _assignmentDal;
 
         public DemoDataSeeder(
             ICompanyDal companyDal,
@@ -27,7 +30,8 @@ namespace Garajim.Business.Seed
             IMaintenanceDal maintenanceDal,
             IFuelDal fuelDal,
             IExpenseDal expenseDal,
-            IReminderDal reminderDal)
+            IReminderDal reminderDal,
+            IVehicleAssignmentDal assignmentDal)
         {
             _companyDal = companyDal;
             _userDal = userDal;
@@ -36,6 +40,7 @@ namespace Garajim.Business.Seed
             _fuelDal = fuelDal;
             _expenseDal = expenseDal;
             _reminderDal = reminderDal;
+            _assignmentDal = assignmentDal;
         }
 
         public async Task<bool> RunAsync()
@@ -69,6 +74,20 @@ namespace Garajim.Business.Seed
             };
             await _userDal.AddAsync(demoUser);
 
+            HashingHelper.CreatePasswordHash(DemoDriverPassword, out var driverHash, out var driverSalt);
+            var demoDriver = new AppUser
+            {
+                CompanyId = company.Id,
+                Role = CompanyRole.Driver,
+                IsActive = true,
+                Email = DemoDriverEmail,
+                FullName = "Demo Sürücü",
+                PasswordHash = driverHash,
+                PasswordSalt = driverSalt,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _userDal.AddAsync(demoDriver);
+
             var vehicle = new Vehicle
             {
                 CompanyId = company.Id,
@@ -82,6 +101,17 @@ namespace Garajim.Business.Seed
                 CreatedAt = DateTime.UtcNow
             };
             await _vehicleDal.AddAsync(vehicle);
+
+            await _assignmentDal.AddAsync(new VehicleAssignment
+            {
+                CompanyId = company.Id,
+                VehicleId = vehicle.Id,
+                UserId = demoDriver.Id,
+                StartDate = bugun.AddDays(-60),
+                EndDate = null,
+                AssignedByUserId = demoUser.Id,
+                CreatedAt = DateTime.UtcNow
+            });
 
             await _maintenanceDal.AddAsync(new MaintenanceRecord
             {

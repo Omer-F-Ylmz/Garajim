@@ -18,7 +18,7 @@ Durum işaretleri: `[x]` bitti · `[~]` kısmen · `[ ]` başlanmadı
 - [x] Hangfire job'ı şirketleri tek tek dolaşıyor; şirketler arası tek sorgu yok
 - [x] Demo tohumlaması yeni şemayla idempotent
 
-Faz 1a'da bilerek yapılmayanlar:
+Faz 1a'da bilerek yapılmayanlar (üçü de Faz 1b'de kapandı):
 
 - `Documents` ve `VehicleAssignments` tabloları yalnızca şema olarak var; davranışları Faz 1b'de gelir
 - Araç plakası tekilliği hâlâ kullanıcı başına (`UserId, Plate`); çok kullanıcılı şirkette şirket başına olmalı, Faz 1b
@@ -26,13 +26,26 @@ Faz 1a'da bilerek yapılmayanlar:
 
 ## Faz 1b — Roller, zimmet, belge, arayüz
 
-- [ ] `CompanyRole`: Owner, Manager, Driver; JWT'ye rol claim'i
-- [ ] Politikalar: Owner her şey; Manager araç/kayıt/zimmet; Driver yalnız zimmetli araçları
-- [ ] Kullanıcı yönetimi uçları (yalnız Owner): kullanıcı ekle (geçici şifre yanıtta bir kez), rol değiştir, pasifleştir
-- [ ] Araç-sürücü zimmeti: aynı anda tek aktif zimmet (filtreli tekil indeks + iş kuralı), zimmet geçmişi, devir
-- [ ] Belge yükleme: wwwroot dışında saklama, uzantı beyaz listesi, magic-byte kontrolü, boyut ve şirket kotası
-- [ ] SPA: şirket adı alanı, Ekip ekranı, araç kartında zimmet, bakım kaydına belge, Driver görünümü
-- [ ] Plaka tekilliğinin şirket başına taşınması
+- [x] `CompanyRole`: Owner, Manager, Driver; JWT'ye rol claim'i
+- [x] Politikalar: Owner her şey; Manager araç/kayıt/zimmet; Driver yalnız zimmetli araçları
+- [x] Kullanıcı yönetimi uçları (yalnız Owner): kullanıcı ekle (geçici şifre yanıtta bir kez), rol değiştir, pasifleştir
+- [x] Araç-sürücü zimmeti: aynı anda tek aktif zimmet (filtreli tekil indeks + iş kuralı), zimmet geçmişi, devir
+- [x] Belge yükleme: wwwroot dışında saklama, uzantı beyaz listesi, magic-byte kontrolü, boyut ve şirket kotası
+- [x] SPA: şirket adı alanı, Ekip ekranı, araç kartında zimmet, bakım kaydına belge, Driver görünümü
+- [x] Plaka tekilliğinin şirket başına taşınması; migration çakışan plakaları bulup açık hatayla durur
+- [x] Demo tohumlaması sahip + sürücü + aktif zimmet üretir, idempotent kalır
+
+Faz 1b sırasında yakalanan ve düzeltilenler:
+
+- `app.js` ve `styles.css` bir saat önbellekleniyordu; yayından sonra dönen kullanıcı yeni HTML'i eski scriptle çalıştırıyordu. İkisi de artık doğrulamaya bağlı
+- Belge yükleme ucu `[FromForm] IFormFile` ile ayrı parametreler aldığı için Swagger dokümanı 500 veriyordu; bağlama tek forma taşındı
+- Rol sıfırlaması araçlar yüklenmeden sekmeyi tetikleyip `vehicleId=null` isteği atıyordu
+
+Faz 1b'de bilerek yapılmayanlar:
+
+- Geçmişe dönük zimmet devri (elle `StartDate` / `EndDate`) yok; devir her zaman "şimdi". Tarih düzeltmesi audit log ile birlikte gelecek
+- Driver'a "kendi eklediği araç" istisnası yok; erişim yalnız aktif zimmetten gelir
+- Belge önizlemesi yok; yalnız yükleme, listeleme, indirme ve silme var
 
 ## Faz 2 — Filo operasyonu
 

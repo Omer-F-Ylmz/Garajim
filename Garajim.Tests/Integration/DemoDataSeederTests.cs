@@ -2,6 +2,7 @@ using Garajim.Business.Concrete;
 using Garajim.Business.Seed;
 using Garajim.Core.Utilities.Security;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garajim.Tests.Integration
@@ -12,7 +13,7 @@ namespace Garajim.Tests.Integration
 
         private DemoDataSeeder CreateSeeder()
         {
-            return new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal);
+            return new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal, _db.AssignmentDal);
         }
 
         [Fact]
@@ -41,12 +42,56 @@ namespace Garajim.Tests.Integration
 
             Assert.False(ikinciSonuc);
             Assert.False(ucuncuSonuc);
-            Assert.Equal(1, await _db.Context.Users.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.Users.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(1, await _db.Context.VehicleAssignments.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.Vehicles.IgnoreQueryFilters().CountAsync());
             Assert.Equal(2, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(3, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(2, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync());
+        }
+
+        [Fact]
+        public async Task DemoEkibiSahipVeSurucudenOlusur()
+        {
+            await CreateSeeder().RunAsync();
+
+            var sahip = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
+            var surucu = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoDriverEmail);
+
+            Assert.Equal(CompanyRole.Owner, sahip.Role);
+            Assert.Equal(CompanyRole.Driver, surucu.Role);
+            Assert.True(sahip.IsActive);
+            Assert.True(surucu.IsActive);
+            Assert.Equal(sahip.CompanyId, surucu.CompanyId);
+        }
+
+        [Fact]
+        public async Task DemoAraciSurucuyeZimmetliGelir()
+        {
+            await CreateSeeder().RunAsync();
+
+            var surucu = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoDriverEmail);
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+            var zimmet = await _db.Context.VehicleAssignments.IgnoreQueryFilters().AsNoTracking().SingleAsync();
+
+            Assert.Equal(arac.Id, zimmet.VehicleId);
+            Assert.Equal(surucu.Id, zimmet.UserId);
+            Assert.Equal(arac.CompanyId, zimmet.CompanyId);
+            Assert.Null(zimmet.EndDate);
+        }
+
+        [Fact]
+        public async Task DemoSurucusuYalnizZimmetliAraciGorur()
+        {
+            await CreateSeeder().RunAsync();
+            var surucu = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoDriverEmail);
+            _db.Tenant.SetCompany(surucu.CompanyId);
+
+            var araclar = await _db.VehicleAccess.GetAccessibleListAsync(surucu.Id);
+
+            Assert.Single(araclar);
+            Assert.Equal(DemoDataSeeder.DemoPlate, araclar[0].Plate);
         }
 
         [Fact]
