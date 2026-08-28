@@ -32,6 +32,11 @@ namespace Garajim.Tests.Integration
         private readonly SqliteTestDatabase _db = new SqliteTestDatabase();
         private readonly SahteEmailService _email = new SahteEmailService();
 
+        private ReminderNotificationJob JobOlustur(IEmailService emailService)
+        {
+            return new ReminderNotificationJob(_db.CompanyDal, _db.ReminderDal, _db.Tenant, emailService);
+        }
+
         private Reminder HatirlatmaEkle(int gunSonra, bool isCompleted = false, DateTime? lastNotifiedAt = null)
         {
             var userId = _db.KullaniciEkle("surucu@garajim.local").Id;
@@ -56,7 +61,7 @@ namespace Garajim.Tests.Integration
         public async Task RunAsync_ClaimEdilenHatirlatmayaTamBirEpostaGonderilir()
         {
             HatirlatmaEkle(3);
-            var job = new ReminderNotificationJob(_db.ReminderDal, _email);
+            var job = JobOlustur(_email);
 
             await job.RunAsync();
 
@@ -71,7 +76,7 @@ namespace Garajim.Tests.Integration
         public async Task RunAsync_IkinciKosudaAyniHatirlatmaIcinEpostaGonderilmez()
         {
             HatirlatmaEkle(3);
-            var job = new ReminderNotificationJob(_db.ReminderDal, _email);
+            var job = JobOlustur(_email);
 
             await job.RunAsync();
             var ilkKosuSayisi = _email.Gonderilenler.Count;
@@ -86,7 +91,7 @@ namespace Garajim.Tests.Integration
         public async Task RunAsync_TamamlanmisHatirlatmaIcinEpostaGonderilmez()
         {
             HatirlatmaEkle(3, isCompleted: true);
-            var job = new ReminderNotificationJob(_db.ReminderDal, _email);
+            var job = JobOlustur(_email);
 
             await job.RunAsync();
 
@@ -97,7 +102,7 @@ namespace Garajim.Tests.Integration
         public async Task RunAsync_UzakTarihliHatirlatmaIcinEpostaGonderilmez()
         {
             HatirlatmaEkle(30);
-            var job = new ReminderNotificationJob(_db.ReminderDal, _email);
+            var job = JobOlustur(_email);
 
             await job.RunAsync();
 
@@ -108,7 +113,7 @@ namespace Garajim.Tests.Integration
         public async Task RunAsync_GecmisTarihliHatirlatmaIcinGectiMesajiGonderilir()
         {
             HatirlatmaEkle(-2);
-            var job = new ReminderNotificationJob(_db.ReminderDal, _email);
+            var job = JobOlustur(_email);
 
             await job.RunAsync();
 
@@ -121,11 +126,63 @@ namespace Garajim.Tests.Integration
         {
             HatirlatmaEkle(1);
             var patlayan = new PatlayanEmailService();
-            var job = new ReminderNotificationJob(_db.ReminderDal, patlayan);
+            var job = JobOlustur(patlayan);
 
             await job.RunAsync();
 
             Assert.Equal(1, patlayan.Cagrildi);
+        }
+
+        [Fact]
+        public async Task RunAsync_HerSirketYalnizKendiHatirlatmasiniIsler()
+        {
+            var sirketA = _db.SirketEkle("A Filo");
+            var sirketB = _db.SirketEkle("B Filo");
+            HatirlatmaEkleSirkete(sirketA, "a@garajim.local", "34AAA111");
+            HatirlatmaEkleSirkete(sirketB, "b@garajim.local", "06BBB222");
+
+            await JobOlustur(_email).RunAsync();
+
+            Assert.Equal(2, _email.Gonderilenler.Count);
+
+            var aMesaji = _email.Gonderilenler.Single(g => g.To == "a@garajim.local");
+            var bMesaji = _email.Gonderilenler.Single(g => g.To == "b@garajim.local");
+
+            Assert.Contains("34AAA111", aMesaji.Subject);
+            Assert.DoesNotContain("06BBB222", aMesaji.Subject);
+            Assert.Contains("06BBB222", bMesaji.Subject);
+            Assert.DoesNotContain("34AAA111", bMesaji.Subject);
+        }
+
+        [Fact]
+        public async Task RunAsync_BirSirketinHatirlatmasiDigerinePostaGondermez()
+        {
+            var sirketA = _db.SirketEkle("A Filo");
+            var sirketB = _db.SirketEkle("B Filo");
+            HatirlatmaEkleSirkete(sirketA, "a@garajim.local", "34AAA111");
+            _db.KullaniciEkle("b@garajim.local", sirketB.Id);
+
+            await JobOlustur(_email).RunAsync();
+
+            Assert.Single(_email.Gonderilenler);
+            Assert.Equal("a@garajim.local", _email.Gonderilenler[0].To);
+        }
+
+        private void HatirlatmaEkleSirkete(Company sirket, string eposta, string plaka)
+        {
+            var kullanici = _db.KullaniciEkle(eposta, sirket.Id);
+            var arac = _db.AracEkleSirketle(kullanici.Id, plaka, sirket.Id);
+
+            _db.Context.Reminders.Add(new Reminder
+            {
+                CompanyId = sirket.Id,
+                VehicleId = arac.Id,
+                Type = ReminderType.Muayene,
+                DueDate = DateTime.UtcNow.Date.AddDays(3),
+                IsCompleted = false,
+                CreatedAt = new DateTime(2026, 1, 1)
+            });
+            _db.Context.SaveChanges();
         }
 
         public void Dispose()
