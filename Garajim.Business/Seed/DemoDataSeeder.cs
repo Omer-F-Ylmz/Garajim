@@ -1,3 +1,4 @@
+using Garajim.Core.Multitenancy;
 using Garajim.Core.Utilities.Security;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -22,6 +23,7 @@ namespace Garajim.Business.Seed
         private readonly IExpenseDal _expenseDal;
         private readonly IReminderDal _reminderDal;
         private readonly IVehicleAssignmentDal _assignmentDal;
+        private readonly TenantContext _tenantContext;
 
         public DemoDataSeeder(
             ICompanyDal companyDal,
@@ -31,7 +33,8 @@ namespace Garajim.Business.Seed
             IFuelDal fuelDal,
             IExpenseDal expenseDal,
             IReminderDal reminderDal,
-            IVehicleAssignmentDal assignmentDal)
+            IVehicleAssignmentDal assignmentDal,
+            TenantContext tenantContext)
         {
             _companyDal = companyDal;
             _userDal = userDal;
@@ -41,57 +44,108 @@ namespace Garajim.Business.Seed
             _expenseDal = expenseDal;
             _reminderDal = reminderDal;
             _assignmentDal = assignmentDal;
+            _tenantContext = tenantContext;
         }
 
         public async Task<bool> RunAsync()
         {
-            if (await _userDal.ExistsForRegistrationAsync(DemoEmail))
+            var eklendi = false;
+
+            var owner = await _userDal.GetForAuthenticationAsync(DemoEmail);
+
+            var company = owner != null
+                ? await _companyDal.GetAsync(c => c.Id == owner.CompanyId)
+                : await _companyDal.GetAsync(c => c.Name == DemoCompanyName);
+
+            if (company == null)
             {
-                return false;
+                company = new Company
+                {
+                    Name = DemoCompanyName,
+                    PlanType = PlanType.Standart,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _companyDal.AddAsync(company);
+                eklendi = true;
             }
 
-            var bugun = DateTime.UtcNow.Date;
-
-            var company = new Company
+            _tenantContext.SetCompany(company.Id);
+            try
             {
-                Name = DemoCompanyName,
-                PlanType = PlanType.Standart,
-                CreatedAt = DateTime.UtcNow
-            };
-            await _companyDal.AddAsync(company);
+                if (owner == null)
+                {
+                    owner = KullaniciOlustur(company.Id, DemoEmail, DemoPassword, "Demo Kullanıcı", CompanyRole.Owner);
+                    await _userDal.AddAsync(owner);
+                    eklendi = true;
+                }
 
-            HashingHelper.CreatePasswordHash(DemoPassword, out var passwordHash, out var passwordSalt);
-            var demoUser = new AppUser
+                var driver = await _userDal.GetAsync(u => u.Email == DemoDriverEmail);
+                if (driver == null && !await _userDal.ExistsForRegistrationAsync(DemoDriverEmail))
+                {
+                    driver = KullaniciOlustur(company.Id, DemoDriverEmail, DemoDriverPassword, "Demo Sürücü", CompanyRole.Driver);
+                    await _userDal.AddAsync(driver);
+                    eklendi = true;
+                }
+
+                var vehicle = await _vehicleDal.GetAsync(v => v.Plate == DemoPlate);
+                if (vehicle == null)
+                {
+                    vehicle = await AracVeKayitlariniEkleAsync(company.Id, owner.Id);
+                    eklendi = true;
+                }
+
+                if (driver != null)
+                {
+                    var aktif = await _assignmentDal.GetActiveByVehicleAsync(vehicle.Id);
+                    if (aktif == null)
+                    {
+                        await _assignmentDal.AddAsync(new VehicleAssignment
+                        {
+                            CompanyId = company.Id,
+                            VehicleId = vehicle.Id,
+                            UserId = driver.Id,
+                            StartDate = DateTime.UtcNow,
+                            EndDate = null,
+                            AssignedByUserId = owner.Id,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                        eklendi = true;
+                    }
+                }
+            }
+            finally
             {
-                CompanyId = company.Id,
-                Role = CompanyRole.Owner,
+                _tenantContext.Clear();
+            }
+
+            return eklendi;
+        }
+
+        private static AppUser KullaniciOlustur(
+            int companyId, string email, string password, string fullName, CompanyRole role)
+        {
+            HashingHelper.CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
+            return new AppUser
+            {
+                CompanyId = companyId,
+                Role = role,
                 IsActive = true,
-                Email = DemoEmail,
-                FullName = "Demo Kullanıcı",
+                Email = email,
+                FullName = fullName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 CreatedAt = DateTime.UtcNow
             };
-            await _userDal.AddAsync(demoUser);
+        }
 
-            HashingHelper.CreatePasswordHash(DemoDriverPassword, out var driverHash, out var driverSalt);
-            var demoDriver = new AppUser
-            {
-                CompanyId = company.Id,
-                Role = CompanyRole.Driver,
-                IsActive = true,
-                Email = DemoDriverEmail,
-                FullName = "Demo Sürücü",
-                PasswordHash = driverHash,
-                PasswordSalt = driverSalt,
-                CreatedAt = DateTime.UtcNow
-            };
-            await _userDal.AddAsync(demoDriver);
+        private async Task<Vehicle> AracVeKayitlariniEkleAsync(int companyId, int ownerId)
+        {
+            var bugun = DateTime.UtcNow.Date;
 
             var vehicle = new Vehicle
             {
-                CompanyId = company.Id,
-                UserId = demoUser.Id,
+                CompanyId = companyId,
+                UserId = ownerId,
                 Plate = DemoPlate,
                 Brand = "Renault",
                 Model = "Clio",
@@ -102,20 +156,9 @@ namespace Garajim.Business.Seed
             };
             await _vehicleDal.AddAsync(vehicle);
 
-            await _assignmentDal.AddAsync(new VehicleAssignment
-            {
-                CompanyId = company.Id,
-                VehicleId = vehicle.Id,
-                UserId = demoDriver.Id,
-                StartDate = bugun.AddDays(-60),
-                EndDate = null,
-                AssignedByUserId = demoUser.Id,
-                CreatedAt = DateTime.UtcNow
-            });
-
             await _maintenanceDal.AddAsync(new MaintenanceRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Type = MaintenanceType.PeriyodikBakim,
                 Date = bugun.AddDays(-120),
@@ -126,7 +169,7 @@ namespace Garajim.Business.Seed
             });
             await _maintenanceDal.AddAsync(new MaintenanceRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Type = MaintenanceType.LastikDegisimi,
                 Date = bugun.AddDays(-45),
@@ -138,7 +181,7 @@ namespace Garajim.Business.Seed
 
             await _fuelDal.AddAsync(new FuelRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-38),
                 Km = 120900,
@@ -147,7 +190,7 @@ namespace Garajim.Business.Seed
             });
             await _fuelDal.AddAsync(new FuelRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-20),
                 Km = 121500,
@@ -156,7 +199,7 @@ namespace Garajim.Business.Seed
             });
             await _fuelDal.AddAsync(new FuelRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Date = bugun.AddDays(-5),
                 Km = 122000,
@@ -166,7 +209,7 @@ namespace Garajim.Business.Seed
 
             await _expenseDal.AddAsync(new ExpenseRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Category = ExpenseCategory.Kasko,
                 Date = bugun.AddDays(-90),
@@ -175,7 +218,7 @@ namespace Garajim.Business.Seed
             });
             await _expenseDal.AddAsync(new ExpenseRecord
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Category = ExpenseCategory.Otopark,
                 Date = bugun.AddDays(-12),
@@ -185,7 +228,7 @@ namespace Garajim.Business.Seed
 
             await _reminderDal.AddAsync(new Reminder
             {
-                CompanyId = company.Id,
+                CompanyId = companyId,
                 VehicleId = vehicle.Id,
                 Type = ReminderType.Muayene,
                 DueDate = bugun.AddDays(21),
@@ -194,7 +237,7 @@ namespace Garajim.Business.Seed
                 CreatedAt = DateTime.UtcNow
             });
 
-            return true;
+            return vehicle;
         }
     }
 }
