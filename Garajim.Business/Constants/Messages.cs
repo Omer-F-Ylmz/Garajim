@@ -40,5 +40,13 @@ namespace Garajim.Business.Constants
         public const string AssignmentCreated = "Zimmet oluşturuldu.";
         public const string AssignmentTransferred = "Zimmet devredildi.";
         public const string AssignmentEnded = "Zimmet sonlandırıldı.";
+        public const string DocumentContextRequired = "Belge için araç veya bakım kaydı belirtilmelidir.";
+        public const string DocumentExtensionNotAllowed = "Bu uzantı kabul edilmiyor; yalnızca jpg, jpeg, png ve pdf yüklenebilir.";
+        public const string DocumentTooLarge = "Dosya boyutu izin verilen sınırın üstünde.";
+        public const string DocumentContentMismatch = "Dosya içeriği uzantısıyla uyuşmuyor.";
+        public const string DocumentQuotaExceeded = "Şirket belge kotası doldu; yer açmak için eski belgeleri silin.";
+        public const string DocumentNotFound = "Belge bulunamadı.";
+        public const string DocumentUploaded = "Belge yüklendi.";
+        public const string DocumentDeleted = "Belge silindi.";
     }
 }
