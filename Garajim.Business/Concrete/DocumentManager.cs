@@ -190,15 +190,24 @@ namespace Garajim.Business.Concrete
             return imzalar.Any(imza => icerik.Length >= imza.Length && icerik.Take(imza.Length).SequenceEqual(imza));
         }
 
-        private string KlasorYolu()
+        public static string DepoYolunuCoz(string yapilandirilanYol)
         {
-            var yol = _configuration["Documents:StoragePath"];
-            if (string.IsNullOrWhiteSpace(yol))
+            if (string.IsNullOrWhiteSpace(yapilandirilanYol))
             {
-                yol = Path.Combine(AppContext.BaseDirectory, "App_Data", "documents");
+                return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "App_Data", "documents"));
             }
 
-            return Path.GetFullPath(yol);
+            if (Path.IsPathRooted(yapilandirilanYol))
+            {
+                return Path.GetFullPath(yapilandirilanYol);
+            }
+
+            return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, yapilandirilanYol));
+        }
+
+        private string KlasorYolu()
+        {
+            return DepoYolunuCoz(_configuration["Documents:StoragePath"]);
         }
 
         private long DosyaSiniri()

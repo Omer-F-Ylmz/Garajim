@@ -19,14 +19,16 @@ Yayından **önce** ayarla:
 
 | Değişken | Değer | Not |
 |---|---|---|
-| `Documents__StoragePath` | Site kökü dışında, yazılabilir mutlak bir yol | Aşağıdaki açıklamayı oku |
+| `Documents__StoragePath` | `..\data\documents` (site kökünde, wwwroot'un yanında) | Aşağıdaki açıklamayı oku |
 | `ConnectionStrings__Default` | Uzak MSSQL bağlantısı | LocalDB içeriyorsa uygulama açılmayı reddeder |
 | `Jwt__Key` | 32+ karakter | Boş veya kısa ise uygulama açılmayı reddeder |
 | `DemoSeed__Enabled` | `true` veya `false` | Canlıda demo verisi isteniyor mu, karar ver |
 
-`Documents__StoragePath` neden önemli: değer boş bırakılırsa uygulama belgeleri **site kökünün içine**, `App_Data/documents` altına yazar. Site kökü aynı zamanda publish hedefidir; oraya yazılan kullanıcı verisi her yayında risk altındadır (bkz. bölüm 3).
+`Documents__StoragePath` neden önemli: değer boş bırakılırsa uygulama belgeleri **publish klasörünün içine**, `App_Data/documents` altına yazar. Publish klasörü MSDeploy'un senkron hedefidir; oraya yazılan kullanıcı verisi her yayında risk altındadır (bkz. bölüm 3).
 
-Panelde site kökü dışında yazılabilir bir yol varsa (ör. hesabın veri klasörü) onu kullan. **MonsterASP'te böyle bir yolun bulunup bulunmadığı bu oturumda doğrulanmadı** — panelden veya destekten teyit et. Yoksa varsayılan `App_Data` yolunda kal; bölüm 3'teki koruma devrede.
+Göreli değerler uygulama klasörüne (`AppContext.BaseDirectory`) göre çözülür, çalışma dizinine göre değil; sonuç her ortamda aynıdır. Uygulama `wwwroot`'a publish edildiği için `..\data\documents` değeri bir üste, `wwwroot`'un yanındaki `data\documents` klasörüne gider — yani publish hedefinin dışına. Mutlak bir yol verirsen aynen kullanılır.
+
+Bu klasörün MonsterASP'te yazılabilir olduğu bu oturumda **doğrulanmadı**; ilk yayında bölüm 4'teki belge yükleme adımıyla teyit et. Yükleme hata verirse mutlak bir yola geç veya varsayılan `App_Data` yolunda kal; o durumda bölüm 3'teki koruma devrede.
 
 Yol yanlış veya yazılamazsa belge yükleme çalışma anında hata verir; sessiz veri kaybı olmaz.
 
