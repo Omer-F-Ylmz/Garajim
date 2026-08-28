@@ -43,6 +43,8 @@ namespace Garajim.Business.Concrete
             var user = new AppUser
             {
                 CompanyId = company.Id,
+                Role = CompanyRole.Owner,
+                IsActive = true,
                 Email = email,
                 FullName = fullName,
                 PasswordHash = passwordHash,
@@ -59,6 +61,8 @@ namespace Garajim.Business.Concrete
             var user = await _userDal.GetForAuthenticationAsync(email);
             if (user == null || !HashingHelper.VerifyPasswordHash(dto.Password ?? string.Empty, user.PasswordHash, user.PasswordSalt))
                 return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
+            if (!user.IsActive)
+                return new ErrorDataResult<TokenDto>(Messages.UserInactive);
             return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.LoginSuccess);
         }
 
@@ -67,6 +71,7 @@ namespace Garajim.Business.Concrete
             var token = JwtTokenHelper.CreateToken(
                 user.Id,
                 user.CompanyId,
+                user.Role.ToString(),
                 user.Email,
                 user.FullName,
                 _configuration["Jwt:Key"],

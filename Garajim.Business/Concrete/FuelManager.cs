@@ -11,16 +11,18 @@ namespace Garajim.Business.Concrete
     {
         private readonly IFuelDal _fuelDal;
         private readonly IVehicleDal _vehicleDal;
+        private readonly IVehicleAccessService _vehicleAccess;
 
-        public FuelManager(IFuelDal fuelDal, IVehicleDal vehicleDal)
+        public FuelManager(IFuelDal fuelDal, IVehicleDal vehicleDal, IVehicleAccessService vehicleAccess)
         {
             _fuelDal = fuelDal;
             _vehicleDal = vehicleDal;
+            _vehicleAccess = vehicleAccess;
         }
 
         public async Task<IDataResult<List<FuelDto>>> GetListAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<List<FuelDto>>(Messages.VehicleNotFound);
             var records = await _fuelDal.GetRecentAsync(vehicleId, QueryLimits.MaxListSize);
@@ -30,7 +32,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<FuelDto>> AddAsync(int userId, FuelCreateDto dto)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<FuelDto>(Messages.VehicleNotFound);
             if (dto.Liters <= 0 || dto.TotalCost < 0 || dto.Km < 0)
@@ -58,7 +60,7 @@ namespace Garajim.Business.Concrete
             var record = await _fuelDal.GetAsync(f => f.Id == id);
             if (record == null)
                 return new ErrorResult(Messages.RecordNotFound);
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == record.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.RecordNotFound);
             await _fuelDal.DeleteAsync(record);

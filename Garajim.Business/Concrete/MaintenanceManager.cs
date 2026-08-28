@@ -11,16 +11,18 @@ namespace Garajim.Business.Concrete
     {
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IVehicleDal _vehicleDal;
+        private readonly IVehicleAccessService _vehicleAccess;
 
-        public MaintenanceManager(IMaintenanceDal maintenanceDal, IVehicleDal vehicleDal)
+        public MaintenanceManager(IMaintenanceDal maintenanceDal, IVehicleDal vehicleDal, IVehicleAccessService vehicleAccess)
         {
             _maintenanceDal = maintenanceDal;
             _vehicleDal = vehicleDal;
+            _vehicleAccess = vehicleAccess;
         }
 
         public async Task<IDataResult<List<MaintenanceDto>>> GetListAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<List<MaintenanceDto>>(Messages.VehicleNotFound);
             var records = await _maintenanceDal.GetRecentAsync(vehicleId, QueryLimits.MaxListSize);
@@ -30,7 +32,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<MaintenanceDto>> AddAsync(int userId, MaintenanceCreateDto dto)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<MaintenanceDto>(Messages.VehicleNotFound);
             if (dto.Cost < 0 || dto.Km < 0 || !Enum.IsDefined(dto.Type))
@@ -60,7 +62,7 @@ namespace Garajim.Business.Concrete
             var record = await _maintenanceDal.GetAsync(m => m.Id == id);
             if (record == null)
                 return new ErrorResult(Messages.RecordNotFound);
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == record.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.RecordNotFound);
             await _maintenanceDal.DeleteAsync(record);

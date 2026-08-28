@@ -1,6 +1,7 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Garajim.API.Controllers
@@ -32,6 +33,7 @@ namespace Garajim.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
         public async Task<IActionResult> Add(VehicleCreateDto dto)
         {
             var result = await _vehicleService.AddAsync(CurrentUserId, dto);
@@ -41,6 +43,7 @@ namespace Garajim.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
         public async Task<IActionResult> Update(int id, VehicleUpdateDto dto)
         {
             var result = await _vehicleService.UpdateAsync(CurrentUserId, id, dto);
@@ -50,6 +53,7 @@ namespace Garajim.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _vehicleService.DeleteAsync(CurrentUserId, id);

@@ -1,4 +1,5 @@
 using Garajim.Core.Multitenancy;
+using Garajim.Business.Concrete;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
 using Garajim.Entity.Concrete;
@@ -36,6 +37,8 @@ namespace Garajim.Tests.Integration
             FuelDal = new EfFuelDal(Context);
             ExpenseDal = new EfExpenseDal(Context);
             ReminderDal = new EfReminderDal(Context);
+            AssignmentDal = new EfVehicleAssignmentDal(Context);
+            VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
         }
 
         public GarajimDbContext Context { get; }
@@ -60,6 +63,10 @@ namespace Garajim.Tests.Integration
 
         public EfReminderDal ReminderDal { get; }
 
+        public EfVehicleAssignmentDal AssignmentDal { get; }
+
+        public VehicleAccessManager VehicleAccess { get; }
+
         public Company SirketEkle(string ad)
         {
             var company = new Company
@@ -79,11 +86,23 @@ namespace Garajim.Tests.Integration
             return KullaniciEkle(email, CompanyId);
         }
 
+        public AppUser KullaniciEkle(string email, CompanyRole role)
+        {
+            return KullaniciEkle(email, CompanyId, role);
+        }
+
         public AppUser KullaniciEkle(string email, int companyId)
+        {
+            return KullaniciEkle(email, companyId, CompanyRole.Owner);
+        }
+
+        public AppUser KullaniciEkle(string email, int companyId, CompanyRole role)
         {
             var user = new AppUser
             {
                 CompanyId = companyId,
+                Role = role,
+                IsActive = true,
                 Email = email,
                 FullName = email,
                 PasswordHash = new byte[] { 1, 2, 3 },

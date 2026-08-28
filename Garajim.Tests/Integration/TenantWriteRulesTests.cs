@@ -63,7 +63,7 @@ namespace Garajim.Tests.Integration
         public async Task AracEklerken_KullanicininSirketiDevralinir()
         {
             var kullanici = _db.KullaniciEkle("surucu@garajim.local");
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
 
             var sonuc = await manager.AddAsync(kullanici.Id, new VehicleCreateDto
             {
@@ -87,7 +87,7 @@ namespace Garajim.Tests.Integration
             var kullanici = _db.KullaniciEkle("surucu@garajim.local");
             var arac = _db.AracEkle(kullanici.Id, "34ABC123");
 
-            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal).AddAsync(kullanici.Id, new MaintenanceCreateDto
+            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess).AddAsync(kullanici.Id, new MaintenanceCreateDto
             {
                 VehicleId = arac.Id,
                 Type = MaintenanceType.PeriyodikBakim,
@@ -95,7 +95,7 @@ namespace Garajim.Tests.Integration
                 Km = 110000,
                 Cost = 4500m
             });
-            await new FuelManager(_db.FuelDal, _db.VehicleDal).AddAsync(kullanici.Id, new FuelCreateDto
+            await new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess).AddAsync(kullanici.Id, new FuelCreateDto
             {
                 VehicleId = arac.Id,
                 Date = new DateTime(2026, 3, 2),
@@ -103,14 +103,14 @@ namespace Garajim.Tests.Integration
                 Liters = 40m,
                 TotalCost = 1800m
             });
-            await new ExpenseManager(_db.ExpenseDal, _db.VehicleDal).AddAsync(kullanici.Id, new ExpenseCreateDto
+            await new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess).AddAsync(kullanici.Id, new ExpenseCreateDto
             {
                 VehicleId = arac.Id,
                 Category = ExpenseCategory.Kasko,
                 Date = new DateTime(2026, 3, 3),
                 Amount = 12000m
             });
-            await new ReminderManager(_db.ReminderDal, _db.VehicleDal).AddAsync(kullanici.Id, new ReminderCreateDto
+            await new ReminderManager(_db.ReminderDal, _db.VehicleAccess).AddAsync(kullanici.Id, new ReminderCreateDto
             {
                 VehicleId = arac.Id,
                 Type = ReminderType.Muayene,

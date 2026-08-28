@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -13,21 +14,21 @@ namespace Garajim.Tests.Unit
         private const int UserId = 7;
         private const int VehicleId = 3;
 
-        private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
 
         private ReportManager CreateManager()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123" });
             _fuelDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(100m);
             _maintenanceDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(200m);
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            return new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
         }
 
         [Fact]
@@ -54,7 +55,7 @@ namespace Garajim.Tests.Unit
         public async Task GetSummaryAsync_AyniGunAraliginda_BitisGunSonunaKadarGenisletilir()
         {
             DateTime kullanilanBitis = default;
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123" });
             _fuelDal.Setup(d => d.GetTotalCostAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .Callback<int, DateTime, DateTime>((_, __, end) => kullanilanBitis = end)
@@ -63,7 +64,7 @@ namespace Garajim.Tests.Unit
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            var manager = new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
             await manager.GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 5, 1), new DateTime(2026, 5, 1));
 
             Assert.Equal(new DateTime(2026, 5, 1, 23, 59, 59), kullanilanBitis, TimeSpan.FromSeconds(1));

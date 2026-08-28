@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -13,20 +14,21 @@ namespace Garajim.Tests.Unit
         private const int VehicleId = 3;
 
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
 
         private ReportManager CreateManager(params FuelRecord[] kayitlar)
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123" });
 
             _fuelDal.Setup(d => d.GetListAsync(It.IsAny<Expression<Func<FuelRecord, bool>>>()))
                 .ReturnsAsync((Expression<Func<FuelRecord, bool>> predicate) =>
                     kayitlar.Where(predicate.Compile()).ToList());
 
-            return new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
         }
 
         private static FuelRecord Kayit(int km, decimal litre, decimal tutar)
@@ -106,8 +108,8 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task GetFuelStatsAsync_BaskaKullanicininAraciIcinHataDoner()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync((Vehicle)null);
-            var manager = new ReportManager(_vehicleDal.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
 
             var result = await manager.GetFuelStatsAsync(UserId, VehicleId);
 

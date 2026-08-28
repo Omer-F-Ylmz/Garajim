@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -15,13 +16,14 @@ namespace Garajim.Tests.Unit
         private const int VehicleId = 3;
 
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
 
         public NegativeValueValidationTests()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123", CurrentKm = 100000 });
         }
 
@@ -66,7 +68,7 @@ namespace Garajim.Tests.Unit
         [InlineData(4500, -1)]
         public async Task MaintenanceAdd_NegatifTutarVeyaKilometreReddedilir(decimal tutar, int km)
         {
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
             var dto = BakimDto();
             dto.Cost = tutar;
             dto.Km = km;
@@ -82,7 +84,7 @@ namespace Garajim.Tests.Unit
         public async Task MaintenanceAdd_SifirTutarKabulEdilir()
         {
             _maintenanceDal.Setup(d => d.AddAsync(It.IsAny<MaintenanceRecord>())).Returns(Task.CompletedTask);
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
             var dto = BakimDto();
             dto.Cost = 0m;
 
@@ -98,7 +100,7 @@ namespace Garajim.Tests.Unit
         [InlineData(40, 1800, -1)]
         public async Task FuelAdd_GecersizLitreTutarVeyaKilometreReddedilir(decimal litre, decimal tutar, int km)
         {
-            var manager = new FuelManager(_fuelDal.Object, _vehicleDal.Object);
+            var manager = new FuelManager(_fuelDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
             var dto = YakitDto();
             dto.Liters = litre;
             dto.TotalCost = tutar;
@@ -116,7 +118,7 @@ namespace Garajim.Tests.Unit
         [InlineData(-12000)]
         public async Task ExpenseAdd_NegatifTutarReddedilir(decimal tutar)
         {
-            var manager = new ExpenseManager(_expenseDal.Object, _vehicleDal.Object);
+            var manager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
             var dto = MasrafDto();
             dto.Amount = tutar;
 
@@ -131,7 +133,7 @@ namespace Garajim.Tests.Unit
         public async Task ExpenseAdd_SifirTutarKabulEdilir()
         {
             _expenseDal.Setup(d => d.AddAsync(It.IsAny<ExpenseRecord>())).Returns(Task.CompletedTask);
-            var manager = new ExpenseManager(_expenseDal.Object, _vehicleDal.Object);
+            var manager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
             var dto = MasrafDto();
             dto.Amount = 0m;
 

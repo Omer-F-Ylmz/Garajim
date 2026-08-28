@@ -10,17 +10,17 @@ namespace Garajim.Business.Concrete
     public class ExpenseManager : IExpenseService
     {
         private readonly IExpenseDal _expenseDal;
-        private readonly IVehicleDal _vehicleDal;
+        private readonly IVehicleAccessService _vehicleAccess;
 
-        public ExpenseManager(IExpenseDal expenseDal, IVehicleDal vehicleDal)
+        public ExpenseManager(IExpenseDal expenseDal, IVehicleAccessService vehicleAccess)
         {
             _expenseDal = expenseDal;
-            _vehicleDal = vehicleDal;
+            _vehicleAccess = vehicleAccess;
         }
 
         public async Task<IDataResult<List<ExpenseDto>>> GetListAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<List<ExpenseDto>>(Messages.VehicleNotFound);
             var records = await _expenseDal.GetRecentAsync(vehicleId, QueryLimits.MaxListSize);
@@ -30,7 +30,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<ExpenseDto>> AddAsync(int userId, ExpenseCreateDto dto)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<ExpenseDto>(Messages.VehicleNotFound);
             if (dto.Amount < 0 || !Enum.IsDefined(dto.Category))
@@ -53,7 +53,7 @@ namespace Garajim.Business.Concrete
             var record = await _expenseDal.GetAsync(e => e.Id == id);
             if (record == null)
                 return new ErrorResult(Messages.RecordNotFound);
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == record.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.RecordNotFound);
             await _expenseDal.DeleteAsync(record);

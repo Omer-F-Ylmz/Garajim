@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -16,15 +17,16 @@ namespace Garajim.Tests.Unit
 
         private readonly Mock<IReminderDal> _reminderDal = new Mock<IReminderDal>();
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
 
         private ReminderManager CreateManager()
         {
-            return new ReminderManager(_reminderDal.Object, _vehicleDal.Object);
+            return new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);
         }
 
         private void AracSahibiOlarakAyarla()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123", CurrentKm = 100000 });
         }
 
@@ -133,7 +135,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task AddAsync_BaskaKullanicininAracinaHatirlatmaEklenemez()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync((Vehicle)null);
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
 
             var result = await CreateManager().AddAsync(UserId, new ReminderCreateDto
             {

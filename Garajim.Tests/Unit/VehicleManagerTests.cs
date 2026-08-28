@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -14,13 +15,14 @@ namespace Garajim.Tests.Unit
         private const int UserId = 7;
 
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
 
         private VehicleManager CreateManager()
         {
             _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
                 .ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
-            return new VehicleManager(_vehicleDal.Object, _userDal.Object);
+            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
         }
 
         private static VehicleCreateDto ValidDto()
@@ -163,7 +165,7 @@ namespace Garajim.Tests.Unit
         public async Task UpdateAsync_GecersizYilKaydiDegistirmez()
         {
             var vehicle = new Vehicle { Id = 1, UserId = UserId, Plate = "34ABC123", Brand = "Renault", Model = "Clio", Year = 2018, CurrentKm = 100000 };
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync(vehicle);
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(vehicle);
 
             var result = await CreateManager().UpdateAsync(UserId, 1, new VehicleUpdateDto
             {
@@ -183,7 +185,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task GetByIdAsync_BaskaKullanicininAraciBulunamazDoner()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync((Vehicle)null);
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
 
             var result = await CreateManager().GetByIdAsync(UserId, 1);
 

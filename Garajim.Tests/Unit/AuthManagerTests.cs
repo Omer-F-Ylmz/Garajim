@@ -121,6 +121,7 @@ namespace Garajim.Tests.Unit
             var kayitliKullanici = new AppUser
             {
                 Id = 5,
+                IsActive = true,
                 Email = "kullanici@garajim.local",
                 FullName = "Test Kullanıcı",
                 PasswordHash = hash,
@@ -148,7 +149,7 @@ namespace Garajim.Tests.Unit
         {
             HashingHelper.CreatePasswordHash("gizli123", out var hash, out var salt);
             _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AppUser { Id = 5, Email = "kullanici@garajim.local", PasswordHash = hash, PasswordSalt = salt });
+                .ReturnsAsync(new AppUser { Id = 5, IsActive = true, Email = "kullanici@garajim.local", PasswordHash = hash, PasswordSalt = salt });
 
             var result = await CreateManager().LoginAsync(new LoginDto
             {

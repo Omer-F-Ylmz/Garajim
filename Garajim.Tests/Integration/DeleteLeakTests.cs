@@ -22,7 +22,7 @@ namespace Garajim.Tests.Integration
         public DeleteLeakTests()
         {
             _kullaniciA = _db.KullaniciEkle("a@garajim.local").Id;
-            _kullaniciB = _db.KullaniciEkle("b@garajim.local").Id;
+            _kullaniciB = _db.KullaniciEkle("b@garajim.local", CompanyRole.Driver).Id;
             _aracA = _db.AracEkle(_kullaniciA, "34AAA111");
 
             _bakimA = new MaintenanceRecord { CompanyId = _aracA.CompanyId, VehicleId = _aracA.Id, Type = MaintenanceType.PeriyodikBakim, Date = new DateTime(2026, 3, 1), Km = 105000, Cost = 5000m };
@@ -40,7 +40,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task MaintenanceDelete_YabanciKayitVeOlmayanKayitAyniMesajiDoner()
         {
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _bakimA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -54,7 +54,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task FuelDelete_YabanciKayitVeOlmayanKayitAyniMesajiDoner()
         {
-            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal);
+            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _yakitA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -66,7 +66,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ExpenseDelete_YabanciKayitVeOlmayanKayitAyniMesajiDoner()
         {
-            var manager = new ExpenseManager(_db.ExpenseDal, _db.VehicleDal);
+            var manager = new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _masrafA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -78,7 +78,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ReminderDeleteVeComplete_YabanciKayitVeOlmayanKayitAyniMesajiDoner()
         {
-            var manager = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
+            var manager = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
 
             var yabanciSil = await manager.DeleteAsync(_kullaniciB, _hatirlatmaA.Id);
             var olmayanSil = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -93,7 +93,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleDelete_YabanciAracVeOlmayanAracAyniMesajiDoner()
         {
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _aracA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -105,11 +105,11 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task YabanciSilmeDenemeleriKayitlariSilmez()
         {
-            var maintenance = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
-            var fuel = new FuelManager(_db.FuelDal, _db.VehicleDal);
-            var expense = new ExpenseManager(_db.ExpenseDal, _db.VehicleDal);
-            var reminder = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
-            var vehicle = new VehicleManager(_db.VehicleDal, _db.UserDal);
+            var maintenance = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
+            var fuel = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
+            var expense = new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess);
+            var reminder = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
+            var vehicle = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
 
             await maintenance.DeleteAsync(_kullaniciB, _bakimA.Id);
             await fuel.DeleteAsync(_kullaniciB, _yakitA.Id);

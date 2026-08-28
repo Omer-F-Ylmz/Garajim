@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
@@ -15,6 +16,7 @@ namespace Garajim.Tests.Unit
         private const int VehicleId = 3;
 
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
+        private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
@@ -22,7 +24,7 @@ namespace Garajim.Tests.Unit
 
         public EnumValidationTests()
         {
-            _vehicleDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Vehicle, bool>>>()))
+            _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123", Brand = "Renault", Model = "Clio", Year = 2018, CurrentKm = 100000 });
             _vehicleDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync(false);
             _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>())).ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
@@ -36,7 +38,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleAdd_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object);
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
 
             var result = await manager.AddAsync(UserId, new VehicleCreateDto
             {
@@ -56,7 +58,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleUpdate_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object);
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
 
             var result = await manager.UpdateAsync(UserId, VehicleId, new VehicleUpdateDto
             {
@@ -75,7 +77,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task MaintenanceAdd_TanimsizBakimTuruReddedilir()
         {
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
 
             var result = await manager.AddAsync(UserId, new MaintenanceCreateDto
             {
@@ -94,7 +96,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task ExpenseAdd_TanimsizKategoriReddedilir()
         {
-            var manager = new ExpenseManager(_expenseDal.Object, _vehicleDal.Object);
+            var manager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
 
             var result = await manager.AddAsync(UserId, new ExpenseCreateDto
             {
@@ -112,7 +114,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task ReminderAdd_TanimsizHatirlatmaTuruReddedilir()
         {
-            var manager = new ReminderManager(_reminderDal.Object, _vehicleDal.Object);
+            var manager = new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);
 
             var result = await manager.AddAsync(UserId, new ReminderCreateDto
             {
@@ -129,10 +131,10 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task TanimliEnumDegerleriKabulEdilmeyeDevamEder()
         {
-            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object);
-            var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object);
-            var expenseManager = new ExpenseManager(_expenseDal.Object, _vehicleDal.Object);
-            var reminderManager = new ReminderManager(_reminderDal.Object, _vehicleDal.Object);
+            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
+            var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
+            var expenseManager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
+            var reminderManager = new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);
 
             var vehicle = await vehicleManager.AddAsync(UserId, new VehicleCreateDto
             {

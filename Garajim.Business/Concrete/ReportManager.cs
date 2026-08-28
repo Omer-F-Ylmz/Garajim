@@ -8,14 +8,14 @@ namespace Garajim.Business.Concrete
 {
     public class ReportManager : IReportService
     {
-        private readonly IVehicleDal _vehicleDal;
+        private readonly IVehicleAccessService _vehicleAccess;
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IFuelDal _fuelDal;
         private readonly IExpenseDal _expenseDal;
 
-        public ReportManager(IVehicleDal vehicleDal, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal)
+        public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal)
         {
-            _vehicleDal = vehicleDal;
+            _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
             _fuelDal = fuelDal;
             _expenseDal = expenseDal;
@@ -23,7 +23,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<ExpenseSummaryDto>(Messages.VehicleNotFound);
             if (end < start)
@@ -48,7 +48,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<List<MonthlyCostDto>>> GetMonthlyAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<List<MonthlyCostDto>>(Messages.VehicleNotFound);
             var merged = new Dictionary<(int Year, int Month), decimal>();
@@ -67,7 +67,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<FuelStatsDto>> GetFuelStatsAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<FuelStatsDto>(Messages.VehicleNotFound);
             var records = (await _fuelDal.GetListAsync(f => f.VehicleId == vehicleId && f.Km > 0))

@@ -11,23 +11,25 @@ namespace Garajim.Business.Concrete
     {
         private readonly IVehicleDal _vehicleDal;
         private readonly IUserDal _userDal;
+        private readonly IVehicleAccessService _vehicleAccess;
 
-        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal)
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess)
         {
             _vehicleDal = vehicleDal;
             _userDal = userDal;
+            _vehicleAccess = vehicleAccess;
         }
 
         public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId)
         {
-            var vehicles = await _vehicleDal.GetListAsync(v => v.UserId == userId);
+            var vehicles = await _vehicleAccess.GetAccessibleListAsync(userId);
             var list = vehicles.OrderBy(v => v.Plate).Select(MapToDto).ToList();
             return new SuccessDataResult<List<VehicleDto>>(list);
         }
 
         public async Task<IDataResult<VehicleDto>> GetByIdAsync(int userId, int id)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == id && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
             if (vehicle == null)
                 return new ErrorDataResult<VehicleDto>(Messages.VehicleNotFound);
             return new SuccessDataResult<VehicleDto>(MapToDto(vehicle));
@@ -63,7 +65,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IResult> UpdateAsync(int userId, int id, VehicleUpdateDto dto)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == id && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
             if (vehicle == null)
                 return new ErrorResult(Messages.VehicleNotFound);
             if (string.IsNullOrWhiteSpace(dto.Brand) || string.IsNullOrWhiteSpace(dto.Model) ||
@@ -80,7 +82,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IResult> DeleteAsync(int userId, int id)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == id && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
             if (vehicle == null)
                 return new ErrorResult(Messages.VehicleNotFound);
             await _vehicleDal.DeleteAsync(vehicle);

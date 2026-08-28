@@ -44,8 +44,11 @@ builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();
 builder.Services.AddScoped<IFuelDal, EfFuelDal>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
+builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
+builder.Services.AddScoped<ITeamService, TeamManager>();
+builder.Services.AddScoped<IVehicleAccessService, VehicleAccessManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();

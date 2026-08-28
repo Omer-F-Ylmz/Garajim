@@ -39,7 +39,7 @@ namespace Garajim.Tests.Integration
         public async Task BakimListesiEnYeniKayittanBaslar()
         {
             BakimEkle(10);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var result = await manager.GetListAsync(_userId, _arac.Id);
 
@@ -53,7 +53,7 @@ namespace Garajim.Tests.Integration
         public async Task BakimListesiUstSinirdaKesilir()
         {
             BakimEkle(QueryLimits.MaxListSize + 25);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var result = await manager.GetListAsync(_userId, _arac.Id);
 
@@ -72,8 +72,8 @@ namespace Garajim.Tests.Integration
                 new ExpenseRecord { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Category = ExpenseCategory.Kasko, Date = new DateTime(2026, 4, 8), Amount = 12000m });
             _db.Context.SaveChanges();
 
-            var fuel = await new FuelManager(_db.FuelDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
-            var expense = await new ExpenseManager(_db.ExpenseDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
+            var fuel = await new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess).GetListAsync(_userId, _arac.Id);
+            var expense = await new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess).GetListAsync(_userId, _arac.Id);
 
             Assert.Equal(new DateTime(2026, 3, 5), fuel.Data[0].Date);
             Assert.Equal(new DateTime(2026, 4, 8), expense.Data[0].Date);
@@ -88,7 +88,7 @@ namespace Garajim.Tests.Integration
                 new Reminder { CompanyId = _arac.CompanyId, VehicleId = _arac.Id, Type = ReminderType.Mtv, DueDate = new DateTime(2026, 5, 1), IsCompleted = false, CreatedAt = new DateTime(2026, 1, 1) });
             _db.Context.SaveChanges();
 
-            var result = await new ReminderManager(_db.ReminderDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
+            var result = await new ReminderManager(_db.ReminderDal, _db.VehicleAccess).GetListAsync(_userId, _arac.Id);
 
             Assert.Equal(3, result.Data.Count);
             Assert.False(result.Data[0].IsCompleted);
@@ -103,7 +103,7 @@ namespace Garajim.Tests.Integration
             BakimEkle(5);
             _db.Context.ChangeTracker.Clear();
 
-            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal).GetListAsync(_userId, _arac.Id);
+            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess).GetListAsync(_userId, _arac.Id);
 
             Assert.Empty(_db.Context.ChangeTracker.Entries<MaintenanceRecord>());
         }

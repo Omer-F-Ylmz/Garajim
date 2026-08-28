@@ -27,5 +27,12 @@ namespace Garajim.Business.Constants
         public const string PriceKilometreOutOfRange = "Kilometre 0 ile 2.000.000 arasında olmalıdır.";
         public const string PriceEstimateFailed = "Fiyat tahmini üretilemedi.";
         public const string TooManyRequests = "Çok fazla deneme yaptınız, lütfen bir dakika sonra tekrar deneyin.";
+        public const string UserInactive = "Hesabınız pasif durumda, şirket yöneticinizle görüşün.";
+        public const string UserNotFound = "Kullanıcı bulunamadı.";
+        public const string UserAdded = "Kullanıcı eklendi, geçici şifreyi kendisine iletin.";
+        public const string UserRoleChanged = "Kullanıcının rolü güncellendi.";
+        public const string UserDeactivated = "Kullanıcı pasifleştirildi.";
+        public const string CannotManageSelf = "Kendi hesabınız üzerinde bu işlemi yapamazsınız.";
+        public const string LastOwnerRequired = "Şirkette en az bir Owner kalmalıdır.";
     }
 }

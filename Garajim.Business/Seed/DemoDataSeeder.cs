@@ -59,6 +59,8 @@ namespace Garajim.Business.Seed
             var demoUser = new AppUser
             {
                 CompanyId = company.Id,
+                Role = CompanyRole.Owner,
+                IsActive = true,
                 Email = DemoEmail,
                 FullName = "Demo Kullanıcı",
                 PasswordHash = passwordHash,

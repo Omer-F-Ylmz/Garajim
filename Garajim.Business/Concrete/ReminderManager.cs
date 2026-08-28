@@ -10,17 +10,17 @@ namespace Garajim.Business.Concrete
     public class ReminderManager : IReminderService
     {
         private readonly IReminderDal _reminderDal;
-        private readonly IVehicleDal _vehicleDal;
+        private readonly IVehicleAccessService _vehicleAccess;
 
-        public ReminderManager(IReminderDal reminderDal, IVehicleDal vehicleDal)
+        public ReminderManager(IReminderDal reminderDal, IVehicleAccessService vehicleAccess)
         {
             _reminderDal = reminderDal;
-            _vehicleDal = vehicleDal;
+            _vehicleAccess = vehicleAccess;
         }
 
         public async Task<IDataResult<List<ReminderDto>>> GetListAsync(int userId, int vehicleId)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == vehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<List<ReminderDto>>(Messages.VehicleNotFound);
             var reminders = await _reminderDal.GetListForVehicleAsync(vehicleId, QueryLimits.MaxListSize);
@@ -41,7 +41,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<ReminderDto>> AddAsync(int userId, ReminderCreateDto dto)
         {
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == dto.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<ReminderDto>(Messages.VehicleNotFound);
             if (!Enum.IsDefined(dto.Type))
@@ -70,7 +70,7 @@ namespace Garajim.Business.Concrete
             var reminder = await _reminderDal.GetAsync(r => r.Id == id);
             if (reminder == null)
                 return new ErrorResult(Messages.ReminderNotFound);
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == reminder.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, reminder.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.ReminderNotFound);
             reminder.IsCompleted = true;
@@ -83,7 +83,7 @@ namespace Garajim.Business.Concrete
             var reminder = await _reminderDal.GetAsync(r => r.Id == id);
             if (reminder == null)
                 return new ErrorResult(Messages.ReminderNotFound);
-            var vehicle = await _vehicleDal.GetAsync(v => v.Id == reminder.VehicleId && v.UserId == userId);
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, reminder.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.ReminderNotFound);
             await _reminderDal.DeleteAsync(reminder);

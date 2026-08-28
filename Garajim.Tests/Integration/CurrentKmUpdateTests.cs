@@ -13,7 +13,7 @@ namespace Garajim.Tests.Integration
         {
             var userId = _db.KullaniciEkle("a@garajim.local").Id;
             var arac = _db.AracEkle(userId, "34AAA111", 100000);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var result = await manager.AddAsync(userId, new MaintenanceCreateDto
             {
@@ -33,7 +33,7 @@ namespace Garajim.Tests.Integration
         {
             var userId = _db.KullaniciEkle("a@garajim.local").Id;
             var arac = _db.AracEkle(userId, "34AAA111", 100000);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var result = await manager.AddAsync(userId, new MaintenanceCreateDto
             {
@@ -53,7 +53,7 @@ namespace Garajim.Tests.Integration
         {
             var userId = _db.KullaniciEkle("a@garajim.local").Id;
             var arac = _db.AracEkle(userId, "34AAA111", 100000);
-            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal);
+            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
 
             var result = await manager.AddAsync(userId, new FuelCreateDto
             {
@@ -73,7 +73,7 @@ namespace Garajim.Tests.Integration
         {
             var userId = _db.KullaniciEkle("a@garajim.local").Id;
             var arac = _db.AracEkle(userId, "34AAA111", 100000);
-            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal);
+            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
 
             await manager.AddAsync(userId, new FuelCreateDto
             {
@@ -92,8 +92,8 @@ namespace Garajim.Tests.Integration
         {
             var userId = _db.KullaniciEkle("a@garajim.local").Id;
             var arac = _db.AracEkle(userId, "34AAA111", 100000);
-            var fuelManager = new FuelManager(_db.FuelDal, _db.VehicleDal);
-            var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var fuelManager = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
+            var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             await fuelManager.AddAsync(userId, new FuelCreateDto
             {

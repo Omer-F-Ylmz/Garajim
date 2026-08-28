@@ -22,7 +22,7 @@ namespace Garajim.Tests.Integration
         public OwnershipIsolationTests()
         {
             _kullaniciA = _db.KullaniciEkle("a@garajim.local").Id;
-            _kullaniciB = _db.KullaniciEkle("b@garajim.local").Id;
+            _kullaniciB = _db.KullaniciEkle("b@garajim.local", CompanyRole.Driver).Id;
             _aracA = _db.AracEkle(_kullaniciA, "34AAA111");
             _db.AracEkle(_kullaniciB, "06BBB222");
 
@@ -69,7 +69,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleManager_BaskaKullanicininAracinaErisemez()
         {
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
 
             var getir = await manager.GetByIdAsync(_kullaniciB, _aracA.Id);
             var listele = await manager.GetAllAsync(_kullaniciB);
@@ -87,7 +87,7 @@ namespace Garajim.Tests.Integration
             Assert.False(guncelle.Success);
             Assert.False(sil.Success);
             Assert.DoesNotContain(listele.Data, v => v.Id == _aracA.Id);
-            Assert.Single(listele.Data);
+            Assert.Empty(listele.Data);
 
             var veritabanindaki = _db.AraciYenidenOku(_aracA.Id);
             Assert.Equal("Renault", veritabanindaki.Brand);
@@ -97,7 +97,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task MaintenanceManager_BaskaKullanicininBakimKayitlarinaErisemez()
         {
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
 
             var listele = await manager.GetListAsync(_kullaniciB, _aracA.Id);
             var ekle = await manager.AddAsync(_kullaniciB, new MaintenanceCreateDto
@@ -121,7 +121,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task FuelManager_BaskaKullanicininYakitKayitlarinaErisemez()
         {
-            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal);
+            var manager = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
 
             var listele = await manager.GetListAsync(_kullaniciB, _aracA.Id);
             var ekle = await manager.AddAsync(_kullaniciB, new FuelCreateDto
@@ -143,7 +143,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ExpenseManager_BaskaKullanicininMasrafKayitlarinaErisemez()
         {
-            var manager = new ExpenseManager(_db.ExpenseDal, _db.VehicleDal);
+            var manager = new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess);
 
             var listele = await manager.GetListAsync(_kullaniciB, _aracA.Id);
             var ekle = await manager.AddAsync(_kullaniciB, new ExpenseCreateDto
@@ -164,7 +164,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ReminderManager_BaskaKullanicininHatirlatmalarinaErisemez()
         {
-            var manager = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
+            var manager = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
 
             var listele = await manager.GetListAsync(_kullaniciB, _aracA.Id);
             var yaklasan = await manager.GetUpcomingAsync(_kullaniciB, 30);
@@ -185,7 +185,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ReportManager_BaskaKullanicininRaporlarinaErisemez()
         {
-            var manager = new ReportManager(_db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal);
+            var manager = new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal);
 
             var ozet = await manager.GetSummaryAsync(_kullaniciB, _aracA.Id, new DateTime(2026, 1, 1), new DateTime(2026, 12, 31));
             var aylik = await manager.GetMonthlyAsync(_kullaniciB, _aracA.Id);
@@ -200,9 +200,9 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task Sahibi_KendiKayitlarinaErisebilir()
         {
-            var vehicleManager = new VehicleManager(_db.VehicleDal, _db.UserDal);
-            var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal);
-            var reminderManager = new ReminderManager(_db.ReminderDal, _db.VehicleDal);
+            var vehicleManager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
+            var reminderManager = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
 
             var arac = await vehicleManager.GetByIdAsync(_kullaniciA, _aracA.Id);
             var bakimlar = await maintenanceManager.GetListAsync(_kullaniciA, _aracA.Id);
