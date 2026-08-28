@@ -183,6 +183,10 @@
         } catch (error) {
             state.user = null;
         }
+        if (!state.user || !state.user.role) {
+            clearSession();
+            return false;
+        }
         return true;
     }
 
