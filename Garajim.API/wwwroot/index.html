@@ -39,6 +39,9 @@
                 <label for="register-password">Şifre</label>
                 <input id="register-password" type="password" autocomplete="new-password" required>
                 <small class="hint">En az 6 karakter.</small>
+                <label for="register-company">Şirket adı</label>
+                <input id="register-company" type="text" autocomplete="organization">
+                <small class="hint">Boş bırakırsanız ad soyadınız kullanılır.</small>
                 <button type="submit" class="primary">Kayıt ol</button>
             </form>
 
@@ -54,13 +57,48 @@
             </div>
             <div class="topbar-right">
                 <select id="vehicle-select" aria-label="Araç seç"></select>
-                <button id="add-vehicle-btn" class="ghost" type="button">+ Araç</button>
+                <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
+                <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
                 <span id="user-label" class="user-label"></span>
                 <button id="logout-btn" class="ghost" type="button">Çıkış</button>
             </div>
         </header>
 
         <p id="app-message" class="message" role="alert"></p>
+
+        <section id="team-box" class="panel hidden">
+            <h2>Ekip</h2>
+            <form id="team-form" class="grid-form">
+                <div>
+                    <label for="team-name">Ad soyad</label>
+                    <input id="team-name" type="text" required>
+                </div>
+                <div>
+                    <label for="team-email">E-posta</label>
+                    <input id="team-email" type="email" required>
+                </div>
+                <div>
+                    <label for="team-role">Rol</label>
+                    <select id="team-role"></select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Üye ekle</button>
+                    <button id="team-close" type="button" class="ghost">Kapat</button>
+                </div>
+            </form>
+            <div id="team-credential" class="panel-inline hidden">
+                <p class="hint">Geçici şifre yalnızca bir kez gösterilir; üyeye siz iletmelisiniz.</p>
+                <p><strong id="team-credential-email"></strong> &mdash; <code id="team-credential-password"></code></p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Ad soyad</th><th>E-posta</th><th>Rol</th><th>Durum</th><th></th></tr>
+                    </thead>
+                    <tbody id="team-rows"></tbody>
+                </table>
+            </div>
+        </section>
 
         <section id="vehicle-form-box" class="panel hidden">
             <h2>Yeni araç</h2>
@@ -97,8 +135,8 @@
         </section>
 
         <div id="empty-state" class="panel hidden">
-            <h2>Henüz aracınız yok</h2>
-            <p>Kayıt tutmaya başlamak için üstteki <strong>+ Araç</strong> düğmesiyle bir araç ekleyin.</p>
+            <h2 id="empty-title">Henüz aracınız yok</h2>
+            <p id="empty-text">Kayıt tutmaya başlamak için üstteki <strong>+ Araç</strong> düğmesiyle bir araç ekleyin.</p>
         </div>
 
         <div id="workspace" class="hidden">
@@ -109,6 +147,7 @@
                 <button class="tab-btn" data-tab="hatirlatma" type="button">Hatırlatmalar</button>
                 <button class="tab-btn" data-tab="rapor" type="button">Raporlar</button>
                 <button class="tab-btn" data-tab="tahmin" type="button">Fiyat Tahmini</button>
+                <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
             </nav>
 
             <section id="panel-bakim" class="panel tab-panel">
@@ -145,10 +184,21 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Tarih</th><th>Tür</th><th>Km</th><th>Tutar</th><th>Servis</th><th></th></tr>
+                            <tr><th>Tarih</th><th>Tür</th><th>Km</th><th>Tutar</th><th>Servis</th><th>Belge</th><th></th></tr>
                         </thead>
                         <tbody id="maintenance-rows"></tbody>
                     </table>
+                </div>
+
+                <div id="document-box" class="panel-inline hidden">
+                    <h3 id="document-title">Belgeler</h3>
+                    <form id="document-form" class="inline-form">
+                        <input id="document-file" type="file" accept=".jpg,.jpeg,.png,.pdf" required>
+                        <button type="submit" class="primary">Yükle</button>
+                        <button id="document-close" type="button" class="ghost">Kapat</button>
+                    </form>
+                    <small class="hint">jpg, jpeg, png veya pdf; en fazla 5 MB.</small>
+                    <ul id="document-list" class="upcoming"></ul>
                 </div>
             </section>
 
@@ -335,6 +385,29 @@
                     <span class="price-label">Tahmini değer</span>
                     <span id="price-value" class="price-value"></span>
                     <span id="price-detail" class="price-detail"></span>
+                </div>
+            </section>
+
+            <section id="panel-zimmet" class="panel tab-panel hidden">
+                <h2>Zimmet</h2>
+                <p id="assignment-current" class="hint"></p>
+                <form id="assignment-form" class="grid-form">
+                    <div>
+                        <label for="assignment-user">Sürücü</label>
+                        <select id="assignment-user"></select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="assignment-submit" type="submit" class="primary">Zimmetle</button>
+                        <button id="assignment-end" type="button" class="ghost">Zimmeti sonlandır</button>
+                    </div>
+                </form>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Sürücü</th><th>Başlangıç</th><th>Bitiş</th></tr>
+                        </thead>
+                        <tbody id="assignment-rows"></tbody>
+                    </table>
                 </div>
             </section>
         </div>

@@ -33,9 +33,10 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<TokenDto>(Messages.EmailAlreadyExists);
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
             var fullName = dto.FullName.Trim();
+            var companyName = string.IsNullOrWhiteSpace(dto.CompanyName) ? fullName : dto.CompanyName.Trim();
             var company = new Company
             {
-                Name = fullName.Length > 150 ? fullName.Substring(0, 150) : fullName,
+                Name = companyName.Length > 150 ? companyName.Substring(0, 150) : companyName,
                 PlanType = PlanType.Standart,
                 CreatedAt = DateTime.UtcNow
             };
@@ -52,7 +53,7 @@ namespace Garajim.Business.Concrete
                 CreatedAt = DateTime.UtcNow
             };
             await _userDal.AddAsync(user);
-            return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.RegisterSuccess);
+            return new SuccessDataResult<TokenDto>(CreateTokenDto(user, company.Name), Messages.RegisterSuccess);
         }
 
         public async Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto)
@@ -63,10 +64,11 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
             if (!user.IsActive)
                 return new ErrorDataResult<TokenDto>(Messages.UserInactive);
-            return new SuccessDataResult<TokenDto>(CreateTokenDto(user), Messages.LoginSuccess);
+            var company = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
+            return new SuccessDataResult<TokenDto>(CreateTokenDto(user, company?.Name), Messages.LoginSuccess);
         }
 
-        private TokenDto CreateTokenDto(AppUser user)
+        private TokenDto CreateTokenDto(AppUser user, string companyName)
         {
             var token = JwtTokenHelper.CreateToken(
                 user.Id,
@@ -78,7 +80,14 @@ namespace Garajim.Business.Concrete
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 int.Parse(_configuration["Jwt:ExpireDays"]));
-            return new TokenDto { Token = token, Email = user.Email, FullName = user.FullName };
+            return new TokenDto
+            {
+                Token = token,
+                Email = user.Email,
+                FullName = user.FullName,
+                Role = user.Role.ToString(),
+                CompanyName = companyName
+            };
         }
     }
 }

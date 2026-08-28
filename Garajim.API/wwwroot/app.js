@@ -9,8 +9,15 @@
         user: null,
         vehicles: [],
         selectedVehicleId: null,
+        documentRecordId: null,
         chart: null
     };
+
+    var TEAM_ROLES = [
+        ["Manager", "Yönetici"],
+        ["Driver", "Sürücü"],
+        ["Owner", "Sahip"]
+    ];
 
     var MAINTENANCE_TYPES = [
         ["PeriyodikBakim", "Periyodik bakım"],
@@ -198,8 +205,12 @@
         }
         var init = { method: settings.method || "GET", headers: headers };
         if (settings.body !== undefined) {
-            headers["Content-Type"] = "application/json";
-            init.body = JSON.stringify(settings.body);
+            if (typeof FormData !== "undefined" && settings.body instanceof FormData) {
+                init.body = settings.body;
+            } else {
+                headers["Content-Type"] = "application/json";
+                init.body = JSON.stringify(settings.body);
+            }
         }
 
         var isAuthCall = path.indexOf("/api/Auth/") === 0;
@@ -264,11 +275,45 @@
         showMessage(el("auth-message"), "");
     }
 
+    function currentRole() {
+        return (state.user && state.user.role) || "Owner";
+    }
+
+    function isOwner() {
+        return currentRole() === "Owner";
+    }
+
+    function canManage() {
+        var role = currentRole();
+        return role === "Owner" || role === "Manager";
+    }
+
+    function applyRole() {
+        el("add-vehicle-btn").classList.toggle("hidden", !canManage());
+        el("team-btn").classList.toggle("hidden", !isOwner());
+
+        var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
+        if (zimmetTab) {
+            zimmetTab.classList.toggle("hidden", !canManage());
+            if (!canManage() && zimmetTab.classList.contains("active")) {
+                selectTab("bakim");
+            }
+        }
+        if (!isOwner()) {
+            el("team-box").classList.add("hidden");
+        }
+    }
+
     function enterApp() {
         el("auth-screen").classList.add("hidden");
         el("app-screen").classList.remove("hidden");
-        var label = state.user && state.user.fullName ? state.user.fullName : "";
+        var user = state.user || {};
+        var label = user.fullName || "";
+        if (user.companyName) {
+            label = label ? label + " · " + user.companyName : user.companyName;
+        }
         el("user-label").textContent = label;
+        applyRole();
         loadVehicles();
     }
 
@@ -286,6 +331,7 @@
             });
 
             var hasVehicles = state.vehicles.length > 0;
+            renderEmptyState(hasVehicles);
             el("empty-state").classList.toggle("hidden", hasVehicles);
             el("workspace").classList.toggle("hidden", !hasVehicles);
             select.classList.toggle("hidden", !hasVehicles);
@@ -308,12 +354,28 @@
         });
     }
 
+    function renderEmptyState(hasVehicles) {
+        if (hasVehicles) {
+            return;
+        }
+        if (canManage()) {
+            el("empty-title").textContent = "Henüz aracınız yok";
+            el("empty-text").textContent = "Kayıt tutmaya başlamak için üstteki + Araç düğmesiyle bir araç ekleyin.";
+        } else {
+            el("empty-title").textContent = "Size zimmetli araç yok";
+            el("empty-text").textContent = "Bir araç zimmetlendiğinde kayıtları burada görürsünüz. Zimmet için şirket yöneticinize başvurun.";
+        }
+    }
+
     function activeTab() {
         var button = document.querySelector(".tab-btn.active");
         return button ? button.getAttribute("data-tab") : "bakim";
     }
 
     function loadActiveTab() {
+        if (!state.selectedVehicleId) {
+            return;
+        }
         var tab = activeTab();
         if (tab === "bakim") {
             loadMaintenance();
@@ -326,6 +388,8 @@
         } else if (tab === "rapor") {
             loadFuelStats();
             loadMonthly();
+        } else if (tab === "zimmet") {
+            loadAssignments();
         }
     }
 
@@ -353,7 +417,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 6, "Kayıt yok.");
+                emptyRow(tbody, 7, "Kayıt yok.");
                 return;
             }
             rows.forEach(function (item) {
@@ -363,11 +427,228 @@
                 tr.appendChild(make("td", km(item.km)));
                 tr.appendChild(make("td", money(item.cost)));
                 tr.appendChild(make("td", item.serviceName || "-"));
+                tr.appendChild(documentButton(item.id));
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Maintenance/" + item.id, loadMaintenance); }));
                 tbody.appendChild(tr);
             });
         }).catch(function (error) {
             handleError(el("app-message"), error);
+        });
+    }
+
+    function documentButton(recordId) {
+        var cell = document.createElement("td");
+        var button = make("button", "Belgeler", "link-btn");
+        button.type = "button";
+        button.addEventListener("click", function () { openDocuments(recordId); });
+        cell.appendChild(button);
+        return cell;
+    }
+
+    function openDocuments(recordId) {
+        state.documentRecordId = recordId;
+        el("document-box").classList.remove("hidden");
+        el("document-title").textContent = "Bakım kaydı #" + recordId + " belgeleri";
+        el("document-form").reset();
+        loadDocuments();
+    }
+
+    function closeDocuments() {
+        state.documentRecordId = null;
+        el("document-box").classList.add("hidden");
+    }
+
+    function loadDocuments() {
+        var list = el("document-list");
+        if (!state.documentRecordId) {
+            clear(list);
+            return;
+        }
+        api("/api/Documents?maintenanceRecordId=" + state.documentRecordId).then(function (result) {
+            var rows = (result && result.data) || [];
+            clear(list);
+            if (rows.length === 0) {
+                list.appendChild(make("li", "Bu kayda bağlı belge yok."));
+                return;
+            }
+            rows.forEach(function (item) {
+                var li = document.createElement("li");
+                li.appendChild(make("span", item.originalName + " · " + fileSize(item.sizeBytes)));
+
+                var actions = make("span", "", "row-actions");
+                var download = make("button", "İndir", "link-btn");
+                download.type = "button";
+                download.addEventListener("click", function () { downloadDocument(item); });
+                actions.appendChild(download);
+
+                var remove = make("button", "Sil", "link-btn");
+                remove.type = "button";
+                remove.addEventListener("click", function () { removeDocument(item.id); });
+                actions.appendChild(remove);
+
+                li.appendChild(actions);
+                list.appendChild(li);
+            });
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function fileSize(bytes) {
+        var value = Number(bytes) || 0;
+        if (value < 1024) {
+            return value + " B";
+        }
+        if (value < 1024 * 1024) {
+            return Math.round(value / 1024) + " KB";
+        }
+        return (value / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function downloadDocument(item) {
+        var headers = state.token ? { Authorization: "Bearer " + state.token } : {};
+        fetch("/api/Documents/" + item.id + "/download", { headers: headers }).then(function (response) {
+            if (!response.ok) {
+                throw new Error("Belge indirilemedi.");
+            }
+            return response.blob();
+        }).then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = item.originalName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function removeDocument(id) {
+        api("/api/Documents/" + id, { method: "DELETE" }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Belge silindi.", true);
+            loadDocuments();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function loadTeam() {
+        var tbody = el("team-rows");
+        api("/api/Team").then(function (result) {
+            var rows = (result && result.data) || [];
+            clear(tbody);
+            if (rows.length === 0) {
+                emptyRow(tbody, 5, "Kayıt yok.");
+                return;
+            }
+            rows.forEach(function (item) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", item.fullName));
+                tr.appendChild(make("td", item.email));
+
+                var roleCell = document.createElement("td");
+                if (state.user && item.email === state.user.email) {
+                    roleCell.textContent = labelOf(TEAM_ROLES, item.role);
+                } else {
+                    var select = document.createElement("select");
+                    fillSelect(select, TEAM_ROLES);
+                    select.value = item.role;
+                    select.addEventListener("change", function () { changeRole(item.id, select.value); });
+                    roleCell.appendChild(select);
+                }
+                tr.appendChild(roleCell);
+                tr.appendChild(make("td", item.isActive ? "Aktif" : "Pasif"));
+
+                var actionCell = document.createElement("td");
+                var kendisi = state.user && item.email === state.user.email;
+                if (item.isActive && !kendisi) {
+                    var button = make("button", "Pasifleştir", "link-btn");
+                    button.type = "button";
+                    button.addEventListener("click", function () { deactivateMember(item.id); });
+                    actionCell.appendChild(button);
+                }
+                tr.appendChild(actionCell);
+                tbody.appendChild(tr);
+            });
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function changeRole(id, role) {
+        api("/api/Team/" + id + "/role", { method: "PUT", body: { role: role } }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Rol güncellendi.", true);
+            loadTeam();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+            loadTeam();
+        });
+    }
+
+    function deactivateMember(id) {
+        api("/api/Team/" + id + "/deactivate", { method: "PUT" }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Üye pasifleştirildi.", true);
+            loadTeam();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function loadAssignments() {
+        if (!state.selectedVehicleId) {
+            return;
+        }
+        var tbody = el("assignment-rows");
+        api("/api/Assignments?vehicleId=" + state.selectedVehicleId).then(function (result) {
+            var rows = (result && result.data) || [];
+            clear(tbody);
+
+            var aktif = null;
+            rows.forEach(function (item) {
+                if (item.isActive) {
+                    aktif = item;
+                }
+            });
+            el("assignment-current").textContent = aktif
+                ? "Şu an zimmetli: " + aktif.userFullName + " (" + formatDate(aktif.startDate) + " tarihinden beri)"
+                : "Bu araç şu an kimseye zimmetli değil.";
+            el("assignment-submit").textContent = aktif ? "Devret" : "Zimmetle";
+            el("assignment-end").classList.toggle("hidden", !aktif);
+
+            if (rows.length === 0) {
+                emptyRow(tbody, 3, "Zimmet geçmişi yok.");
+            } else {
+                rows.forEach(function (item) {
+                    var tr = document.createElement("tr");
+                    tr.appendChild(make("td", item.userFullName));
+                    tr.appendChild(make("td", formatDate(item.startDate)));
+                    tr.appendChild(make("td", item.endDate ? formatDate(item.endDate) : "Devam ediyor"));
+                    tbody.appendChild(tr);
+                });
+            }
+
+            return loadAssignableUsers();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function loadAssignableUsers() {
+        return api("/api/Team").then(function (result) {
+            var rows = (result && result.data) || [];
+            var select = el("assignment-user");
+            clear(select);
+            rows.filter(function (item) {
+                return item.isActive;
+            }).forEach(function (item) {
+                var option = document.createElement("option");
+                option.value = String(item.id);
+                option.textContent = item.fullName + " (" + labelOf(TEAM_ROLES, item.role) + ")";
+                select.appendChild(option);
+            });
         });
     }
 
@@ -642,7 +923,8 @@
                 body: {
                     fullName: el("register-name").value,
                     email: el("register-email").value,
-                    password: el("register-password").value
+                    password: el("register-password").value,
+                    companyName: el("register-company").value
                 }
             }).then(function (result) {
                 saveSession(result.data.token, result.data);
@@ -658,10 +940,113 @@
         });
     }
 
+    function bindTeam() {
+        el("team-btn").addEventListener("click", function () {
+            var box = el("team-box");
+            var acilacak = box.classList.contains("hidden");
+            box.classList.toggle("hidden", !acilacak);
+            el("team-credential").classList.add("hidden");
+            if (acilacak) {
+                loadTeam();
+            }
+        });
+
+        el("team-close").addEventListener("click", function () {
+            el("team-box").classList.add("hidden");
+        });
+
+        el("team-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+            api("/api/Team", {
+                method: "POST",
+                body: {
+                    fullName: el("team-name").value,
+                    email: el("team-email").value,
+                    role: el("team-role").value
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Üye eklendi.", true);
+                el("team-form").reset();
+                el("team-credential").classList.remove("hidden");
+                el("team-credential-email").textContent = result.data.email;
+                el("team-credential-password").textContent = result.data.temporaryPassword;
+                loadTeam();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
+    function bindAssignment() {
+        el("assignment-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+            var userId = Number(el("assignment-user").value);
+            if (!userId) {
+                showMessage(el("app-message"), "Önce ekibe bir kullanıcı ekleyin.");
+                return;
+            }
+            var devir = el("assignment-submit").textContent === "Devret";
+            api(devir ? "/api/Assignments/transfer" : "/api/Assignments", {
+                method: devir ? "PUT" : "POST",
+                body: { vehicleId: state.selectedVehicleId, userId: userId }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Zimmet güncellendi.", true);
+                loadAssignments();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("assignment-end").addEventListener("click", function () {
+            clearMessages();
+            api("/api/Assignments/end", {
+                method: "PUT",
+                body: { vehicleId: state.selectedVehicleId }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Zimmet sonlandırıldı.", true);
+                loadAssignments();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
+    function bindDocuments() {
+        el("document-close").addEventListener("click", closeDocuments);
+
+        el("document-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+            if (!state.documentRecordId) {
+                showMessage(el("app-message"), "Önce bir bakım kaydının Belgeler düğmesine basın.");
+                return;
+            }
+            var input = el("document-file");
+            if (!input.files || input.files.length === 0) {
+                showMessage(el("app-message"), "Önce bir dosya seçin.");
+                return;
+            }
+            var form = new FormData();
+            form.append("file", input.files[0]);
+            form.append("maintenanceRecordId", String(state.documentRecordId));
+
+            api("/api/Documents", { method: "POST", body: form }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Belge yüklendi.", true);
+                el("document-form").reset();
+                loadDocuments();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
     function bindVehicle() {
         el("vehicle-select").addEventListener("change", function (event) {
             state.selectedVehicleId = Number(event.target.value);
             clearMessages();
+            closeDocuments();
             loadActiveTab();
         });
 
@@ -699,23 +1084,25 @@
         });
     }
 
+    function selectTab(tab) {
+        var buttons = document.querySelectorAll(".tab-btn");
+        Array.prototype.forEach.call(buttons, function (button) {
+            button.classList.toggle("active", button.getAttribute("data-tab") === tab);
+        });
+        var panels = document.querySelectorAll(".tab-panel");
+        Array.prototype.forEach.call(panels, function (panel) {
+            panel.classList.add("hidden");
+        });
+        el("panel-" + tab).classList.remove("hidden");
+        clearMessages();
+        loadActiveTab();
+    }
+
     function bindTabs() {
         var buttons = document.querySelectorAll(".tab-btn");
         Array.prototype.forEach.call(buttons, function (button) {
             button.addEventListener("click", function () {
-                Array.prototype.forEach.call(buttons, function (other) {
-                    other.classList.remove("active");
-                });
-                button.classList.add("active");
-
-                var tab = button.getAttribute("data-tab");
-                var panels = document.querySelectorAll(".tab-panel");
-                Array.prototype.forEach.call(panels, function (panel) {
-                    panel.classList.add("hidden");
-                });
-                el("panel-" + tab).classList.remove("hidden");
-                clearMessages();
-                loadActiveTab();
+                selectTab(button.getAttribute("data-tab"));
             });
         });
     }
@@ -851,6 +1238,7 @@
     }
 
     function initSelects() {
+        fillSelect(el("team-role"), TEAM_ROLES);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -878,6 +1266,9 @@
         bindVehicle();
         bindTabs();
         bindRecordForms();
+        bindTeam();
+        bindAssignment();
+        bindDocuments();
 
         if (readSession()) {
             enterApp();
