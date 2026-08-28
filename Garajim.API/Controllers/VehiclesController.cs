@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +45,7 @@ namespace Garajim.API.Controllers
         {
             var result = await _vehicleService.UpdateAsync(CurrentUserId, id, dto);
             if (!result.Success)
-                return BadRequest(result);
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
             return Ok(result);
         }
 
