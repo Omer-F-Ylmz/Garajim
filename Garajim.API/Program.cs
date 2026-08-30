@@ -9,6 +9,7 @@ using Garajim.API.Startup;
 using Garajim.Business.Abstract;
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
+using Garajim.Business.Concrete.Receipts;
 using Garajim.Business.Constants;
 using Garajim.Business.Jobs;
 using Garajim.Business.Seed;
@@ -59,6 +60,13 @@ builder.Services.AddScoped<IExpenseService, ExpenseManager>();
 builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddHttpClient(ReceiptExtractorBase.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(30));
+builder.Services.AddScoped<GeminiReceiptExtractor>();
+builder.Services.AddScoped<OpenAiReceiptExtractor>();
+builder.Services.AddScoped<IReceiptExtractor>(provider =>
+    string.Equals(provider.GetRequiredService<IConfiguration>()["Receipts:Provider"], "OpenAI", StringComparison.OrdinalIgnoreCase)
+        ? provider.GetRequiredService<OpenAiReceiptExtractor>()
+        : provider.GetRequiredService<GeminiReceiptExtractor>());
 builder.Services.AddScoped<ReminderNotificationJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
 
