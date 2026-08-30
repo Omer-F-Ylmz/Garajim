@@ -1,5 +1,6 @@
 using Garajim.Business.Abstract;
 using Garajim.Core.Multitenancy;
+using Microsoft.Extensions.Configuration;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Enums;
 
@@ -13,14 +14,16 @@ namespace Garajim.Business.Jobs
         private readonly ICompanyDal _companyDal;
         private readonly IReminderDal _reminderDal;
         private readonly TenantContext _tenantContext;
-        private readonly IEmailService _emailService;
+        private readonly IEmailSender _emailSender;
+        private readonly IConfiguration _configuration;
 
-        public ReminderNotificationJob(ICompanyDal companyDal, IReminderDal reminderDal, TenantContext tenantContext, IEmailService emailService)
+        public ReminderNotificationJob(ICompanyDal companyDal, IReminderDal reminderDal, TenantContext tenantContext, IEmailSender emailSender, IConfiguration configuration)
         {
             _companyDal = companyDal;
             _reminderDal = reminderDal;
             _tenantContext = tenantContext;
-            _emailService = emailService;
+            _emailSender = emailSender;
+            _configuration = configuration;
         }
 
         public async Task RunAsync()
@@ -57,9 +60,12 @@ namespace Garajim.Business.Jobs
                     body = $"Merhaba {item.FullName}, {item.Plate} plakalı aracınızın {typeName} tarihi bugün ({item.DueDate:dd.MM.yyyy}).";
                 else
                     body = $"Merhaba {item.FullName}, {item.Plate} plakalı aracınızın {typeName} tarihi {-daysLeft} gün önce geçti ({item.DueDate:dd.MM.yyyy}).";
+                var baseUrl = _configuration["App:BaseUrl"];
+                if (!string.IsNullOrWhiteSpace(baseUrl))
+                    body += $" Kayıtlarınız: {baseUrl.TrimEnd('/')}";
                 try
                 {
-                    await _emailService.SendAsync(item.Email, subject, body);
+                    await _emailSender.SendAsync(item.Email, subject, body);
                 }
                 catch
                 {

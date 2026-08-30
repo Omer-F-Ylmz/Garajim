@@ -58,7 +58,7 @@ builder.Services.AddScoped<IFuelService, FuelManager>();
 builder.Services.AddScoped<IExpenseService, ExpenseManager>();
 builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
-builder.Services.AddScoped<IEmailService, SmtpEmailManager>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<ReminderNotificationJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
 
