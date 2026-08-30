@@ -1,10 +1,22 @@
 # Yol Haritası
 
-Garajım bireysel araç takibinden çok kiracılı filo yönetimine dönüşüyor. Bu dosya fazların durumunu tutar.
+## Konumlandırma
+
+**"Fişi fotoğrafla, gerisini biz halledelim; sattığında karnesi yanında gider."**
+
+Ürün "Aracının Belgeli Hafızası" olarak konumlanır. Çekirdek çark üç parçalıdır ve her parça bir sonrakini besler:
+
+1. **Fiş okuma veri toplar** — kullanıcı fişi fotoğraflar, kayıt kendiliğinden oluşur; veri girme sürtünmesi ortadan kalkar.
+2. **Karne değere çevirir** — biriken kayıtlar aracın belgeli geçmişine dönüşür; satışta alıcıya gösterilen karne, veriyi kullanıcının malı yapar.
+3. **Evrak takvimi kullanıcıyı geri çağırır** — MTV, muayene, sigorta tarihleri kullanıcıyı düzenli aralıklarla uygulamaya döndürür; dönen kullanıcı yeni fiş yükler.
+
+Hedef kitle: önce bireysel araç sahibi. Filo tarafı "pull" modunda kalır — landing'de "Filonuz mu var? İletişime geçin" satırı durur, aktif B2B satış yapılmaz; talep gelirse değerlendirilir.
 
 Durum işaretleri: `[x]` bitti · `[~]` kısmen · `[ ]` başlanmadı
 
-## Faz 1a — Mimari temel (bu oturum)
+## Faz 1 — TAMAMLANDI — canlıda
+
+### Faz 1a — Mimari temel
 
 - [x] `Company` entity'si: Id, Name, PlanType (tek değer: Standart), CreatedAt
 - [x] Sekiz entity'de `CompanyId`: Users, Vehicles, MaintenanceRecords, FuelRecords, ExpenseRecords, Reminders, Documents, VehicleAssignments
@@ -16,15 +28,9 @@ Durum işaretleri: `[x]` bitti · `[~]` kısmen · `[ ]` başlanmadı
 - [x] Kiracı izolasyonu testleri: yabancı kayıtta GET/PUT/DELETE 404, liste uçları yalnız kendi şirketi
 - [x] Denormalizasyon değişmezi (`çocuk.CompanyId == aracın CompanyId`) testle sabitlendi
 - [x] Hangfire job'ı şirketleri tek tek dolaşıyor; şirketler arası tek sorgu yok
-- [x] Demo tohumlaması yeni şemayla idempotent
+- [x] Demo tohumlaması yeni şemayla idempotent (yayın sonrası artımlı hale getirildi: eksik öğe tamamlanır, mevcut veriye dokunulmaz)
 
-Faz 1a'da bilerek yapılmayanlar (üçü de Faz 1b'de kapandı):
-
-- `Documents` ve `VehicleAssignments` tabloları yalnızca şema olarak var; davranışları Faz 1b'de gelir
-- Araç plakası tekilliği hâlâ kullanıcı başına (`UserId, Plate`); çok kullanıcılı şirkette şirket başına olmalı, Faz 1b
-- Aktif zimmet için filtreli tekil indeks Faz 1b'de iş kuralıyla birlikte eklenecek
-
-## Faz 1b — Roller, zimmet, belge, arayüz
+### Faz 1b — Roller, zimmet, belge, arayüz
 
 - [x] `CompanyRole`: Owner, Manager, Driver; JWT'ye rol claim'i
 - [x] Politikalar: Owner her şey; Manager araç/kayıt/zimmet; Driver yalnız zimmetli araçları
@@ -35,46 +41,92 @@ Faz 1a'da bilerek yapılmayanlar (üçü de Faz 1b'de kapandı):
 - [x] Plaka tekilliğinin şirket başına taşınması; migration çakışan plakaları bulup açık hatayla durur
 - [x] Demo tohumlaması sahip + sürücü + aktif zimmet üretir, idempotent kalır
 
-Faz 1b sırasında yakalanan ve düzeltilenler:
+Faz 1'de bilinçli sınırlar: geçmişe dönük zimmet devri yok (audit log ile gelecek); Driver'a "kendi eklediği araç" istisnası yok; belge önizlemesi yok.
 
-- `app.js` ve `styles.css` bir saat önbellekleniyordu; yayından sonra dönen kullanıcı yeni HTML'i eski scriptle çalıştırıyordu. İkisi de artık doğrulamaya bağlı
-- Belge yükleme ucu `[FromForm] IFormFile` ile ayrı parametreler aldığı için Swagger dokümanı 500 veriyordu; bağlama tek forma taşındı
-- Rol sıfırlaması araçlar yüklenmeden sekmeyi tetikleyip `vehicleId=null` isteği atıyordu
+## 6 Aylık Plan
 
-Faz 1b'de bilerek yapılmayanlar:
+### Ay 1 — Fiş okuma + PWA + e-posta (bu sprint)
 
-- Geçmişe dönük zimmet devri (elle `StartDate` / `EndDate`) yok; devir her zaman "şimdi". Tarih düzeltmesi audit log ile birlikte gelecek
-- Driver'a "kendi eklediği araç" istisnası yok; erişim yalnız aktif zimmetten gelir
-- Belge önizlemesi yok; yalnız yükleme, listeleme, indirme ve silme var
+- [ ] E-posta bildirim altyapısı: MailKit SMTP, yapılandırma yoksa loglayıp atlama, hatırlatma job'ına bağlı
+- [ ] `IReceiptExtractor` + Gemini/OpenAI sağlayıcıları (görüntüden yapılandırılmış JSON)
+- [ ] Taslak kayıt akışı: fiş yükle → AI çıkarımı → kullanıcı onayı → Yakıt/Bakım/Masraf kaydı + belge bağı
+- [ ] Onayda düzeltilen alanların ölçümü (pratik doğruluk metriği)
+- [ ] PWA: manifest + service worker + ana ekrana ekle; mobil öncelikli fiş yükleme ekranı
+- [ ] Aylık AI çağrı limiti (maliyet koruması)
 
-## Faz 2 — Filo operasyonu
+### Ay 2 — Araç karnesi + parça hafızası
 
-- [ ] Resmî tarih takibi (muayene, egzoz, trafik sigortası, kasko) ve otomatik hatırlatma
+- [ ] Araç karnesi: kayıtlardan üretilen paylaşılabilir belgeli geçmiş
+- [ ] Parça hafızası: hangi parça ne zaman, kaç km'de değişti
+
+### Ay 3 — Türkiye evrak takvimi
+
+- [ ] MTV Ocak/Temmuz otomatik hatırlatma
+- [ ] Muayene araç türüne göre: hususi 2 yıl / ticari 1 yıl
+- [ ] Egzoz emisyon, zorunlu trafik, kasko takvimleri
+- [ ] Cüzdan kartı / ICS takvim aboneliği
+- [ ] Acil durum kartı
+
+### Ay 4 — Geçiş sihirbazı + gelir
+
+- [ ] Rakipten geçiş sihirbazı: Drivvo / Fuelio CSV içe aktarma
+- [ ] Maliyet analizi
+- [ ] Pro paketleme
+
+### Ay 5-6 — Genişleme
+
+- [ ] EV / şarj kayıtları
+- [ ] Lastik ve sarf takibi
+- [ ] Davet programı
+
+## Kill Criteria
+
+- **Fiş çıkarım doğruluğu:** İlk 30 Türk fişinde tarih+tutar+km çıkarım doğruluğu %85'in altındaysa prompt/sağlayıcı revizyonu yapılır; ikinci turda da altında kalırsa fotoğraf-önce stratejisi sorgulanır.
+- **Tutunma:** İlk 100 kullanıcının %25'inden azı 30. günde hâlâ fiş yüklüyorsa tez yeniden değerlendirilir.
+- **Paylaşım:** Karne paylaşım oranı %15'in altındaysa davet programı öne çekilir.
+
+## Tetikleyiciye Bağlı
+
+Takvime değil koşula bağlı işler; koşul oluşmadan başlanmaz:
+
+- **AI usta ve AI ilan asistanı** — karne verisi olgunlaşınca
+- **Usta köprüsü** — aktif kullanıcı kütlesi oluşunca
+- **WhatsApp botu** — API maliyeti bütçeye girince; kullanıcı ayarından açılıp kapanabilir olacak
+- **E-arşiv email-in** (faturayı e-postayla iletme) — fotoğraf kanalı kanıtlanınca
+- **Kaza/hasar dosyası** — rent a car ile ortak geliştirilecek
+- **Sesli giriş**
+
+## Sınırlı / Durduruldu
+
+- **Sigorta yönlendirme** — yalnız lisanslı acente ortaklığıyla; ortaklık yoksa yapılmaz
+- **Değer takibi** — yalnız beyan bazlı basit amortisman; piyasa fiyatı iddiası yok
+- **Recall takibi** — Türkiye'de merkezi kaynak yok; durduruldu
+- **Servis pazaryeri** — süresiz ertelendi
+
+## Gelecek Ürün: Rent a Car SaaS
+
+Tetikleyiciler (herhangi biri): 2027 yetki belgesi düzenlemesi kesinleşirse VEYA filo kanalından 5+ kiralamacı talebi gelirse.
+
+Garajım'dan taşınacak ortak çekirdek: belge deposu, fotoğraflı tutanak, takvim, çok kiracılılık. Bu modüller ilerideki ayrıştırma kolay olsun diye genel/taşınabilir yazılır.
+
+## Birikim (planlanmamış)
+
+Eski fazlardan devralınan, 6 aylık plana girmeyen işler:
+
 - [ ] Periyodik bakım şablonları: kilometre ve takvim bazlı
 - [ ] Yakıt analizi: L/100km, filo ortalamasından sapma uyarısı
-- [ ] Araç başına toplam sahip olma maliyeti (TCO) raporu
 - [ ] CSV / Excel dışa aktarım
 - [ ] Yönetici dashboard'u
 - [ ] Sürücü belge takibi (ehliyet, SRC)
-
-## Faz 3 — Bildirim, veri, ticarileşme
-
-- [ ] E-posta (SMTP) ve SMS bildirimi
 - [ ] Excel'den toplu içe aktarma
 - [ ] Audit log
-- [ ] Mobil uyumlu arayüz
-- [ ] Hasar ve kaza kayıtları
-- [ ] Lastik takibi
-- [ ] Abonelik ve ödeme (iyzico veya PayTR), araç sayısına göre paket sınırları
+- [ ] Abonelik ve ödeme (iyzico veya PayTR), araç sayısına göre paket sınırları — Ay 4 Pro paketlemenin altyapısı
 - [ ] KVKK temeli: aydınlatma metni, veri silme akışı
-
-## Faz 4 — İleri analiz ve entegrasyon
-
-- [ ] Araç değiştirme analizi: mevcut ML fiyat tahmini ile bakım maliyeti eğrisinin birleştirilmesi
+- [ ] Araç değiştirme analizi: ML fiyat tahmini + bakım maliyeti eğrisi
 - [ ] Muhasebe entegrasyonları ve dışa açık API
 - [ ] Çoklu şube
 
-## Sıraya alınan teknik borçlar
+## Sıraya Alınan Teknik Borçlar
 
 Ayrıntısı [#2 numaralı issue](https://github.com/Omer-F-Ylmz/Garajim/issues/2)'da:
 
