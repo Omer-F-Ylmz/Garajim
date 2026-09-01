@@ -1,4 +1,6 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Evraklar;
+using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
@@ -14,14 +16,27 @@ namespace Garajim.Business.Concrete
         private readonly IFuelDal _fuelDal;
         private readonly IExpenseDal _expenseDal;
         private readonly IUserDal _userDal;
+        private readonly ICompanyDal _companyDal;
+        private readonly IEvrakDal _evrakDal;
+        private readonly IReminderDal _reminderDal;
+        private readonly IVehicleAssignmentDal _assignmentDal;
+        private readonly IReceiptDraftDal _receiptDraftDal;
+        private readonly PlanKurallari _planKurallari;
 
-        public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal)
+        public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal,
+            ICompanyDal companyDal, IEvrakDal evrakDal, IReminderDal reminderDal, IVehicleAssignmentDal assignmentDal, IReceiptDraftDal receiptDraftDal, PlanKurallari planKurallari)
         {
             _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
             _fuelDal = fuelDal;
             _expenseDal = expenseDal;
             _userDal = userDal;
+            _companyDal = companyDal;
+            _evrakDal = evrakDal;
+            _reminderDal = reminderDal;
+            _assignmentDal = assignmentDal;
+            _receiptDraftDal = receiptDraftDal;
+            _planKurallari = planKurallari;
         }
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
@@ -215,6 +230,68 @@ namespace Garajim.Business.Concrete
                 .ToList();
 
             return new SuccessDataResult<FiloMaliyetDto>(rapor);
+        }
+
+        public async Task<IDataResult<DashboardDto>> GetDashboardAsync(int userId)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<DashboardDto>(Messages.UserNotFound);
+
+            var sirket = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
+            if (sirket == null)
+                return new ErrorDataResult<DashboardDto>(Messages.UserNotFound);
+
+            var araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
+            var idler = araclar.Select(a => a.Id).ToList();
+
+            var bugun = DateTime.UtcNow.Date;
+            var buAyBasi = new DateTime(bugun.Year, bugun.Month, 1);
+            var gecenAyBasi = buAyBasi.AddMonths(-1);
+
+            var panel = new DashboardDto
+            {
+                Plan = sirket.PlanType.ToString(),
+                AracSayisi = araclar.Count,
+                AracLimiti = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti)
+            };
+
+            if (idler.Count == 0)
+            {
+                return new SuccessDataResult<DashboardDto>(panel);
+            }
+
+            panel.AktifZimmet = await _assignmentDal.AktifSayiAsync(idler);
+
+            var evrak = await _evrakDal.DurumSayilariAsync(idler, userId, bugun, EvrakKurallari.YaklasiyorGun);
+            panel.EvrakGecti = evrak.Gecti;
+            panel.EvrakYaklasiyor = evrak.Yaklasiyor;
+
+            panel.HatirlatmaYaklasiyor = await _reminderDal.YaklasanSayisiAsync(idler, bugun.AddDays(EvrakKurallari.YaklasiyorGun));
+
+            if (user.Role != CompanyRole.Driver)
+            {
+                panel.BekleyenFis = await _receiptDraftDal.BekleyenSayisiAsync();
+            }
+
+            panel.BuAyMaliyet = await AyMaliyetiAsync(idler, buAyBasi, buAyBasi.AddMonths(1).AddTicks(-1));
+            panel.GecenAyMaliyet = await AyMaliyetiAsync(idler, gecenAyBasi, buAyBasi.AddTicks(-1));
+
+            if (panel.GecenAyMaliyet > 0)
+            {
+                panel.DegisimYuzde = Math.Round((panel.BuAyMaliyet - panel.GecenAyMaliyet) / panel.GecenAyMaliyet * 100, 1);
+            }
+
+            return new SuccessDataResult<DashboardDto>(panel);
+        }
+
+        private async Task<decimal> AyMaliyetiAsync(List<int> vehicleIds, DateTime bas, DateTime son)
+        {
+            var yakit = await _fuelDal.GetTotalsByVehicleAsync(vehicleIds, bas, son);
+            var bakim = await _maintenanceDal.GetTotalsByVehicleAsync(vehicleIds, bas, son);
+            var masraf = await _expenseDal.GetTotalsByVehicleAsync(vehicleIds, bas, son);
+
+            return yakit.Sum(t => t.Toplam) + bakim.Sum(t => t.Toplam) + masraf.Sum(t => t.Toplam);
         }
 
         private static decimal Deger(Dictionary<int, decimal> kaynak, int vehicleId)

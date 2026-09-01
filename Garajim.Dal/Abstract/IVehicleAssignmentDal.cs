@@ -10,5 +10,7 @@ namespace Garajim.Dal.Abstract
         Task<VehicleAssignment> GetActiveByVehicleAsync(int vehicleId);
 
         Task<List<VehicleAssignment>> GetHistoryAsync(int vehicleId);
+
+        Task<int> AktifSayiAsync(List<int> vehicleIds);
     }
 }

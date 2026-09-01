@@ -64,6 +64,16 @@ namespace Garajim.Dal.Concrete
                         };
             return await query.ToListAsync();
         }
+        public async Task<int> YaklasanSayisiAsync(List<int> vehicleIds, DateTime limit)
+        {
+            return await Context.Reminders
+                .AsNoTracking()
+                .CountAsync(r => !r.IsCompleted &&
+                                 vehicleIds.Contains(r.VehicleId) &&
+                                 r.DueDate != null &&
+                                 r.DueDate <= limit);
+        }
+
         public async Task<List<Reminder>> GetListForVehicleAsync(int vehicleId, int limit)
         {
             return await Context.Reminders

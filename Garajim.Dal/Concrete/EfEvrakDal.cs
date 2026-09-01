@@ -44,6 +44,22 @@ namespace Garajim.Dal.Concrete
             return affected > 0;
         }
 
+        public async Task<(int Gecti, int Yaklasiyor)> DurumSayilariAsync(List<int> vehicleIds, int? userId, DateTime bugun, int yaklasiyorGun)
+        {
+            var esik = bugun.AddDays(yaklasiyorGun);
+
+            var kapsam = Context.EvrakKayitlari
+                .AsNoTracking()
+                .Where(e => e.Aktif &&
+                            ((e.VehicleId != null && vehicleIds.Contains(e.VehicleId.Value)) ||
+                             (userId != null && e.UserId == userId)));
+
+            var gecti = await kapsam.CountAsync(e => e.BitisTarihi < bugun);
+            var yaklasiyor = await kapsam.CountAsync(e => e.BitisTarihi >= bugun && e.BitisTarihi <= esik);
+
+            return (gecti, yaklasiyor);
+        }
+
         public async Task PasiflestirAsync(int id)
         {
             await Context.EvrakKayitlari

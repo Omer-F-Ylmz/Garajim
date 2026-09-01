@@ -27,6 +27,13 @@ namespace Garajim.Dal.Concrete
                 .FirstOrDefaultAsync(a => a.VehicleId == vehicleId && a.EndDate == null);
         }
 
+        public async Task<int> AktifSayiAsync(List<int> vehicleIds)
+        {
+            return await Context.VehicleAssignments
+                .AsNoTracking()
+                .CountAsync(a => a.EndDate == null && vehicleIds.Contains(a.VehicleId));
+        }
+
         public async Task<List<VehicleAssignment>> GetHistoryAsync(int vehicleId)
         {
             return await Context.VehicleAssignments

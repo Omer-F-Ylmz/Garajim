@@ -19,6 +19,11 @@ namespace Garajim.Tests.Unit
         private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
+        private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
+        private readonly Mock<IEvrakDal> _evrakDal = new Mock<IEvrakDal>();
+        private readonly Mock<IReminderDal> _reminderDal = new Mock<IReminderDal>();
+        private readonly Mock<IVehicleAssignmentDal> _assignmentDal = new Mock<IVehicleAssignmentDal>();
+        private readonly Mock<IReceiptDraftDal> _receiptDraftDal = new Mock<IReceiptDraftDal>();
 
         private ReportManager CreateManager()
         {
@@ -29,7 +34,7 @@ namespace Garajim.Tests.Unit
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur());
         }
 
         [Fact]
@@ -65,7 +70,7 @@ namespace Garajim.Tests.Unit
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur());
             await manager.GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 5, 1), new DateTime(2026, 5, 1));
 
             Assert.Equal(new DateTime(2026, 5, 1, 23, 59, 59), kullanilanBitis, TimeSpan.FromSeconds(1));

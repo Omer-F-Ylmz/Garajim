@@ -40,6 +40,15 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            var result = await _reportService.GetDashboardAsync(CurrentUserId);
+            if (!result.Success)
+                return BadRequest(result);
+            return Ok(result);
+        }
+
         [HttpGet("filo-maliyet")]
         public async Task<IActionResult> GetFiloMaliyet([FromQuery] DateTime baslangic, [FromQuery] DateTime bitis)
         {

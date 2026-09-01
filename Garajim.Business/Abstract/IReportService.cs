@@ -10,5 +10,6 @@ namespace Garajim.Business.Abstract
         Task<IDataResult<FuelStatsDto>> GetFuelStatsAsync(int userId, int vehicleId);
         Task<IDataResult<AracMaliyetDto>> GetAracMaliyetAsync(int userId, int vehicleId, DateTime baslangic, DateTime bitis);
         Task<IDataResult<FiloMaliyetDto>> GetFiloMaliyetAsync(int userId, DateTime baslangic, DateTime bitis);
+        Task<IDataResult<DashboardDto>> GetDashboardAsync(int userId);
     }
 }

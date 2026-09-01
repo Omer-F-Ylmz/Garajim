@@ -19,6 +19,11 @@ namespace Garajim.Tests.Unit
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
+        private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
+        private readonly Mock<IEvrakDal> _evrakDal = new Mock<IEvrakDal>();
+        private readonly Mock<IReminderDal> _reminderDal = new Mock<IReminderDal>();
+        private readonly Mock<IVehicleAssignmentDal> _assignmentDal = new Mock<IVehicleAssignmentDal>();
+        private readonly Mock<IReceiptDraftDal> _receiptDraftDal = new Mock<IReceiptDraftDal>();
 
         private ReportManager CreateManager(params FuelRecord[] kayitlar)
         {
@@ -29,7 +34,7 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync((Expression<Func<FuelRecord, bool>> predicate) =>
                     kayitlar.Where(predicate.Compile()).ToList());
 
-            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur());
         }
 
         private static FuelRecord Kayit(int km, decimal litre, decimal tutar)
@@ -110,7 +115,7 @@ namespace Garajim.Tests.Unit
         public async Task GetFuelStatsAsync_BaskaKullanicininAraciIcinHataDoner()
         {
             _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
-            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur());
 
             var result = await manager.GetFuelStatsAsync(UserId, VehicleId);
 
