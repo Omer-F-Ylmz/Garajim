@@ -44,7 +44,7 @@ namespace Garajim.Dal.Concrete
                 .AsNoTracking()
                 .Where(f => f.VehicleId == vehicleId && f.Km > 0 && f.Date >= start && f.Date <= end)
                 .OrderBy(f => f.Km).ThenBy(f => f.Id)
-                .Select(f => new YakitOlcumDto { Tarih = f.Date, Km = f.Km, Litre = f.Liters })
+                .Select(f => new YakitOlcumDto { Tarih = f.Date, Km = f.Km, Litre = f.Liters, Kwh = f.Kwh ?? 0m })
                 .ToListAsync();
         }
 

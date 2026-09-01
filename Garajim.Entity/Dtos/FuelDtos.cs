@@ -1,3 +1,5 @@
+using Garajim.Entity.Enums;
+
 namespace Garajim.Entity.Dtos
 {
     public class FuelCreateDto
@@ -7,6 +9,8 @@ namespace Garajim.Entity.Dtos
         public decimal Liters { get; set; }
         public decimal TotalCost { get; set; }
         public int Km { get; set; }
+        public decimal? Kwh { get; set; }
+        public SarjTuru? SarjTuru { get; set; }
     }
 
     public class FuelDto
@@ -17,5 +21,7 @@ namespace Garajim.Entity.Dtos
         public decimal Liters { get; set; }
         public decimal TotalCost { get; set; }
         public int Km { get; set; }
+        public decimal? Kwh { get; set; }
+        public string SarjTuru { get; set; }
     }
 }

@@ -136,6 +136,7 @@ namespace Garajim.Business.Concrete
                 ToplamBakim = bakimAylik.Sum(a => a.Total),
                 ToplamMasraf = masrafAylik.Sum(a => a.Total),
                 YakitKaydiSayisi = olcumler.Count,
+                ToplamKwh = olcumler.Sum(o => o.Kwh),
                 AylikSeri = AylikSeri(bitis.Date, yakitAylik, bakimAylik, masrafAylik)
             };
 
@@ -151,7 +152,17 @@ namespace Garajim.Business.Concrete
                 maliyet.MaliyetKmBasi = Math.Round(maliyet.ToplamMaliyet / maliyet.MesafeKm, 2);
 
                 var tuketilenLitre = olcumler.Skip(1).Sum(o => o.Litre);
-                maliyet.Litre100Km = Math.Round(tuketilenLitre / maliyet.MesafeKm * 100, 2);
+                if (tuketilenLitre > 0)
+                {
+                    maliyet.Litre100Km = Math.Round(tuketilenLitre / maliyet.MesafeKm * 100, 2);
+                }
+
+                var tuketilenKwh = olcumler.Skip(1).Sum(o => o.Kwh);
+                if (tuketilenKwh > 0)
+                {
+                    maliyet.Kwh100Km = Math.Round(tuketilenKwh / maliyet.MesafeKm * 100, 2);
+                }
+
                 maliyet.TuketimSeri = TuketimSeri(olcumler);
             }
 
@@ -336,6 +347,7 @@ namespace Garajim.Business.Concrete
         {
             var mesafeler = new Dictionary<(int Yil, int Ay), int>();
             var litreler = new Dictionary<(int Yil, int Ay), decimal>();
+            var kwhler = new Dictionary<(int Yil, int Ay), decimal>();
 
             for (var i = 1; i < olcumler.Count; i++)
             {
@@ -350,6 +362,8 @@ namespace Garajim.Business.Concrete
                 mesafeler[anahtar] = mesafe + fark;
                 litreler.TryGetValue(anahtar, out var litre);
                 litreler[anahtar] = litre + olcumler[i].Litre;
+                kwhler.TryGetValue(anahtar, out var kwh);
+                kwhler[anahtar] = kwh + olcumler[i].Kwh;
             }
 
             return mesafeler
@@ -358,7 +372,8 @@ namespace Garajim.Business.Concrete
                 {
                     Yil = m.Key.Yil,
                     Ay = m.Key.Ay,
-                    Litre100Km = Math.Round(litreler[m.Key] / m.Value * 100, 2)
+                    Litre100Km = Math.Round(litreler[m.Key] / m.Value * 100, 2),
+                    Kwh100Km = Math.Round(kwhler[m.Key] / m.Value * 100, 2)
                 })
                 .OrderBy(t => t.Yil).ThenBy(t => t.Ay)
                 .ToList();

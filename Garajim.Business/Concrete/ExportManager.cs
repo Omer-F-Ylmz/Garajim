@@ -70,7 +70,7 @@ namespace Garajim.Business.Concrete
 
             if (secilen == "yakit")
             {
-                sb.AppendLine("Plaka;Tarih;Kilometre;Litre;BirimFiyat;Tutar");
+                sb.AppendLine("Plaka;Tarih;Kilometre;Litre;BirimFiyat;Tutar;Kwh;SarjTuru");
                 var kayitlar = idler.Count == 0
                     ? new List<FuelRecord>()
                     : await _fuelDal.GetListAsync(f => idler.Contains(f.VehicleId) && f.Date >= bas && f.Date <= son);
@@ -79,7 +79,9 @@ namespace Garajim.Business.Concrete
                 {
                     var birim = kayit.Liters > 0 ? Math.Round(kayit.TotalCost / kayit.Liters, 2) : 0m;
                     sb.AppendLine(Satir(Plaka(plakalar, kayit.VehicleId), Tarih(kayit.Date), kayit.Km.ToString(CultureInfo.InvariantCulture),
-                        Sayi(kayit.Liters), Sayi(birim), Sayi(kayit.TotalCost)));
+                        Sayi(kayit.Liters), Sayi(birim), Sayi(kayit.TotalCost),
+                        kayit.Kwh == null ? string.Empty : Sayi(kayit.Kwh.Value),
+                        kayit.SarjTuru?.ToString()));
                     satirSayisi++;
                 }
             }

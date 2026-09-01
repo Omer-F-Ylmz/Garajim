@@ -15,6 +15,7 @@ namespace Garajim.Entity.Dtos
         public int Yil { get; set; }
         public int Ay { get; set; }
         public decimal Litre100Km { get; set; }
+        public decimal Kwh100Km { get; set; }
     }
 
     public class AracMaliyetDto
@@ -31,6 +32,8 @@ namespace Garajim.Entity.Dtos
         public int YakitKaydiSayisi { get; set; }
         public decimal? MaliyetKmBasi { get; set; }
         public decimal? Litre100Km { get; set; }
+        public decimal ToplamKwh { get; set; }
+        public decimal? Kwh100Km { get; set; }
         public List<MaliyetAyDto> AylikSeri { get; set; } = new List<MaliyetAyDto>();
         public List<TuketimAyDto> TuketimSeri { get; set; } = new List<TuketimAyDto>();
     }
@@ -81,5 +84,6 @@ namespace Garajim.Entity.Dtos
         public DateTime Tarih { get; set; }
         public int Km { get; set; }
         public decimal Litre { get; set; }
+        public decimal Kwh { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using Garajim.Core.Entities;
+using Garajim.Entity.Enums;
 
 namespace Garajim.Entity.Concrete
 {
@@ -11,5 +12,7 @@ namespace Garajim.Entity.Concrete
         public decimal Liters { get; set; }
         public decimal TotalCost { get; set; }
         public int Km { get; set; }
+        public decimal? Kwh { get; set; }
+        public SarjTuru? SarjTuru { get; set; }
     }
 }

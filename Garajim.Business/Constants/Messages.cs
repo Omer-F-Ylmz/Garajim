@@ -82,6 +82,10 @@ namespace Garajim.Business.Constants
         public const string ImportBozukDosya = "Dosya okunamadı; sütun ayracı bulunamadı.";
         public const string ImportEksikEslesme = "Zorunlu sütunların tümü eşlenmeli.";
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
+        public const string ElektrikliAracaYakit = "Elektrikli araçta litre girilemez; şarj miktarını kWh olarak girin.";
+        public const string SarjMiktariGerekli = "Şarj miktarı (kWh) zorunludur.";
+        public const string YakitliAracaSarj = "Bu araç elektrikli değil; kWh girilemez.";
+
         public const string YolculukEklendi = "Yolculuk kaydı eklendi.";
         public const string YolculukGuncellendi = "Yolculuk kaydı güncellendi.";
         public const string YolculukSilindi = "Yolculuk kaydı silindi.";
