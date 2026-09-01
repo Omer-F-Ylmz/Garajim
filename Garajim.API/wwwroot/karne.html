@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Araç Karnesi — Garajım</title>
+    <link rel="icon" type="image/svg+xml" href="garajim-logo.svg">
+    <meta name="theme-color" content="#ff7a1a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="karne.css">
+</head>
+<body>
+    <main id="karne" class="karne">
+        <header class="karne-head">
+            <div class="brand">
+                <span class="brand-mark"></span>
+                <span class="brand-name">Garajım</span>
+            </div>
+            <button id="yazdir" class="ghost" type="button">Yazdır</button>
+        </header>
+
+        <p id="durum" class="durum">Karne yükleniyor…</p>
+
+        <section id="icerik" class="hidden">
+            <h1 id="arac-baslik"></h1>
+            <dl id="arac-bilgi" class="bilgi"></dl>
+
+            <section id="bakim-bolumu" class="bolum hidden">
+                <h2>Bakım geçmişi</h2>
+                <div class="tablo-sar">
+                    <table>
+                        <thead><tr><th>Tarih</th><th>İşlem</th><th>Km</th><th>Servis</th><th id="bakim-tutar-baslik">Tutar</th></tr></thead>
+                        <tbody id="bakim-satirlari"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="parca-bolumu" class="bolum hidden">
+                <h2>Parça hafızası</h2>
+                <div class="tablo-sar">
+                    <table>
+                        <thead><tr><th>Parça</th><th>Son değişim</th><th>Adet</th></tr></thead>
+                        <tbody id="parca-satirlari"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="yakit-bolumu" class="bolum hidden">
+                <h2>Yakıt özeti</h2>
+                <dl id="yakit-bilgi" class="bilgi"></dl>
+            </section>
+
+            <section id="belge-bolumu" class="bolum hidden">
+                <h2>Belgeler</h2>
+                <ul id="belge-listesi" class="belgeler"></ul>
+            </section>
+        </section>
+
+        <footer class="karne-alt">
+            <p>Bu karne Garajım ile tutuldu — <a id="cta" href="/">kendi aracın için ücretsiz başla</a></p>
+        </footer>
+    </main>
+
+    <script src="karne.js"></script>
+</body>
+</html>

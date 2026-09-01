@@ -296,6 +296,7 @@
     function applyRole() {
         el("add-vehicle-btn").classList.toggle("hidden", !canManage());
         el("team-btn").classList.toggle("hidden", !isOwner());
+        el("karne-btn").classList.toggle("hidden", !canManage());
 
         var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
         if (zimmetTab) {
@@ -306,6 +307,9 @@
         }
         if (!isOwner()) {
             el("team-box").classList.add("hidden");
+        }
+        if (!canManage()) {
+            el("karne-box").classList.add("hidden");
         }
     }
 
@@ -1306,6 +1310,98 @@
         });
     }
 
+    function karneKapsamiOku() {
+        return {
+            bakimGecmisi: el("karne-bakim").checked,
+            parcaHafizasi: el("karne-parca").checked,
+            yakitOzeti: el("karne-yakit").checked,
+            belgeler: el("karne-belge").checked,
+            plakaGoster: el("karne-plaka").checked,
+            tutarGoster: el("karne-tutar").checked
+        };
+    }
+
+    function karneSonucGoster(veri) {
+        el("karne-sonuc").classList.remove("hidden");
+        el("karne-url").textContent = veri.url;
+        el("karne-goruntulenme").textContent = "Görüntülenme: " + (veri.goruntulenmeSayisi || 0);
+
+        try {
+            window.GarajimQR.canvasaCiz(el("karne-qr"), veri.url, 4, 2);
+        } catch (hata) {
+            el("karne-qr").classList.add("hidden");
+        }
+    }
+
+    function bindKarne() {
+        el("karne-btn").addEventListener("click", function () {
+            var kutu = el("karne-box");
+            var acilacak = kutu.classList.contains("hidden");
+            kutu.classList.toggle("hidden", !acilacak);
+            if (acilacak) {
+                el("karne-sonuc").classList.add("hidden");
+            }
+        });
+
+        el("karne-close").addEventListener("click", function () {
+            el("karne-box").classList.add("hidden");
+        });
+
+        el("karne-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            if (!state.selectedVehicleId) {
+                showMessage(el("app-message"), "Önce bir araç seçin.");
+                return;
+            }
+
+            var sure = el("karne-sure").value;
+
+            api("/api/Vehicles/" + state.selectedVehicleId + "/karne", {
+                method: "POST",
+                body: {
+                    kapsam: karneKapsamiOku(),
+                    sonKullanmaGun: sure ? Number(sure) : null
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Bağlantı oluşturuldu.", true);
+                karneSonucGoster(result.data);
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("karne-kapat").addEventListener("click", function () {
+            clearMessages();
+            if (!state.selectedVehicleId) {
+                return;
+            }
+
+            api("/api/Vehicles/" + state.selectedVehicleId + "/karne", { method: "DELETE" })
+                .then(function (result) {
+                    showMessage(el("app-message"), (result && result.message) || "Paylaşım kapatıldı.", true);
+                    el("karne-sonuc").classList.add("hidden");
+                })
+                .catch(function (error) {
+                    handleError(el("app-message"), error);
+                });
+        });
+
+        el("karne-kopyala").addEventListener("click", function () {
+            var metin = el("karne-url").textContent;
+            if (!metin) {
+                return;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(metin).then(function () {
+                    showMessage(el("app-message"), "Bağlantı kopyalandı.", true);
+                });
+            }
+        });
+    }
+
     function bulkUploadOne(dosya, otoOnay) {
         var form = new FormData();
         form.append("file", dosya);
@@ -1754,6 +1850,7 @@
         bindReceipts();
         bindBulkUpload();
         bindParts();
+        bindKarne();
 
         if (readSession()) {
             enterApp();

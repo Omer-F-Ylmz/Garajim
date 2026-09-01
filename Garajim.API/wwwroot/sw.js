@@ -46,6 +46,11 @@ self.addEventListener("fetch", function (event) {
         return;
     }
 
+    if (url.pathname.indexOf("/karne") === 0) {
+        event.respondWith(fetch(istek));
+        return;
+    }
+
     event.respondWith(
         fetch(istek).then(function (cevap) {
             if (cevap && cevap.status === 200 && cevap.type === "basic") {

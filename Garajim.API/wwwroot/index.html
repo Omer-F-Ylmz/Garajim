@@ -65,6 +65,7 @@
                 <button id="receipt-btn" class="primary compact" type="button">Fiş Yükle <span id="receipt-badge" class="badge-count hidden"></span></button>
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
                 <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
+                <button id="karne-btn" class="ghost hidden" type="button">Karne paylaş</button>
                 <span id="user-label" class="user-label"></span>
                 <button id="logout-btn" class="ghost" type="button">Çıkış</button>
             </div>
@@ -149,6 +150,37 @@
 
             <h3 id="receipt-pending-title" class="hidden">Bekleyen fişler</h3>
             <ul id="receipt-pending" class="upcoming"></ul>
+        </section>
+
+        <section id="karne-box" class="panel hidden">
+            <h2>Karne paylaş</h2>
+            <p class="hint">Aracın belgeli geçmişini bağlantıyla paylaşın; hangi bölümlerin görüneceğini siz seçin.</p>
+            <form id="karne-form" class="grid-form">
+                <div class="parts-cell">
+                    <label>Kapsam</label>
+                    <label class="switch-label"><input id="karne-bakim" type="checkbox" checked> Bakım geçmişi</label>
+                    <label class="switch-label"><input id="karne-parca" type="checkbox" checked> Parça hafızası</label>
+                    <label class="switch-label"><input id="karne-yakit" type="checkbox"> Yakıt özeti</label>
+                    <label class="switch-label"><input id="karne-belge" type="checkbox"> Belgeler</label>
+                    <label class="switch-label"><input id="karne-plaka" type="checkbox"> Plakayı göster</label>
+                    <label class="switch-label"><input id="karne-tutar" type="checkbox"> Tutarları göster</label>
+                </div>
+                <div>
+                    <label for="karne-sure">Süre (gün)</label>
+                    <input id="karne-sure" type="number" min="1" placeholder="Süresiz">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Bağlantı oluştur</button>
+                    <button id="karne-kapat" type="button" class="ghost">Paylaşımı kapat</button>
+                    <button id="karne-close" type="button" class="ghost">Kapat</button>
+                </div>
+            </form>
+            <div id="karne-sonuc" class="panel-inline hidden">
+                <p id="karne-url" class="karne-url"></p>
+                <div class="karne-qr-sar"><canvas id="karne-qr"></canvas></div>
+                <button id="karne-kopyala" type="button" class="ghost">Kopyala</button>
+                <p id="karne-goruntulenme" class="hint"></p>
+            </div>
         </section>
 
         <section id="team-box" class="panel hidden">
@@ -518,6 +550,7 @@
     </div>
 
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="vendor/qr.js"></script>
     <script defer src="app.js"></script>
 </body>
 </html>

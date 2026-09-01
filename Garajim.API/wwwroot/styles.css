@@ -653,3 +653,23 @@ button.compact {
     color: var(--danger);
     font-weight: 600;
 }
+
+.karne-url {
+    word-break: break-all;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.karne-qr-sar {
+    margin: 10px 0;
+}
+
+#karne-qr {
+    max-width: 200px;
+    height: auto;
+    border-radius: 6px;
+}
