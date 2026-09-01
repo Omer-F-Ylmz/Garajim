@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
+using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -18,6 +19,7 @@ namespace Garajim.Tests.Unit
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
         private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
+        private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
         private readonly Mock<IReminderDal> _reminderDal = new Mock<IReminderDal>();
@@ -28,6 +30,8 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync(new Vehicle { Id = VehicleId, UserId = UserId, Plate = "34ABC123", Brand = "Renault", Model = "Clio", Year = 2018, CurrentKm = 100000 });
             _vehicleDal.Setup(d => d.AnyAsync(It.IsAny<Expression<Func<Vehicle, bool>>>())).ReturnsAsync(false);
             _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>())).ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
+            _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
+                .ReturnsAsync(new Company { Id = 42, Name = "Test", PlanType = PlanType.Bireysel });
             _vehicleDal.Setup(d => d.AddAsync(It.IsAny<Vehicle>())).Returns(Task.CompletedTask);
             _vehicleDal.Setup(d => d.UpdateAsync(It.IsAny<Vehicle>())).Returns(Task.CompletedTask);
             _maintenanceDal.Setup(d => d.AddAsync(It.IsAny<MaintenanceRecord>())).Returns(Task.CompletedTask);
@@ -38,7 +42,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleAdd_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
 
             var result = await manager.AddAsync(UserId, new VehicleCreateDto
             {
@@ -58,7 +62,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleUpdate_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
 
             var result = await manager.UpdateAsync(UserId, VehicleId, new VehicleUpdateDto
             {
@@ -131,7 +135,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task TanimliEnumDegerleriKabulEdilmeyeDevamEder()
         {
-            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
+            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
             var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
             var expenseManager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
             var reminderManager = new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);

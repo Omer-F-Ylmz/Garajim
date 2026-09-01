@@ -117,7 +117,11 @@ namespace Garajim.API.Controllers
         {
             var result = await _vehicleService.AddAsync(CurrentUserId, dto);
             if (!result.Success)
+            {
+                if (result.Message == Messages.AracLimitiAsildi)
+                    return StatusCode(StatusCodes.Status402PaymentRequired, result);
                 return BadRequest(result);
+            }
             return Ok(result);
         }
 

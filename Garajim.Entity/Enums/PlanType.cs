@@ -2,6 +2,7 @@ namespace Garajim.Entity.Enums
 {
     public enum PlanType
     {
-        Standart = 1
+        Bireysel = 1,
+        Filo = 2
     }
 }

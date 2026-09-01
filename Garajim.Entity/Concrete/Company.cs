@@ -8,6 +8,7 @@ namespace Garajim.Entity.Concrete
         public int Id { get; set; }
         public string Name { get; set; }
         public PlanType PlanType { get; set; }
+        public int? AracLimiti { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

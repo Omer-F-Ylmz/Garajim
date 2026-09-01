@@ -1,5 +1,7 @@
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
+using Garajim.Business.Concrete.Planlar;
+using Microsoft.Extensions.Configuration;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
 using Garajim.Entity.Concrete;
@@ -31,6 +33,7 @@ namespace Garajim.Tests.Integration
             Tenant.SetCompany(VarsayilanSirket.Id);
 
             CompanyDal = new EfCompanyDal(Context);
+            PlanKurallari = new PlanKurallari(new ConfigurationBuilder().Build());
             UserDal = new EfUserDal(Context);
             VehicleDal = new EfVehicleDal(Context);
             MaintenanceDal = new EfMaintenanceDal(Context);
@@ -53,6 +56,8 @@ namespace Garajim.Tests.Integration
         public int CompanyId => VarsayilanSirket.Id;
 
         public EfCompanyDal CompanyDal { get; }
+
+        public PlanKurallari PlanKurallari { get; }
 
         public EfUserDal UserDal { get; }
 
@@ -81,7 +86,7 @@ namespace Garajim.Tests.Integration
             var company = new Company
             {
                 Name = ad,
-                PlanType = PlanType.Standart,
+                PlanType = PlanType.Bireysel,
                 CreatedAt = new DateTime(2026, 1, 1)
             };
 

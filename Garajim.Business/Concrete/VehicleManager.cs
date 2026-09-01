@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
@@ -13,12 +14,16 @@ namespace Garajim.Business.Concrete
         private readonly IVehicleDal _vehicleDal;
         private readonly IUserDal _userDal;
         private readonly IVehicleAccessService _vehicleAccess;
+        private readonly ICompanyDal _companyDal;
+        private readonly PlanKurallari _planKurallari;
 
-        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess)
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari)
         {
             _vehicleDal = vehicleDal;
             _userDal = userDal;
             _vehicleAccess = vehicleAccess;
+            _companyDal = companyDal;
+            _planKurallari = planKurallari;
         }
 
         public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId)
@@ -48,6 +53,12 @@ namespace Garajim.Business.Concrete
             var owner = await _userDal.GetAsync(u => u.Id == userId);
             if (owner == null)
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
+            var sirket = await _companyDal.GetAsync(c => c.Id == owner.CompanyId);
+            if (sirket == null)
+                return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
+            var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti);
+            if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId) >= limit)
+                return new ErrorDataResult<VehicleDto>(Messages.AracLimitiAsildi);
             var vehicle = new Vehicle
             {
                 CompanyId = owner.CompanyId,

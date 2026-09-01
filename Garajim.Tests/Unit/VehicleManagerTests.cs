@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
+using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -17,12 +18,15 @@ namespace Garajim.Tests.Unit
         private readonly Mock<IVehicleDal> _vehicleDal = new Mock<IVehicleDal>();
         private readonly Mock<IVehicleAccessService> _vehicleAccess = new Mock<IVehicleAccessService>();
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
+        private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
 
         private VehicleManager CreateManager()
         {
             _userDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<AppUser, bool>>>()))
                 .ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
-            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
+            _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
+                .ReturnsAsync(new Company { Id = 42, Name = "Test", PlanType = PlanType.Bireysel });
+            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
         }
 
         private static VehicleCreateDto ValidDto()

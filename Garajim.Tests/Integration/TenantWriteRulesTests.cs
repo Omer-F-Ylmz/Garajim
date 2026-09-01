@@ -41,7 +41,7 @@ namespace Garajim.Tests.Integration
 
             Assert.True(sonuc.Success);
             Assert.Equal("Ayşe Yılmaz", sirket.Name);
-            Assert.Equal(PlanType.Standart, sirket.PlanType);
+            Assert.Equal(PlanType.Bireysel, sirket.PlanType);
             Assert.True(kullanici.CompanyId > 0);
         }
 
@@ -63,7 +63,7 @@ namespace Garajim.Tests.Integration
         public async Task AracEklerken_KullanicininSirketiDevralinir()
         {
             var kullanici = _db.KullaniciEkle("surucu@garajim.local");
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
 
             var sonuc = await manager.AddAsync(kullanici.Id, new VehicleCreateDto
             {

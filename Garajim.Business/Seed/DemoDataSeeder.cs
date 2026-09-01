@@ -62,7 +62,7 @@ namespace Garajim.Business.Seed
                 company = new Company
                 {
                     Name = DemoCompanyName,
-                    PlanType = PlanType.Standart,
+                    PlanType = PlanType.Bireysel,
                     CreatedAt = DateTime.UtcNow
                 };
                 await _companyDal.AddAsync(company);

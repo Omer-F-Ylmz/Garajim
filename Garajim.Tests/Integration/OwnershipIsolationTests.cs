@@ -69,7 +69,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleManager_BaskaKullanicininAracinaErisemez()
         {
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
 
             var getir = await manager.GetByIdAsync(_kullaniciB, _aracA.Id);
             var listele = await manager.GetAllAsync(_kullaniciB);
@@ -200,7 +200,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task Sahibi_KendiKayitlarinaErisebilir()
         {
-            var vehicleManager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var vehicleManager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
             var maintenanceManager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork);
             var reminderManager = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
 

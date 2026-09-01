@@ -82,6 +82,8 @@ namespace Garajim.Business.Constants
         public const string ImportBozukDosya = "Dosya okunamadı; sütun ayracı bulunamadı.";
         public const string ImportEksikEslesme = "Zorunlu sütunların tümü eşlenmeli.";
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
+        public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin veya bir aracı silin.";
+
         public const string ImportTamamlandi = "İçe aktarma tamamlandı.";
     }
 }

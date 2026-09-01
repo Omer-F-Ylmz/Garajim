@@ -37,7 +37,7 @@ namespace Garajim.Business.Concrete
             var company = new Company
             {
                 Name = companyName.Length > 150 ? companyName.Substring(0, 150) : companyName,
-                PlanType = PlanType.Standart,
+                PlanType = PlanType.Bireysel,
                 CreatedAt = DateTime.UtcNow
             };
             await _companyDal.AddAsync(company);

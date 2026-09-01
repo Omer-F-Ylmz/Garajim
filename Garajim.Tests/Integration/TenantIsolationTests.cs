@@ -129,7 +129,7 @@ namespace Garajim.Tests.Integration
         public async Task BaskaSirketinAraciIdIleIstenirseBulunamaz()
         {
             _db.Tenant.SetCompany(_sirketA.Id);
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
 
             var sonuc = await manager.GetByIdAsync(_kullaniciA.Id, _aracB.Id);
 
@@ -141,7 +141,7 @@ namespace Garajim.Tests.Integration
         public async Task BaskaSirketinAraciSilinemez()
         {
             _db.Tenant.SetCompany(_sirketA.Id);
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
 
             var sonuc = await manager.DeleteAsync(_kullaniciA.Id, _aracB.Id);
 

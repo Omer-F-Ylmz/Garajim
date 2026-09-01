@@ -29,7 +29,7 @@ namespace Garajim.Tests.Integration
             var sirket = new Company
             {
                 Name = DemoDataSeeder.DemoCompanyName,
-                PlanType = PlanType.Standart,
+                PlanType = PlanType.Bireysel,
                 CreatedAt = new DateTime(2026, 1, 1)
             };
             _db.Context.Companies.Add(sirket);
