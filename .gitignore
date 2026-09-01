@@ -35,3 +35,7 @@ publish/
 *.log
 Thumbs.db
 .DS_Store
+
+## Kalibrasyon ciktilari (repoya girmez)
+kalibrasyon-*.md
+cevap-anahtari.csv

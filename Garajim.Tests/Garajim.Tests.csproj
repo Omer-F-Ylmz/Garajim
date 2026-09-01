@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Garajim.Dal\Garajim.Dal.csproj" />
     <ProjectReference Include="..\Garajim.API\Garajim.API.csproj" />
     <ProjectReference Include="..\Garajim.ML\Garajim.ML.csproj" />
+    <ProjectReference Include="..\tools\Garajim.Calibration\Garajim.Calibration.csproj" />
   </ItemGroup>
 
 </Project>
