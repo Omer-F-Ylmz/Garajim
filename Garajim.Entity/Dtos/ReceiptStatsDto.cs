@@ -6,6 +6,7 @@ namespace Garajim.Entity.Dtos
         public int Onaylanan { get; set; }
         public int Reddedilen { get; set; }
         public int Bekleyen { get; set; }
+        public int OtoOnaylanan { get; set; }
         public double OnayOrani { get; set; }
         public double RedOrani { get; set; }
         public double OrtalamaGuven { get; set; }

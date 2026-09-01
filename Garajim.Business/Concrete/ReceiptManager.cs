@@ -87,26 +87,26 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<ReceiptDraftDto>(MapToDto(draft));
         }
 
-        public async Task<IDataResult<ReceiptDraftDto>> UploadAsync(int userId, ReceiptUploadDto dto)
+        public async Task<IDataResult<ReceiptUploadResultDto>> UploadAsync(int userId, ReceiptUploadDto dto, bool otoOnay)
         {
             var orijinalAd = DocumentContentValidator.GuvenliAd(dto.FileName);
             var icerik = dto.Content ?? Array.Empty<byte>();
 
             var hata = DocumentContentValidator.Dogrula(orijinalAd, icerik, DosyaSiniri());
             if (hata != null)
-                return new ErrorDataResult<ReceiptDraftDto>(hata);
+                return new ErrorDataResult<ReceiptUploadResultDto>(hata);
 
             var mevcutToplam = await _documentDal.GetCompanyTotalSizeAsync();
             if (mevcutToplam + icerik.LongLength > Kota())
-                return new ErrorDataResult<ReceiptDraftDto>(Messages.DocumentQuotaExceeded);
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.DocumentQuotaExceeded);
 
             var ayBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
             if (await _draftDal.GetMonthlyCountAsync(ayBasi) >= AylikLimit())
-                return new ErrorDataResult<ReceiptDraftDto>(Messages.ReceiptMonthlyLimitExceeded);
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.ReceiptMonthlyLimitExceeded);
 
             var user = await _userDal.GetAsync(u => u.Id == userId);
             if (user == null)
-                return new ErrorDataResult<ReceiptDraftDto>(Messages.UserNotFound);
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.UserNotFound);
 
             var uzanti = Path.GetExtension(orijinalAd).ToLowerInvariant();
             var icerikTipi = DocumentContentValidator.IcerikTipi(uzanti);
@@ -154,10 +154,76 @@ namespace Garajim.Business.Concrete
                 OlusturmaTarihi = DateTime.UtcNow
             };
 
-            draft.VehicleId = await OnerilenAracAsync(userId, sonuc.Plaka);
+            var onerilenArac = await OnerilenAracAsync(userId, sonuc.Plaka);
+            draft.VehicleId = onerilenArac?.Id;
 
+            if (!otoOnay)
+            {
+                await _draftDal.AddAsync(draft);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), Messages.ReceiptUploaded);
+            }
+
+            draft.AtlamaNedeni = OtoOnayEngeli(draft, sonuc, onerilenArac);
+            if (draft.AtlamaNedeni != null)
+            {
+                await _draftDal.AddAsync(draft);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), Messages.ReceiptUploaded);
+            }
+
+            var onayDto = new ReceiptConfirmDto
+            {
+                VehicleId = onerilenArac.Id,
+                Tur = draft.TahminiTur,
+                Tarih = draft.Tarih.Value,
+                Tutar = draft.ToplamTutar.Value,
+                Km = draft.Km,
+                Litre = draft.Litre,
+                BirimFiyat = draft.BirimFiyat
+            };
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            draft.Durum = ReceiptDraftStatus.Onaylandi;
+            draft.OtoOnaylandi = true;
+            draft.DuzeltilenAlanlar = null;
             await _draftDal.AddAsync(draft);
-            return new SuccessDataResult<ReceiptDraftDto>(MapToDto(draft), Messages.ReceiptUploaded);
+
+            var olusturulan = await KayitVeBelgeOlusturAsync(userId, draft, onerilenArac, onayDto);
+
+            await _unitOfWork.CommitAsync();
+
+            return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, olusturulan), Messages.ReceiptAutoConfirmed);
+        }
+
+        private string OtoOnayEngeli(ReceiptDraft draft, ReceiptExtractionResult sonuc, Vehicle arac)
+        {
+            if (sonuc.GuvenSkoru < OtoOnayGuven())
+                return "Okuma güveni otomatik onay eşiğinin altında.";
+
+            var eksikler = new List<string>();
+            if (draft.Tarih == null) eksikler.Add("tarih");
+            if (draft.ToplamTutar == null) eksikler.Add("tutar");
+            if (draft.TahminiTur == ReceiptType.Bilinmiyor) eksikler.Add("tür");
+
+            if (eksikler.Count > 0)
+                return "Fişten okunamayan alan var: " + string.Join(", ", eksikler) + ".";
+
+            if (arac == null)
+                return "Fişteki plaka eşleşen bir araca bağlanamadı.";
+
+            return null;
+        }
+
+        private static ReceiptUploadResultDto Sonuc(ReceiptDraft draft, OlusturulanKayitDto olusturulan)
+        {
+            return new ReceiptUploadResultDto
+            {
+                TaslakId = draft.Id,
+                Durum = draft.Durum.ToString(),
+                AtlamaNedeni = draft.AtlamaNedeni,
+                OlusturulanKayit = olusturulan,
+                Taslak = MapToDto(draft)
+            };
         }
 
         public async Task<IDataResult<ReceiptDraftDto>> ConfirmAsync(int userId, int id, ReceiptConfirmDto dto)
@@ -180,61 +246,7 @@ namespace Garajim.Business.Concrete
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            int? maintenanceRecordId = null;
-
-            if (dto.Tur == ReceiptType.Yakit)
-            {
-                await _fuelDal.AddAsync(new FuelRecord
-                {
-                    CompanyId = vehicle.CompanyId,
-                    VehicleId = vehicle.Id,
-                    Date = dto.Tarih.Date,
-                    Liters = dto.Litre ?? 0m,
-                    TotalCost = dto.Tutar,
-                    Km = dto.Km ?? vehicle.CurrentKm
-                });
-            }
-            else if (dto.Tur == ReceiptType.Bakim)
-            {
-                var record = new MaintenanceRecord
-                {
-                    CompanyId = vehicle.CompanyId,
-                    VehicleId = vehicle.Id,
-                    Type = dto.BakimTuru ?? MaintenanceType.Diger,
-                    Date = dto.Tarih.Date,
-                    Km = dto.Km ?? vehicle.CurrentKm,
-                    Cost = dto.Tutar,
-                    ServiceName = dto.ServisAdi,
-                    Note = dto.Not
-                };
-                await _maintenanceDal.AddAsync(record);
-                maintenanceRecordId = record.Id;
-            }
-            else
-            {
-                await _expenseDal.AddAsync(new ExpenseRecord
-                {
-                    CompanyId = vehicle.CompanyId,
-                    VehicleId = vehicle.Id,
-                    Category = dto.MasrafKategorisi ?? ExpenseCategory.Diger,
-                    Date = dto.Tarih.Date,
-                    Amount = dto.Tutar,
-                    Note = dto.Not
-                });
-            }
-
-            await _documentDal.AddAsync(new Document
-            {
-                CompanyId = vehicle.CompanyId,
-                VehicleId = vehicle.Id,
-                MaintenanceRecordId = maintenanceRecordId,
-                OriginalName = draft.OrijinalAd,
-                StoredName = draft.DosyaYolu,
-                SizeBytes = draft.BoyutBayt,
-                ContentType = draft.IcerikTipi,
-                UploadedByUserId = userId,
-                CreatedAt = DateTime.UtcNow
-            });
+            await KayitVeBelgeOlusturAsync(userId, draft, vehicle, dto);
 
             draft.Durum = ReceiptDraftStatus.Onaylandi;
             draft.VehicleId = vehicle.Id;
@@ -266,6 +278,73 @@ namespace Garajim.Business.Concrete
             return new SuccessResult(Messages.ReceiptRejected);
         }
 
+        private async Task<OlusturulanKayitDto> KayitVeBelgeOlusturAsync(int userId, ReceiptDraft draft, Vehicle vehicle, ReceiptConfirmDto dto)
+        {
+            int? maintenanceRecordId = null;
+            var olusturulan = new OlusturulanKayitDto { Tur = dto.Tur.ToString() };
+
+            if (dto.Tur == ReceiptType.Yakit)
+            {
+                var record = new FuelRecord
+                {
+                    CompanyId = vehicle.CompanyId,
+                    VehicleId = vehicle.Id,
+                    Date = dto.Tarih.Date,
+                    Liters = dto.Litre ?? 0m,
+                    TotalCost = dto.Tutar,
+                    Km = dto.Km ?? vehicle.CurrentKm
+                };
+                await _fuelDal.AddAsync(record);
+                olusturulan.Id = record.Id;
+            }
+            else if (dto.Tur == ReceiptType.Bakim)
+            {
+                var record = new MaintenanceRecord
+                {
+                    CompanyId = vehicle.CompanyId,
+                    VehicleId = vehicle.Id,
+                    Type = dto.BakimTuru ?? MaintenanceType.Diger,
+                    Date = dto.Tarih.Date,
+                    Km = dto.Km ?? vehicle.CurrentKm,
+                    Cost = dto.Tutar,
+                    ServiceName = dto.ServisAdi,
+                    Note = dto.Not
+                };
+                await _maintenanceDal.AddAsync(record);
+                maintenanceRecordId = record.Id;
+                olusturulan.Id = record.Id;
+            }
+            else
+            {
+                var record = new ExpenseRecord
+                {
+                    CompanyId = vehicle.CompanyId,
+                    VehicleId = vehicle.Id,
+                    Category = dto.MasrafKategorisi ?? ExpenseCategory.Diger,
+                    Date = dto.Tarih.Date,
+                    Amount = dto.Tutar,
+                    Note = dto.Not
+                };
+                await _expenseDal.AddAsync(record);
+                olusturulan.Id = record.Id;
+            }
+
+            await _documentDal.AddAsync(new Document
+            {
+                CompanyId = vehicle.CompanyId,
+                VehicleId = vehicle.Id,
+                MaintenanceRecordId = maintenanceRecordId,
+                OriginalName = draft.OrijinalAd,
+                StoredName = draft.DosyaYolu,
+                SizeBytes = draft.BoyutBayt,
+                ContentType = draft.IcerikTipi,
+                UploadedByUserId = userId,
+                CreatedAt = DateTime.UtcNow
+            });
+
+            return olusturulan;
+        }
+
         private static string DuzeltilenAlanlariBul(ReceiptDraft draft, ReceiptConfirmDto dto)
         {
             var degisenler = new List<string>();
@@ -294,7 +373,7 @@ namespace Garajim.Business.Concrete
             return string.Join(",", degisenler);
         }
 
-        private async Task<int?> OnerilenAracAsync(int userId, string plaka)
+        private async Task<Vehicle> OnerilenAracAsync(int userId, string plaka)
         {
             if (string.IsNullOrWhiteSpace(plaka))
             {
@@ -307,7 +386,7 @@ namespace Garajim.Business.Concrete
                 return null;
             }
 
-            return await _vehicleAccess.GetAccessibleAsync(userId, vehicle.Id) == null ? null : vehicle.Id;
+            return await _vehicleAccess.GetAccessibleAsync(userId, vehicle.Id);
         }
 
         private async Task<ReceiptDraft> ErisilebilirTaslakAsync(int userId, int id)
@@ -365,6 +444,8 @@ namespace Garajim.Business.Concrete
                 TahminiTur = draft.TahminiTur.ToString(),
                 GuvenSkoru = draft.GuvenSkoru,
                 DuzeltilenAlanlar = draft.DuzeltilenAlanlar,
+                OtoOnaylandi = draft.OtoOnaylandi,
+                AtlamaNedeni = draft.AtlamaNedeni,
                 OlusturmaTarihi = draft.OlusturmaTarihi
             };
         }
@@ -377,6 +458,7 @@ namespace Garajim.Business.Concrete
             {
                 ToplamCagri = drafts.Count,
                 Onaylanan = drafts.Count(d => d.Durum == ReceiptDraftStatus.Onaylandi),
+                OtoOnaylanan = drafts.Count(d => d.OtoOnaylandi),
                 Reddedilen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Reddedildi),
                 Bekleyen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Bekliyor)
             };
@@ -398,7 +480,7 @@ namespace Garajim.Business.Concrete
                 istatistik.AlanDoluluk["tur"] = Yuzde(drafts.Count(d => d.TahminiTur != ReceiptType.Bilinmiyor), drafts.Count);
             }
 
-            var onaylananlar = drafts.Where(d => d.Durum == ReceiptDraftStatus.Onaylandi).ToList();
+            var onaylananlar = drafts.Where(d => d.Durum == ReceiptDraftStatus.Onaylandi && !d.OtoOnaylandi).ToList();
             if (onaylananlar.Count > 0)
             {
                 foreach (var alan in new[] { "Tarih", "Tutar", "Km", "Litre", "BirimFiyat", "Tur", "Arac" })
@@ -431,6 +513,14 @@ namespace Garajim.Business.Concrete
             return string.Equals(_configuration["Receipts:Provider"], "OpenAI", StringComparison.OrdinalIgnoreCase)
                 ? "OpenAI"
                 : "Gemini";
+        }
+
+        private double OtoOnayGuven()
+        {
+            var deger = _configuration["Receipts:OtoOnayGuven"];
+            return double.TryParse(deger, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var sonuc) && sonuc > 0 && sonuc <= 1
+                ? sonuc
+                : 0.85;
         }
 
         private long DosyaSiniri()

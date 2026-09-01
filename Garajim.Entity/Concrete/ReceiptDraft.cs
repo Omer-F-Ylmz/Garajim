@@ -24,6 +24,8 @@ namespace Garajim.Entity.Concrete
         public ReceiptType TahminiTur { get; set; }
         public double GuvenSkoru { get; set; }
         public string DuzeltilenAlanlar { get; set; }
+        public bool OtoOnaylandi { get; set; }
+        public string AtlamaNedeni { get; set; }
         public string Saglayici { get; set; }
         public int SureMs { get; set; }
         public DateTime OlusturmaTarihi { get; set; }

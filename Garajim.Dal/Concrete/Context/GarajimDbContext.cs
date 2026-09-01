@@ -121,6 +121,7 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(r => r.Plaka).HasMaxLength(20);
                 entity.Property(r => r.DuzeltilenAlanlar).HasMaxLength(400);
                 entity.Property(r => r.Saglayici).HasMaxLength(40);
+                entity.Property(r => r.AtlamaNedeni).HasMaxLength(200);
                 entity.Property(r => r.ToplamTutar).HasPrecision(18, 2);
                 entity.Property(r => r.KdvTutari).HasPrecision(18, 2);
                 entity.Property(r => r.Litre).HasPrecision(9, 2);

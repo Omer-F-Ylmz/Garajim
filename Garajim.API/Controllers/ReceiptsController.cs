@@ -48,11 +48,11 @@ namespace Garajim.API.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Upload([FromForm] ReceiptUploadForm form)
+        public async Task<IActionResult> Upload([FromForm] ReceiptUploadForm form, [FromQuery] bool otoOnay = false)
         {
             var file = form?.File;
             if (file == null || file.Length == 0)
-                return BadRequest(new ErrorDataResult<ReceiptDraftDto>(Messages.InvalidValue));
+                return BadRequest(new ErrorDataResult<ReceiptUploadResultDto>(Messages.InvalidValue));
 
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
@@ -61,7 +61,7 @@ namespace Garajim.API.Controllers
             {
                 FileName = file.FileName,
                 Content = stream.ToArray()
-            });
+            }, otoOnay);
 
             if (!result.Success)
             {

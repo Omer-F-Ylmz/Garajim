@@ -135,10 +135,10 @@ namespace Garajim.Tests.Integration
                 TahminiTur = ReceiptType.Yakit,
                 GuvenSkoru = 0.8
             };
-            var onaylanacak = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var onaylanacak = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
 
             _factory.Extractor.Sonuc = new ReceiptExtractionResult { GuvenSkoru = 0.2 };
-            var reddedilecek = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var reddedilecek = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
 
             await sahip.PostAsJsonAsync($"/api/Receipts/{onaylanacak}/confirm", new
             {
@@ -200,8 +200,8 @@ namespace Garajim.Tests.Integration
                 GuvenSkoru = 0.8
             };
 
-            var birinci = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
-            var ikinci = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var birinci = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
+            var ikinci = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
 
             await sahip.PostAsJsonAsync($"/api/Receipts/{birinci}/confirm", new
             {

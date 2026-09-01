@@ -152,10 +152,11 @@ namespace Garajim.Tests.Integration
             _factory.Extractor.Sonuc = DoluSonuc();
 
             var cevap = await YukleAsync(sahip);
-            var veri = await VeriAsync(cevap);
+            var zarf = await VeriAsync(cevap);
+            var veri = zarf.GetProperty("taslak");
 
             Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
-            Assert.Equal("Bekliyor", veri.GetProperty("durum").GetString());
+            Assert.Equal("Bekliyor", zarf.GetProperty("durum").GetString());
             Assert.Equal(1980.50m, veri.GetProperty("toplamTutar").GetDecimal());
             Assert.Equal("34FIS001", veri.GetProperty("plaka").GetString());
             Assert.Equal(aracId, veri.GetProperty("vehicleId").GetInt32());
@@ -170,7 +171,7 @@ namespace Garajim.Tests.Integration
             var aracId = await AracEkleAsync(sahip, "34FIS001");
             _factory.Extractor.Sonuc = DoluSonuc();
 
-            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
 
             var onay = await sahip.PostAsJsonAsync($"/api/Receipts/{taslakId}/confirm", new
             {
@@ -214,7 +215,7 @@ namespace Garajim.Tests.Integration
                 GuvenSkoru = 0.8
             };
 
-            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
 
             var onay = await sahip.PostAsJsonAsync($"/api/Receipts/{taslakId}/confirm", new
             {
@@ -242,7 +243,7 @@ namespace Garajim.Tests.Integration
             await AracEkleAsync(sahip, "34FIS003");
             _factory.Extractor.Sonuc = DoluSonuc("34FIS003");
 
-            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var taslakId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
             Assert.Single(Directory.GetFiles(_klasor));
 
             var red = await sahip.PostAsync($"/api/Receipts/{taslakId}/reject", null);
@@ -297,7 +298,7 @@ namespace Garajim.Tests.Integration
             await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = zimmetliArac, userId = surucuId });
 
             _factory.Extractor.Sonuc = new ReceiptExtractionResult { ToplamTutar = 500m, TahminiTur = ReceiptType.Masraf, GuvenSkoru = 0.7 };
-            var taslakId = (await VeriAsync(await YukleAsync(surucu))).GetProperty("id").GetInt32();
+            var taslakId = (await VeriAsync(await YukleAsync(surucu))).GetProperty("taslakId").GetInt32();
 
             var yasak = await surucu.PostAsJsonAsync($"/api/Receipts/{taslakId}/confirm", new
             {
@@ -328,7 +329,7 @@ namespace Garajim.Tests.Integration
             var birinci = await SahipOlusturAsync();
             await AracEkleAsync(birinci, "34FIS006");
             _factory.Extractor.Sonuc = DoluSonuc("34FIS006");
-            var taslakId = (await VeriAsync(await YukleAsync(birinci))).GetProperty("id").GetInt32();
+            var taslakId = (await VeriAsync(await YukleAsync(birinci))).GetProperty("taslakId").GetInt32();
 
             var ikinci = await SahipOlusturAsync();
 
@@ -345,13 +346,14 @@ namespace Garajim.Tests.Integration
             _factory.Extractor.Sonuc = new ReceiptExtractionResult { GuvenSkoru = 0 };
 
             var cevap = await YukleAsync(sahip);
-            var veri = await VeriAsync(cevap);
+            var zarf = await VeriAsync(cevap);
+            var veri = zarf.GetProperty("taslak");
 
             Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
             Assert.Equal(JsonValueKind.Null, veri.GetProperty("tarih").ValueKind);
             Assert.Equal(JsonValueKind.Null, veri.GetProperty("toplamTutar").ValueKind);
             Assert.Equal(JsonValueKind.Null, veri.GetProperty("vehicleId").ValueKind);
-            Assert.Equal("Bekliyor", veri.GetProperty("durum").GetString());
+            Assert.Equal("Bekliyor", zarf.GetProperty("durum").GetString());
         }
 
         [Fact]
@@ -361,8 +363,8 @@ namespace Garajim.Tests.Integration
             await AracEkleAsync(sahip, "34FIS008");
             _factory.Extractor.Sonuc = DoluSonuc("34FIS008");
 
-            var birinciId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
-            var ikinciId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("id").GetInt32();
+            var birinciId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
+            var ikinciId = (await VeriAsync(await YukleAsync(sahip))).GetProperty("taslakId").GetInt32();
             await sahip.PostAsync($"/api/Receipts/{birinciId}/reject", null);
 
             var bekleyenler = await VeriAsync(await sahip.GetAsync("/api/Receipts?durum=Bekliyor"));

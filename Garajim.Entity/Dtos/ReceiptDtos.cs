@@ -18,7 +18,24 @@ namespace Garajim.Entity.Dtos
         public string TahminiTur { get; set; }
         public double GuvenSkoru { get; set; }
         public string DuzeltilenAlanlar { get; set; }
+        public bool OtoOnaylandi { get; set; }
+        public string AtlamaNedeni { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
+    }
+
+    public class ReceiptUploadResultDto
+    {
+        public int TaslakId { get; set; }
+        public string Durum { get; set; }
+        public string AtlamaNedeni { get; set; }
+        public OlusturulanKayitDto OlusturulanKayit { get; set; }
+        public ReceiptDraftDto Taslak { get; set; }
+    }
+
+    public class OlusturulanKayitDto
+    {
+        public string Tur { get; set; }
+        public int Id { get; set; }
     }
 
     public class ReceiptUploadDto
