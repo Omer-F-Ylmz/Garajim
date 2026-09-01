@@ -283,6 +283,17 @@
                     <tbody id="team-rows"></tbody>
                 </table>
             </div>
+
+            <h3>Ekip belgeleri</h3>
+            <p class="hint">Ehliyet, SRC ve psikoteknik bitişleri. Süresi geçen veya yaklaşan üye en üstte.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Ad soyad</th><th>Rol</th><th>Durum</th><th>Belgeler</th></tr>
+                    </thead>
+                    <tbody id="belge-rows"></tbody>
+                </table>
+            </div>
         </section>
 
         <section id="vehicle-form-box" class="panel hidden">
@@ -334,6 +345,7 @@
                 <button class="tab-btn" data-tab="tahmin" type="button">Fiyat Tahmini</button>
                 <button class="tab-btn" data-tab="evrak" type="button">Evrak</button>
                 <button class="tab-btn" data-tab="parca" type="button">Parça Hafızası</button>
+                <button class="tab-btn" data-tab="yolculuk" type="button">Yolculuk</button>
                 <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
             </nav>
 
@@ -555,6 +567,16 @@
                     </table>
                 </div>
 
+                <h3>Dışa aktar</h3>
+                <p class="hint">Seçili aralık ve araç için CSV indirin; dosya Excel ile açılır ve geri içe aktarılabilir.</p>
+                <div class="inline-form">
+                    <button id="export-yakit" type="button" class="ghost">Yakıt CSV</button>
+                    <button id="export-bakim" type="button" class="ghost">Bakım CSV</button>
+                    <button id="export-masraf" type="button" class="ghost">Masraf CSV</button>
+                    <button id="export-evrak" type="button" class="ghost">Evrak CSV</button>
+                    <label class="switch-label"><input id="export-tum-araclar" type="checkbox"> Tüm araçlar</label>
+                </div>
+
                 <h3>Yakıt istatistiği</h3>
                 <div class="cards" id="fuel-cards"></div>
             </section>
@@ -661,6 +683,55 @@
                             <tr><th>Parça</th><th>Son değişim</th><th>Adet</th><th>Toplam</th><th>Sonraki</th><th>Durum</th><th></th></tr>
                         </thead>
                         <tbody id="parca-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="panel-yolculuk" class="panel tab-panel hidden">
+                <h2>Yolculuk defteri</h2>
+                <p class="hint">İş ve özel kilometreyi ayrı tutun; özet vergi beyanında iş oranını verir.</p>
+                <form id="yolculuk-form" class="grid-form">
+                    <div>
+                        <label for="yolculuk-tarih">Tarih</label>
+                        <input id="yolculuk-tarih" type="date" required>
+                    </div>
+                    <div>
+                        <label for="yolculuk-bas-km">Başlangıç km</label>
+                        <input id="yolculuk-bas-km" type="number" min="0" required>
+                    </div>
+                    <div>
+                        <label for="yolculuk-bitis-km">Bitiş km</label>
+                        <input id="yolculuk-bitis-km" type="number" min="0" required>
+                    </div>
+                    <div>
+                        <label for="yolculuk-amac">Amaç</label>
+                        <select id="yolculuk-amac"></select>
+                    </div>
+                    <div>
+                        <label for="yolculuk-nereden">Nereden</label>
+                        <input id="yolculuk-nereden" type="text" maxlength="150">
+                    </div>
+                    <div>
+                        <label for="yolculuk-nereye">Nereye</label>
+                        <input id="yolculuk-nereye" type="text" maxlength="150">
+                    </div>
+                    <div>
+                        <label for="yolculuk-not">Not</label>
+                        <input id="yolculuk-not" type="text" maxlength="500">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary">Yolculuk ekle</button>
+                    </div>
+                </form>
+
+                <div class="cards" id="yolculuk-cards"></div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Tarih</th><th>Amaç</th><th>Başlangıç</th><th>Bitiş</th><th>Mesafe</th><th>Güzergah</th><th>Sürücü</th><th></th></tr>
+                        </thead>
+                        <tbody id="yolculuk-rows"></tbody>
                     </table>
                 </div>
             </section>

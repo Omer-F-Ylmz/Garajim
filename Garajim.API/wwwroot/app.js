@@ -410,6 +410,8 @@
             loadFiloMaliyet();
         } else if (tab === "zimmet") {
             loadAssignments();
+        } else if (tab === "yolculuk") {
+            loadYolculuk();
         } else if (tab === "parca") {
             loadPartMemory();
         } else if (tab === "evrak") {
@@ -560,6 +562,7 @@
     }
 
     function loadTeam() {
+        loadBelgeler();
         var tbody = el("team-rows");
         api("/api/Team").then(function (result) {
             var rows = (result && result.data) || [];
@@ -1042,6 +1045,207 @@
                 }]
             },
             options: grafikSecenekleri(false)
+        });
+    }
+
+    var YOLCULUK_AMAC = [
+        ["Is", "İş"],
+        ["Ozel", "Özel"]
+    ];
+
+    var BELGE_DURUM = {
+        Gecti: "Süresi geçti",
+        Yaklasiyor: "Yaklaşıyor",
+        Iyi: "İyi"
+    };
+
+    function yolculukAraligi() {
+        var bas = el("report-start").value;
+        var son = el("report-end").value;
+        var parcalar = [];
+        if (bas) {
+            parcalar.push("baslangic=" + bas);
+        }
+        if (son) {
+            parcalar.push("bitis=" + son);
+        }
+        return parcalar.join("&");
+    }
+
+    function renderYolculukRows(kayitlar) {
+        var tbody = el("yolculuk-rows");
+        clear(tbody);
+
+        if (kayitlar.length === 0) {
+            emptyRow(tbody, 8, "Bu araç için yolculuk kaydı yok.");
+            return;
+        }
+
+        kayitlar.forEach(function (kayit) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", formatDate(kayit.tarih)));
+            tr.appendChild(make("td", labelOf(YOLCULUK_AMAC, kayit.amac)));
+            tr.appendChild(make("td", km(kayit.baslangicKm)));
+            tr.appendChild(make("td", km(kayit.bitisKm)));
+            tr.appendChild(make("td", km(kayit.mesafeKm)));
+
+            var guzergah = [kayit.nereden, kayit.nereye].filter(Boolean).join(" → ");
+            tr.appendChild(make("td", guzergah || "-"));
+            tr.appendChild(make("td", kayit.surucuAdi || "-"));
+
+            tr.appendChild(deleteButton(function () { yolculukSil(kayit.id); }));
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadYolculuk() {
+        if (!state.selectedVehicleId) {
+            clear(el("yolculuk-rows"));
+            clear(el("yolculuk-cards"));
+            return Promise.resolve();
+        }
+
+        var sorgu = "vehicleId=" + state.selectedVehicleId;
+        var aralik = yolculukAraligi();
+        if (aralik) {
+            sorgu += "&" + aralik;
+        }
+
+        return api("/api/Yolculuk?" + sorgu).then(function (result) {
+            renderYolculukRows((result && result.data) || []);
+            return api("/api/Yolculuk/ozet?" + sorgu);
+        }).then(function (result) {
+            var ozet = (result && result.data) || {};
+            var cards = el("yolculuk-cards");
+            clear(cards);
+            cards.appendChild(card("Toplam mesafe", km(ozet.toplamKm), true));
+            cards.appendChild(card("İş", km(ozet.isKm)));
+            cards.appendChild(card("Özel", km(ozet.ozelKm)));
+            cards.appendChild(card("İş oranı", (Number(ozet.isOrani) || 0) + " %", true));
+            cards.appendChild(card("Yolculuk", String(ozet.yolculukSayisi || 0)));
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function yolculukSil(id) {
+        clearMessages();
+        api("/api/Yolculuk/" + id, { method: "DELETE" }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Kayıt silindi.", true);
+            loadYolculuk();
+            loadVehicles();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function bindYolculuk() {
+        el("yolculuk-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            if (!state.selectedVehicleId) {
+                showMessage(el("app-message"), "Önce bir araç seçin.", false);
+                return;
+            }
+
+            api("/api/Yolculuk", {
+                method: "POST",
+                body: {
+                    vehicleId: state.selectedVehicleId,
+                    tarih: el("yolculuk-tarih").value,
+                    baslangicKm: Number(el("yolculuk-bas-km").value),
+                    bitisKm: Number(el("yolculuk-bitis-km").value),
+                    amac: el("yolculuk-amac").value,
+                    nereden: el("yolculuk-nereden").value,
+                    nereye: el("yolculuk-nereye").value,
+                    not: el("yolculuk-not").value
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Yolculuk eklendi.", true);
+                el("yolculuk-form").reset();
+                el("yolculuk-tarih").value = todayInput();
+                loadYolculuk();
+                loadVehicles();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
+    function renderBelgeRows(uyeler) {
+        var tbody = el("belge-rows");
+        clear(tbody);
+
+        if (uyeler.length === 0) {
+            emptyRow(tbody, 4, "Ekip üyesi yok.");
+            return;
+        }
+
+        uyeler.forEach(function (uye) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", uye.adSoyad));
+            tr.appendChild(make("td", labelOf(TEAM_ROLES, uye.rol)));
+            tr.appendChild(make("td", BELGE_DURUM[uye.enKotuDurum] || uye.enKotuDurum, "durum-" + uye.enKotuDurum.toLowerCase()));
+
+            var belgeler = (uye.belgeler || []).map(function (belge) {
+                return belge.evrakAdi + " (" + formatDate(belge.bitisTarihi) + ")";
+            });
+            tr.appendChild(make("td", belgeler.length === 0 ? "-" : belgeler.join(", ")));
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadBelgeler() {
+        return api("/api/Team/belgeler").then(function (result) {
+            renderBelgeRows((result && result.data) || []);
+        }).catch(function () {
+            clear(el("belge-rows"));
+            emptyRow(el("belge-rows"), 4, "Ekip belgeleri görüntülenemedi.");
+        });
+    }
+
+    function exportIndir(tur) {
+        clearMessages();
+
+        var parcalar = [];
+        if (!el("export-tum-araclar").checked && state.selectedVehicleId) {
+            parcalar.push("vehicleId=" + state.selectedVehicleId);
+        }
+        var aralik = yolculukAraligi();
+        if (aralik) {
+            parcalar.push(aralik);
+        }
+
+        var yol = "/api/Export/" + tur + ".csv" + (parcalar.length > 0 ? "?" + parcalar.join("&") : "");
+
+        fetch(yol, { headers: { Authorization: "Bearer " + state.token } }).then(function (response) {
+            if (!response.ok) {
+                throw new Error("Dosya indirilemedi.");
+            }
+            return response.blob();
+        }).then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = "garajim-" + tur + ".csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showMessage(el("app-message"), "CSV indirildi.", true);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function bindExport() {
+        ["yakit", "bakim", "masraf", "evrak"].forEach(function (tur) {
+            el("export-" + tur).addEventListener("click", function () {
+                exportIndir(tur);
+            });
         });
     }
 
@@ -2439,6 +2643,7 @@
         fillSelect(el("receipt-maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("receipt-category"), EXPENSE_CATEGORIES);
         fillSelect(el("evrak-tur"), EVRAK_TYPES);
+        fillSelect(el("yolculuk-amac"), YOLCULUK_AMAC);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -2453,6 +2658,7 @@
         el("maintenance-date").value = today;
         el("fuel-date").value = today;
         el("expense-date").value = today;
+        el("yolculuk-tarih").value = today;
         el("report-end").value = today;
         var start = new Date();
         start.setMonth(start.getMonth() - 6);
@@ -2476,6 +2682,8 @@
         bindEvrak();
         bindAyarlar();
         bindImport();
+        bindYolculuk();
+        bindExport();
 
         if (readSession()) {
             enterApp();
