@@ -4,6 +4,7 @@ using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 
 namespace Garajim.Business.Concrete
 {
@@ -57,6 +58,8 @@ namespace Garajim.Business.Concrete
                 Year = dto.Year,
                 CurrentKm = dto.CurrentKm,
                 FuelType = dto.FuelType,
+                KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
+                IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
                 CreatedAt = DateTime.UtcNow
             };
             await _vehicleDal.AddAsync(vehicle);

@@ -10,6 +10,8 @@ namespace Garajim.Entity.Dtos
         public int Year { get; set; }
         public int CurrentKm { get; set; }
         public FuelType FuelType { get; set; }
+        public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
+        public DateTime? IlkTescilTarihi { get; set; }
     }
 
     public class VehicleUpdateDto
@@ -19,6 +21,8 @@ namespace Garajim.Entity.Dtos
         public int Year { get; set; }
         public int CurrentKm { get; set; }
         public FuelType FuelType { get; set; }
+        public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
+        public DateTime? IlkTescilTarihi { get; set; }
     }
 
     public class VehicleDto
@@ -30,6 +34,8 @@ namespace Garajim.Entity.Dtos
         public int Year { get; set; }
         public int CurrentKm { get; set; }
         public FuelType FuelType { get; set; }
+        public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
+        public DateTime? IlkTescilTarihi { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

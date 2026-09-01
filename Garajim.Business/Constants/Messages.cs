@@ -64,5 +64,13 @@ namespace Garajim.Business.Constants
         public const string KarneCreated = "Karne bağlantısı oluşturuldu.";
         public const string KarneClosed = "Karne paylaşımı kapatıldı.";
         public const string KarneNotFound = "Karne bulunamadı.";
+
+        public const string AuthorizationDenied = "Bu işlem için yetkiniz yok.";
+        public const string EvrakNotFound = "Evrak kaydı bulunamadı.";
+        public const string EvrakSahibiTekOlmali = "Evrak ya bir araca ya da bir kullanıcıya bağlanmalıdır; ikisi birden olamaz.";
+        public const string EvrakAdded = "Evrak kaydı eklendi.";
+        public const string EvrakUpdated = "Evrak kaydı güncellendi.";
+        public const string EvrakRenewed = "Evrak yenilendi.";
+        public const string EvrakDeleted = "Evrak kaydı silindi.";
     }
 }
