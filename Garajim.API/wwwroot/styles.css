@@ -612,3 +612,44 @@ button.compact {
     font-size: 11px;
     font-weight: 700;
 }
+
+.parts-cell {
+    grid-column: 1 / -1;
+}
+
+.part-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.part-row .part-type {
+    flex: 2 1 150px;
+}
+
+.part-row .part-desc {
+    flex: 3 1 160px;
+}
+
+.part-row .part-qty {
+    flex: 0 1 70px;
+}
+
+.part-row .part-cost {
+    flex: 1 1 100px;
+}
+
+.durum-iyi {
+    color: var(--ok);
+}
+
+.durum-yaklasiyor {
+    color: var(--accent);
+}
+
+.durum-gecti {
+    color: var(--danger);
+    font-weight: 600;
+}

@@ -10,6 +10,8 @@ using Garajim.Entity.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Text.Json;
+using Garajim.Business.Concrete.Parts;
 
 namespace Garajim.Business.Concrete
 {
@@ -24,6 +26,7 @@ namespace Garajim.Business.Concrete
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IFuelDal _fuelDal;
         private readonly IExpenseDal _expenseDal;
+        private readonly IMaintenancePartDal _partDal;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IReceiptExtractor _extractor;
         private readonly IUnitOfWork _unitOfWork;
@@ -38,6 +41,7 @@ namespace Garajim.Business.Concrete
             IMaintenanceDal maintenanceDal,
             IFuelDal fuelDal,
             IExpenseDal expenseDal,
+            IMaintenancePartDal partDal,
             IVehicleAccessService vehicleAccess,
             IReceiptExtractor extractor,
             IUnitOfWork unitOfWork,
@@ -51,6 +55,7 @@ namespace Garajim.Business.Concrete
             _maintenanceDal = maintenanceDal;
             _fuelDal = fuelDal;
             _expenseDal = expenseDal;
+            _partDal = partDal;
             _vehicleAccess = vehicleAccess;
             _extractor = extractor;
             _unitOfWork = unitOfWork;
@@ -151,6 +156,7 @@ namespace Garajim.Business.Concrete
                 Km = sonuc.Km,
                 TahminiTur = sonuc.TahminiTur,
                 GuvenSkoru = sonuc.GuvenSkoru,
+                ParcalarJson = ParcalariSerilestir(ParcaEslestirici.Cevir(sonuc.KalemListesi)),
                 OlusturmaTarihi = DateTime.UtcNow
             };
 
@@ -212,6 +218,49 @@ namespace Garajim.Business.Concrete
                 return "Fişteki plaka eşleşen bir araca bağlanamadı.";
 
             return null;
+        }
+
+        private static bool ParcalarDegistiMi(string taslakJson, List<MaintenancePartDto> gelen)
+        {
+            var taslak = ParcalariCoz(taslakJson);
+            if (taslak.Count != gelen.Count)
+            {
+                return true;
+            }
+
+            for (var i = 0; i < taslak.Count; i++)
+            {
+                if (taslak[i].ParcaTuru != gelen[i].ParcaTuru
+                    || taslak[i].Adet != gelen[i].Adet
+                    || taslak[i].Tutar != gelen[i].Tutar)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static string ParcalariSerilestir(List<MaintenancePartDto> parcalar)
+        {
+            return parcalar == null || parcalar.Count == 0 ? null : JsonSerializer.Serialize(parcalar);
+        }
+
+        private static List<MaintenancePartDto> ParcalariCoz(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return new List<MaintenancePartDto>();
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<List<MaintenancePartDto>>(json) ?? new List<MaintenancePartDto>();
+            }
+            catch (JsonException)
+            {
+                return new List<MaintenancePartDto>();
+            }
         }
 
         private static ReceiptUploadResultDto Sonuc(ReceiptDraft draft, OlusturulanKayitDto olusturulan)
@@ -313,6 +362,27 @@ namespace Garajim.Business.Concrete
                 await _maintenanceDal.AddAsync(record);
                 maintenanceRecordId = record.Id;
                 olusturulan.Id = record.Id;
+
+                var parcalar = dto.Parcalar ?? ParcalariCoz(draft.ParcalarJson);
+                foreach (var parca in parcalar)
+                {
+                    if (!Enum.IsDefined(parca.ParcaTuru) || parca.Adet <= 0)
+                    {
+                        continue;
+                    }
+
+                    await _partDal.AddAsync(new MaintenancePart
+                    {
+                        CompanyId = vehicle.CompanyId,
+                        MaintenanceRecordId = record.Id,
+                        VehicleId = vehicle.Id,
+                        ParcaTuru = parca.ParcaTuru,
+                        Aciklama = parca.Aciklama,
+                        Adet = parca.Adet,
+                        Tutar = parca.Tutar,
+                        Marka = parca.Marka
+                    });
+                }
             }
             else
             {
@@ -369,6 +439,9 @@ namespace Garajim.Business.Concrete
 
             if (draft.VehicleId != dto.VehicleId)
                 degisenler.Add("Arac");
+
+            if (dto.Parcalar != null && ParcalarDegistiMi(draft.ParcalarJson, dto.Parcalar))
+                degisenler.Add("parcalar");
 
             return string.Join(",", degisenler);
         }
@@ -444,6 +517,7 @@ namespace Garajim.Business.Concrete
                 TahminiTur = draft.TahminiTur.ToString(),
                 GuvenSkoru = draft.GuvenSkoru,
                 DuzeltilenAlanlar = draft.DuzeltilenAlanlar,
+                Parcalar = ParcalariCoz(draft.ParcalarJson),
                 OtoOnaylandi = draft.OtoOnaylandi,
                 AtlamaNedeni = draft.AtlamaNedeni,
                 OlusturmaTarihi = draft.OlusturmaTarihi

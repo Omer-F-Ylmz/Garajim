@@ -396,6 +396,8 @@
             loadMonthly();
         } else if (tab === "zimmet") {
             loadAssignments();
+        } else if (tab === "parca") {
+            loadPartMemory();
         }
     }
 
@@ -1083,6 +1085,7 @@
         markNull(litre, draft.litre === null || draft.litre === undefined);
 
         el("receipt-note").value = "";
+        renderReceiptParts(draft.parcalar);
     }
 
     function hideReceiptReview() {
@@ -1122,6 +1125,184 @@
             });
         }).catch(function () {
             el("receipt-badge").classList.add("hidden");
+        });
+    }
+
+    var PART_TYPES = [
+        ["MotorYagi", "Motor yağı"],
+        ["YagFiltresi", "Yağ filtresi"],
+        ["HavaFiltresi", "Hava filtresi"],
+        ["PolenFiltresi", "Polen filtresi"],
+        ["YakitFiltresi", "Yakıt filtresi"],
+        ["FrenBalatasiOn", "Ön fren balatası"],
+        ["FrenBalatasiArka", "Arka fren balatası"],
+        ["FrenDiskiOn", "Ön fren diski"],
+        ["FrenDiskiArka", "Arka fren diski"],
+        ["Buji", "Buji"],
+        ["TrigerSeti", "Triger seti"],
+        ["VKayisi", "V kayışı"],
+        ["Aku", "Akü"],
+        ["Lastik", "Lastik"],
+        ["Amortisor", "Amortisör"],
+        ["Silecek", "Silecek"],
+        ["Antifriz", "Antifriz"],
+        ["FrenHidroligi", "Fren hidroliği"],
+        ["SanzimanYagi", "Şanzıman yağı"],
+        ["Devirdaim", "Devirdaim"],
+        ["RotBasi", "Rot başı"],
+        ["Salincak", "Salıncak"],
+        ["Debriyaj", "Debriyaj"],
+        ["Diger", "Diğer"]
+    ];
+
+    var PART_STATUS = {
+        Iyi: "İyi",
+        Yaklasiyor: "Yaklaşıyor",
+        Gecti: "Geçti"
+    };
+
+    function addPartRow(kutu, deger) {
+        var satir = make("div", "", "part-row");
+
+        var tur = document.createElement("select");
+        fillSelect(tur, PART_TYPES);
+        tur.className = "part-type";
+        if (deger && deger.parcaTuru) {
+            tur.value = deger.parcaTuru;
+        }
+        satir.appendChild(tur);
+
+        var aciklama = document.createElement("input");
+        aciklama.type = "text";
+        aciklama.className = "part-desc";
+        aciklama.placeholder = "Açıklama";
+        aciklama.value = deger && deger.aciklama ? deger.aciklama : "";
+        satir.appendChild(aciklama);
+
+        var adet = document.createElement("input");
+        adet.type = "number";
+        adet.min = "1";
+        adet.className = "part-qty";
+        adet.value = deger && deger.adet ? deger.adet : 1;
+        satir.appendChild(adet);
+
+        var tutar = document.createElement("input");
+        tutar.type = "number";
+        tutar.min = "0";
+        tutar.step = "0.01";
+        tutar.className = "part-cost";
+        tutar.placeholder = "Tutar";
+        tutar.value = deger && deger.tutar !== null && deger.tutar !== undefined ? deger.tutar : "";
+        satir.appendChild(tutar);
+
+        var sil = make("button", "Sil", "link-btn");
+        sil.type = "button";
+        sil.addEventListener("click", function () { kutu.removeChild(satir); });
+        satir.appendChild(sil);
+
+        kutu.appendChild(satir);
+    }
+
+    function readPartRows(kutu) {
+        var parcalar = [];
+        Array.prototype.forEach.call(kutu.querySelectorAll(".part-row"), function (satir) {
+            var tutar = satir.querySelector(".part-cost").value;
+            parcalar.push({
+                parcaTuru: satir.querySelector(".part-type").value,
+                aciklama: satir.querySelector(".part-desc").value,
+                adet: Number(satir.querySelector(".part-qty").value) || 1,
+                tutar: tutar ? Number(tutar) : null,
+                marka: null
+            });
+        });
+        return parcalar;
+    }
+
+    function renderReceiptParts(parcalar) {
+        var kutu = el("receipt-parts-box");
+        var liste = el("receipt-parts");
+        clear(liste);
+
+        var varMi = parcalar && parcalar.length > 0;
+        kutu.classList.toggle("hidden", !varMi);
+
+        if (!varMi) {
+            return;
+        }
+
+        parcalar.forEach(function (parca) {
+            var li = document.createElement("li");
+            var metin = labelOf(PART_TYPES, parca.parcaTuru) + " — " + (parca.aciklama || "");
+            if (parca.tutar !== null && parca.tutar !== undefined) {
+                metin += " · " + money(parca.tutar);
+            }
+            li.appendChild(make("span", metin));
+            liste.appendChild(li);
+        });
+    }
+
+    function loadPartMemory() {
+        if (!state.selectedVehicleId) {
+            return;
+        }
+        var tbody = el("parca-rows");
+        api("/api/Vehicles/" + state.selectedVehicleId + "/parca-hafizasi").then(function (result) {
+            var rows = (result && result.data) || [];
+            clear(tbody);
+
+            if (rows.length === 0) {
+                emptyRow(tbody, 7, "Bakım kayıtlarında parça yok.");
+                return;
+            }
+
+            rows.forEach(function (item) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", item.parcaAdi));
+                tr.appendChild(make("td", formatDate(item.sonDegisimTarihi) + (item.sonDegisimKm ? " · " + km(item.sonDegisimKm) : "")));
+                tr.appendChild(make("td", item.degisimSayisi));
+                tr.appendChild(make("td", money(item.toplamTutar)));
+
+                var sonraki = [];
+                if (item.sonrakiTahminiKm) {
+                    sonraki.push(km(item.sonrakiTahminiKm));
+                }
+                if (item.sonrakiTahminiTarih) {
+                    sonraki.push(formatDate(item.sonrakiTahminiTarih));
+                }
+                tr.appendChild(make("td", sonraki.length ? sonraki.join(" / ") : "-"));
+
+                tr.appendChild(make("td", PART_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase()));
+
+                var hucre = document.createElement("td");
+                if (item.sonrakiTahminiKm || item.sonrakiTahminiTarih) {
+                    var dugme = make("button", "Hatırlatma oluştur", "link-btn");
+                    dugme.type = "button";
+                    dugme.addEventListener("click", function () { createPartReminder(item.parcaTuru); });
+                    hucre.appendChild(dugme);
+                }
+                tr.appendChild(hucre);
+
+                tbody.appendChild(tr);
+            });
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function createPartReminder(parcaTuru) {
+        clearMessages();
+        api("/api/Vehicles/" + state.selectedVehicleId + "/parca-hafizasi/" + parcaTuru + "/hatirlatma", { method: "POST" })
+            .then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Hatırlatma eklendi.", true);
+            })
+            .catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+    }
+
+    function bindParts() {
+        el("maintenance-part-add").addEventListener("click", function () {
+            addPartRow(el("maintenance-parts"), null);
         });
     }
 
@@ -1279,6 +1460,7 @@
                     km: kilometre ? Number(kilometre) : null,
                     litre: tur === "Yakit" && litre ? Number(litre) : null,
                     bakimTuru: tur === "Bakim" ? el("receipt-maintenance-type").value : null,
+                    parcalar: tur === "Bakim" && state.receiptDraft.parcalar ? state.receiptDraft.parcalar : null,
                     masrafKategorisi: tur === "Masraf" ? el("receipt-category").value : null,
                     not: el("receipt-note").value
                 }
@@ -1410,6 +1592,7 @@
                 method: "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
+                    parcalar: readPartRows(el("maintenance-parts")),
                     type: el("maintenance-type").value,
                     date: el("maintenance-date").value,
                     km: Number(el("maintenance-km").value),
@@ -1420,6 +1603,7 @@
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);
                 el("maintenance-form").reset();
+                clear(el("maintenance-parts"));
                 el("maintenance-date").value = todayInput();
                 loadMaintenance();
                 loadVehicles();
@@ -1569,6 +1753,7 @@
         bindDocuments();
         bindReceipts();
         bindBulkUpload();
+        bindParts();
 
         if (readSession()) {
             enterApp();

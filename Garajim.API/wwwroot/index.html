@@ -136,6 +136,10 @@
                         <label for="receipt-note">Not</label>
                         <input id="receipt-note" type="text">
                     </div>
+                    <div id="receipt-parts-box" class="parts-cell hidden">
+                        <label>Fişten okunan parçalar</label>
+                        <ul id="receipt-parts" class="upcoming"></ul>
+                    </div>
                     <div class="form-actions">
                         <button type="submit" class="primary">Onayla ve kaydet</button>
                         <button id="receipt-reject" type="button" class="ghost">Reddet</button>
@@ -228,6 +232,7 @@
                 <button class="tab-btn" data-tab="hatirlatma" type="button">Hatırlatmalar</button>
                 <button class="tab-btn" data-tab="rapor" type="button">Raporlar</button>
                 <button class="tab-btn" data-tab="tahmin" type="button">Fiyat Tahmini</button>
+                <button class="tab-btn" data-tab="parca" type="button">Parça Hafızası</button>
                 <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
             </nav>
 
@@ -257,6 +262,11 @@
                     <div>
                         <label for="maintenance-note">Not</label>
                         <input id="maintenance-note" type="text">
+                    </div>
+                    <div class="parts-cell">
+                        <label>Parçalar</label>
+                        <div id="maintenance-parts"></div>
+                        <button id="maintenance-part-add" type="button" class="ghost compact">+ Parça satırı</button>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="primary">Bakım ekle</button>
@@ -466,6 +476,19 @@
                     <span class="price-label">Tahmini değer</span>
                     <span id="price-value" class="price-value"></span>
                     <span id="price-detail" class="price-detail"></span>
+                </div>
+            </section>
+
+            <section id="panel-parca" class="panel tab-panel hidden">
+                <h2>Parça hafızası</h2>
+                <p class="hint">Bakım kayıtlarındaki parçalardan üretilir; durum aracın güncel kilometresine göre hesaplanır.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Parça</th><th>Son değişim</th><th>Adet</th><th>Toplam</th><th>Sonraki</th><th>Durum</th><th></th></tr>
+                        </thead>
+                        <tbody id="parca-rows"></tbody>
+                    </table>
                 </div>
             </section>
 

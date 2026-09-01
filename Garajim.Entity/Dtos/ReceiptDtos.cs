@@ -20,6 +20,7 @@ namespace Garajim.Entity.Dtos
         public string DuzeltilenAlanlar { get; set; }
         public bool OtoOnaylandi { get; set; }
         public string AtlamaNedeni { get; set; }
+        public List<MaintenancePartDto> Parcalar { get; set; } = new List<MaintenancePartDto>();
         public DateTime OlusturmaTarihi { get; set; }
     }
 
@@ -57,5 +58,6 @@ namespace Garajim.Entity.Dtos
         public ExpenseCategory? MasrafKategorisi { get; set; }
         public string ServisAdi { get; set; }
         public string Not { get; set; }
+        public List<MaintenancePartDto> Parcalar { get; set; }
     }
 }
