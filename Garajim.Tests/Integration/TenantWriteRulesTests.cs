@@ -87,7 +87,7 @@ namespace Garajim.Tests.Integration
             var kullanici = _db.KullaniciEkle("surucu@garajim.local");
             var arac = _db.AracEkle(kullanici.Id, "34ABC123");
 
-            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess).AddAsync(kullanici.Id, new MaintenanceCreateDto
+            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork).AddAsync(kullanici.Id, new MaintenanceCreateDto
             {
                 VehicleId = arac.Id,
                 Type = MaintenanceType.PeriyodikBakim,

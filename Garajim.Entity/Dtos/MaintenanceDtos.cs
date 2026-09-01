@@ -11,6 +11,18 @@ namespace Garajim.Entity.Dtos
         public decimal Cost { get; set; }
         public string ServiceName { get; set; }
         public string Note { get; set; }
+        public List<MaintenancePartDto> Parcalar { get; set; } = new List<MaintenancePartDto>();
+    }
+
+    public class MaintenanceUpdateDto
+    {
+        public MaintenanceType Type { get; set; }
+        public DateTime Date { get; set; }
+        public int Km { get; set; }
+        public decimal Cost { get; set; }
+        public string ServiceName { get; set; }
+        public string Note { get; set; }
+        public List<MaintenancePartDto> Parcalar { get; set; } = new List<MaintenancePartDto>();
     }
 
     public class MaintenanceDto
@@ -23,5 +35,6 @@ namespace Garajim.Entity.Dtos
         public decimal Cost { get; set; }
         public string ServiceName { get; set; }
         public string Note { get; set; }
+        public List<MaintenancePartDto> Parcalar { get; set; } = new List<MaintenancePartDto>();
     }
 }

@@ -15,6 +15,7 @@ namespace Garajim.Business.Constants
         public const string RecordDeleted = "Kayıt silindi.";
         public const string RecordNotFound = "Kayıt bulunamadı.";
         public const string ReminderAdded = "Hatırlatma eklendi.";
+        public const string RecordUpdated = "Kayıt güncellendi.";
         public const string ReminderCompleted = "Hatırlatma tamamlandı olarak işaretlendi.";
         public const string ReminderDeleted = "Hatırlatma silindi.";
         public const string ReminderNotFound = "Hatırlatma bulunamadı.";
@@ -56,5 +57,8 @@ namespace Garajim.Business.Constants
         public const string ReceiptAutoConfirmed = "Fiş okundu ve otomatik kaydedildi.";
         public const string ReceiptConfirmed = "Kayıt oluşturuldu.";
         public const string ReceiptRejected = "Fiş taslağı silindi.";
+
+        public const string PartNeverReplaced = "Bu parça için kayıtlı değişim yok.";
+        public const string PartHasNoInterval = "Bu parça için tanımlı değişim aralığı yok.";
     }
 }

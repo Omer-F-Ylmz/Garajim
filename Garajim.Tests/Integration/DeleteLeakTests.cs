@@ -40,7 +40,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task MaintenanceDelete_YabanciKayitVeOlmayanKayitAyniMesajiDoner()
         {
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _bakimA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -105,7 +105,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task YabanciSilmeDenemeleriKayitlariSilmez()
         {
-            var maintenance = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess);
+            var maintenance = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork);
             var fuel = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
             var expense = new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess);
             var reminder = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);

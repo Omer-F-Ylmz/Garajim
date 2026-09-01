@@ -77,7 +77,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task MaintenanceAdd_TanimsizBakimTuruReddedilir()
         {
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
 
             var result = await manager.AddAsync(UserId, new MaintenanceCreateDto
             {
@@ -132,7 +132,7 @@ namespace Garajim.Tests.Unit
         public async Task TanimliEnumDegerleriKabulEdilmeyeDevamEder()
         {
             var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object);
-            var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
+            var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
             var expenseManager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
             var reminderManager = new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);
 

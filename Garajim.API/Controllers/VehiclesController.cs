@@ -1,6 +1,7 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,30 @@ namespace Garajim.API.Controllers
     public class VehiclesController : SecureControllerBase
     {
         private readonly IVehicleService _vehicleService;
+        private readonly IPartMemoryService _partMemoryService;
 
-        public VehiclesController(IVehicleService vehicleService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService)
         {
             _vehicleService = vehicleService;
+            _partMemoryService = partMemoryService;
+        }
+
+        [HttpGet("{id}/parca-hafizasi")]
+        public async Task<IActionResult> ParcaHafizasi(int id)
+        {
+            var result = await _partMemoryService.GetAsync(CurrentUserId, id);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/parca-hafizasi/{parcaTuru}/hatirlatma")]
+        public async Task<IActionResult> ParcaHatirlatmasi(int id, ParcaTuru parcaTuru)
+        {
+            var result = await _partMemoryService.CreateReminderAsync(CurrentUserId, id, parcaTuru);
+            if (!result.Success)
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
         }
 
         [HttpGet]

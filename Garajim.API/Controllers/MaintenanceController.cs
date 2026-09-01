@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,15 @@ namespace Garajim.API.Controllers
             var result = await _maintenanceService.AddAsync(CurrentUserId, dto);
             if (!result.Success)
                 return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, MaintenanceUpdateDto dto)
+        {
+            var result = await _maintenanceService.UpdateAsync(CurrentUserId, id, dto);
+            if (!result.Success)
+                return result.Message == Messages.RecordNotFound ? NotFound(result) : BadRequest(result);
             return Ok(result);
         }
 

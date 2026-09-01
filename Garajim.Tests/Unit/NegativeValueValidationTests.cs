@@ -68,7 +68,7 @@ namespace Garajim.Tests.Unit
         [InlineData(4500, -1)]
         public async Task MaintenanceAdd_NegatifTutarVeyaKilometreReddedilir(decimal tutar, int km)
         {
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
             var dto = BakimDto();
             dto.Cost = tutar;
             dto.Km = km;
@@ -84,7 +84,7 @@ namespace Garajim.Tests.Unit
         public async Task MaintenanceAdd_SifirTutarKabulEdilir()
         {
             _maintenanceDal.Setup(d => d.AddAsync(It.IsAny<MaintenanceRecord>())).Returns(Task.CompletedTask);
-            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object);
+            var manager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
             var dto = BakimDto();
             dto.Cost = 0m;
 
