@@ -82,6 +82,20 @@
             </form>
             <p id="receipt-progress" class="hint hidden">Fiş okunuyor, birkaç saniye sürebilir…</p>
 
+            <h3>Toplu yükle</h3>
+            <p class="hint">Birden fazla fişi bir kerede seçin; sırayla okunur.</p>
+            <form id="bulk-form" class="inline-form">
+                <input id="bulk-files" type="file" accept="image/*,.pdf" multiple required>
+                <label class="switch-label"><input id="bulk-auto" type="checkbox" checked> Otomatik onayla</label>
+                <button type="submit" class="primary">Toplu oku</button>
+            </form>
+            <p id="bulk-progress" class="hint hidden"></p>
+            <div id="bulk-summary" class="panel-inline hidden">
+                <h3>Toplu yükleme özeti</h3>
+                <p id="bulk-summary-line"></p>
+                <ul id="bulk-summary-list" class="upcoming"></ul>
+            </div>
+
             <div id="receipt-review" class="panel-inline hidden">
                 <h3>Kontrol edip onaylayın</h3>
                 <p id="receipt-confidence" class="hint"></p>

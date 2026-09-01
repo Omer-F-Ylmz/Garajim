@@ -1125,6 +1125,92 @@
         });
     }
 
+    function bulkUploadOne(dosya, otoOnay) {
+        var form = new FormData();
+        form.append("file", dosya);
+        return api("/api/Receipts?otoOnay=" + (otoOnay ? "true" : "false"), { method: "POST", body: form })
+            .then(function (result) {
+                return { ok: true, ad: dosya.name, veri: result.data };
+            })
+            .catch(function (error) {
+                return { ok: false, ad: dosya.name, hata: error.message || "Yüklenemedi." };
+            });
+    }
+
+    function renderBulkSummary(sonuclar) {
+        var onaylandi = sonuclar.filter(function (s) { return s.ok && s.veri.durum === "Onaylandi"; });
+        var bekliyor = sonuclar.filter(function (s) { return s.ok && s.veri.durum === "Bekliyor"; });
+        var hatali = sonuclar.filter(function (s) { return !s.ok; });
+
+        el("bulk-summary").classList.remove("hidden");
+        el("bulk-summary-line").textContent =
+            "Onaylandı " + onaylandi.length + " · Bekliyor " + bekliyor.length + " · Hata " + hatali.length;
+
+        var liste = el("bulk-summary-list");
+        clear(liste);
+
+        onaylandi.forEach(function (s) {
+            var li = document.createElement("li");
+            li.appendChild(make("span", s.ad + " — kaydedildi"));
+            var rozet = make("span", "oto", "badge-oto");
+            li.appendChild(rozet);
+            liste.appendChild(li);
+        });
+
+        bekliyor.forEach(function (s) {
+            var li = document.createElement("li");
+            li.appendChild(make("span", s.ad + " — " + (s.veri.atlamaNedeni || "Kontrol bekliyor")));
+            liste.appendChild(li);
+        });
+
+        hatali.forEach(function (s) {
+            var li = document.createElement("li");
+            li.appendChild(make("span", s.ad + " — " + s.hata));
+            liste.appendChild(li);
+        });
+    }
+
+    function bindBulkUpload() {
+        el("bulk-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            var input = el("bulk-files");
+            if (!input.files || input.files.length === 0) {
+                showMessage(el("app-message"), "Önce fiş dosyalarını seçin.");
+                return;
+            }
+
+            var dosyalar = Array.prototype.slice.call(input.files);
+            var otoOnay = el("bulk-auto").checked;
+            var sonuclar = [];
+            var ilerleme = el("bulk-progress");
+
+            el("bulk-summary").classList.add("hidden");
+            ilerleme.classList.remove("hidden");
+            ilerleme.textContent = "0/" + dosyalar.length;
+
+            var zincir = Promise.resolve();
+            dosyalar.forEach(function (dosya, sira) {
+                zincir = zincir.then(function () {
+                    return bulkUploadOne(dosya, otoOnay).then(function (sonuc) {
+                        sonuclar.push(sonuc);
+                        ilerleme.textContent = (sira + 1) + "/" + dosyalar.length;
+                    });
+                });
+            });
+
+            zincir.then(function () {
+                ilerleme.classList.add("hidden");
+                el("bulk-form").reset();
+                el("bulk-auto").checked = otoOnay;
+                renderBulkSummary(sonuclar);
+                loadPendingReceipts();
+                loadVehicles();
+            });
+        });
+    }
+
     function bindReceipts() {
         el("receipt-btn").addEventListener("click", function () {
             var box = el("receipt-box");
@@ -1159,11 +1245,11 @@
 
             el("receipt-progress").classList.remove("hidden");
 
-            api("/api/Receipts", { method: "POST", body: form }).then(function (result) {
+            api("/api/Receipts?otoOnay=false", { method: "POST", body: form }).then(function (result) {
                 el("receipt-progress").classList.add("hidden");
                 showMessage(el("app-message"), (result && result.message) || "Fiş okundu.", true);
                 el("receipt-form").reset();
-                showReceiptReview(result.data);
+                showReceiptReview(result.data.taslak);
                 loadPendingReceipts();
             }).catch(function (error) {
                 el("receipt-progress").classList.add("hidden");
@@ -1482,6 +1568,7 @@
         bindAssignment();
         bindDocuments();
         bindReceipts();
+        bindBulkUpload();
 
         if (readSession()) {
             enterApp();
