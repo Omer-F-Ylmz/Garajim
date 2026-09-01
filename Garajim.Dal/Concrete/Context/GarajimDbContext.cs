@@ -24,6 +24,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<Reminder> Reminders { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<VehicleAssignment> VehicleAssignments { get; set; }
+        public DbSet<ReceiptDraft> ReceiptDrafts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -112,6 +113,24 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<ReceiptDraft>(entity =>
+            {
+                entity.Property(r => r.DosyaYolu).HasMaxLength(200).IsRequired();
+                entity.Property(r => r.OrijinalAd).HasMaxLength(260).IsRequired();
+                entity.Property(r => r.IcerikTipi).HasMaxLength(120).IsRequired();
+                entity.Property(r => r.Plaka).HasMaxLength(20);
+                entity.Property(r => r.DuzeltilenAlanlar).HasMaxLength(400);
+                entity.Property(r => r.ToplamTutar).HasPrecision(18, 2);
+                entity.Property(r => r.KdvTutari).HasPrecision(18, 2);
+                entity.Property(r => r.Litre).HasPrecision(9, 2);
+                entity.Property(r => r.BirimFiyat).HasPrecision(9, 2);
+                entity.HasIndex(r => r.CompanyId);
+                entity.HasIndex(r => new { r.CompanyId, r.Durum });
+                entity.HasIndex(r => r.OlusturmaTarihi);
+                entity.HasOne<Company>().WithMany().HasForeignKey(r => r.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.SetNull);
+            });
+
             modelBuilder.Entity<AppUser>().HasQueryFilter(u => u.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<Vehicle>().HasQueryFilter(v => v.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<MaintenanceRecord>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
@@ -120,6 +139,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<Reminder>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<Document>().HasQueryFilter(d => d.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<VehicleAssignment>().HasQueryFilter(a => a.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<ReceiptDraft>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
         }
     }
 }

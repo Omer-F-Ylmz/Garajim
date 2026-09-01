@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Documents;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
@@ -10,25 +11,6 @@ namespace Garajim.Business.Concrete
 {
     public class DocumentManager : IDocumentService
     {
-        private const long VarsayilanDosyaSiniri = 5 * 1024 * 1024;
-        private const long VarsayilanKota = 250 * 1024 * 1024;
-
-        private static readonly Dictionary<string, string> IzinliUzantilar = new Dictionary<string, string>
-        {
-            [".jpg"] = "image/jpeg",
-            [".jpeg"] = "image/jpeg",
-            [".png"] = "image/png",
-            [".pdf"] = "application/pdf"
-        };
-
-        private static readonly Dictionary<string, byte[][]> SihirliBaytlar = new Dictionary<string, byte[][]>
-        {
-            [".jpg"] = new[] { new byte[] { 0xFF, 0xD8, 0xFF } },
-            [".jpeg"] = new[] { new byte[] { 0xFF, 0xD8, 0xFF } },
-            [".png"] = new[] { new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } },
-            [".pdf"] = new[] { new byte[] { 0x25, 0x50, 0x44, 0x46 } }
-        };
-
         private readonly IDocumentDal _documentDal;
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IVehicleAccessService _vehicleAccess;
@@ -65,28 +47,18 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<DocumentDto>(Messages.VehicleNotFound);
 
-            var orijinalAd = Path.GetFileName(dto.FileName ?? string.Empty).Replace("\\", string.Empty);
-            if (string.IsNullOrWhiteSpace(orijinalAd))
-                return new ErrorDataResult<DocumentDto>(Messages.InvalidValue);
-
-            var uzanti = Path.GetExtension(orijinalAd).ToLowerInvariant();
-            if (!IzinliUzantilar.ContainsKey(uzanti))
-                return new ErrorDataResult<DocumentDto>(Messages.DocumentExtensionNotAllowed);
-
+            var orijinalAd = DocumentContentValidator.GuvenliAd(dto.FileName);
             var icerik = dto.Content ?? Array.Empty<byte>();
-            if (icerik.LongLength == 0)
-                return new ErrorDataResult<DocumentDto>(Messages.InvalidValue);
 
-            if (icerik.LongLength > DosyaSiniri())
-                return new ErrorDataResult<DocumentDto>(Messages.DocumentTooLarge);
-
-            if (!SihirliBaytUyuyorMu(uzanti, icerik))
-                return new ErrorDataResult<DocumentDto>(Messages.DocumentContentMismatch);
+            var hata = DocumentContentValidator.Dogrula(orijinalAd, icerik, DosyaSiniri());
+            if (hata != null)
+                return new ErrorDataResult<DocumentDto>(hata);
 
             var mevcutToplam = await _documentDal.GetCompanyTotalSizeAsync();
             if (mevcutToplam + icerik.LongLength > Kota())
                 return new ErrorDataResult<DocumentDto>(Messages.DocumentQuotaExceeded);
 
+            var uzanti = Path.GetExtension(orijinalAd).ToLowerInvariant();
             var klasor = KlasorYolu();
             Directory.CreateDirectory(klasor);
 
@@ -99,10 +71,10 @@ namespace Garajim.Business.Concrete
                 CompanyId = vehicle.CompanyId,
                 VehicleId = dto.VehicleId,
                 MaintenanceRecordId = dto.MaintenanceRecordId,
-                OriginalName = orijinalAd.Length > 260 ? orijinalAd.Substring(0, 260) : orijinalAd,
+                OriginalName = orijinalAd,
                 StoredName = saklananAd,
                 SizeBytes = icerik.LongLength,
-                ContentType = IzinliUzantilar[uzanti],
+                ContentType = DocumentContentValidator.IcerikTipi(uzanti),
                 UploadedByUserId = userId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -180,16 +152,6 @@ namespace Garajim.Business.Concrete
             return null;
         }
 
-        private static bool SihirliBaytUyuyorMu(string uzanti, byte[] icerik)
-        {
-            if (!SihirliBaytlar.TryGetValue(uzanti, out var imzalar))
-            {
-                return false;
-            }
-
-            return imzalar.Any(imza => icerik.Length >= imza.Length && icerik.Take(imza.Length).SequenceEqual(imza));
-        }
-
         public static string DepoYolunuCoz(string yapilandirilanYol)
         {
             if (string.IsNullOrWhiteSpace(yapilandirilanYol))
@@ -212,12 +174,12 @@ namespace Garajim.Business.Concrete
 
         private long DosyaSiniri()
         {
-            return SayiOku("Documents:MaxFileSizeBytes", VarsayilanDosyaSiniri);
+            return SayiOku("Documents:MaxFileSizeBytes", DocumentContentValidator.VarsayilanDosyaSiniri);
         }
 
         private long Kota()
         {
-            return SayiOku("Documents:CompanyQuotaBytes", VarsayilanKota);
+            return SayiOku("Documents:CompanyQuotaBytes", DocumentContentValidator.VarsayilanKota);
         }
 
         private long SayiOku(string anahtar, long varsayilan)

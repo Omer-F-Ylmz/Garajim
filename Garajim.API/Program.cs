@@ -47,12 +47,15 @@ builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
 builder.Services.AddScoped<IDocumentDal, EfDocumentDal>();
+builder.Services.AddScoped<IReceiptDraftDal, EfReceiptDraftDal>();
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddScoped<ITeamService, TeamManager>();
 builder.Services.AddScoped<IVehicleAccessService, VehicleAccessManager>();
 builder.Services.AddScoped<IAssignmentService, AssignmentManager>();
 builder.Services.AddScoped<IDocumentService, DocumentManager>();
+builder.Services.AddScoped<IReceiptService, ReceiptManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();

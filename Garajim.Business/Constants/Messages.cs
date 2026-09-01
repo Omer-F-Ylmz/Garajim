@@ -48,5 +48,12 @@ namespace Garajim.Business.Constants
         public const string DocumentNotFound = "Belge bulunamadı.";
         public const string DocumentUploaded = "Belge yüklendi.";
         public const string DocumentDeleted = "Belge silindi.";
+
+        public const string ReceiptNotFound = "Fiş taslağı bulunamadı.";
+        public const string ReceiptAlreadyHandled = "Bu taslak zaten sonuçlandırılmış.";
+        public const string ReceiptMonthlyLimitExceeded = "Bu ay için fiş okuma limitiniz doldu; yeni fişleri gelecek ay yükleyebilir veya kayıtları elle girebilirsiniz.";
+        public const string ReceiptUploaded = "Fiş okundu, kontrol edip onaylayın.";
+        public const string ReceiptConfirmed = "Kayıt oluşturuldu.";
+        public const string ReceiptRejected = "Fiş taslağı silindi.";
     }
 }
