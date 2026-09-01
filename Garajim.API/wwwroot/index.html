@@ -533,6 +533,28 @@
                 </div>
                 <p id="chart-fallback" class="hint"></p>
 
+                <h3>Maliyet</h3>
+                <div class="cards" id="maliyet-cards"></div>
+                <div class="chart-box">
+                    <canvas id="maliyet-chart" height="220"></canvas>
+                </div>
+                <p id="maliyet-fallback" class="hint"></p>
+                <div class="chart-box">
+                    <canvas id="tuketim-chart" height="220"></canvas>
+                </div>
+                <p id="tuketim-fallback" class="hint"></p>
+
+                <h3>Filo karşılaştırması</h3>
+                <p class="hint">Km başına maliyeti en yüksek araç en üstte. Km başı hesap için araçta en az iki yakıt kaydı gerekir.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Araç</th><th>Toplam</th><th>Mesafe</th><th>TL/km</th><th>L/100km</th></tr>
+                        </thead>
+                        <tbody id="filo-rows"></tbody>
+                    </table>
+                </div>
+
                 <h3>Yakıt istatistiği</h3>
                 <div class="cards" id="fuel-cards"></div>
             </section>

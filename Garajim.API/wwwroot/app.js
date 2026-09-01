@@ -11,7 +11,9 @@
         selectedVehicleId: null,
         documentRecordId: null,
         receiptDraft: null,
-        chart: null
+        chart: null,
+        maliyetChart: null,
+        tuketimChart: null
     };
 
     var TEAM_ROLES = [
@@ -191,12 +193,18 @@
         return true;
     }
 
+    function grafikleriTemizle() {
+        ["chart", "maliyetChart", "tuketimChart"].forEach(function (ad) {
+            if (state[ad]) {
+                state[ad].destroy();
+                state[ad] = null;
+            }
+        });
+    }
+
     function goToLogin(message) {
         clearSession();
-        if (state.chart) {
-            state.chart.destroy();
-            state.chart = null;
-        }
+        grafikleriTemizle();
         el("app-screen").classList.add("hidden");
         el("auth-screen").classList.remove("hidden");
         showMessage(el("auth-message"), message || "");
@@ -398,6 +406,8 @@
         } else if (tab === "rapor") {
             loadFuelStats();
             loadMonthly();
+            loadMaliyet();
+            loadFiloMaliyet();
         } else if (tab === "zimmet") {
             loadAssignments();
         } else if (tab === "parca") {
@@ -904,6 +914,134 @@
                     y: { ticks: { color: "#99a1ad" }, grid: { color: "#262b33" } }
                 }
             }
+        });
+    }
+
+    function raporAraligi() {
+        return "baslangic=" + el("report-start").value + "&bitis=" + el("report-end").value;
+    }
+
+    function loadMaliyet() {
+        var cards = el("maliyet-cards");
+        return api("/api/Vehicles/" + state.selectedVehicleId + "/maliyet?" + raporAraligi()).then(function (result) {
+            var data = (result && result.data) || {};
+
+            clear(cards);
+            cards.appendChild(card("Toplam maliyet", money(data.toplamMaliyet), true));
+            cards.appendChild(card("Km başına maliyet", data.maliyetKmBasi === null ? "—" : money(data.maliyetKmBasi), true));
+            cards.appendChild(card("Ortalama tüketim", data.litre100Km === null ? "—" : literFormat.format(Number(data.litre100Km)) + " L/100km"));
+            cards.appendChild(card("Mesafe", km(data.mesafeKm)));
+            cards.appendChild(card("Yakıt", money(data.toplamYakit)));
+            cards.appendChild(card("Bakım", money(data.toplamBakim)));
+            cards.appendChild(card("Masraf", money(data.toplamMasraf)));
+
+            drawMaliyetChart(data.aylikSeri || []);
+            drawTuketimChart(data.tuketimSeri || []);
+        }).catch(function (error) {
+            clear(cards);
+            cards.appendChild(card("Maliyet", error && error.message ? error.message : "Hesaplanamadı."));
+        });
+    }
+
+    function loadFiloMaliyet() {
+        var tbody = el("filo-rows");
+        return api("/api/Reports/filo-maliyet?" + raporAraligi()).then(function (result) {
+            var araclar = (result && result.data && result.data.araclar) || [];
+            clear(tbody);
+
+            if (araclar.length === 0) {
+                emptyRow(tbody, 5, "Bu aralıkta filo verisi yok.");
+                return;
+            }
+
+            araclar.forEach(function (satir) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", satir.plaka + " - " + satir.marka + " " + satir.model));
+                tr.appendChild(make("td", money(satir.toplamMaliyet)));
+                tr.appendChild(make("td", km(satir.mesafeKm)));
+                tr.appendChild(make("td", satir.maliyetKmBasi === null ? "—" : money(satir.maliyetKmBasi)));
+                tr.appendChild(make("td", satir.litre100Km === null ? "—" : literFormat.format(Number(satir.litre100Km))));
+                tbody.appendChild(tr);
+            });
+        }).catch(function (error) {
+            clear(tbody);
+            emptyRow(tbody, 5, error && error.message ? error.message : "Filo karşılaştırması alınamadı.");
+        });
+    }
+
+    function ayEtiketi(kalem) {
+        return String(kalem.ay).padStart(2, "0") + "." + kalem.yil;
+    }
+
+    function grafikSecenekleri(yiginli) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#99a1ad" } } },
+            scales: {
+                x: { stacked: yiginli, ticks: { color: "#99a1ad" }, grid: { color: "#262b33" } },
+                y: { stacked: yiginli, ticks: { color: "#99a1ad" }, grid: { color: "#262b33" } }
+            }
+        };
+    }
+
+    function drawMaliyetChart(seri) {
+        var fallback = el("maliyet-fallback");
+
+        if (typeof Chart === "undefined") {
+            fallback.textContent = "Grafik kütüphanesi yüklenemedi (CDN erişimi yok). Maliyet kartları görünmeye devam eder.";
+            return;
+        }
+
+        var dolu = seri.some(function (kalem) { return Number(kalem.toplam) > 0; });
+        fallback.textContent = dolu ? "" : "Grafik için henüz veri yok.";
+
+        if (state.maliyetChart) {
+            state.maliyetChart.destroy();
+        }
+
+        state.maliyetChart = new Chart(el("maliyet-chart"), {
+            type: "bar",
+            data: {
+                labels: seri.map(ayEtiketi),
+                datasets: [
+                    { label: "Yakıt", data: seri.map(function (k) { return Number(k.yakit); }), backgroundColor: "rgba(255, 122, 26, 0.75)" },
+                    { label: "Bakım", data: seri.map(function (k) { return Number(k.bakim); }), backgroundColor: "rgba(90, 160, 255, 0.75)" },
+                    { label: "Masraf", data: seri.map(function (k) { return Number(k.masraf); }), backgroundColor: "rgba(140, 200, 140, 0.75)" }
+                ]
+            },
+            options: grafikSecenekleri(true)
+        });
+    }
+
+    function drawTuketimChart(seri) {
+        var fallback = el("tuketim-fallback");
+
+        if (typeof Chart === "undefined") {
+            fallback.textContent = "";
+            return;
+        }
+
+        fallback.textContent = seri.length === 0 ? "Tüketim grafiği için en az iki yakıt kaydı gerekir." : "";
+
+        if (state.tuketimChart) {
+            state.tuketimChart.destroy();
+        }
+
+        state.tuketimChart = new Chart(el("tuketim-chart"), {
+            type: "line",
+            data: {
+                labels: seri.map(ayEtiketi),
+                datasets: [{
+                    label: "Tüketim (L/100km)",
+                    data: seri.map(function (k) { return Number(k.litre100Km); }),
+                    borderColor: "#ff7a1a",
+                    backgroundColor: "rgba(255, 122, 26, 0.25)",
+                    tension: 0.25,
+                    fill: true
+                }]
+            },
+            options: grafikSecenekleri(false)
         });
     }
 
@@ -2265,6 +2403,8 @@
             });
             loadMonthly();
             loadFuelStats();
+            loadMaliyet();
+            loadFiloMaliyet();
         });
 
         el("price-form").addEventListener("submit", function (event) {
