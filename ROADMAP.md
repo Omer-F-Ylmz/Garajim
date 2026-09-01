@@ -18,7 +18,7 @@ Durum işaretleri: `[x]` bitti · `[~]` kısmen · `[ ]` başlanmadı
 
 ### Faz 1a — Mimari temel
 
-- [x] `Company` entity'si: Id, Name, PlanType (tek değer: Standart), CreatedAt
+- [x] `Company` entity'si: Id, Name, PlanType, CreatedAt (Sprint 5'te `Bireysel`/`Filo` ayrımı ve `AracLimiti` eklendi)
 - [x] Sekiz entity'de `CompanyId`: Users, Vehicles, MaintenanceRecords, FuelRecords, ExpenseRecords, Reminders, Documents, VehicleAssignments
 - [x] EF Core global query filter; `CompanyId` JWT claim'inden gelir, istek gövdesinden asla okunmaz
 - [x] Tenant sağlayıcı (`ITenantProvider` / `TenantContext`) ve `TenantResolutionMiddleware`
@@ -71,37 +71,79 @@ Toplu yükleme, koşullu otomatik onay, parça hafızası ve araç karnesi.
 | Araç karnesi: token ile anonim paylaşım, kapsam denetimi, SystemScope | `7f6d9dd` |
 | Karne sayfası, istemci tarafı QR ve yazdırma düzeni | `b966145` |
 
-## Sprint 3 — Türkiye evrak takvimi
+## Sprint 3 — TAMAMLANDI
 
-- [ ] TÜVTÜRK muayene takvimi: araç türüne göre hususi 2 yıl / ticari 1 yıl
-- [ ] Zorunlu trafik sigortası yenileme tarihi
-- [ ] Kasko yenileme tarihi
-- [ ] Egzoz emisyon ölçüm tarihi
-- [ ] MTV Ocak/Temmuz otomatik hatırlatma
-- [ ] Tarihler mevcut `Reminder` + `ReminderNotificationJob` e-posta kanalına bağlanır; yeni bildirim altyapısı yazılmaz
-- [ ] ICS takvim aboneliği (araç başına takvim akışı)
-- [ ] Cüzdan kartı / acil durum kartı
+Türkiye evrak takvimi, ICS aboneliği ve acil durum kartı.
 
-## Sprint 4 — Rakipten geçiş + maliyet analizi
+| Özellik | Commit |
+|---|---|
+| `EvrakKurallari`: muayene/egzoz aralıkları, kış lastiği penceresi, uyarı günleri (tek sınıf, ayarlardan ezilebilir) | `23b7744` |
+| Evrak CRUD + aylık takvim + yenileme zinciri; Driver yazamaz | `9e1123b` |
+| Hatırlatma job'ına evrak taraması: talep-önce-gönder deseni, araç ve kişi alıcıları | `2441502` |
+| ICS takvim aboneliği: SHA-256 token, `SystemScope`, VALARM -P7D | `f16d76d` |
+| Acil durum kartı: anonim sayfa, `tel:` bağlantısı, kartvizit yazdırma düzeni | `196e22f` |
+| SPA Evrak sekmesi, takvim aboneliği ve karne kapsamına acil kart | `cb147b1` |
 
-- [ ] Drivvo CSV içe aktarma
-- [ ] Fuelio CSV içe aktarma
-- [ ] İçe aktarma sihirbazı: sütun eşleme, önizleme, çakışan kayıt uyarısı
-- [ ] Maliyet analizi: araç başına km başı maliyet, dönemsel kırılım
-- [ ] Pro paketleme
+### Mevzuat değerlerinin kaynağı
 
-## Sprint 5 — Filo paketi
+Muayene ve egzoz aralıkları, kış lastiği penceresi ve uyarı günleri **yalnız** `Garajim.Business/Concrete/Evraklar/EvrakKurallari.cs` içinde durur; kod başka hiçbir yerde bu sayıları tekrar etmez. Değerler `appsettings` üzerinden ezilebilir:
 
-- [ ] Yönetici dashboard'u: filo geneli maliyet, yaklaşan evrak, zimmet durumu
-- [ ] Filo geneli raporlar ve CSV / Excel dışa aktarım
-- [ ] Sürücü belge takibi (ehliyet, SRC)
-- [ ] Araç başına paket sınırı ve abonelik
+| Ayar | Varsayılan | Anlamı |
+|---|---|---|
+| `Evrak:KisLastigi` | `01-12..01-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA) |
+| `Evrak:UyariGunleri` | `30,7` | Bitişten kaç gün önce e-posta gönderileceği |
+
+Kod içindeki sabitler: hususi muayene 2 yıl / ticari 1 yıl, egzoz aynı ayrım, ilk muayene tescilden 3 yıl sonra, "yaklaşıyor" eşiği 30 gün. Mevzuat değişirse tek dosya ve tek test dosyası (`EvrakKurallariTests`) güncellenir.
+
+## Sprint 4 — TAMAMLANDI
+
+Rakip uygulamalardan geçiş ve maliyet analizi.
+
+| Özellik | Commit |
+|---|---|
+| CSV içe aktarma çekirdeği: ayraç/kodlama sezme, Fuelio bölüm başlıkları, Drivvo TR/EN eşanlam tablosu, satır hash'iyle idempotency | `49046e3` |
+| SPA geçiş sihirbazı: dosya → eşleme → deneme çalıştırma → aktarım, hatalı satır indirme | `47a2fef` |
+| Maliyet analizi: `GET /api/Vehicles/{id}/maliyet`, `GET /api/Reports/filo-maliyet` | `e1ad5e0` |
+| Raporlarda maliyet ekranı: kırılım grafiği, tüketim eğrisi, filo tablosu | `32174ab` |
+
+## Sprint 5 — TAMAMLANDI
+
+Filo paketi, sürücü belgeleri ve yolculuk defteri.
+
+| Özellik | Commit |
+|---|---|
+| Plan paketleri (Bireysel/Filo) ve araç limiti; limit aşımında 402 | `39aa108` |
+| Özet panel ucu: `GET /api/Reports/dashboard` | `50f2660` |
+| CSV dışa aktarma: `GET /api/Export/{yakit,bakim,masraf,evrak}.csv` | `90fff79` |
+| Sürücü belge takibi: `GET /api/Team/belgeler`, en kötü durum sıralaması | `ba24b36` |
+| Yolculuk defteri: iş/özel km ayrımı, mesafe değişmezi | `5bc3b2d` |
+| SPA: Yolculuk sekmesi, ekip belgeleri tablosu, CSV indirme | `37f404b` |
+
+Plan değerleri `Garajim.Business/Concrete/Planlar/PlanKurallari.cs` içinde tek yerde durur:
+
+| Ayar | Varsayılan | Anlamı |
+|---|---|---|
+| `Plan:BireyselAracLimiti` | `3` | Bireysel pakette araç üst sınırı |
+| `Plan:FiloAracLimiti` | `25` | Filo paketinde araç üst sınırı |
+| `Plan:DavetOdulGun` | `30` | Davet başına iki tarafa da eklenen bonus gün |
+
+`Company.AracLimiti` doluysa plan varsayılanını ezer (şirkete özel anlaşma).
+
+## Sprint 6 — TAMAMLANDI
+
+Elektrikli/hibrit araçlar, lastik takibi ve davet programı.
+
+| Özellik | Commit |
+|---|---|
+| EV/hibrit: `FuelRecord.Kwh` + `SarjTuru`, yakıt türüne göre doğrulama, kWh/100km tüketimi | `04bf6d0` |
+| Lastik setleri: takma/sökme geçmişi, otomatik sökme, kış lastiği ve diş derinliği uyarısı | `4573457` |
+| Davet programı: şirkete özel kod, çift taraflı ödül, davetli listesi | `830588a` |
 
 ## Sonraki (planlanmamış)
 
-- [ ] EV / şarj kayıtları
-- [ ] Lastik ve sarf takibi
-- [ ] Davet programı
+- [ ] Abonelik ve ödeme sağlayıcı entegrasyonu (bonus gün alanı hazır, faturalandırma yok)
+- [ ] Apple/Google Wallet kartı — sertifika ve geliştirici hesabı gerektiriyor
+- [ ] Ana ekran widget'ı (yerel uygulama kabuğu gerektiriyor)
 
 ## Kill Criteria
 
@@ -139,13 +181,13 @@ Garajım'dan taşınacak ortak çekirdek: belge deposu, fotoğraflı tutanak, ta
 
 ## Birikim (planlanmamış)
 
-Hiçbir sprinte bağlanmamış işler. Sprint 3-5'e taşınanlar buradan çıkarıldı; her madde tek yerde durur.
+Hiçbir sprinte bağlanmamış işler. Sprint 3-6'ya taşınanlar buradan çıkarıldı; her madde tek yerde durur.
 
 - [ ] Periyodik bakım şablonları: kilometre ve takvim bazlı
-- [ ] Yakıt analizi: L/100km, filo ortalamasından sapma uyarısı
+- [ ] Filo ortalamasından tüketim sapması uyarısı (L/100km ve kWh/100km Sprint 4-6'da geldi)
 - [ ] Excel'den toplu içe aktarma (CSV dışındaki kaynaklar)
 - [ ] Audit log
-- [ ] Ödeme sağlayıcı entegrasyonu (iyzico veya PayTR) — Sprint 5 abonelik maddesinin altyapısı
+- [ ] Ödeme sağlayıcı entegrasyonu (iyzico veya PayTR) — plan ve bonus gün alanları hazır, faturalandırma yok
 - [ ] KVKK temeli: aydınlatma metni, veri silme akışı
 - [ ] Araç değiştirme analizi: ML fiyat tahmini + bakım maliyeti eğrisi
 - [ ] Muhasebe entegrasyonları ve dışa açık API

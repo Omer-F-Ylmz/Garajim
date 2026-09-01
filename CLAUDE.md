@@ -14,6 +14,10 @@ Katmanlar: Core → Entity → Dal → Business → API. Entity'ler flat, naviga
 
 Kodda yorum satırı yazma. Her görevin sonunda dotnet build al, varsa testleri çalıştır, anlamlı Türkçe commit at. dotnet build almadan önce çalışan API sürecini durdur.
 
+SPA'da `innerHTML` kullanma; metin `textContent`, düğüm `document.createElement` ile kurulur.
+
+Yeni entity eklerken: `CompanyId` alanı, `HasQueryFilter`, `CompanyId` üzerinde indeks ve şirket izolasyonu testi zorunludur. Denormalize edilmiş alan (örn. `YolculukKaydi.MesafeKm`, `LastikSeti.ToplamKm`) varsa değişmezi hem veritabanı check constraint'i hem de test ile sabitlenir.
+
 ### Kiracı izolasyonu — SystemScope tek kapıdır
 
 Tenant filtresini aşmanın tek yolu `SystemScope.For(tenantContext, companyId)`'dir; blok bitince önceki bağlam geri gelir. Yeni kodda `IgnoreQueryFilters()` **yasaktır**.
@@ -29,11 +33,25 @@ Mevcut iki istisna korunur, üçüncüsü eklenmez:
 
 Canlı veritabanı doludur. `Up()` içinde yalnız `AddColumn`, `CreateTable`, `CreateIndex` bulunur; `DropColumn`, `DropTable`, `AlterColumn` ve `RenameColumn` kullanılmaz. Kolon daraltma ya da tip değiştirme gerekiyorsa yeni kolon açılır, veri taşınır, eski kolon bir sonraki sürümde ele alınır. Migration ekledikten sonra `Up()` içeriğini doğrula.
 
+### Tek kaynak sınıfları
+
+Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar edilmez ve `appsettings` üzerinden ezilebilir:
+
+- `Business/Concrete/Evraklar/EvrakKurallari.cs` — muayene/egzoz aralıkları, kış lastiği penceresi, uyarı günleri (`Evrak:*`)
+- `Business/Concrete/Planlar/PlanKurallari.cs` — plan araç limitleri, davet ödül günü (`Plan:*`)
+
+Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
+
+### Anonim uçlar
+
+Anonim uçlar (`/api/karne/*`, `/api/takvim/*.ics`) aynı deseni izler: token yalnız oluşturma yanıtında ham döner, veritabanında SHA-256 özeti tutulur; uç `[AllowAnonymous]` ve `[EnableRateLimiting(KarneController.RateLimitPolicy)]` taşır (IP başına dakikada 30); okuma `SystemScope` içinde yapılır. Yeni anonim uç bu üçünü birden taşımadan eklenmez.
+
 ### Service worker kabuk listesi
+
 
 `wwwroot/sw.js` içindeki `KABUK_DOSYALARI` yalnız uygulama kabuğunu tutar: `/`, `/index.html`, `/styles.css`, `/app.js`, `/garajim-logo.svg`, `/garajim-icon-180.png`, `/garajim-icon-512.png`, `/manifest.json`.
 
-`karne.html`, `karne.js`, `karne.css` ve `/api/karne/*` **önbelleğe girmez** — `fetch` işleyicisi `/karne` ile başlayan yolları doğrudan ağa geçirir. Karne anonim ve anlık veri gösterir; bayat kopya paylaşılan araç hakkında yanlış bilgi verir.
+`karne.html`, `acil.html` ve bunların varlıkları ile `/api/karne/*` **önbelleğe girmez** — `fetch` işleyicisi `/karne` ve `/acil` ile başlayan yolları doğrudan ağa geçirir. Bu sayfalar anonim ve anlık veri gösterir; bayat kopya paylaşılan araç hakkında yanlış bilgi verir.
 
 ### Otomatik onay üç şartı
 

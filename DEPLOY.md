@@ -2,7 +2,7 @@
 
 MonsterASP.NET üzerine Web Deploy (MSDeploy) ile yayın içindir. Adımları sırayla uygula; bir adım beklenenden farklı sonuç verirse **dur**, sonraki adıma geçme.
 
-Yayın öncesi durum: 234 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
+Yayın öncesi durum: 554 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
 
 ## 1. Veritabanı yedeği (atlanamaz)
 
@@ -23,6 +23,9 @@ Yayından **önce** ayarla:
 | `ConnectionStrings__Default` | Uzak MSSQL bağlantısı | LocalDB içeriyorsa uygulama açılmayı reddeder |
 | `Jwt__Key` | 32+ karakter | Boş veya kısa ise uygulama açılmayı reddeder |
 | `DemoSeed__Enabled` | `true` veya `false` | Canlıda demo verisi isteniyor mu, karar ver |
+| `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
+
+Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 01-12..01-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet ödülü 30 gün) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 
 `Documents__StoragePath` neden önemli: değer boş bırakılırsa uygulama belgeleri **publish klasörünün içine**, `App_Data/documents` altına yazar. Publish klasörü MSDeploy'un senkron hedefidir; oraya yazılan kullanıcı verisi her yayında risk altındadır (bkz. bölüm 3).
 
@@ -56,6 +59,8 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 3. **Driver** hesabıyla giriş: yalnızca zimmetli aracı görüyor mu? Zimmetsiz bir araç kimliğine `GET /api/Vehicles/{id}` → **404** mü?
 4. Bir bakım kaydına **belge yükle**, sonra **indir**. Dosya doğru geliyor mu?
 5. **Eski oturumlar**: yayından önce açık kalmış bir tarayıcı sekmesini yenile. Rol taşımayan oturum giriş ekranına düşmeli. Düşmüyorsa kullanıcıya çıkış-giriş yaptır.
+6. **Anonim uçlar**: bir karne bağlantısı ve bir takvim aboneliği oluştur; `GET /api/karne/{token}` ve `GET /api/takvim/{token}.ics` girişsiz **200** dönüyor mu, ICS `text/calendar` mi? Bu iki bağlantı tam URL içermiyorsa `App__BaseUrl` ayarlanmamıştır.
+7. **Plan limiti**: bireysel bir şirkette limit üstü araç eklemeyi dene; **402** dönmeli.
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

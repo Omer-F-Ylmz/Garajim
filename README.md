@@ -152,7 +152,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `ConnectionStrings__Default` | Zorunlu | — | Uzak MSSQL. LocalDB içerirse uygulama üretimde başlamayı reddeder |
 | `Jwt__Key` | Zorunlu | — | En az 32 karakter, rastgele |
 | `Documents__StoragePath` | Zorunlu sayılır | `App_Data/documents` (publish klasörünün içi) | `..\private\documents` önerilir; varsayılan yol publish hedefinin içindedir |
-| `App__BaseUrl` | Karne için zorunlu | boş | Boşsa karne bağlantısı göreli üretilir ve paylaşılamaz; hatırlatma e-postasındaki link de düşer |
+| `App__BaseUrl` | Karne, takvim ve davet için zorunlu | boş | Boşsa karne / ICS / davet bağlantısı göreli üretilir ve paylaşılamaz; hatırlatma e-postasındaki link de düşer |
 | `Receipts__ApiKey` | Fiş okuma için zorunlu | boş | Boşsa akış çalışır ama her fiş boş taslak ve sıfır güvenle döner |
 | `Receipts__Provider` | Opsiyonel | `Gemini` | `Gemini` veya `OpenAI` |
 | `Receipts__Model` | Opsiyonel | `gemini-2.5-flash` / `gpt-4.1-nano` | Sağlayıcıya göre |
@@ -161,6 +161,11 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Documents__MaxFileSizeBytes` | Opsiyonel | `5242880` | Dosya başına sınır |
 | `Documents__CompanyQuotaBytes` | Opsiyonel | `262144000` | Şirket başına toplam belge alanı |
 | `Smtp__Host` `Smtp__Port` `Smtp__User` `Smtp__Pass` `Smtp__From` | Opsiyonel | boş | Eksikse gönderim loglanıp atlanır, uygulama çökmez |
+| `Evrak__KisLastigi` | Opsiyonel | `01-12..01-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA) |
+| `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |
+| `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |
+| `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
+| `Plan__DavetOdulGun` | Opsiyonel | `30` | Davet başına iki tarafa eklenen bonus gün |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
 
@@ -193,7 +198,43 @@ Aracın belgeli geçmişi tek bağlantıyla paylaşılır — satışta alıcıy
 - `karne.html` ana uygulamadan bağımsız çalışır, yazdırma düzeni taşır ve QR kodu istemcide üretilir (dış servise istek gitmez). Bu sayfa service worker önbelleğine alınmaz.
 - `GET /api/vehicles/karne-stats` (Owner) araç sayısı, karnesi aktif araç oranı ve toplam görüntülenmeyi verir.
 
+## Evrak takvimi
+
+Muayene, sigorta, kasko, egzoz, kış lastiği ve kişiye ait belgeler (ehliyet, SRC, psikoteknik) tek yerde toplanır.
+
+- `POST /api/evrak` araç ya da kullanıcı belgesi açar; ikisinden **tam biri** dolu olmalıdır (veritabanı check constraint'i ile sabit).
+- `POST /api/evrak/{id}/yenile` eski kaydı pasifleştirir, `EvrakKurallari`'nın önerdiği yeni bitiş tarihiyle zinciri sürdürür.
+- Hatırlatma job'ı evrakları da tarar; uyarı günleri `Evrak:UyariGunleri` (varsayılan 30 ve 7) ile ayarlanır ve gönderim talep-önce-gönder deseniyle bir kez yapılır.
+- `POST /api/takvim/abonelik` kişiye özel bir ICS akışı üretir (`/api/takvim/{token}.ics`); telefon takvimine eklenir, VALARM ile 7 gün önce uyarır. Token SHA-256 özetiyle saklanır, uç IP başına dakikada 30 istekle sınırlıdır.
+- Acil durum kartı: karne paylaşımında `AcilKart` açıksa `/acil?t={token}` sayfası plaka, acil kişi ve trafik sigortası bilgisini kartvizit boyutunda yazdırılabilir gösterir.
+
+## Başka uygulamadan geçiş
+
+`Ayarlar → Başka uygulamadan geçiş` Drivvo, Fuelio ve düz CSV dosyalarını alır.
+
+- Ayraç (`;` `,` TAB), kodlama (UTF-8 / Windows-1254) ve sayı biçimi (`1.484,36` / `1,484.36`) otomatik sezilir; tarih `gg.AA.yyyy` ve ISO biçimlerini kabul eder.
+- Fuelio'nun `## Vehicle / ## Log / ## Costs` bölümlerinden kayıt türüne uyan bölüm seçilir.
+- `POST /api/import/onizle` şablonu, önerilen sütun eşlemesini, ilk 20 satırı ve okunamayan satırları döner; `POST /api/import/uygula` `dryRun` ile önce denenir.
+- Aynı dosya ikinci kez yüklendiğinde hiçbir kayıt tekrarlanmaz: her satırın `(aracId + alanlar)` SHA-256 özeti `ImportKayitlari` tablosunda tekil indekslidir.
+- Sınırlar: 5 MB, 5.000 satır. Araç kilometresi yalnız artan yönde güncellenir. Driver içe aktaramaz.
+
+## Maliyet analizi
+
+- `GET /api/vehicles/{id}/maliyet` dönem toplamını yakıt / bakım / masraf olarak kırar, km başı maliyeti, 12 aylık seriyi ve tüketim serisini (L/100km, elektrikli araçta kWh/100km) verir.
+- `GET /api/reports/filo-maliyet` (Owner / Manager) araçları km başı maliyete göre sıralar. Km başı hesap için araçta en az iki yakıt kaydı gerekir; tek kayıtlı araç listede kalır ama oranı boş döner.
+- Tüm toplamlar SQL tarafında `GROUP BY` ile hesaplanır.
+
+## Yolculuk defteri ve lastik
+
+- `POST /api/yolculuk` iş/özel ayrımıyla yolculuk yazar; `MesafeKm` alanı `BitisKm - BaslangicKm` değişmezini hem check constraint hem testle korur. `GET /api/yolculuk/ozet` vergi beyanı için iş oranını verir.
+- `POST /api/lastik` yeni set takar; araçta takılı set varsa aynı kilometrede otomatik sökülür ve `ToplamKm` alanı kapanır. `GET /api/lastik` kış lastiği dönemi ve diş derinliği uyarısını da döner.
+
+## Davet programı
+
+`GET /api/davet` şirkete özel 8 karakterli kodu ilk istekte üretir ve sabit tutar. Kodla kaydolan şirket ve davet eden şirket `Plan:DavetOdulGun` (varsayılan 30) kadar bonus gün kazanır; geçersiz kod kaydı reddeder, sessizce yutulmaz.
+
 ## Kalibrasyon aracı
+
 
 `tools/Garajim.Calibration`, fiş çıkarımının gerçek doğruluğunu bir cevap anahtarına karşı ölçer.
 
@@ -226,7 +267,18 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET|POST /api/documents`, `GET /api/documents/{id}/download`, `DELETE /api/documents/{id}`
 - `GET|POST /api/team`, `PUT /api/team/{id}/role`, `PUT /api/team/{id}/deactivate`
 - `GET|POST /api/assignments`, `PUT /api/assignments/transfer`, `PUT /api/assignments/end`
+- `GET|POST /api/evrak`, `PUT|DELETE /api/evrak/{id}`, `POST /api/evrak/{id}/yenile`, `GET /api/vehicles/{id}/evrak`
+- `POST|DELETE /api/takvim/abonelik`, `GET /api/takvim/{token}.ics`
+- `GET /api/karne/{token}/acil`
+- `POST /api/import/onizle`, `POST /api/import/uygula`
+- `GET /api/export/{yakit|bakim|masraf|evrak}.csv?vehicleId=&baslangic=&bitis=`
+- `GET /api/vehicles/{id}/maliyet?baslangic=&bitis=`, `GET /api/reports/filo-maliyet?baslangic=&bitis=`, `GET /api/reports/dashboard`
+- `GET /api/team/belgeler`
+- `GET|POST /api/yolculuk`, `GET /api/yolculuk/ozet`, `PUT|DELETE /api/yolculuk/{id}`
+- `GET|POST /api/lastik`, `PUT /api/lastik/{id}/sok`, `DELETE /api/lastik/{id}`
+- `GET /api/davet`
 - `POST /api/price/estimate`
+
 
 ## Fiyat Tahmini (ML.NET)
 
