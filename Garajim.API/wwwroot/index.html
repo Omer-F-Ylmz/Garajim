@@ -166,6 +166,57 @@
                 <p id="takvim-url" class="karne-url"></p>
                 <button id="takvim-kopyala" type="button" class="ghost">Kopyala</button>
             </div>
+
+            <h3>Başka uygulamadan geçiş</h3>
+            <p class="hint">Drivvo, Fuelio veya kendi CSV dosyanızı yükleyin. Ayraç, kodlama ve tarih biçimi otomatik sezilir; aynı dosyayı ikinci kez yüklerseniz kayıt tekrarlanmaz.</p>
+            <div class="grid-form">
+                <div>
+                    <label for="import-arac">Araç</label>
+                    <select id="import-arac"></select>
+                </div>
+                <div>
+                    <label for="import-tur">Kayıt türü</label>
+                    <select id="import-tur">
+                        <option value="Yakit">Yakıt</option>
+                        <option value="Bakim">Bakım</option>
+                        <option value="Masraf">Masraf</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="import-dosya">CSV dosyası</label>
+                    <input id="import-dosya" type="file" accept=".csv,text/csv">
+                </div>
+            </div>
+            <div class="inline-form">
+                <button id="import-onizle" type="button" class="primary">Dosyayı çöz</button>
+                <button id="import-sifirla" type="button" class="ghost">Sıfırla</button>
+            </div>
+
+            <div id="import-onizleme" class="panel-inline hidden">
+                <p id="import-ozet" class="hint"></p>
+                <div id="import-eslesme" class="grid-form"></div>
+                <div class="table-wrap">
+                    <table id="import-ornek">
+                        <thead><tr id="import-ornek-baslik"></tr></thead>
+                        <tbody id="import-ornek-govde"></tbody>
+                    </table>
+                </div>
+                <div class="inline-form">
+                    <button id="import-deneme" type="button" class="ghost">Deneme çalıştır</button>
+                    <button id="import-uygula" type="button" class="primary">İçeri aktar</button>
+                </div>
+            </div>
+
+            <div id="import-sonuc" class="panel-inline hidden">
+                <p id="import-sonuc-ozet" class="hint"></p>
+                <div class="table-wrap">
+                    <table id="import-hatalar">
+                        <thead><tr><th>Satır</th><th>Sebep</th><th>İçerik</th></tr></thead>
+                        <tbody id="import-hata-govde"></tbody>
+                    </table>
+                </div>
+                <button id="import-hata-indir" type="button" class="ghost hidden">Hatalı satırları indir</button>
+            </div>
         </section>
 
         <section id="karne-box" class="panel hidden">

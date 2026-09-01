@@ -164,7 +164,7 @@ namespace Garajim.Business.Concrete
 
             if (dto.DryRun || eklenecekler.Count == 0)
             {
-                return new SuccessDataResult<ImportSonucDto>(sonuc, Messages.ImportOnizlendi);
+                return new SuccessDataResult<ImportSonucDto>(sonuc, dto.DryRun ? Messages.ImportOnizlendi : Messages.ImportTamamlandi);
             }
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync();

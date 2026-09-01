@@ -1433,10 +1433,307 @@
         });
     }
 
+    var IMPORT_ALANLARI = [
+        { key: "tarih", label: "Tarih" },
+        { key: "km", label: "Kilometre" },
+        { key: "litre", label: "Litre" },
+        { key: "tutar", label: "Tutar" },
+        { key: "birimfiyat", label: "Birim fiyat" },
+        { key: "kategori", label: "Kategori" },
+        { key: "aciklama", label: "Açıklama" },
+        { key: "servis", label: "Servis" }
+    ];
+
+    var importDurum = { onizleme: null, hatalar: [] };
+
+    function importAlanlari(kayitTuru) {
+        if (kayitTuru === "Yakit") {
+            return ["tarih", "km", "litre", "tutar", "birimfiyat"];
+        }
+        if (kayitTuru === "Bakim") {
+            return ["tarih", "km", "tutar", "servis", "aciklama"];
+        }
+        return ["tarih", "tutar", "kategori", "aciklama"];
+    }
+
+    function importZorunlular(kayitTuru) {
+        return kayitTuru === "Yakit" ? ["tarih", "tutar", "litre"] : ["tarih", "tutar"];
+    }
+
+    function importAlanAdi(key) {
+        for (var i = 0; i < IMPORT_ALANLARI.length; i++) {
+            if (IMPORT_ALANLARI[i].key === key) {
+                return IMPORT_ALANLARI[i].label;
+            }
+        }
+        return key;
+    }
+
+    function fillImportVehicles() {
+        var select = el("import-arac");
+        var onceki = select.value;
+        clear(select);
+        state.vehicles.forEach(function (vehicle) {
+            var option = document.createElement("option");
+            option.value = String(vehicle.id);
+            option.textContent = vehicle.plate + " - " + vehicle.brand + " " + vehicle.model;
+            select.appendChild(option);
+        });
+        if (onceki) {
+            select.value = onceki;
+        } else if (state.selectedVehicleId) {
+            select.value = String(state.selectedVehicleId);
+        }
+    }
+
+    function renderImportEslesme(onizleme) {
+        var kap = el("import-eslesme");
+        clear(kap);
+
+        var zorunlular = importZorunlular(onizleme.kayitTuru);
+
+        importAlanlari(onizleme.kayitTuru).forEach(function (alan) {
+            var hucre = document.createElement("div");
+
+            var etiket = document.createElement("label");
+            etiket.setAttribute("for", "import-alan-" + alan);
+            etiket.textContent = importAlanAdi(alan) + (zorunlular.indexOf(alan) >= 0 ? " *" : "");
+            hucre.appendChild(etiket);
+
+            var select = document.createElement("select");
+            select.id = "import-alan-" + alan;
+            select.setAttribute("data-alan", alan);
+
+            var bos = document.createElement("option");
+            bos.value = "";
+            bos.textContent = "— eşlenmedi —";
+            select.appendChild(bos);
+
+            onizleme.basliklar.forEach(function (baslik, sira) {
+                var option = document.createElement("option");
+                option.value = String(sira);
+                option.textContent = baslik || ("Sütun " + (sira + 1));
+                select.appendChild(option);
+            });
+
+            var onerilen = onizleme.onerilenEslesme && onizleme.onerilenEslesme[alan];
+            select.value = (onerilen === 0 || onerilen) ? String(onerilen) : "";
+
+            hucre.appendChild(select);
+            kap.appendChild(hucre);
+        });
+    }
+
+    function renderImportOrnek(onizleme) {
+        var baslikSatiri = el("import-ornek-baslik");
+        clear(baslikSatiri);
+        onizleme.basliklar.forEach(function (baslik, sira) {
+            var th = document.createElement("th");
+            th.textContent = baslik || ("Sütun " + (sira + 1));
+            baslikSatiri.appendChild(th);
+        });
+
+        var govde = el("import-ornek-govde");
+        clear(govde);
+        (onizleme.ornekSatirlar || []).forEach(function (satir) {
+            var tr = document.createElement("tr");
+            onizleme.basliklar.forEach(function (baslik, sira) {
+                var td = document.createElement("td");
+                td.textContent = satir[sira] || "";
+                tr.appendChild(td);
+            });
+            govde.appendChild(tr);
+        });
+    }
+
+    function renderImportHatalar(hatalar) {
+        importDurum.hatalar = hatalar || [];
+        var govde = el("import-hata-govde");
+        clear(govde);
+
+        importDurum.hatalar.forEach(function (hata) {
+            var tr = document.createElement("tr");
+
+            var no = document.createElement("td");
+            no.textContent = String(hata.satirNo);
+            tr.appendChild(no);
+
+            var sebep = document.createElement("td");
+            sebep.textContent = hata.sebep;
+            tr.appendChild(sebep);
+
+            var icerik = document.createElement("td");
+            icerik.textContent = hata.icerik || "";
+            tr.appendChild(icerik);
+
+            govde.appendChild(tr);
+        });
+
+        el("import-hata-indir").classList.toggle("hidden", importDurum.hatalar.length === 0);
+    }
+
+    function importEslesmeTopla() {
+        var eslesme = {};
+        var selectler = el("import-eslesme").querySelectorAll("select");
+        for (var i = 0; i < selectler.length; i++) {
+            var deger = selectler[i].value;
+            if (deger !== "") {
+                eslesme[selectler[i].getAttribute("data-alan")] = Number(deger);
+            }
+        }
+        return eslesme;
+    }
+
+    function importSifirla() {
+        importDurum.onizleme = null;
+        importDurum.hatalar = [];
+        el("import-dosya").value = "";
+        el("import-onizleme").classList.add("hidden");
+        el("import-sonuc").classList.add("hidden");
+        clear(el("import-eslesme"));
+        clear(el("import-ornek-baslik"));
+        clear(el("import-ornek-govde"));
+        clear(el("import-hata-govde"));
+    }
+
+    function importDosya() {
+        var girdi = el("import-dosya");
+        return girdi.files && girdi.files.length > 0 ? girdi.files[0] : null;
+    }
+
+    function importUygula(dryRun) {
+        clearMessages();
+
+        var dosya = importDosya();
+        if (!dosya) {
+            showMessage(el("app-message"), "Önce bir CSV dosyası seçin.", false);
+            return;
+        }
+
+        var aracId = el("import-arac").value;
+        if (!aracId) {
+            showMessage(el("app-message"), "Önce bir araç seçin.", false);
+            return;
+        }
+
+        var kayitTuru = el("import-tur").value;
+        var eslesme = importEslesmeTopla();
+
+        var eksik = importZorunlular(kayitTuru).filter(function (alan) {
+            return !(alan in eslesme);
+        });
+        if (eksik.length > 0) {
+            showMessage(el("app-message"), "Zorunlu sütunlar eşlenmeli: " + eksik.map(importAlanAdi).join(", "), false);
+            return;
+        }
+
+        var form = new FormData();
+        form.append("file", dosya);
+        form.append("kayitTuru", kayitTuru);
+        form.append("vehicleId", aracId);
+        form.append("eslesme", JSON.stringify(eslesme));
+        form.append("dryRun", dryRun ? "true" : "false");
+
+        api("/api/Import/uygula", { method: "POST", body: form }).then(function (result) {
+            var veri = result.data;
+            el("import-sonuc").classList.remove("hidden");
+            el("import-sonuc-ozet").textContent = (veri.dryRun ? "Deneme: " : "Sonuç: ")
+                + veri.eklenen + (veri.dryRun ? " kayıt eklenecek, " : " kayıt eklendi, ")
+                + veri.atlanan + " mükerrer atlandı, "
+                + (veri.hatali || []).length + " satır hatalı.";
+            renderImportHatalar(veri.hatali);
+
+            showMessage(el("app-message"), (result && result.message) || "İşlem tamamlandı.", true);
+
+            if (!veri.dryRun && veri.eklenen > 0) {
+                loadVehicles();
+                loadActiveTab();
+            }
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function importHatalariIndir() {
+        if (importDurum.hatalar.length === 0) {
+            return;
+        }
+
+        var satirlar = ["satir;sebep;icerik"];
+        importDurum.hatalar.forEach(function (hata) {
+            satirlar.push(hata.satirNo + ";" + (hata.sebep || "").replace(/;/g, ",") + ";" + (hata.icerik || "").replace(/;/g, ","));
+        });
+
+        var blob = new Blob(["﻿" + satirlar.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "hatali-satirlar.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function bindImport() {
+        el("import-onizle").addEventListener("click", function () {
+            clearMessages();
+
+            var dosya = importDosya();
+            if (!dosya) {
+                showMessage(el("app-message"), "Önce bir CSV dosyası seçin.", false);
+                return;
+            }
+
+            var form = new FormData();
+            form.append("file", dosya);
+            form.append("kayitTuru", el("import-tur").value);
+
+            api("/api/Import/onizle", { method: "POST", body: form }).then(function (result) {
+                var veri = result.data;
+                importDurum.onizleme = veri;
+
+                el("import-onizleme").classList.remove("hidden");
+                el("import-sonuc").classList.add("hidden");
+                el("import-ozet").textContent = veri.sablon + " biçimi sezildi. Ayraç: " + veri.ayrac
+                    + ", " + veri.toplamSatir + " satır, "
+                    + (veri.hataliSatirlar || []).length + " satır okunamadı.";
+
+                renderImportEslesme(veri);
+                renderImportOrnek(veri);
+                renderImportHatalar(veri.hataliSatirlar);
+                fillImportVehicles();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("import-tur").addEventListener("change", function () {
+            if (importDurum.onizleme) {
+                importDurum.onizleme.kayitTuru = el("import-tur").value;
+                renderImportEslesme(importDurum.onizleme);
+            }
+        });
+
+        el("import-deneme").addEventListener("click", function () {
+            importUygula(true);
+        });
+
+        el("import-uygula").addEventListener("click", function () {
+            importUygula(false);
+        });
+
+        el("import-sifirla").addEventListener("click", importSifirla);
+        el("import-hata-indir").addEventListener("click", importHatalariIndir);
+    }
+
     function bindAyarlar() {
         el("ayarlar-btn").addEventListener("click", function () {
             var kutu = el("ayarlar-box");
             kutu.classList.toggle("hidden", !kutu.classList.contains("hidden"));
+            if (!kutu.classList.contains("hidden")) {
+                fillImportVehicles();
+            }
         });
 
         el("ayarlar-close").addEventListener("click", function () {
@@ -2038,6 +2335,7 @@
         bindKarne();
         bindEvrak();
         bindAyarlar();
+        bindImport();
 
         if (readSession()) {
             enterApp();
