@@ -398,6 +398,7 @@
         if (tab === "bakim") {
             loadMaintenance();
         } else if (tab === "yakit") {
+            yakitAlanlariniAyarla();
             loadFuel();
         } else if (tab === "masraf") {
             loadExpenses();
@@ -412,6 +413,8 @@
             loadAssignments();
         } else if (tab === "yolculuk") {
             loadYolculuk();
+        } else if (tab === "lastik") {
+            loadLastik();
         } else if (tab === "parca") {
             loadPartMemory();
         } else if (tab === "evrak") {
@@ -685,14 +688,15 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 5, "Kayıt yok.");
+                emptyRow(tbody, 6, "Kayıt yok.");
                 return;
             }
             rows.forEach(function (item) {
                 var tr = document.createElement("tr");
                 tr.appendChild(make("td", formatDate(item.date)));
                 tr.appendChild(make("td", km(item.km)));
-                tr.appendChild(make("td", literFormat.format(Number(item.liters)) + " L"));
+                tr.appendChild(make("td", Number(item.liters) > 0 ? literFormat.format(Number(item.liters)) + " L" : "-"));
+                tr.appendChild(make("td", item.kwh === null ? "-" : literFormat.format(Number(item.kwh)) + " kWh" + (item.sarjTuru ? " (" + labelOf(SARJ_TURU, item.sarjTuru) + ")" : "")));
                 tr.appendChild(make("td", money(item.totalCost)));
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Fuel/" + item.id, loadFuel); }));
                 tbody.appendChild(tr);
@@ -933,6 +937,10 @@
             cards.appendChild(card("Toplam maliyet", money(data.toplamMaliyet), true));
             cards.appendChild(card("Km başına maliyet", data.maliyetKmBasi === null ? "—" : money(data.maliyetKmBasi), true));
             cards.appendChild(card("Ortalama tüketim", data.litre100Km === null ? "—" : literFormat.format(Number(data.litre100Km)) + " L/100km"));
+            if (data.kwh100Km !== null || Number(data.toplamKwh) > 0) {
+                cards.appendChild(card("Şarj tüketimi", data.kwh100Km === null ? "—" : literFormat.format(Number(data.kwh100Km)) + " kWh/100km"));
+                cards.appendChild(card("Toplam şarj", literFormat.format(Number(data.toplamKwh)) + " kWh"));
+            }
             cards.appendChild(card("Mesafe", km(data.mesafeKm)));
             cards.appendChild(card("Yakıt", money(data.toplamYakit)));
             cards.appendChild(card("Bakım", money(data.toplamBakim)));
@@ -1249,6 +1257,211 @@
         });
     }
 
+    var LASTIK_MEVSIM = [
+        ["Yaz", "Yaz"],
+        ["Kis", "Kış"],
+        ["DortMevsim", "Dört mevsim"]
+    ];
+
+    var SARJ_TURU = [
+        ["", "-"],
+        ["Ev", "Ev"],
+        ["Isyeri", "İş yeri"],
+        ["HizliSarj", "Hızlı şarj"]
+    ];
+
+    function seciliArac() {
+        for (var i = 0; i < state.vehicles.length; i++) {
+            if (state.vehicles[i].id === state.selectedVehicleId) {
+                return state.vehicles[i];
+            }
+        }
+        return null;
+    }
+
+    function yakitAlanlariniAyarla() {
+        var arac = seciliArac();
+        var tur = arac ? arac.fuelType : null;
+        var elektrikli = tur === "Elektrik";
+        var hibrit = tur === "Hibrit";
+
+        el("fuel-kwh-box").classList.toggle("hidden", !(elektrikli || hibrit));
+        el("fuel-sarj-box").classList.toggle("hidden", !(elektrikli || hibrit));
+
+        var litre = el("fuel-liters");
+        litre.required = !elektrikli;
+        litre.disabled = elektrikli;
+        if (elektrikli) {
+            litre.value = "";
+        }
+
+        el("fuel-kwh").required = elektrikli;
+    }
+
+    function renderLastikRows(setler) {
+        var tbody = el("lastik-rows");
+        clear(tbody);
+
+        if (setler.length === 0) {
+            emptyRow(tbody, 8, "Bu araç için lastik seti kaydı yok.");
+            return;
+        }
+
+        setler.forEach(function (set) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", set.ad + (set.takili ? " (takılı)" : "")));
+            tr.appendChild(make("td", labelOf(LASTIK_MEVSIM, set.mevsim)));
+            tr.appendChild(make("td", [set.marka, set.ebat].filter(Boolean).join(" / ") || "-"));
+            tr.appendChild(make("td", formatDate(set.takilmaTarihi) + " · " + km(set.takilmaKm)));
+            tr.appendChild(make("td", set.sokulmeTarihi ? formatDate(set.sokulmeTarihi) + " · " + km(set.sokulmeKm) : "-"));
+            tr.appendChild(make("td", set.takili ? "-" : km(set.toplamKm)));
+            tr.appendChild(make("td", set.disDerinligiMm === null ? "-" : set.disDerinligiMm + " mm"));
+
+            var islem = document.createElement("td");
+            if (set.takili) {
+                var sok = make("button", "Sök", "link-btn");
+                sok.type = "button";
+                sok.addEventListener("click", function () { lastikSok(set); });
+                islem.appendChild(sok);
+            }
+            var sil = make("button", "Sil", "link-btn");
+            sil.type = "button";
+            sil.addEventListener("click", function () { lastikSil(set.id); });
+            islem.appendChild(sil);
+            tr.appendChild(islem);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadLastik() {
+        if (!state.selectedVehicleId) {
+            clear(el("lastik-rows"));
+            el("lastik-uyari").textContent = "";
+            return Promise.resolve();
+        }
+
+        return api("/api/Lastik?vehicleId=" + state.selectedVehicleId).then(function (result) {
+            var durum = (result && result.data) || {};
+            el("lastik-uyari").textContent = durum.uyari || (durum.kisLastigiDonemi ? "Kış lastiği dönemindesiniz." : "");
+            renderLastikRows(durum.setler || []);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function lastikSok(set) {
+        var arac = seciliArac();
+        var varsayilanKm = arac ? arac.currentKm : set.takilmaKm;
+        var girilen = window.prompt("Sökülme kilometresi", String(varsayilanKm));
+        if (girilen === null) {
+            return;
+        }
+
+        clearMessages();
+        api("/api/Lastik/" + set.id + "/sok", {
+            method: "PUT",
+            body: {
+                sokulmeTarihi: todayInput(),
+                sokulmeKm: Number(girilen)
+            }
+        }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Set söküldü.", true);
+            loadLastik();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function lastikSil(id) {
+        clearMessages();
+        api("/api/Lastik/" + id, { method: "DELETE" }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Set silindi.", true);
+            loadLastik();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function bindLastik() {
+        el("lastik-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            if (!state.selectedVehicleId) {
+                showMessage(el("app-message"), "Önce bir araç seçin.", false);
+                return;
+            }
+
+            var dis = el("lastik-dis").value;
+
+            api("/api/Lastik", {
+                method: "POST",
+                body: {
+                    vehicleId: state.selectedVehicleId,
+                    ad: el("lastik-ad").value,
+                    mevsim: el("lastik-mevsim").value,
+                    marka: el("lastik-marka").value,
+                    ebat: el("lastik-ebat").value,
+                    disDerinligiMm: dis === "" ? null : Number(dis),
+                    takilmaTarihi: el("lastik-tarih").value,
+                    takilmaKm: Number(el("lastik-km").value)
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Set takıldı.", true);
+                el("lastik-form").reset();
+                el("lastik-tarih").value = todayInput();
+                loadLastik();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
+    function loadDavet() {
+        return api("/api/Davet").then(function (result) {
+            var durum = (result && result.data) || {};
+            el("davet-kod").textContent = durum.paylasimBaglantisi || durum.kod || "";
+            el("davet-ozet").textContent = durum.davetSayisi + " davet · " + durum.odulGun + " bonus gün"
+                + (durum.davetEden ? " · sizi " + durum.davetEden + " davet etti" : "");
+
+            var tbody = el("davet-rows");
+            clear(tbody);
+            var davetliler = durum.davetliler || [];
+            if (davetliler.length === 0) {
+                emptyRow(tbody, 2, "Henüz davet edilen şirket yok.");
+                return;
+            }
+            davetliler.forEach(function (satir) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", satir.sirketAdi));
+                tr.appendChild(make("td", formatDate(satir.katilmaTarihi)));
+                tbody.appendChild(tr);
+            });
+        }).catch(function () {
+            el("davet-ozet").textContent = "Davet bilgisi görüntülenemedi.";
+        });
+    }
+
+    function bindDavet() {
+        el("davet-kopyala").addEventListener("click", function () {
+            var metin = el("davet-kod").textContent;
+            if (metin && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(metin).then(function () {
+                    showMessage(el("app-message"), "Davet bağlantısı kopyalandı.", true);
+                });
+            }
+        });
+    }
+
+    function davetKodunuUrldenOku() {
+        var eslesme = /[?&]davet=([A-Za-z0-9]{1,12})/.exec(window.location.search);
+        if (eslesme) {
+            el("register-davet").value = eslesme[1].toUpperCase();
+            switchAuthTab(false);
+        }
+    }
+
     function bindAuth() {
         el("tab-login").addEventListener("click", function () { switchAuthTab(true); });
         el("tab-register").addEventListener("click", function () { switchAuthTab(false); });
@@ -1280,7 +1493,8 @@
                     fullName: el("register-name").value,
                     email: el("register-email").value,
                     password: el("register-password").value,
-                    companyName: el("register-company").value
+                    companyName: el("register-company").value,
+                    davetKodu: el("register-davet").value
                 }
             }).then(function (result) {
                 saveSession(result.data.token, result.data);
@@ -2075,6 +2289,7 @@
             kutu.classList.toggle("hidden", !kutu.classList.contains("hidden"));
             if (!kutu.classList.contains("hidden")) {
                 fillImportVehicles();
+                loadDavet();
             }
         });
 
@@ -2540,7 +2755,9 @@
                     vehicleId: state.selectedVehicleId,
                     date: el("fuel-date").value,
                     km: Number(el("fuel-km").value),
-                    liters: Number(el("fuel-liters").value),
+                    liters: el("fuel-liters").value === "" ? 0 : Number(el("fuel-liters").value),
+                    kwh: el("fuel-kwh").value === "" ? null : Number(el("fuel-kwh").value),
+                    sarjTuru: el("fuel-sarj").value === "" ? null : el("fuel-sarj").value,
                     totalCost: Number(el("fuel-cost").value)
                 }
             }).then(function (result) {
@@ -2644,6 +2861,8 @@
         fillSelect(el("receipt-category"), EXPENSE_CATEGORIES);
         fillSelect(el("evrak-tur"), EVRAK_TYPES);
         fillSelect(el("yolculuk-amac"), YOLCULUK_AMAC);
+        fillSelect(el("lastik-mevsim"), LASTIK_MEVSIM);
+        fillSelect(el("fuel-sarj"), SARJ_TURU);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -2659,6 +2878,7 @@
         el("fuel-date").value = today;
         el("expense-date").value = today;
         el("yolculuk-tarih").value = today;
+        el("lastik-tarih").value = today;
         el("report-end").value = today;
         var start = new Date();
         start.setMonth(start.getMonth() - 6);
@@ -2684,6 +2904,9 @@
         bindImport();
         bindYolculuk();
         bindExport();
+        bindLastik();
+        bindDavet();
+        davetKodunuUrldenOku();
 
         if (readSession()) {
             enterApp();
