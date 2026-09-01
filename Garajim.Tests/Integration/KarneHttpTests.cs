@@ -149,6 +149,59 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task TutarGosterAcikkenParcaTutariVeBakimToplamiGorunur()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN012");
+            await BakimEkleAsync(sahip, aracId);
+
+            var karne = await VeriAsync(await KarneOlusturAsync(sahip, aracId, TamKapsam));
+            var token = TokenAl(karne.GetProperty("url").GetString());
+
+            var anonim = _factory.CreateClient();
+            var govde = await VeriAsync(await anonim.GetAsync($"/api/karne/{token}"));
+
+            var bakim = Assert.Single(govde.GetProperty("bakimlar").EnumerateArray());
+            Assert.Equal(4200m, bakim.GetProperty("tutar").GetDecimal());
+
+            var parca = Assert.Single(govde.GetProperty("parcalar").EnumerateArray());
+            Assert.Equal("MotorYagi", parca.GetProperty("parcaTuru").GetString());
+            Assert.Equal(1800m, parca.GetProperty("toplamTutar").GetDecimal());
+
+            Assert.Equal(4200m, govde.GetProperty("bakimToplami").GetDecimal());
+        }
+
+        [Fact]
+        public async Task TutarGosterKapaliykenParcaTutariVeBakimToplamiSizmaz()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN013");
+            await BakimEkleAsync(sahip, aracId);
+
+            var karne = await VeriAsync(await KarneOlusturAsync(sahip, aracId, new
+            {
+                bakimGecmisi = true,
+                parcaHafizasi = true,
+                yakitOzeti = true,
+                belgeler = true,
+                plakaGoster = true,
+                tutarGoster = false
+            }));
+            var token = TokenAl(karne.GetProperty("url").GetString());
+
+            var anonim = _factory.CreateClient();
+            var govde = await VeriAsync(await anonim.GetAsync($"/api/karne/{token}"));
+
+            var bakim = Assert.Single(govde.GetProperty("bakimlar").EnumerateArray());
+            Assert.Equal(JsonValueKind.Null, bakim.GetProperty("tutar").ValueKind);
+
+            var parca = Assert.Single(govde.GetProperty("parcalar").EnumerateArray());
+            Assert.Equal(0m, parca.GetProperty("toplamTutar").GetDecimal());
+
+            Assert.Equal(JsonValueKind.Null, govde.GetProperty("bakimToplami").ValueKind);
+        }
+
+        [Fact]
         public async Task PasifVeSuresiDolmusKarne404Doner()
         {
             var sahip = await SahipOlusturAsync();

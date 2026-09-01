@@ -180,3 +180,9 @@ a {
         display: none;
     }
 }
+
+.toplam {
+    margin: 10px 0 0;
+    text-align: right;
+    font-weight: 600;
+}

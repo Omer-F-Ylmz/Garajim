@@ -136,11 +136,13 @@ namespace Garajim.Business.Concrete
                         Tutar = paylasim.TutarGoster ? m.Cost : null,
                         ServisAdi = m.ServiceName
                     }).ToList();
+
+                karne.BakimToplami = paylasim.TutarGoster ? bakimlar.Sum(m => m.Cost) : null;
             }
 
             if (paylasim.ParcaHafizasi)
             {
-                karne.Parcalar = await ParcaOzetiAsync(vehicle);
+                karne.Parcalar = await ParcaOzetiAsync(vehicle, paylasim.TutarGoster);
             }
 
             if (paylasim.YakitOzeti)
@@ -228,7 +230,7 @@ namespace Garajim.Business.Concrete
             return paylasim;
         }
 
-        private async Task<List<ParcaHafizasiDto>> ParcaOzetiAsync(Vehicle vehicle)
+        private async Task<List<ParcaHafizasiDto>> ParcaOzetiAsync(Vehicle vehicle, bool tutarGoster)
         {
             var parcalar = await _partDal.GetByVehicleAsync(vehicle.Id);
             if (parcalar.Count == 0)
@@ -249,6 +251,8 @@ namespace Garajim.Business.Concrete
                     .OrderByDescending(k => k.Date)
                     .ToList();
 
+                var toplamTutar = tutarGoster ? grup.Sum(p => p.Tutar ?? 0m) : 0m;
+
                 if (kayitliOlanlar.Count == 0)
                 {
                     continue;
@@ -262,7 +266,7 @@ namespace Garajim.Business.Concrete
                     SonDegisimTarihi = kayitliOlanlar[0].Date,
                     SonDegisimKm = kayitliOlanlar[0].Km,
                     DegisimSayisi = kayitliOlanlar.Count,
-                    ToplamTutar = 0m,
+                    ToplamTutar = toplamTutar,
                     SonrakiTahminiKm = aralik.Km == null ? null : kayitliOlanlar[0].Km + aralik.Km.Value,
                     SonrakiTahminiTarih = aralik.Ay == null ? null : kayitliOlanlar[0].Date.AddMonths(aralik.Ay.Value),
                     Durum = "Iyi"

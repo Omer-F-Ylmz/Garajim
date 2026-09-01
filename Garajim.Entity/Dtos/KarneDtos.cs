@@ -64,6 +64,7 @@ namespace Garajim.Entity.Dtos
         public List<ParcaHafizasiDto> Parcalar { get; set; } = new List<ParcaHafizasiDto>();
         public KarneYakitOzetiDto YakitOzeti { get; set; }
         public List<KarneBelgeDto> Belgeler { get; set; } = new List<KarneBelgeDto>();
+        public decimal? BakimToplami { get; set; }
     }
 
     public class KarneStatsDto

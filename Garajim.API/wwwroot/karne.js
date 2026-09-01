@@ -73,6 +73,11 @@
             var tutarVar = karne.bakimlar.some(function (b) { return b.tutar !== null && b.tutar !== undefined; });
             el("bakim-tutar-baslik").textContent = tutarVar ? "Tutar" : "";
 
+            if (karne.bakimToplami !== null && karne.bakimToplami !== undefined) {
+                el("bakim-toplami").classList.remove("hidden");
+                el("bakim-toplami").textContent = "Toplam bakım harcaması: " + money(karne.bakimToplami);
+            }
+
             var govde = el("bakim-satirlari");
             karne.bakimlar.forEach(function (bakim) {
                 var tr = document.createElement("tr");
@@ -87,12 +92,16 @@
 
         if (karne.parcalar && karne.parcalar.length > 0) {
             el("parca-bolumu").classList.remove("hidden");
+            var parcaTutarVar = karne.parcalar.some(function (p) { return p.toplamTutar > 0; });
+            el("parca-tutar-baslik").textContent = parcaTutarVar ? "Toplam" : "";
+
             var parcaGovde = el("parca-satirlari");
             karne.parcalar.forEach(function (parca) {
                 var tr = document.createElement("tr");
                 tr.appendChild(make("td", parca.parcaAdi));
                 tr.appendChild(make("td", tarih(parca.sonDegisimTarihi) + (parca.sonDegisimKm ? " · " + km(parca.sonDegisimKm) : "")));
                 tr.appendChild(make("td", parca.degisimSayisi));
+                tr.appendChild(make("td", parcaTutarVar ? money(parca.toplamTutar) : ""));
                 parcaGovde.appendChild(tr);
             });
         }
