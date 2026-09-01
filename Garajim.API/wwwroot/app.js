@@ -1414,6 +1414,17 @@
             });
     }
 
+    function taslagiInceleyeAc(taslakId) {
+        clearMessages();
+        api("/api/Receipts/" + taslakId).then(function (result) {
+            el("receipt-box").classList.remove("hidden");
+            showReceiptReview(result.data);
+            el("receipt-review").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
     function renderBulkSummary(sonuclar) {
         var onaylandi = sonuclar.filter(function (s) { return s.ok && s.veri.durum === "Onaylandi"; });
         var bekliyor = sonuclar.filter(function (s) { return s.ok && s.veri.durum === "Bekliyor"; });
@@ -1437,6 +1448,14 @@
         bekliyor.forEach(function (s) {
             var li = document.createElement("li");
             li.appendChild(make("span", s.ad + " — " + (s.veri.atlamaNedeni || "Kontrol bekliyor")));
+
+            var actions = make("span", "", "row-actions");
+            var incele = make("button", "İncele", "link-btn");
+            incele.type = "button";
+            incele.addEventListener("click", function () { taslagiInceleyeAc(s.veri.taslakId); });
+            actions.appendChild(incele);
+            li.appendChild(actions);
+
             liste.appendChild(li);
         });
 
