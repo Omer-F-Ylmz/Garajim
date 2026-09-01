@@ -60,5 +60,9 @@ namespace Garajim.Business.Constants
 
         public const string PartNeverReplaced = "Bu parça için kayıtlı değişim yok.";
         public const string PartHasNoInterval = "Bu parça için tanımlı değişim aralığı yok.";
+
+        public const string KarneCreated = "Karne bağlantısı oluşturuldu.";
+        public const string KarneClosed = "Karne paylaşımı kapatıldı.";
+        public const string KarneNotFound = "Karne bulunamadı.";
     }
 }

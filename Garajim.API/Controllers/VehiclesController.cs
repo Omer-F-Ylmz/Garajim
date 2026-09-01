@@ -2,6 +2,8 @@ using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
+using Garajim.Business.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +14,43 @@ namespace Garajim.API.Controllers
     {
         private readonly IVehicleService _vehicleService;
         private readonly IPartMemoryService _partMemoryService;
+        private readonly IKarneService _karneService;
 
-        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService)
         {
             _vehicleService = vehicleService;
             _partMemoryService = partMemoryService;
+            _karneService = karneService;
+        }
+
+        [HttpPost("{id}/karne")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> KarneOlustur(int id, KarneOlusturDto dto)
+        {
+            var result = await _karneService.OlusturAsync(CurrentUserId, id, dto);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}/karne")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> KarneKapat(int id)
+        {
+            var result = await _karneService.KapatAsync(CurrentUserId, id);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("karne-stats")]
+        [Authorize(Roles = CompanyRoles.Owner)]
+        public async Task<IActionResult> KarneStats()
+        {
+            var result = await _karneService.StatsAsync(CurrentUserId);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
         }
 
         [HttpGet("{id}/parca-hafizasi")]

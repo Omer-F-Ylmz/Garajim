@@ -26,6 +26,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<VehicleAssignment> VehicleAssignments { get; set; }
         public DbSet<ReceiptDraft> ReceiptDrafts { get; set; }
         public DbSet<MaintenancePart> MaintenanceParts { get; set; }
+        public DbSet<KarnePaylasimi> KarnePaylasimlari { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -114,6 +115,16 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<KarnePaylasimi>(entity =>
+            {
+                entity.Property(k => k.TokenHash).HasMaxLength(64).IsRequired();
+                entity.HasIndex(k => k.TokenHash).IsUnique();
+                entity.HasIndex(k => k.CompanyId);
+                entity.HasIndex(k => new { k.VehicleId, k.Aktif });
+                entity.HasOne<Company>().WithMany().HasForeignKey(k => k.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(k => k.VehicleId).OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<MaintenancePart>(entity =>
             {
                 entity.Property(p => p.Aciklama).HasMaxLength(200);
@@ -156,6 +167,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<VehicleAssignment>().HasQueryFilter(a => a.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<ReceiptDraft>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<MaintenancePart>().HasQueryFilter(p => p.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<KarnePaylasimi>().HasQueryFilter(k => k.CompanyId == CurrentCompanyId);
         }
     }
 }

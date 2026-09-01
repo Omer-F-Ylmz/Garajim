@@ -49,6 +49,7 @@ builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
 builder.Services.AddScoped<IDocumentDal, EfDocumentDal>();
 builder.Services.AddScoped<IReceiptDraftDal, EfReceiptDraftDal>();
 builder.Services.AddScoped<IMaintenancePartDal, EfMaintenancePartDal>();
+builder.Services.AddScoped<IKarnePaylasimiDal, EfKarnePaylasimiDal>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
@@ -58,6 +59,7 @@ builder.Services.AddScoped<IAssignmentService, AssignmentManager>();
 builder.Services.AddScoped<IDocumentService, DocumentManager>();
 builder.Services.AddScoped<IReceiptService, ReceiptManager>();
 builder.Services.AddScoped<IPartMemoryService, PartMemoryManager>();
+builder.Services.AddScoped<IKarneService, KarneManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();
@@ -152,6 +154,16 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Le
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy(KarneController.RateLimitPolicy, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "bilinmeyen",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 30,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
 
     options.AddPolicy(AuthController.RateLimitPolicy, httpContext =>
     {
