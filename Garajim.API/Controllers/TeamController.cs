@@ -54,4 +54,25 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
     }
+
+    [Route("api/Team")]
+    [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+    public class TeamDocumentsController : SecureControllerBase
+    {
+        private readonly ITeamService _teamService;
+
+        public TeamDocumentsController(ITeamService teamService)
+        {
+            _teamService = teamService;
+        }
+
+        [HttpGet("belgeler")]
+        public async Task<IActionResult> GetBelgeler()
+        {
+            var result = await _teamService.GetBelgelerAsync(CurrentUserId);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+    }
 }

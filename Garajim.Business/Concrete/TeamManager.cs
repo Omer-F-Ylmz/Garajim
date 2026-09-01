@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Core.Utilities.Security;
@@ -16,10 +17,12 @@ namespace Garajim.Business.Concrete
         private const int GeciciSifreUzunlugu = 12;
 
         private readonly IUserDal _userDal;
+        private readonly IEvrakDal _evrakDal;
 
-        public TeamManager(IUserDal userDal)
+        public TeamManager(IUserDal userDal, IEvrakDal evrakDal)
         {
             _userDal = userDal;
+            _evrakDal = evrakDal;
         }
 
         public async Task<IDataResult<List<TeamMemberDto>>> GetListAsync(int currentUserId)
@@ -36,6 +39,73 @@ namespace Garajim.Business.Concrete
                 .ToList();
 
             return new SuccessDataResult<List<TeamMemberDto>>(list);
+        }
+
+        public async Task<IDataResult<List<SurucuBelgeDto>>> GetBelgelerAsync(int currentUserId)
+        {
+            var current = await _userDal.GetAsync(u => u.Id == currentUserId);
+            if (current == null)
+                return new ErrorDataResult<List<SurucuBelgeDto>>(Messages.UserNotFound);
+
+            var users = await _userDal.GetListAsync(u => u.IsActive);
+            var idler = users.Select(u => u.Id).ToList();
+
+            var bugun = DateTime.UtcNow.Date;
+            var evraklar = idler.Count == 0
+                ? new List<EvrakKaydi>()
+                : await _evrakDal.GetListAsync(e => e.Aktif && e.UserId != null && idler.Contains(e.UserId.Value));
+
+            var liste = users.Select(user =>
+            {
+                var satirlar = evraklar
+                    .Where(e => e.UserId == user.Id)
+                    .OrderBy(e => e.BitisTarihi)
+                    .Select(e => new SurucuBelgeSatiriDto
+                    {
+                        EvrakId = e.Id,
+                        EvrakTuru = e.EvrakTuru.ToString(),
+                        EvrakAdi = EvrakAdlari.Ad(e.EvrakTuru),
+                        BitisTarihi = e.BitisTarihi,
+                        Durum = EvrakKurallari.Durum(e.BitisTarihi, bugun),
+                        KalanGun = (int)(e.BitisTarihi.Date - bugun).TotalDays
+                    })
+                    .ToList();
+
+                return new SurucuBelgeDto
+                {
+                    UserId = user.Id,
+                    AdSoyad = user.FullName,
+                    Eposta = user.Email,
+                    Rol = user.Role.ToString(),
+                    EnKotuDurum = EnKotu(satirlar),
+                    Belgeler = satirlar
+                };
+            })
+            .OrderBy(u => DurumSirasi(u.EnKotuDurum))
+            .ThenBy(u => u.AdSoyad)
+            .ToList();
+
+            return new SuccessDataResult<List<SurucuBelgeDto>>(liste);
+        }
+
+        private static string EnKotu(List<SurucuBelgeSatiriDto> satirlar)
+        {
+            if (satirlar.Any(s => s.Durum == "Gecti"))
+            {
+                return "Gecti";
+            }
+
+            return satirlar.Any(s => s.Durum == "Yaklasiyor") ? "Yaklasiyor" : "Iyi";
+        }
+
+        private static int DurumSirasi(string durum)
+        {
+            if (durum == "Gecti")
+            {
+                return 0;
+            }
+
+            return durum == "Yaklasiyor" ? 1 : 2;
         }
 
         public async Task<IDataResult<TeamMemberCreatedDto>> AddAsync(int currentUserId, TeamMemberCreateDto dto)

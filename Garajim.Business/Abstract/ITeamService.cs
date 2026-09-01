@@ -9,5 +9,6 @@ namespace Garajim.Business.Abstract
         Task<IDataResult<TeamMemberCreatedDto>> AddAsync(int currentUserId, TeamMemberCreateDto dto);
         Task<IResult> ChangeRoleAsync(int currentUserId, int targetUserId, TeamMemberRoleDto dto);
         Task<IResult> DeactivateAsync(int currentUserId, int targetUserId);
+        Task<IDataResult<List<SurucuBelgeDto>>> GetBelgelerAsync(int currentUserId);
     }
 }
