@@ -82,6 +82,16 @@ namespace Garajim.Business.Constants
         public const string ImportBozukDosya = "Dosya okunamadı; sütun ayracı bulunamadı.";
         public const string ImportEksikEslesme = "Zorunlu sütunların tümü eşlenmeli.";
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
+        public const string LastikTakildi = "Lastik seti takıldı.";
+        public const string LastikSokuldu = "Lastik seti söküldü.";
+        public const string LastikSilindi = "Lastik seti silindi.";
+        public const string LastikBulunamadi = "Lastik seti bulunamadı.";
+        public const string LastikZatenSokulmus = "Bu set zaten sökülmüş.";
+        public const string LastikKmHatali = "Sökülme kilometresi ve tarihi takılmadan önce olamaz.";
+        public const string LastikSetiYok = "Araçta takılı lastik seti kayıtlı değil.";
+        public const string KisLastigiUyarisi = "Kış lastigi dönemindesiniz ama araçta yaz lastiği takılı.";
+        public const string LastikDisDerinligiUyarisi = "Diş derinliği yasal sınıra indi; seti değiştirin.";
+
         public const string ElektrikliAracaYakit = "Elektrikli araçta litre girilemez; şarj miktarını kWh olarak girin.";
         public const string SarjMiktariGerekli = "Şarj miktarı (kWh) zorunludur.";
         public const string YakitliAracaSarj = "Bu araç elektrikli değil; kWh girilemez.";

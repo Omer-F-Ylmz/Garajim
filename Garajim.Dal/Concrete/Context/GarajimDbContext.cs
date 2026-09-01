@@ -31,6 +31,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<TakvimAbonelik> TakvimAbonelikleri { get; set; }
         public DbSet<ImportKaydi> ImportKayitlari { get; set; }
         public DbSet<YolculukKaydi> YolculukKayitlari { get; set; }
+        public DbSet<LastikSeti> LastikSetleri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -146,6 +147,20 @@ namespace Garajim.Dal.Concrete.Context
                 entity.ToTable(t => t.HasCheckConstraint("CK_YolculukKaydi_Mesafe", "[BitisKm] > [BaslangicKm] AND [MesafeKm] = [BitisKm] - [BaslangicKm]"));
             });
 
+            modelBuilder.Entity<LastikSeti>(entity =>
+            {
+                entity.Property(l => l.Ad).HasMaxLength(100).IsRequired();
+                entity.Property(l => l.Marka).HasMaxLength(100);
+                entity.Property(l => l.Ebat).HasMaxLength(50);
+                entity.Property(l => l.DisDerinligiMm).HasPrecision(4, 1);
+                entity.HasIndex(l => l.CompanyId);
+                entity.HasIndex(l => new { l.VehicleId, l.Takili });
+                entity.HasOne<Company>().WithMany().HasForeignKey(l => l.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(l => l.VehicleId).OnDelete(DeleteBehavior.Cascade);
+                entity.ToTable(t => t.HasCheckConstraint("CK_LastikSeti_Mesafe",
+                    "([SokulmeKm] IS NULL AND [Takili] = 1 AND [ToplamKm] = 0) OR ([SokulmeKm] IS NOT NULL AND [Takili] = 0 AND [SokulmeKm] >= [TakilmaKm] AND [ToplamKm] = [SokulmeKm] - [TakilmaKm])"));
+            });
+
             modelBuilder.Entity<TakvimAbonelik>(entity =>
 
             {
@@ -228,6 +243,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<TakvimAbonelik>().HasQueryFilter(t => t.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<ImportKaydi>().HasQueryFilter(i => i.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<YolculukKaydi>().HasQueryFilter(y => y.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<LastikSeti>().HasQueryFilter(l => l.CompanyId == CurrentCompanyId);
         }
     }
 }
