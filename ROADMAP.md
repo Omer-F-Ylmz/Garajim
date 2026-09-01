@@ -43,37 +43,61 @@ Durum işaretleri: `[x]` bitti · `[~]` kısmen · `[ ]` başlanmadı
 
 Faz 1'de bilinçli sınırlar: geçmişe dönük zimmet devri yok (audit log ile gelecek); Driver'a "kendi eklediği araç" istisnası yok; belge önizlemesi yok.
 
-## 6 Aylık Plan
+## Sprint 1 — TAMAMLANDI
 
-### Ay 1 — Fiş okuma + PWA + e-posta (bu sprint)
+Fiş okuma, PWA ve e-posta altyapısı.
 
-- [ ] E-posta bildirim altyapısı: MailKit SMTP, yapılandırma yoksa loglayıp atlama, hatırlatma job'ına bağlı
-- [ ] `IReceiptExtractor` + Gemini/OpenAI sağlayıcıları (görüntüden yapılandırılmış JSON)
-- [ ] Taslak kayıt akışı: fiş yükle → AI çıkarımı → kullanıcı onayı → Yakıt/Bakım/Masraf kaydı + belge bağı
-- [ ] Onayda düzeltilen alanların ölçümü (pratik doğruluk metriği)
-- [ ] PWA: manifest + service worker + ana ekrana ekle; mobil öncelikli fiş yükleme ekranı
-- [ ] Aylık AI çağrı limiti (maliyet koruması)
+| Özellik | Commit |
+|---|---|
+| E-posta altyapısı: MailKit SMTP, yapılandırma yoksa loglayıp atlama, hatırlatma job'ına bağlı | `efe642d` |
+| `IReceiptExtractor` + Gemini/OpenAI sağlayıcıları, 30 sn zaman aşımı, tek tekrar | `9e033d4` |
+| Taslak kayıt akışı: yükle → çıkar → onayla → Yakıt/Bakım/Masraf + belge bağı, tek transaction | `af5cb1d` |
+| SPA fiş ekranı + PWA (manifest, service worker, ana ekrana ekle) | `98fe6bc` |
+| Ölçüm: çağrı logu, alan doluluk ve düzeltme oranı, `GET /api/Receipts/stats` | `b8e54e3` |
 
-### Ay 2 — Araç karnesi + parça hafızası
+Aylık AI çağrı limiti (`Receipts__AylikLimit`, varsayılan 100) taslak akışıyla birlikte geldi.
 
-- [ ] Araç karnesi: kayıtlardan üretilen paylaşılabilir belgeli geçmiş
-- [ ] Parça hafızası: hangi parça ne zaman, kaç km'de değişti
+## Sprint 2 — TAMAMLANDI
 
-### Ay 3 — Türkiye evrak takvimi
+Toplu yükleme, koşullu otomatik onay, parça hafızası ve araç karnesi.
 
+| Özellik | Commit |
+|---|---|
+| Koşullu oto onay: güven + alan + plaka üçlüsü tamsa kayıt anında açılır | `3ec8a56` |
+| Toplu fiş yükleme: sıralı gönderim, ilerleme, dosya bazında özet | `d2daf10` |
+| Kalibrasyon aracı: cevap anahtarına karşı alan bazında doğruluk | `b63159a` |
+| Parça hafızası: 24 parça türü, aralık kataloğu, Iyi/Yaklasiyor/Gecti durumu | `8c8cb3e` |
+| Fişten parça çıkarımı + bakım formu ve parça hafızası arayüzü | `5ed99e9` |
+| Araç karnesi: token ile anonim paylaşım, kapsam denetimi, SystemScope | `7f6d9dd` |
+| Karne sayfası, istemci tarafı QR ve yazdırma düzeni | `b966145` |
+
+## Sprint 3 — Türkiye evrak takvimi
+
+- [ ] TÜVTÜRK muayene takvimi: araç türüne göre hususi 2 yıl / ticari 1 yıl
+- [ ] Zorunlu trafik sigortası yenileme tarihi
+- [ ] Kasko yenileme tarihi
+- [ ] Egzoz emisyon ölçüm tarihi
 - [ ] MTV Ocak/Temmuz otomatik hatırlatma
-- [ ] Muayene araç türüne göre: hususi 2 yıl / ticari 1 yıl
-- [ ] Egzoz emisyon, zorunlu trafik, kasko takvimleri
-- [ ] Cüzdan kartı / ICS takvim aboneliği
-- [ ] Acil durum kartı
+- [ ] Tarihler mevcut `Reminder` + `ReminderNotificationJob` e-posta kanalına bağlanır; yeni bildirim altyapısı yazılmaz
+- [ ] ICS takvim aboneliği (araç başına takvim akışı)
+- [ ] Cüzdan kartı / acil durum kartı
 
-### Ay 4 — Geçiş sihirbazı + gelir
+## Sprint 4 — Rakipten geçiş + maliyet analizi
 
-- [ ] Rakipten geçiş sihirbazı: Drivvo / Fuelio CSV içe aktarma
-- [ ] Maliyet analizi
+- [ ] Drivvo CSV içe aktarma
+- [ ] Fuelio CSV içe aktarma
+- [ ] İçe aktarma sihirbazı: sütun eşleme, önizleme, çakışan kayıt uyarısı
+- [ ] Maliyet analizi: araç başına km başı maliyet, dönemsel kırılım
 - [ ] Pro paketleme
 
-### Ay 5-6 — Genişleme
+## Sprint 5 — Filo paketi
+
+- [ ] Yönetici dashboard'u: filo geneli maliyet, yaklaşan evrak, zimmet durumu
+- [ ] Filo geneli raporlar ve CSV / Excel dışa aktarım
+- [ ] Sürücü belge takibi (ehliyet, SRC)
+- [ ] Araç başına paket sınırı ve abonelik
+
+## Sonraki (planlanmamış)
 
 - [ ] EV / şarj kayıtları
 - [ ] Lastik ve sarf takibi
@@ -81,9 +105,13 @@ Faz 1'de bilinçli sınırlar: geçmişe dönük zimmet devri yok (audit log ile
 
 ## Kill Criteria
 
-- **Fiş çıkarım doğruluğu:** İlk 30 Türk fişinde tarih+tutar+km çıkarım doğruluğu %85'in altındaysa prompt/sağlayıcı revizyonu yapılır; ikinci turda da altında kalırsa fotoğraf-önce stratejisi sorgulanır.
-- **Tutunma:** İlk 100 kullanıcının %25'inden azı 30. günde hâlâ fiş yüklüyorsa tez yeniden değerlendirilir.
-- **Paylaşım:** Karne paylaşım oranı %15'in altındaysa davet programı öne çekilir.
+Her ölçütün okunacağı kaynak sabittir; başka yerden okunmaz.
+
+| Ölçüt | Eşik | Ölçüm kaynağı |
+|---|---|---|
+| Fiş çıkarım doğruluğu | İlk 30 Türk fişinde tarih+tutar+km doğruluğu %85'in altındaysa prompt/sağlayıcı revizyonu; ikinci turda da altındaysa fotoğraf-önce stratejisi sorgulanır | `tools/Garajim.Calibration` çıktısındaki `alanDogruluk`; çapraz kontrol `GET /api/Receipts/stats` → `alanDuzeltmeOrani` |
+| Tutunma | İlk 100 kullanıcının %25'inden azı 30. günde hâlâ fiş yüklüyorsa tez yeniden değerlendirilir | `GET /api/Receipts/stats` → `toplamCagri` (şirket başına, aylık) |
+| Karne paylaşımı | Paylaşım oranı %15'in altındaysa davet programı öne çekilir | `GET /api/Vehicles/karne-stats` → `aktifOran` ve `toplamGoruntulenme` |
 
 ## Tetikleyiciye Bağlı
 
@@ -111,16 +139,13 @@ Garajım'dan taşınacak ortak çekirdek: belge deposu, fotoğraflı tutanak, ta
 
 ## Birikim (planlanmamış)
 
-Eski fazlardan devralınan, 6 aylık plana girmeyen işler:
+Hiçbir sprinte bağlanmamış işler. Sprint 3-5'e taşınanlar buradan çıkarıldı; her madde tek yerde durur.
 
 - [ ] Periyodik bakım şablonları: kilometre ve takvim bazlı
 - [ ] Yakıt analizi: L/100km, filo ortalamasından sapma uyarısı
-- [ ] CSV / Excel dışa aktarım
-- [ ] Yönetici dashboard'u
-- [ ] Sürücü belge takibi (ehliyet, SRC)
-- [ ] Excel'den toplu içe aktarma
+- [ ] Excel'den toplu içe aktarma (CSV dışındaki kaynaklar)
 - [ ] Audit log
-- [ ] Abonelik ve ödeme (iyzico veya PayTR), araç sayısına göre paket sınırları — Ay 4 Pro paketlemenin altyapısı
+- [ ] Ödeme sağlayıcı entegrasyonu (iyzico veya PayTR) — Sprint 5 abonelik maddesinin altyapısı
 - [ ] KVKK temeli: aydınlatma metni, veri silme akışı
 - [ ] Araç değiştirme analizi: ML fiyat tahmini + bakım maliyeti eğrisi
 - [ ] Muhasebe entegrasyonları ve dışa açık API
