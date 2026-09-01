@@ -1,0 +1,31 @@
+{
+  "name": "Garajım",
+  "short_name": "Garajım",
+  "description": "Aracının belgeli hafızası: fişi fotoğrafla, kaydı biz oluşturalım.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "tr",
+  "background_color": "#0d0f12",
+  "theme_color": "#ff7a1a",
+  "icons": [
+    {
+      "src": "/garajim-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/garajim-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/garajim-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

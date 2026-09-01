@@ -10,6 +10,7 @@
         vehicles: [],
         selectedVehicleId: null,
         documentRecordId: null,
+        receiptDraft: null,
         chart: null
     };
 
@@ -319,6 +320,7 @@
         el("user-label").textContent = label;
         applyRole();
         loadVehicles();
+        loadPendingReceipts();
     }
 
     function loadVehicles() {
@@ -1017,6 +1019,209 @@
         });
     }
 
+    var RECEIPT_TYPES = [
+        ["Yakit", "Yakıt"],
+        ["Bakim", "Bakım"],
+        ["Masraf", "Masraf"]
+    ];
+
+    function receiptTypeChanged() {
+        var tur = el("receipt-type").value;
+        el("receipt-liters-box").classList.toggle("hidden", tur !== "Yakit");
+        el("receipt-maintenance-box").classList.toggle("hidden", tur !== "Bakim");
+        el("receipt-category-box").classList.toggle("hidden", tur !== "Masraf");
+    }
+
+    function markNull(node, isNull) {
+        node.classList.toggle("needs-value", isNull);
+    }
+
+    function fillReceiptVehicles(selectedId) {
+        var select = el("receipt-vehicle");
+        clear(select);
+        state.vehicles.forEach(function (vehicle) {
+            var option = document.createElement("option");
+            option.value = String(vehicle.id);
+            option.textContent = vehicle.plate + " - " + vehicle.brand + " " + vehicle.model;
+            select.appendChild(option);
+        });
+        if (selectedId) {
+            select.value = String(selectedId);
+        } else if (state.selectedVehicleId) {
+            select.value = String(state.selectedVehicleId);
+        }
+    }
+
+    function showReceiptReview(draft) {
+        state.receiptDraft = draft;
+        el("receipt-review").classList.remove("hidden");
+
+        var guven = Math.round((Number(draft.guvenSkoru) || 0) * 100);
+        el("receipt-confidence").textContent = guven > 0
+            ? "Okuma güveni %" + guven + ". Boş kalan alanları siz doldurun."
+            : "Fiş okunamadı. Alanları elle doldurabilirsiniz.";
+
+        fillReceiptVehicles(draft.vehicleId);
+
+        el("receipt-type").value = draft.tahminiTur === "Bilinmiyor" ? "Masraf" : draft.tahminiTur;
+        receiptTypeChanged();
+
+        var tarih = el("receipt-date");
+        tarih.value = draft.tarih ? String(draft.tarih).slice(0, 10) : "";
+        markNull(tarih, !draft.tarih);
+
+        var tutar = el("receipt-amount");
+        tutar.value = draft.toplamTutar === null || draft.toplamTutar === undefined ? "" : draft.toplamTutar;
+        markNull(tutar, draft.toplamTutar === null || draft.toplamTutar === undefined);
+
+        var kilometre = el("receipt-km");
+        kilometre.value = draft.km === null || draft.km === undefined ? "" : draft.km;
+        markNull(kilometre, draft.km === null || draft.km === undefined);
+
+        var litre = el("receipt-liters");
+        litre.value = draft.litre === null || draft.litre === undefined ? "" : draft.litre;
+        markNull(litre, draft.litre === null || draft.litre === undefined);
+
+        el("receipt-note").value = "";
+    }
+
+    function hideReceiptReview() {
+        state.receiptDraft = null;
+        el("receipt-review").classList.add("hidden");
+    }
+
+    function loadPendingReceipts() {
+        return api("/api/Receipts?durum=Bekliyor").then(function (result) {
+            var rows = (result && result.data) || [];
+            var liste = el("receipt-pending");
+            clear(liste);
+
+            var rozet = el("receipt-badge");
+            rozet.textContent = rows.length ? String(rows.length) : "";
+            rozet.classList.toggle("hidden", rows.length === 0);
+            el("receipt-pending-title").classList.toggle("hidden", rows.length === 0);
+
+            rows.forEach(function (item) {
+                var li = document.createElement("li");
+                var ozet = item.orijinalAd;
+                if (item.toplamTutar !== null && item.toplamTutar !== undefined) {
+                    ozet += " · " + money(item.toplamTutar);
+                }
+                li.appendChild(make("span", ozet));
+
+                var actions = make("span", "", "row-actions");
+                var ac = make("button", "İncele", "link-btn");
+                ac.type = "button";
+                ac.addEventListener("click", function () {
+                    el("receipt-box").classList.remove("hidden");
+                    showReceiptReview(item);
+                });
+                actions.appendChild(ac);
+                li.appendChild(actions);
+                liste.appendChild(li);
+            });
+        }).catch(function () {
+            el("receipt-badge").classList.add("hidden");
+        });
+    }
+
+    function bindReceipts() {
+        el("receipt-btn").addEventListener("click", function () {
+            var box = el("receipt-box");
+            var acilacak = box.classList.contains("hidden");
+            box.classList.toggle("hidden", !acilacak);
+            if (acilacak) {
+                hideReceiptReview();
+                el("receipt-form").reset();
+                loadPendingReceipts();
+            }
+        });
+
+        el("receipt-close").addEventListener("click", function () {
+            el("receipt-box").classList.add("hidden");
+            hideReceiptReview();
+        });
+
+        el("receipt-type").addEventListener("change", receiptTypeChanged);
+
+        el("receipt-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            var input = el("receipt-file");
+            if (!input.files || input.files.length === 0) {
+                showMessage(el("app-message"), "Önce bir fiş fotoğrafı seçin.");
+                return;
+            }
+
+            var form = new FormData();
+            form.append("file", input.files[0]);
+
+            el("receipt-progress").classList.remove("hidden");
+
+            api("/api/Receipts", { method: "POST", body: form }).then(function (result) {
+                el("receipt-progress").classList.add("hidden");
+                showMessage(el("app-message"), (result && result.message) || "Fiş okundu.", true);
+                el("receipt-form").reset();
+                showReceiptReview(result.data);
+                loadPendingReceipts();
+            }).catch(function (error) {
+                el("receipt-progress").classList.add("hidden");
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("receipt-confirm-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            if (!state.receiptDraft) {
+                return;
+            }
+
+            var tur = el("receipt-type").value;
+            var kilometre = el("receipt-km").value;
+            var litre = el("receipt-liters").value;
+
+            api("/api/Receipts/" + state.receiptDraft.id + "/confirm", {
+                method: "POST",
+                body: {
+                    vehicleId: Number(el("receipt-vehicle").value),
+                    tur: tur,
+                    tarih: el("receipt-date").value,
+                    tutar: Number(el("receipt-amount").value),
+                    km: kilometre ? Number(kilometre) : null,
+                    litre: tur === "Yakit" && litre ? Number(litre) : null,
+                    bakimTuru: tur === "Bakim" ? el("receipt-maintenance-type").value : null,
+                    masrafKategorisi: tur === "Masraf" ? el("receipt-category").value : null,
+                    not: el("receipt-note").value
+                }
+            }).then(function (result) {
+                hideReceiptReview();
+                loadPendingReceipts();
+                loadVehicles();
+                selectTab(tur === "Yakit" ? "yakit" : tur === "Bakim" ? "bakim" : "masraf");
+                showMessage(el("app-message"), (result && result.message) || "Kayıt oluşturuldu.", true);
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("receipt-reject").addEventListener("click", function () {
+            if (!state.receiptDraft) {
+                return;
+            }
+            clearMessages();
+            api("/api/Receipts/" + state.receiptDraft.id + "/reject", { method: "POST" }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Taslak silindi.", true);
+                hideReceiptReview();
+                loadPendingReceipts();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+    }
+
     function bindDocuments() {
         el("document-close").addEventListener("click", closeDocuments);
 
@@ -1243,6 +1448,9 @@
 
     function initSelects() {
         fillSelect(el("team-role"), TEAM_ROLES);
+        fillSelect(el("receipt-type"), RECEIPT_TYPES);
+        fillSelect(el("receipt-maintenance-type"), MAINTENANCE_TYPES);
+        fillSelect(el("receipt-category"), EXPENSE_CATEGORIES);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -1273,11 +1481,23 @@
         bindTeam();
         bindAssignment();
         bindDocuments();
+        bindReceipts();
 
         if (readSession()) {
             enterApp();
         }
     }
 
+    function registerServiceWorker() {
+        if (!("serviceWorker" in navigator)) {
+            return;
+        }
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/sw.js").catch(function () {
+            });
+        });
+    }
+
+    registerServiceWorker();
     document.addEventListener("DOMContentLoaded", init);
 })();

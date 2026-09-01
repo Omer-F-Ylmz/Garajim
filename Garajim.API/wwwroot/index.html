@@ -7,6 +7,11 @@
     <link rel="icon" type="image/svg+xml" href="garajim-logo.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="garajim-icon-32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="garajim-icon-180.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff7a1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Garajım">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -57,6 +62,7 @@
             </div>
             <div class="topbar-right">
                 <select id="vehicle-select" aria-label="Araç seç"></select>
+                <button id="receipt-btn" class="primary compact" type="button">Fiş Yükle <span id="receipt-badge" class="badge-count hidden"></span></button>
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
                 <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
                 <span id="user-label" class="user-label"></span>
@@ -65,6 +71,67 @@
         </header>
 
         <p id="app-message" class="message" role="alert"></p>
+
+        <section id="receipt-box" class="panel hidden">
+            <h2>Fiş yükle</h2>
+            <p class="hint">Fişin fotoğrafını çek, alanları biz dolduralım. jpg, png veya pdf; en fazla 5 MB.</p>
+            <form id="receipt-form" class="inline-form">
+                <input id="receipt-file" type="file" accept="image/*,.pdf" capture="environment" required>
+                <button type="submit" class="primary">Oku</button>
+                <button id="receipt-close" type="button" class="ghost">Kapat</button>
+            </form>
+            <p id="receipt-progress" class="hint hidden">Fiş okunuyor, birkaç saniye sürebilir…</p>
+
+            <div id="receipt-review" class="panel-inline hidden">
+                <h3>Kontrol edip onaylayın</h3>
+                <p id="receipt-confidence" class="hint"></p>
+                <form id="receipt-confirm-form" class="grid-form">
+                    <div>
+                        <label for="receipt-vehicle">Araç</label>
+                        <select id="receipt-vehicle" required></select>
+                    </div>
+                    <div>
+                        <label for="receipt-type">Tür</label>
+                        <select id="receipt-type"></select>
+                    </div>
+                    <div>
+                        <label for="receipt-date">Tarih</label>
+                        <input id="receipt-date" type="date" required>
+                    </div>
+                    <div>
+                        <label for="receipt-amount">Tutar (TL)</label>
+                        <input id="receipt-amount" type="number" min="0.01" step="0.01" required>
+                    </div>
+                    <div>
+                        <label for="receipt-km">Kilometre</label>
+                        <input id="receipt-km" type="number" min="0">
+                    </div>
+                    <div id="receipt-liters-box">
+                        <label for="receipt-liters">Litre</label>
+                        <input id="receipt-liters" type="number" min="0" step="0.01">
+                    </div>
+                    <div id="receipt-maintenance-box" class="hidden">
+                        <label for="receipt-maintenance-type">Bakım türü</label>
+                        <select id="receipt-maintenance-type"></select>
+                    </div>
+                    <div id="receipt-category-box" class="hidden">
+                        <label for="receipt-category">Masraf kategorisi</label>
+                        <select id="receipt-category"></select>
+                    </div>
+                    <div>
+                        <label for="receipt-note">Not</label>
+                        <input id="receipt-note" type="text">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary">Onayla ve kaydet</button>
+                        <button id="receipt-reject" type="button" class="ghost">Reddet</button>
+                    </div>
+                </form>
+            </div>
+
+            <h3 id="receipt-pending-title" class="hidden">Bekleyen fişler</h3>
+            <ul id="receipt-pending" class="upcoming"></ul>
+        </section>
 
         <section id="team-box" class="panel hidden">
             <h2>Ekip</h2>

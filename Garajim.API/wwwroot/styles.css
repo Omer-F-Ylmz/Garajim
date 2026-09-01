@@ -529,3 +529,58 @@ tbody tr:hover {
     padding: 4px 8px;
     font-size: 13px;
 }
+
+.badge-count {
+    display: inline-block;
+    min-width: 18px;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+button.compact {
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.needs-value {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+#receipt-file {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .topbar-right {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .topbar-right #receipt-btn {
+        order: -1;
+        flex: 1 1 100%;
+    }
+
+    .grid-form {
+        grid-template-columns: 1fr;
+    }
+
+    .inline-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+}
