@@ -11,5 +11,6 @@ namespace Garajim.Business.Abstract
         Task<IDataResult<ReceiptDraftDto>> UploadAsync(int userId, ReceiptUploadDto dto);
         Task<IDataResult<ReceiptDraftDto>> ConfirmAsync(int userId, int id, ReceiptConfirmDto dto);
         Task<IResult> RejectAsync(int userId, int id);
+        Task<IDataResult<ReceiptStatsDto>> GetStatsAsync(int userId);
     }
 }

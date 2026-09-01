@@ -3,6 +3,7 @@ using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Garajim.API.Controllers
@@ -21,6 +22,16 @@ namespace Garajim.API.Controllers
         public async Task<IActionResult> GetList([FromQuery] ReceiptDraftStatus? durum)
         {
             var result = await _receiptService.GetListAsync(CurrentUserId, durum);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("stats")]
+        [Authorize(Roles = CompanyRoles.Owner)]
+        public async Task<IActionResult> GetStats()
+        {
+            var result = await _receiptService.GetStatsAsync(CurrentUserId);
             if (!result.Success)
                 return NotFound(result);
             return Ok(result);

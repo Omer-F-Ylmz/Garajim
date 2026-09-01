@@ -8,6 +8,8 @@ using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Garajim.Business.Concrete
 {
@@ -26,6 +28,7 @@ namespace Garajim.Business.Concrete
         private readonly IReceiptExtractor _extractor;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<ReceiptManager> _logger;
 
         public ReceiptManager(
             IReceiptDraftDal draftDal,
@@ -38,7 +41,8 @@ namespace Garajim.Business.Concrete
             IVehicleAccessService vehicleAccess,
             IReceiptExtractor extractor,
             IUnitOfWork unitOfWork,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<ReceiptManager> logger)
         {
             _draftDal = draftDal;
             _userDal = userDal;
@@ -51,6 +55,7 @@ namespace Garajim.Business.Concrete
             _extractor = extractor;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<IDataResult<List<ReceiptDraftDto>>> GetListAsync(int userId, ReceiptDraftStatus? durum)
@@ -112,10 +117,24 @@ namespace Garajim.Business.Concrete
             var saklananAd = Guid.NewGuid().ToString("N") + uzanti;
             await File.WriteAllBytesAsync(Path.Combine(klasor, saklananAd), icerik);
 
+            var saglayici = Saglayici();
+            var kronometre = Stopwatch.StartNew();
             var sonuc = await _extractor.ExtractAsync(icerik, icerikTipi, CancellationToken.None);
+            kronometre.Stop();
+            var sureMs = (int)kronometre.ElapsedMilliseconds;
+
+            _logger.LogInformation(
+                "Fiş çıkarımı tamamlandı. Sağlayıcı={Saglayici} Süre={SureMs}ms Güven={Guven} " +
+                "Tarih={TarihDolu} Tutar={TutarDolu} Kdv={KdvDolu} Litre={LitreDolu} " +
+                "BirimFiyat={BirimFiyatDolu} Plaka={PlakaDolu} Km={KmDolu} Tur={Tur}",
+                saglayici, sureMs, sonuc.GuvenSkoru,
+                sonuc.Tarih != null, sonuc.ToplamTutar != null, sonuc.KdvTutari != null, sonuc.Litre != null,
+                sonuc.BirimFiyat != null, sonuc.Plaka != null, sonuc.Km != null, sonuc.TahminiTur);
 
             var draft = new ReceiptDraft
             {
+                Saglayici = saglayici,
+                SureMs = sureMs,
                 CompanyId = user.CompanyId,
                 YukleyenUserId = userId,
                 DosyaYolu = saklananAd,
@@ -348,6 +367,70 @@ namespace Garajim.Business.Concrete
                 DuzeltilenAlanlar = draft.DuzeltilenAlanlar,
                 OlusturmaTarihi = draft.OlusturmaTarihi
             };
+        }
+
+        public async Task<IDataResult<ReceiptStatsDto>> GetStatsAsync(int userId)
+        {
+            var drafts = await _draftDal.GetListAsync();
+
+            var istatistik = new ReceiptStatsDto
+            {
+                ToplamCagri = drafts.Count,
+                Onaylanan = drafts.Count(d => d.Durum == ReceiptDraftStatus.Onaylandi),
+                Reddedilen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Reddedildi),
+                Bekleyen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Bekliyor)
+            };
+
+            if (drafts.Count > 0)
+            {
+                istatistik.OnayOrani = Yuzde(istatistik.Onaylanan, drafts.Count);
+                istatistik.RedOrani = Yuzde(istatistik.Reddedilen, drafts.Count);
+                istatistik.OrtalamaGuven = Math.Round(drafts.Average(d => d.GuvenSkoru), 3);
+                istatistik.OrtalamaSureMs = Math.Round(drafts.Average(d => (double)d.SureMs), 1);
+
+                istatistik.AlanDoluluk["tarih"] = Yuzde(drafts.Count(d => d.Tarih != null), drafts.Count);
+                istatistik.AlanDoluluk["toplamTutar"] = Yuzde(drafts.Count(d => d.ToplamTutar != null), drafts.Count);
+                istatistik.AlanDoluluk["kdvTutari"] = Yuzde(drafts.Count(d => d.KdvTutari != null), drafts.Count);
+                istatistik.AlanDoluluk["litre"] = Yuzde(drafts.Count(d => d.Litre != null), drafts.Count);
+                istatistik.AlanDoluluk["birimFiyat"] = Yuzde(drafts.Count(d => d.BirimFiyat != null), drafts.Count);
+                istatistik.AlanDoluluk["plaka"] = Yuzde(drafts.Count(d => d.Plaka != null), drafts.Count);
+                istatistik.AlanDoluluk["km"] = Yuzde(drafts.Count(d => d.Km != null), drafts.Count);
+                istatistik.AlanDoluluk["tur"] = Yuzde(drafts.Count(d => d.TahminiTur != ReceiptType.Bilinmiyor), drafts.Count);
+            }
+
+            var onaylananlar = drafts.Where(d => d.Durum == ReceiptDraftStatus.Onaylandi).ToList();
+            if (onaylananlar.Count > 0)
+            {
+                foreach (var alan in new[] { "Tarih", "Tutar", "Km", "Litre", "BirimFiyat", "Tur", "Arac" })
+                {
+                    var duzeltilen = onaylananlar.Count(d => DuzeltilenIceriyorMu(d.DuzeltilenAlanlar, alan));
+                    istatistik.AlanDuzeltmeOrani[alan.ToLowerInvariant()] = Yuzde(duzeltilen, onaylananlar.Count);
+                }
+            }
+
+            return new SuccessDataResult<ReceiptStatsDto>(istatistik);
+        }
+
+        private static bool DuzeltilenIceriyorMu(string duzeltilenAlanlar, string alan)
+        {
+            if (string.IsNullOrWhiteSpace(duzeltilenAlanlar))
+            {
+                return false;
+            }
+
+            return duzeltilenAlanlar.Split(',', StringSplitOptions.RemoveEmptyEntries).Any(a => a.Trim() == alan);
+        }
+
+        private static double Yuzde(int pay, int payda)
+        {
+            return payda == 0 ? 0 : Math.Round(pay * 100.0 / payda, 1);
+        }
+
+        private string Saglayici()
+        {
+            return string.Equals(_configuration["Receipts:Provider"], "OpenAI", StringComparison.OrdinalIgnoreCase)
+                ? "OpenAI"
+                : "Gemini";
         }
 
         private long DosyaSiniri()
