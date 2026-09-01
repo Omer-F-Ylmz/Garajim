@@ -60,6 +60,9 @@ namespace Garajim.Business.Concrete
                 FuelType = dto.FuelType,
                 KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
                 IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
+                AcilKisiAd = dto.AcilKisiAd,
+                AcilKisiTelefon = dto.AcilKisiTelefon,
+                AcilNot = dto.AcilNot,
                 CreatedAt = DateTime.UtcNow
             };
             await _vehicleDal.AddAsync(vehicle);
@@ -79,6 +82,11 @@ namespace Garajim.Business.Concrete
             vehicle.Year = dto.Year;
             vehicle.CurrentKm = dto.CurrentKm;
             vehicle.FuelType = dto.FuelType;
+            vehicle.KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : vehicle.KullanimTuru;
+            vehicle.IlkTescilTarihi = dto.IlkTescilTarihi?.Date ?? vehicle.IlkTescilTarihi;
+            vehicle.AcilKisiAd = dto.AcilKisiAd;
+            vehicle.AcilKisiTelefon = dto.AcilKisiTelefon;
+            vehicle.AcilNot = dto.AcilNot;
             await _vehicleDal.UpdateAsync(vehicle);
             return new SuccessResult(Messages.VehicleUpdated);
         }

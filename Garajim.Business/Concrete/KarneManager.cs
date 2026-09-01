@@ -8,6 +8,7 @@ using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 using Microsoft.Extensions.Configuration;
 
 namespace Garajim.Business.Concrete
@@ -20,6 +21,7 @@ namespace Garajim.Business.Concrete
         private readonly IMaintenancePartDal _partDal;
         private readonly IFuelDal _fuelDal;
         private readonly IDocumentDal _documentDal;
+        private readonly IEvrakDal _evrakDal;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IDocumentService _documentService;
         private readonly TenantContext _tenantContext;
@@ -32,6 +34,7 @@ namespace Garajim.Business.Concrete
             IMaintenancePartDal partDal,
             IFuelDal fuelDal,
             IDocumentDal documentDal,
+            IEvrakDal evrakDal,
             IVehicleAccessService vehicleAccess,
             IDocumentService documentService,
             TenantContext tenantContext,
@@ -43,6 +46,7 @@ namespace Garajim.Business.Concrete
             _partDal = partDal;
             _fuelDal = fuelDal;
             _documentDal = documentDal;
+            _evrakDal = evrakDal;
             _vehicleAccess = vehicleAccess;
             _documentService = documentService;
             _tenantContext = tenantContext;
@@ -71,6 +75,7 @@ namespace Garajim.Business.Concrete
                 Belgeler = kapsam.Belgeler,
                 PlakaGoster = kapsam.PlakaGoster,
                 TutarGoster = kapsam.TutarGoster,
+                AcilKart = kapsam.AcilKart,
                 SonKullanma = dto?.SonKullanmaGun == null ? null : DateTime.UtcNow.AddDays(dto.SonKullanmaGun.Value),
                 Aktif = true,
                 GoruntulenmeSayisi = 0,
@@ -192,6 +197,37 @@ namespace Garajim.Business.Concrete
                 OriginalName = belge.OriginalName,
                 ContentType = belge.ContentType,
                 Content = await File.ReadAllBytesAsync(tamYol)
+            });
+        }
+
+        public async Task<IDataResult<AcilKartDto>> AcilKartAsync(string token)
+        {
+            var paylasim = await GecerliPaylasimAsync(token);
+            if (paylasim == null || !paylasim.AcilKart)
+                return new ErrorDataResult<AcilKartDto>(Messages.KarneNotFound);
+
+            using var kapsam = SystemScope.For(_tenantContext, paylasim.CompanyId);
+
+            var vehicle = await _vehicleDal.GetAsync(v => v.Id == paylasim.VehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<AcilKartDto>(Messages.KarneNotFound);
+
+            var sigorta = (await _evrakDal.GetListAsync(e => e.VehicleId == vehicle.Id && e.Aktif))
+                .Where(e => e.EvrakTuru == EvrakTuru.TrafikSigortasi)
+                .OrderByDescending(e => e.BitisTarihi)
+                .FirstOrDefault();
+
+            return new SuccessDataResult<AcilKartDto>(new AcilKartDto
+            {
+                Plaka = vehicle.Plate,
+                Marka = vehicle.Brand,
+                Model = vehicle.Model,
+                Yil = vehicle.Year,
+                AcilKisiAd = vehicle.AcilKisiAd,
+                AcilKisiTelefon = vehicle.AcilKisiTelefon,
+                AcilNot = vehicle.AcilNot,
+                SigortaSaglayici = sigorta?.Saglayici,
+                SigortaPoliceNo = sigorta?.PoliceNo
             });
         }
 

@@ -9,6 +9,7 @@ namespace Garajim.Business.Abstract
         Task<IResult> KapatAsync(int userId, int vehicleId);
         Task<IDataResult<KarneDto>> GoruntuleAsync(string token);
         Task<IDataResult<DocumentContentDto>> BelgeAsync(string token, int documentId);
+        Task<IDataResult<AcilKartDto>> AcilKartAsync(string token);
         Task<IDataResult<KarneStatsDto>> StatsAsync(int userId);
     }
 }

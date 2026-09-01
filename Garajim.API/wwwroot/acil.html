@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Acil Durum Kartı — Garajım</title>
+    <link rel="icon" type="image/svg+xml" href="garajim-logo.svg">
+    <meta name="theme-color" content="#ff7a1a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="acil.css">
+</head>
+<body>
+    <main class="sayfa">
+        <p id="durum" class="durum">Kart yükleniyor…</p>
+
+        <section id="kart" class="kart hidden">
+            <header class="kart-ust">
+                <span class="etiket">Acil Durum Kartı</span>
+                <span class="marka">Garajım</span>
+            </header>
+
+            <h1 id="plaka"></h1>
+            <p id="arac" class="arac"></p>
+
+            <dl id="bilgi" class="bilgi"></dl>
+
+            <p id="not" class="not hidden"></p>
+        </section>
+
+        <button id="yazdir" class="ghost hidden" type="button">Kartı yazdır</button>
+    </main>
+
+    <script src="acil.js"></script>
+</body>
+</html>

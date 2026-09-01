@@ -51,6 +51,9 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(v => v.Plate).HasMaxLength(20).IsRequired();
                 entity.Property(v => v.Brand).HasMaxLength(100).IsRequired();
                 entity.Property(v => v.Model).HasMaxLength(100).IsRequired();
+                entity.Property(v => v.AcilKisiAd).HasMaxLength(100);
+                entity.Property(v => v.AcilKisiTelefon).HasMaxLength(30);
+                entity.Property(v => v.AcilNot).HasMaxLength(200);
                 entity.HasIndex(v => new { v.CompanyId, v.Plate }).IsUnique();
                 entity.HasIndex(v => v.CompanyId);
                 entity.HasOne<Company>().WithMany().HasForeignKey(v => v.CompanyId).OnDelete(DeleteBehavior.Restrict);

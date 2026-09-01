@@ -16,6 +16,9 @@ namespace Garajim.Entity.Concrete
         public FuelType FuelType { get; set; }
         public KullanimTuru KullanimTuru { get; set; }
         public DateTime? IlkTescilTarihi { get; set; }
+        public string AcilKisiAd { get; set; }
+        public string AcilKisiTelefon { get; set; }
+        public string AcilNot { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

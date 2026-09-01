@@ -29,6 +29,15 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{token}/acil")]
+        public async Task<IActionResult> AcilKart(string token)
+        {
+            var result = await _karneService.AcilKartAsync(token);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
         [HttpGet("{token}/belge/{documentId}")]
         public async Task<IActionResult> Belge(string token, int documentId)
         {

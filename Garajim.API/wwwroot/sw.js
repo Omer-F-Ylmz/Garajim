@@ -46,7 +46,7 @@ self.addEventListener("fetch", function (event) {
         return;
     }
 
-    if (url.pathname.indexOf("/karne") === 0) {
+    if (url.pathname.indexOf("/karne") === 0 || url.pathname.indexOf("/acil") === 0) {
         event.respondWith(fetch(istek));
         return;
     }

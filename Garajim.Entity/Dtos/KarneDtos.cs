@@ -8,6 +8,7 @@ namespace Garajim.Entity.Dtos
         public bool Belgeler { get; set; }
         public bool PlakaGoster { get; set; }
         public bool TutarGoster { get; set; }
+        public bool AcilKart { get; set; }
     }
 
     public class KarneOlusturDto
@@ -21,6 +22,19 @@ namespace Garajim.Entity.Dtos
         public string Url { get; set; }
         public DateTime? SonKullanma { get; set; }
         public int GoruntulenmeSayisi { get; set; }
+    }
+
+    public class AcilKartDto
+    {
+        public string Plaka { get; set; }
+        public string Marka { get; set; }
+        public string Model { get; set; }
+        public int Yil { get; set; }
+        public string AcilKisiAd { get; set; }
+        public string AcilKisiTelefon { get; set; }
+        public string AcilNot { get; set; }
+        public string SigortaSaglayici { get; set; }
+        public string SigortaPoliceNo { get; set; }
     }
 
     public class KarneAracDto
