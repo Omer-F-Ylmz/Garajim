@@ -27,6 +27,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<ReceiptDraft> ReceiptDrafts { get; set; }
         public DbSet<MaintenancePart> MaintenanceParts { get; set; }
         public DbSet<KarnePaylasimi> KarnePaylasimlari { get; set; }
+        public DbSet<EvrakKaydi> EvrakKayitlari { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -115,6 +116,21 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<EvrakKaydi>(entity =>
+            {
+                entity.Property(e => e.Saglayici).HasMaxLength(100);
+                entity.Property(e => e.PoliceNo).HasMaxLength(50);
+                entity.Property(e => e.Not).HasMaxLength(300);
+                entity.HasIndex(e => new { e.CompanyId, e.BitisTarihi });
+                entity.HasIndex(e => new { e.VehicleId, e.Aktif });
+                entity.HasIndex(e => new { e.UserId, e.Aktif });
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
+                entity.ToTable(t => t.HasCheckConstraint("CK_EvrakKaydi_TekSahip",
+                    "([VehicleId] IS NOT NULL AND [UserId] IS NULL) OR ([VehicleId] IS NULL AND [UserId] IS NOT NULL)"));
+            });
+
             modelBuilder.Entity<KarnePaylasimi>(entity =>
             {
                 entity.Property(k => k.TokenHash).HasMaxLength(64).IsRequired();
@@ -168,6 +184,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<ReceiptDraft>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<MaintenancePart>().HasQueryFilter(p => p.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<KarnePaylasimi>().HasQueryFilter(k => k.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<EvrakKaydi>().HasQueryFilter(e => e.CompanyId == CurrentCompanyId);
         }
     }
 }
