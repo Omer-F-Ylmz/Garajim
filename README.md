@@ -145,15 +145,87 @@ Smtp__From=...
 
 Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, dosyayı düzenlemeniz gerekmez. Prod'a çıkarken `Jwt__Key` mutlaka yeni ve rastgele bir değerle verilmelidir; varsayılan anahtarla üretilen token'lar herkes tarafından taklit edilebilir.
 
+### Panel değişkenleri
+
+| Değişken | Durum | Varsayılan | Not |
+|---|---|---|---|
+| `ConnectionStrings__Default` | Zorunlu | — | Uzak MSSQL. LocalDB içerirse uygulama üretimde başlamayı reddeder |
+| `Jwt__Key` | Zorunlu | — | En az 32 karakter, rastgele |
+| `Documents__StoragePath` | Zorunlu sayılır | `App_Data/documents` (publish klasörünün içi) | `..\private\documents` önerilir; varsayılan yol publish hedefinin içindedir |
+| `App__BaseUrl` | Karne için zorunlu | boş | Boşsa karne bağlantısı göreli üretilir ve paylaşılamaz; hatırlatma e-postasındaki link de düşer |
+| `Receipts__ApiKey` | Fiş okuma için zorunlu | boş | Boşsa akış çalışır ama her fiş boş taslak ve sıfır güvenle döner |
+| `Receipts__Provider` | Opsiyonel | `Gemini` | `Gemini` veya `OpenAI` |
+| `Receipts__Model` | Opsiyonel | `gemini-2.5-flash` / `gpt-4.1-nano` | Sağlayıcıya göre |
+| `Receipts__AylikLimit` | Opsiyonel | `100` | Şirket başına aylık çıkarım çağrısı |
+| `Receipts__OtoOnayGuven` | Opsiyonel | `0.85` | Otomatik onay güven eşiği (0-1) |
+| `Documents__MaxFileSizeBytes` | Opsiyonel | `5242880` | Dosya başına sınır |
+| `Documents__CompanyQuotaBytes` | Opsiyonel | `262144000` | Şirket başına toplam belge alanı |
+| `Smtp__Host` `Smtp__Port` `Smtp__User` `Smtp__Pass` `Smtp__From` | Opsiyonel | boş | Eksikse gönderim loglanıp atlanır, uygulama çökmez |
+| `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
+| `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
+
+## Fişten otomatik kayıt
+
+Fişin fotoğrafını yükleyin; alanlar bir görüntü modeli tarafından okunup taslak olarak döner, siz kontrol edip onaylayınca Yakıt / Bakım / Masraf kaydı açılır ve fiş o kayda belge olarak bağlanır.
+
+- **Tek fiş**: `POST /api/receipts` (multipart). Uzantı beyaz listesi, magic-byte doğrulaması ve 5 MB sınırı belge yüklemeyle aynıdır.
+- **Toplu yükleme**: arayüzde birden fazla dosya seçilir, sırayla gönderilir (paralel değil), ilerleme `7/30` biçiminde yazılır ve hatalı dosya zinciri durdurmaz. Bitişte onaylandı / bekliyor / hata özeti çıkar.
+- **Koşullu otomatik onay**: `POST /api/receipts?otoOnay=true` üç şart birden sağlanırsa yüklemeyle onayı aynı transaction'da bitirir — okuma güveni `Receipts__OtoOnayGuven` eşiğinde (varsayılan 0,85), tarih + tutar + tür dolu, fişteki plaka erişilebilir tek araca eşleşiyor. Biri eksikse taslak `Bekliyor` kalır ve `atlamaNedeni` Türkçe döner.
+- **Maliyet koruması**: şirket başına aylık çağrı `Receipts__AylikLimit` ile sınırlıdır (varsayılan 100), aşımda 429 döner.
+- **Ölçüm**: `GET /api/receipts/stats` (yalnız Owner) toplam çağrı, onay/red oranı, oto onaylanan sayısı, alan doluluk yüzdeleri ve alan bazında düzeltme oranını verir. Düzeltme oranı yalnız elle onaylananlardan hesaplanır.
+
+Sağlayıcı `Receipts__Provider` ile seçilir: `Gemini` (varsayılan) veya `OpenAI`. Anahtar yoksa uygulama çalışmayı sürdürür, çıkarım boş sonuç ve sıfır güvenle döner.
+
+## Parça hafızası
+
+Bakım kaydına parça satırları eklenebilir (tür, açıklama, adet, tutar, marka); fişten okunan satır kalemleri de deterministik bir eşleştiriciyle parça türüne çevrilir, işçilik ve kargo satırları atlanır.
+
+`GET /api/vehicles/{id}/parca-hafizasi` tür başına son değişim tarihi ve kilometresi, değişim sayısı, toplam tutar ve bir sonraki tahmini değişimi döner. Durum Türkiye servis pratiğine göre tanımlı aralık kataloğundan hesaplanır: **Iyi**, **Yaklasiyor** (kalan ≤ aralığın %10'u ya da ≤ 30 gün), **Gecti**. `POST /api/vehicles/{id}/parca-hafizasi/{parcaTuru}/hatirlatma` tahminden hatırlatma açar.
+
+## Araç karnesi
+
+Aracın belgeli geçmişi tek bağlantıyla paylaşılır — satışta alıcıya gösterilecek karne.
+
+- `POST /api/vehicles/{id}/karne` (Owner / Manager) kapsam ve isteğe bağlı süre alıp bağlantı üretir. Araç başına tek aktif bağlantı vardır; yenisi eskisini pasifleştirir.
+- Kapsam bayrakları bağımsızdır: bakım geçmişi, parça hafızası, yakıt özeti, belgeler, plaka gösterimi, tutar gösterimi. Plaka kapalıysa `34 *** 217` biçiminde maskelenir; tutar kapalıysa bakım tutarları, bakım toplamı ve parça toplamları yanıta hiç girmez.
+- `GET /api/karne/{token}` giriş istemez. Kayıt yok, pasif ya da süresi dolmuşsa hepsi aynı 404'ü döndürür. Uç IP başına dakikada 30 istekle sınırlıdır.
+- Token'ın yalnız SHA-256 özeti saklanır; ham değer sadece oluşturma yanıtındaki bağlantıda görünür.
+- `karne.html` ana uygulamadan bağımsız çalışır, yazdırma düzeni taşır ve QR kodu istemcide üretilir (dış servise istek gitmez). Bu sayfa service worker önbelleğine alınmaz.
+- `GET /api/vehicles/karne-stats` (Owner) araç sayısı, karnesi aktif araç oranı ve toplam görüntülenmeyi verir.
+
+## Kalibrasyon aracı
+
+`tools/Garajim.Calibration`, fiş çıkarımının gerçek doğruluğunu bir cevap anahtarına karşı ölçer.
+
+Klasörde fiş görüntüleri ve `cevap-anahtari.csv` bulunur (noktalı virgül ayraç, UTF-8 BOM, başlık `dosya;zorluk;tur;tarih;tutar;km;plaka;litre;aciklama`; tarih `gg.AA.yyyy`, sayı `1.484,36`, boş hücre = değer yok).
+
+Kimlik yalnız ortam değişkeninden okunur, argümanla şifre verilmez:
+
+```powershell
+$env:GARAJIM_URL="https://garajim.runasp.net"; $env:GARAJIM_EMAIL="demo@garajim.app"; $env:GARAJIM_PASS="<sifre>"
+```
+
+```
+dotnet run --project tools/Garajim.Calibration -- --dir <klasör>
+```
+
+Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (tutar ve litre ±0,01, km tam, plaka boşluk ve büyük-küçük duyarsız), sonra doğru değerlerle onaylanır — böylece sunucudaki düzeltme oranı gerçek hatayı yansıtır. Aylık limite takılırsa durur ve o ana kadarki raporu üretir. Rapor konsola ve `--dir` içine `kalibrasyon-<tarih>.md` olarak yazılır; bu dosya gitignore'dadır.
+
 ## Uç Noktalar
 
 - `POST /api/auth/register`, `POST /api/auth/login`
 - `GET|POST /api/vehicles`, `GET|PUT|DELETE /api/vehicles/{id}`
-- `GET /api/maintenance?vehicleId=`, `POST /api/maintenance`, `DELETE /api/maintenance/{id}`
+- `GET /api/maintenance?vehicleId=`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
 - `GET /api/fuel?vehicleId=`, `POST /api/fuel`, `DELETE /api/fuel/{id}`
 - `GET /api/expenses?vehicleId=`, `POST /api/expenses`, `DELETE /api/expenses/{id}`
 - `GET /api/reminders?vehicleId=`, `GET /api/reminders/upcoming?days=30`, `POST /api/reminders`, `PUT /api/reminders/{id}/complete`, `DELETE /api/reminders/{id}`
 - `GET /api/reports/summary?vehicleId=&start=&end=`, `GET /api/reports/monthly?vehicleId=`, `GET /api/reports/fuel-stats?vehicleId=`
+- `POST /api/receipts?otoOnay=`, `GET /api/receipts?durum=`, `GET /api/receipts/{id}`, `POST /api/receipts/{id}/confirm`, `POST /api/receipts/{id}/reject`, `GET /api/receipts/stats`
+- `GET /api/vehicles/{id}/parca-hafizasi`, `POST /api/vehicles/{id}/parca-hafizasi/{parcaTuru}/hatirlatma`
+- `POST|DELETE /api/vehicles/{id}/karne`, `GET /api/vehicles/karne-stats`, `GET /api/karne/{token}`, `GET /api/karne/{token}/belge/{documentId}`
+- `GET|POST /api/documents`, `GET /api/documents/{id}/download`, `DELETE /api/documents/{id}`
+- `GET|POST /api/team`, `PUT /api/team/{id}/role`, `PUT /api/team/{id}/deactivate`
+- `GET|POST /api/assignments`, `PUT /api/assignments/transfer`, `PUT /api/assignments/end`
 - `POST /api/price/estimate`
 
 ## Fiyat Tahmini (ML.NET)
