@@ -82,6 +82,8 @@ namespace Garajim.Business.Constants
         public const string ImportBozukDosya = "Dosya okunamadı; sütun ayracı bulunamadı.";
         public const string ImportEksikEslesme = "Zorunlu sütunların tümü eşlenmeli.";
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
+        public const string DavetKoduGecersiz = "Davet kodu geçersiz.";
+
         public const string LastikTakildi = "Lastik seti takıldı.";
         public const string LastikSokuldu = "Lastik seti söküldü.";
         public const string LastikSilindi = "Lastik seti silindi.";

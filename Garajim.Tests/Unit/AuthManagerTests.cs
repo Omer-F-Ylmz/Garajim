@@ -27,7 +27,7 @@ namespace Garajim.Tests.Unit
                 })
                 .Build();
 
-            return new AuthManager(_userDal.Object, _companyDal.Object, configuration);
+            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, TestPlanKurallari.Olustur());
         }
 
         [Theory]

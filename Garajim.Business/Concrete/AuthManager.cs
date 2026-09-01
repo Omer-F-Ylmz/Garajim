@@ -1,4 +1,6 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Davetler;
+using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Core.Utilities.Security;
@@ -15,12 +17,14 @@ namespace Garajim.Business.Concrete
         private readonly IUserDal _userDal;
         private readonly ICompanyDal _companyDal;
         private readonly IConfiguration _configuration;
+        private readonly PlanKurallari _planKurallari;
 
-        public AuthManager(IUserDal userDal, ICompanyDal companyDal, IConfiguration configuration)
+        public AuthManager(IUserDal userDal, ICompanyDal companyDal, IConfiguration configuration, PlanKurallari planKurallari)
         {
             _userDal = userDal;
             _companyDal = companyDal;
             _configuration = configuration;
+            _planKurallari = planKurallari;
         }
 
         public async Task<IDataResult<TokenDto>> RegisterAsync(RegisterDto dto)
@@ -31,6 +35,14 @@ namespace Garajim.Business.Concrete
             var email = dto.Email.Trim().ToLowerInvariant();
             if (await _userDal.ExistsForRegistrationAsync(email))
                 return new ErrorDataResult<TokenDto>(Messages.EmailAlreadyExists);
+            Company davetEden = null;
+            var davetKodu = DavetKoduUretici.Normalize(dto.DavetKodu);
+            if (davetKodu != null)
+            {
+                davetEden = await _companyDal.GetByDavetKoduAsync(davetKodu);
+                if (davetEden == null)
+                    return new ErrorDataResult<TokenDto>(Messages.DavetKoduGecersiz);
+            }
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
             var fullName = dto.FullName.Trim();
             var companyName = string.IsNullOrWhiteSpace(dto.CompanyName) ? fullName : dto.CompanyName.Trim();
@@ -38,9 +50,16 @@ namespace Garajim.Business.Concrete
             {
                 Name = companyName.Length > 150 ? companyName.Substring(0, 150) : companyName,
                 PlanType = PlanType.Bireysel,
+                DavetEdenCompanyId = davetEden?.Id,
+                OdulGun = davetEden == null ? 0 : _planKurallari.DavetOdulGun(),
                 CreatedAt = DateTime.UtcNow
             };
             await _companyDal.AddAsync(company);
+            if (davetEden != null)
+            {
+                davetEden.OdulGun += _planKurallari.DavetOdulGun();
+                await _companyDal.UpdateAsync(davetEden);
+            }
             var user = new AppUser
             {
                 CompanyId = company.Id,

@@ -75,6 +75,7 @@ builder.Services.AddScoped<IImportService, ImportManager>();
 builder.Services.AddScoped<IExportService, ExportManager>();
 builder.Services.AddScoped<IYolculukService, YolculukManager>();
 builder.Services.AddScoped<ILastikService, LastikManager>();
+builder.Services.AddScoped<IDavetService, DavetManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();

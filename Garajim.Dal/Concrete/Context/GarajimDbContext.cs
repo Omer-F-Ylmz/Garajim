@@ -38,6 +38,8 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.Property(c => c.Name).HasMaxLength(150).IsRequired();
+                entity.Property(c => c.DavetKodu).HasMaxLength(12);
+                entity.HasIndex(c => c.DavetKodu).IsUnique().HasFilter("[DavetKodu] IS NOT NULL");
             });
 
             modelBuilder.Entity<AppUser>(entity =>

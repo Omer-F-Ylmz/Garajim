@@ -6,6 +6,7 @@ namespace Garajim.Entity.Dtos
         public string Password { get; set; }
         public string FullName { get; set; }
         public string CompanyName { get; set; }
+        public string DavetKodu { get; set; }
     }
 
     public class LoginDto

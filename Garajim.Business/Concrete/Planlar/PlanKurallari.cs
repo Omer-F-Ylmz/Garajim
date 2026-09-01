@@ -7,6 +7,7 @@ namespace Garajim.Business.Concrete.Planlar
     {
         public const int VarsayilanBireyselLimit = 3;
         public const int VarsayilanFiloLimit = 25;
+        public const int VarsayilanDavetOdulGun = 30;
 
         private readonly IConfiguration _configuration;
 
@@ -31,6 +32,16 @@ namespace Garajim.Business.Concrete.Planlar
             }
 
             return varsayilan;
+        }
+
+        public int DavetOdulGun()
+        {
+            if (int.TryParse(_configuration["Plan:DavetOdulGun"], out var gun) && gun > 0)
+            {
+                return gun;
+            }
+
+            return VarsayilanDavetOdulGun;
         }
     }
 }
