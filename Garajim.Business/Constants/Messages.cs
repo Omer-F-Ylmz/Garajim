@@ -72,5 +72,9 @@ namespace Garajim.Business.Constants
         public const string EvrakUpdated = "Evrak kaydı güncellendi.";
         public const string EvrakRenewed = "Evrak yenilendi.";
         public const string EvrakDeleted = "Evrak kaydı silindi.";
+
+        public const string TakvimAbonelikCreated = "Takvim aboneliği oluşturuldu.";
+        public const string TakvimAbonelikClosed = "Takvim aboneliği kapatıldı.";
+        public const string TakvimAbonelikNotFound = "Takvim aboneliği bulunamadı.";
     }
 }

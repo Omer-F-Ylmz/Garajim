@@ -26,6 +26,11 @@ namespace Garajim.Entity.Dtos
         public int? DocumentId { get; set; }
     }
 
+    public class TakvimAbonelikDto
+    {
+        public string Url { get; set; }
+    }
+
     public class EvrakDto
     {
         public int Id { get; set; }

@@ -52,6 +52,7 @@ builder.Services.AddScoped<IReceiptDraftDal, EfReceiptDraftDal>();
 builder.Services.AddScoped<IMaintenancePartDal, EfMaintenancePartDal>();
 builder.Services.AddScoped<IKarnePaylasimiDal, EfKarnePaylasimiDal>();
 builder.Services.AddScoped<IEvrakDal, EfEvrakDal>();
+builder.Services.AddScoped<ITakvimAbonelikDal, EfTakvimAbonelikDal>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
@@ -64,6 +65,7 @@ builder.Services.AddScoped<IPartMemoryService, PartMemoryManager>();
 builder.Services.AddScoped<IKarneService, KarneManager>();
 builder.Services.AddScoped<EvrakKurallari>();
 builder.Services.AddScoped<IEvrakService, EvrakManager>();
+builder.Services.AddScoped<ITakvimService, TakvimManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();

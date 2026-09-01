@@ -28,6 +28,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<MaintenancePart> MaintenanceParts { get; set; }
         public DbSet<KarnePaylasimi> KarnePaylasimlari { get; set; }
         public DbSet<EvrakKaydi> EvrakKayitlari { get; set; }
+        public DbSet<TakvimAbonelik> TakvimAbonelikleri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -116,6 +117,15 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(a => a.VehicleId).OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<TakvimAbonelik>(entity =>
+            {
+                entity.Property(t => t.TokenHash).HasMaxLength(64).IsRequired();
+                entity.HasIndex(t => t.TokenHash).IsUnique();
+                entity.HasIndex(t => new { t.UserId, t.Aktif });
+                entity.HasOne<Company>().WithMany().HasForeignKey(t => t.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<EvrakKaydi>(entity =>
             {
                 entity.Property(e => e.Saglayici).HasMaxLength(100);
@@ -185,6 +195,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<MaintenancePart>().HasQueryFilter(p => p.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<KarnePaylasimi>().HasQueryFilter(k => k.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<EvrakKaydi>().HasQueryFilter(e => e.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<TakvimAbonelik>().HasQueryFilter(t => t.CompanyId == CurrentCompanyId);
         }
     }
 }
