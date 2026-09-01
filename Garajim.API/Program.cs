@@ -70,6 +70,7 @@ builder.Services.AddScoped<PlanKurallari>();
 builder.Services.AddScoped<IEvrakService, EvrakManager>();
 builder.Services.AddScoped<ITakvimService, TakvimManager>();
 builder.Services.AddScoped<IImportService, ImportManager>();
+builder.Services.AddScoped<IExportService, ExportManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();
