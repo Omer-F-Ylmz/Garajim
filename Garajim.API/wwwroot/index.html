@@ -66,6 +66,7 @@
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
                 <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
                 <button id="karne-btn" class="ghost hidden" type="button">Karne paylaş</button>
+                <button id="ayarlar-btn" class="ghost" type="button">Ayarlar</button>
                 <span id="user-label" class="user-label"></span>
                 <button id="logout-btn" class="ghost" type="button">Çıkış</button>
             </div>
@@ -152,6 +153,21 @@
             <ul id="receipt-pending" class="upcoming"></ul>
         </section>
 
+        <section id="ayarlar-box" class="panel hidden">
+            <h2>Ayarlar</h2>
+            <h3>Takvime abone ol</h3>
+            <p class="hint">Evrak bitişleri ve hatırlatmalar telefon takviminize düşer. Bağlantı kişiye özeldir, paylaşmayın.</p>
+            <div class="inline-form">
+                <button id="takvim-olustur" type="button" class="primary">Abonelik oluştur</button>
+                <button id="takvim-kapat" type="button" class="ghost">Aboneliği iptal et</button>
+                <button id="ayarlar-close" type="button" class="ghost">Kapat</button>
+            </div>
+            <div id="takvim-sonuc" class="panel-inline hidden">
+                <p id="takvim-url" class="karne-url"></p>
+                <button id="takvim-kopyala" type="button" class="ghost">Kopyala</button>
+            </div>
+        </section>
+
         <section id="karne-box" class="panel hidden">
             <h2>Karne paylaş</h2>
             <p class="hint">Aracın belgeli geçmişini bağlantıyla paylaşın; hangi bölümlerin görüneceğini siz seçin.</p>
@@ -164,6 +180,7 @@
                     <label class="switch-label"><input id="karne-belge" type="checkbox"> Belgeler</label>
                     <label class="switch-label"><input id="karne-plaka" type="checkbox"> Plakayı göster</label>
                     <label class="switch-label"><input id="karne-tutar" type="checkbox"> Tutarları göster</label>
+                    <label class="switch-label"><input id="karne-acil" type="checkbox"> Acil durum kartı</label>
                 </div>
                 <div>
                     <label for="karne-sure">Süre (gün)</label>
@@ -264,6 +281,7 @@
                 <button class="tab-btn" data-tab="hatirlatma" type="button">Hatırlatmalar</button>
                 <button class="tab-btn" data-tab="rapor" type="button">Raporlar</button>
                 <button class="tab-btn" data-tab="tahmin" type="button">Fiyat Tahmini</button>
+                <button class="tab-btn" data-tab="evrak" type="button">Evrak</button>
                 <button class="tab-btn" data-tab="parca" type="button">Parça Hafızası</button>
                 <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
             </nav>
@@ -508,6 +526,56 @@
                     <span class="price-label">Tahmini değer</span>
                     <span id="price-value" class="price-value"></span>
                     <span id="price-detail" class="price-detail"></span>
+                </div>
+            </section>
+
+            <section id="panel-evrak" class="panel tab-panel hidden">
+                <h2>Evrak takvimi</h2>
+                <form id="evrak-form" class="grid-form">
+                    <div>
+                        <label for="evrak-tur">Evrak türü</label>
+                        <select id="evrak-tur"></select>
+                    </div>
+                    <div>
+                        <label for="evrak-baslangic">Başlangıç</label>
+                        <input id="evrak-baslangic" type="date">
+                    </div>
+                    <div>
+                        <label for="evrak-bitis">Bitiş</label>
+                        <input id="evrak-bitis" type="date">
+                        <small class="hint">Boş bırakırsanız kuraldan hesaplanır.</small>
+                    </div>
+                    <div>
+                        <label for="evrak-saglayici">Sağlayıcı</label>
+                        <input id="evrak-saglayici" type="text">
+                    </div>
+                    <div>
+                        <label for="evrak-police">Poliçe no</label>
+                        <input id="evrak-police" type="text">
+                    </div>
+                    <div>
+                        <label for="evrak-not">Not</label>
+                        <input id="evrak-not" type="text">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary">Evrak ekle</button>
+                    </div>
+                </form>
+
+                <div class="inline-form">
+                    <label class="switch-label" for="evrak-ay">Ay</label>
+                    <input id="evrak-ay" type="month">
+                    <button id="evrak-ay-btn" type="button" class="ghost">Ay görünümü</button>
+                    <button id="evrak-hepsi-btn" type="button" class="ghost">Aracın tümü</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Evrak</th><th>Araç / Kişi</th><th>Bitiş</th><th>Kalan</th><th>Sağlayıcı</th><th>Durum</th><th></th></tr>
+                        </thead>
+                        <tbody id="evrak-rows"></tbody>
+                    </table>
                 </div>
             </section>
 

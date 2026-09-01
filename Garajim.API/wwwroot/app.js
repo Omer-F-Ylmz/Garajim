@@ -402,6 +402,8 @@
             loadAssignments();
         } else if (tab === "parca") {
             loadPartMemory();
+        } else if (tab === "evrak") {
+            loadEvrak();
         }
     }
 
@@ -1310,6 +1312,168 @@
         });
     }
 
+    var EVRAK_TYPES = [
+        ["Muayene", "Muayene"],
+        ["TrafikSigortasi", "Trafik sigortası"],
+        ["Kasko", "Kasko"],
+        ["EgzozEmisyon", "Egzoz emisyon"],
+        ["KisLastigi", "Kış lastiği"],
+        ["Ehliyet", "Ehliyet"],
+        ["SRC", "SRC belgesi"],
+        ["Psikoteknik", "Psikoteknik"]
+    ];
+
+    var EVRAK_STATUS = {
+        Iyi: "İyi",
+        Yaklasiyor: "Yaklaşıyor",
+        Gecti: "Geçti"
+    };
+
+    function renderEvrakRows(rows) {
+        var tbody = el("evrak-rows");
+        clear(tbody);
+
+        if (rows.length === 0) {
+            emptyRow(tbody, 7, "Evrak kaydı yok.");
+            return;
+        }
+
+        rows.forEach(function (item) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", item.evrakAdi));
+            tr.appendChild(make("td", item.plaka || item.kullaniciAdi || "-"));
+            tr.appendChild(make("td", formatDate(item.bitisTarihi)));
+            tr.appendChild(make("td", item.kalanGun + " gün"));
+            tr.appendChild(make("td", item.saglayici || "-"));
+            tr.appendChild(make("td", EVRAK_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase()));
+
+            var hucre = document.createElement("td");
+            if (item.aktif && canManage()) {
+                var yenile = make("button", "Yenile", "link-btn");
+                yenile.type = "button";
+                yenile.addEventListener("click", function () { evrakYenile(item.id); });
+                hucre.appendChild(yenile);
+            }
+            tr.appendChild(hucre);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadEvrak() {
+        var yol = state.selectedVehicleId ? "/api/Evrak?vehicleId=" + state.selectedVehicleId : "/api/Evrak";
+        api(yol).then(function (result) {
+            renderEvrakRows((result && result.data) || []);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function loadEvrakAy() {
+        var ay = el("evrak-ay").value;
+        if (!ay) {
+            showMessage(el("app-message"), "Önce bir ay seçin.");
+            return;
+        }
+        clearMessages();
+        api("/api/Evrak/takvim?ay=" + ay).then(function (result) {
+            renderEvrakRows((result && result.data) || []);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function evrakYenile(id) {
+        clearMessages();
+        api("/api/Evrak/" + id + "/yenile", { method: "POST" }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Evrak yenilendi.", true);
+            loadEvrak();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function bindEvrak() {
+        el("evrak-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            if (!state.selectedVehicleId) {
+                showMessage(el("app-message"), "Önce bir araç seçin.");
+                return;
+            }
+
+            var bitis = el("evrak-bitis").value;
+            var baslangic = el("evrak-baslangic").value;
+
+            api("/api/Evrak", {
+                method: "POST",
+                body: {
+                    vehicleId: state.selectedVehicleId,
+                    evrakTuru: el("evrak-tur").value,
+                    baslangicTarihi: baslangic ? baslangic : null,
+                    bitisTarihi: bitis ? bitis : null,
+                    saglayici: el("evrak-saglayici").value,
+                    policeNo: el("evrak-police").value,
+                    not: el("evrak-not").value
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Evrak eklendi.", true);
+                el("evrak-form").reset();
+                loadEvrak();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("evrak-ay-btn").addEventListener("click", loadEvrakAy);
+        el("evrak-hepsi-btn").addEventListener("click", function () {
+            clearMessages();
+            loadEvrak();
+        });
+    }
+
+    function bindAyarlar() {
+        el("ayarlar-btn").addEventListener("click", function () {
+            var kutu = el("ayarlar-box");
+            kutu.classList.toggle("hidden", !kutu.classList.contains("hidden"));
+        });
+
+        el("ayarlar-close").addEventListener("click", function () {
+            el("ayarlar-box").classList.add("hidden");
+        });
+
+        el("takvim-olustur").addEventListener("click", function () {
+            clearMessages();
+            api("/api/Takvim/abonelik", { method: "POST" }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Abonelik oluşturuldu.", true);
+                el("takvim-sonuc").classList.remove("hidden");
+                el("takvim-url").textContent = result.data.url;
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("takvim-kapat").addEventListener("click", function () {
+            clearMessages();
+            api("/api/Takvim/abonelik", { method: "DELETE" }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Abonelik kapatıldı.", true);
+                el("takvim-sonuc").classList.add("hidden");
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("takvim-kopyala").addEventListener("click", function () {
+            var metin = el("takvim-url").textContent;
+            if (metin && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(metin).then(function () {
+                    showMessage(el("app-message"), "Bağlantı kopyalandı.", true);
+                });
+            }
+        });
+    }
+
     function karneKapsamiOku() {
         return {
             bakimGecmisi: el("karne-bakim").checked,
@@ -1317,7 +1481,8 @@
             yakitOzeti: el("karne-yakit").checked,
             belgeler: el("karne-belge").checked,
             plakaGoster: el("karne-plaka").checked,
-            tutarGoster: el("karne-tutar").checked
+            tutarGoster: el("karne-tutar").checked,
+            acilKart: el("karne-acil").checked
         };
     }
 
@@ -1836,6 +2001,7 @@
         fillSelect(el("receipt-type"), RECEIPT_TYPES);
         fillSelect(el("receipt-maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("receipt-category"), EXPENSE_CATEGORIES);
+        fillSelect(el("evrak-tur"), EVRAK_TYPES);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -1870,6 +2036,8 @@
         bindBulkUpload();
         bindParts();
         bindKarne();
+        bindEvrak();
+        bindAyarlar();
 
         if (readSession()) {
             enterApp();
