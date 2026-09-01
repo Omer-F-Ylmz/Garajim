@@ -76,5 +76,12 @@ namespace Garajim.Business.Constants
         public const string TakvimAbonelikCreated = "Takvim aboneliği oluşturuldu.";
         public const string TakvimAbonelikClosed = "Takvim aboneliği kapatıldı.";
         public const string TakvimAbonelikNotFound = "Takvim aboneliği bulunamadı.";
+
+        public const string ImportDosyaCokBuyuk = "Dosya 5 MB sınırını aşıyor.";
+        public const string ImportCokFazlaSatir = "Dosyada 5.000 satırdan fazla kayıt var; dosyayı bölerek yükleyin.";
+        public const string ImportBozukDosya = "Dosya okunamadı; sütun ayracı bulunamadı.";
+        public const string ImportEksikEslesme = "Zorunlu sütunların tümü eşlenmeli.";
+        public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
+        public const string ImportTamamlandi = "İçe aktarma tamamlandı.";
     }
 }
