@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -48,7 +49,9 @@ namespace Garajim.Tests.Integration
                 _connection = new SqliteConnection("DataSource=:memory:");
                 _connection.Open();
 
-                services.AddDbContext<GarajimDbContext>(options => options.UseSqlite(_connection));
+                services.AddDbContext<GarajimDbContext>(options => options
+                    .UseSqlite(_connection)
+                    .ReplaceService<IModelCustomizer, SqliteDecimalModelCustomizer>());
 
                 using var provider = services.BuildServiceProvider();
                 using var scope = provider.CreateScope();

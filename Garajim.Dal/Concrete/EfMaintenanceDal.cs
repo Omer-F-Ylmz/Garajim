@@ -25,9 +25,29 @@ namespace Garajim.Dal.Concrete
             return await Context.MaintenanceRecords
                 .Where(m => m.VehicleId == vehicleId)
                 .GroupBy(m => new { m.Date.Year, m.Date.Month })
-                .Select(g => new MonthlyCostDto { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(x => x.Cost) })
+                .Select(g => new MonthlyCostDto { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(x => (decimal?)x.Cost) ?? 0 })
                 .ToListAsync();
         }
+        public async Task<List<MonthlyCostDto>> GetMonthlyTotalsAsync(int vehicleId, DateTime start, DateTime end)
+        {
+            return await Context.MaintenanceRecords
+                .AsNoTracking()
+                .Where(m => m.VehicleId == vehicleId && m.Date >= start && m.Date <= end)
+                .GroupBy(m => new { m.Date.Year, m.Date.Month })
+                .Select(g => new MonthlyCostDto { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(x => (decimal?)x.Cost) ?? 0 })
+                .ToListAsync();
+        }
+
+        public async Task<List<AracToplamDto>> GetTotalsByVehicleAsync(List<int> vehicleIds, DateTime start, DateTime end)
+        {
+            return await Context.MaintenanceRecords
+                .AsNoTracking()
+                .Where(m => vehicleIds.Contains(m.VehicleId) && m.Date >= start && m.Date <= end)
+                .GroupBy(m => m.VehicleId)
+                .Select(g => new AracToplamDto { VehicleId = g.Key, Toplam = g.Sum(x => (decimal?)x.Cost) ?? 0 })
+                .ToListAsync();
+        }
+
         public async Task<List<MaintenanceRecord>> GetRecentAsync(int vehicleId, int limit)
         {
             return await Context.MaintenanceRecords

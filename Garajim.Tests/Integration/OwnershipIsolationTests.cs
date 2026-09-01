@@ -185,7 +185,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task ReportManager_BaskaKullanicininRaporlarinaErisemez()
         {
-            var manager = new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal);
+            var manager = new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.UserDal);
 
             var ozet = await manager.GetSummaryAsync(_kullaniciB, _aracA.Id, new DateTime(2026, 1, 1), new DateTime(2026, 12, 31));
             var aylik = await manager.GetMonthlyAsync(_kullaniciB, _aracA.Id);

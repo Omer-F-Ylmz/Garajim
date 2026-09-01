@@ -18,6 +18,7 @@ namespace Garajim.Tests.Unit
         private readonly Mock<IFuelDal> _fuelDal = new Mock<IFuelDal>();
         private readonly Mock<IMaintenanceDal> _maintenanceDal = new Mock<IMaintenanceDal>();
         private readonly Mock<IExpenseDal> _expenseDal = new Mock<IExpenseDal>();
+        private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>();
 
         private ReportManager CreateManager(params FuelRecord[] kayitlar)
         {
@@ -28,7 +29,7 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync((Expression<Func<FuelRecord, bool>> predicate) =>
                     kayitlar.Where(predicate.Compile()).ToList());
 
-            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
         }
 
         private static FuelRecord Kayit(int km, decimal litre, decimal tutar)
@@ -109,7 +110,7 @@ namespace Garajim.Tests.Unit
         public async Task GetFuelStatsAsync_BaskaKullanicininAraciIcinHataDoner()
         {
             _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
-            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object);
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object);
 
             var result = await manager.GetFuelStatsAsync(UserId, VehicleId);
 

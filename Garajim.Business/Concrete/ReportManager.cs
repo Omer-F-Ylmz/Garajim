@@ -3,6 +3,7 @@ using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 
 namespace Garajim.Business.Concrete
 {
@@ -12,13 +13,15 @@ namespace Garajim.Business.Concrete
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IFuelDal _fuelDal;
         private readonly IExpenseDal _expenseDal;
+        private readonly IUserDal _userDal;
 
-        public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal)
+        public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal)
         {
             _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
             _fuelDal = fuelDal;
             _expenseDal = expenseDal;
+            _userDal = userDal;
         }
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
@@ -89,6 +92,199 @@ namespace Garajim.Business.Concrete
                 CostPerKm = Math.Round(consumedCost / totalKm, 2)
             };
             return new SuccessDataResult<FuelStatsDto>(stats);
+        }
+
+        public async Task<IDataResult<AracMaliyetDto>> GetAracMaliyetAsync(int userId, int vehicleId, DateTime baslangic, DateTime bitis)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<AracMaliyetDto>(Messages.VehicleNotFound);
+
+            if (bitis.Date < baslangic.Date)
+                return new ErrorDataResult<AracMaliyetDto>(Messages.InvalidValue);
+
+            var bas = baslangic.Date;
+            var son = GunSonu(bitis);
+
+            var yakitAylik = await _fuelDal.GetMonthlyTotalsAsync(vehicleId, bas, son);
+            var bakimAylik = await _maintenanceDal.GetMonthlyTotalsAsync(vehicleId, bas, son);
+            var masrafAylik = await _expenseDal.GetMonthlyTotalsAsync(vehicleId, bas, son);
+            var olcumler = await _fuelDal.GetOlcumlerAsync(vehicleId, bas, son);
+
+            var maliyet = new AracMaliyetDto
+            {
+                VehicleId = vehicle.Id,
+                Plaka = vehicle.Plate,
+                Baslangic = bas,
+                Bitis = bitis.Date,
+                ToplamYakit = yakitAylik.Sum(a => a.Total),
+                ToplamBakim = bakimAylik.Sum(a => a.Total),
+                ToplamMasraf = masrafAylik.Sum(a => a.Total),
+                YakitKaydiSayisi = olcumler.Count,
+                AylikSeri = AylikSeri(bitis.Date, yakitAylik, bakimAylik, masrafAylik)
+            };
+
+            maliyet.ToplamMaliyet = maliyet.ToplamYakit + maliyet.ToplamBakim + maliyet.ToplamMasraf;
+
+            if (olcumler.Count >= 2)
+            {
+                maliyet.MesafeKm = olcumler[olcumler.Count - 1].Km - olcumler[0].Km;
+            }
+
+            if (maliyet.MesafeKm > 0)
+            {
+                maliyet.MaliyetKmBasi = Math.Round(maliyet.ToplamMaliyet / maliyet.MesafeKm, 2);
+
+                var tuketilenLitre = olcumler.Skip(1).Sum(o => o.Litre);
+                maliyet.Litre100Km = Math.Round(tuketilenLitre / maliyet.MesafeKm * 100, 2);
+                maliyet.TuketimSeri = TuketimSeri(olcumler);
+            }
+
+            return new SuccessDataResult<AracMaliyetDto>(maliyet);
+        }
+
+        public async Task<IDataResult<FiloMaliyetDto>> GetFiloMaliyetAsync(int userId, DateTime baslangic, DateTime bitis)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<FiloMaliyetDto>(Messages.UserNotFound);
+            if (user.Role == CompanyRole.Driver)
+                return new ErrorDataResult<FiloMaliyetDto>(Messages.AuthorizationDenied);
+
+            if (bitis.Date < baslangic.Date)
+                return new ErrorDataResult<FiloMaliyetDto>(Messages.InvalidValue);
+
+            var bas = baslangic.Date;
+            var son = GunSonu(bitis);
+
+            var rapor = new FiloMaliyetDto { Baslangic = bas, Bitis = bitis.Date };
+
+            var araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
+            if (araclar.Count == 0)
+                return new SuccessDataResult<FiloMaliyetDto>(rapor);
+
+            var idler = araclar.Select(a => a.Id).ToList();
+
+            var yakit = (await _fuelDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
+            var bakim = (await _maintenanceDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
+            var masraf = (await _expenseDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
+            var ozet = (await _fuelDal.GetYakitOzetiAsync(idler, bas, son)).ToDictionary(o => o.VehicleId);
+            var ilkDolum = (await _fuelDal.GetIlkDolumLitreleriAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
+
+            foreach (var arac in araclar)
+            {
+                var satir = new FiloMaliyetSatiriDto
+                {
+                    VehicleId = arac.Id,
+                    Plaka = arac.Plate,
+                    Marka = arac.Brand,
+                    Model = arac.Model,
+                    ToplamYakit = Deger(yakit, arac.Id),
+                    ToplamBakim = Deger(bakim, arac.Id),
+                    ToplamMasraf = Deger(masraf, arac.Id)
+                };
+
+                satir.ToplamMaliyet = satir.ToplamYakit + satir.ToplamBakim + satir.ToplamMasraf;
+
+                if (ozet.TryGetValue(arac.Id, out var yakitOzeti))
+                {
+                    satir.YakitKaydiSayisi = yakitOzeti.Adet;
+
+                    if (yakitOzeti.Adet >= 2 && yakitOzeti.EnYuksekKm > yakitOzeti.EnDusukKm)
+                    {
+                        satir.MesafeKm = yakitOzeti.EnYuksekKm - yakitOzeti.EnDusukKm;
+                        satir.MaliyetKmBasi = Math.Round(satir.ToplamMaliyet / satir.MesafeKm, 2);
+
+                        var tuketilenLitre = yakitOzeti.Litre - Deger(ilkDolum, arac.Id);
+                        if (tuketilenLitre > 0)
+                        {
+                            satir.Litre100Km = Math.Round(tuketilenLitre / satir.MesafeKm * 100, 2);
+                        }
+                    }
+                }
+
+                rapor.Araclar.Add(satir);
+            }
+
+            rapor.ToplamMaliyet = rapor.Araclar.Sum(a => a.ToplamMaliyet);
+            rapor.ToplamMesafeKm = rapor.Araclar.Sum(a => a.MesafeKm);
+            rapor.Araclar = rapor.Araclar
+                .OrderByDescending(a => a.MaliyetKmBasi ?? -1)
+                .ThenByDescending(a => a.ToplamMaliyet)
+                .ThenBy(a => a.Plaka)
+                .ToList();
+
+            return new SuccessDataResult<FiloMaliyetDto>(rapor);
+        }
+
+        private static decimal Deger(Dictionary<int, decimal> kaynak, int vehicleId)
+        {
+            return kaynak.TryGetValue(vehicleId, out var deger) ? deger : 0m;
+        }
+
+        private static DateTime GunSonu(DateTime bitis)
+        {
+            return bitis.Date >= DateTime.MaxValue.Date ? DateTime.MaxValue : bitis.Date.AddDays(1).AddTicks(-1);
+        }
+
+        private static List<MaliyetAyDto> AylikSeri(DateTime bitis, List<MonthlyCostDto> yakit, List<MonthlyCostDto> bakim, List<MonthlyCostDto> masraf)
+        {
+            var seri = new List<MaliyetAyDto>();
+            var sonAy = new DateTime(bitis.Year, bitis.Month, 1);
+
+            for (var i = 11; i >= 0; i--)
+            {
+                var ay = sonAy.AddMonths(-i);
+                var kalem = new MaliyetAyDto
+                {
+                    Yil = ay.Year,
+                    Ay = ay.Month,
+                    Yakit = AyToplami(yakit, ay),
+                    Bakim = AyToplami(bakim, ay),
+                    Masraf = AyToplami(masraf, ay)
+                };
+                kalem.Toplam = kalem.Yakit + kalem.Bakim + kalem.Masraf;
+                seri.Add(kalem);
+            }
+
+            return seri;
+        }
+
+        private static decimal AyToplami(List<MonthlyCostDto> kaynak, DateTime ay)
+        {
+            return kaynak.Where(k => k.Year == ay.Year && k.Month == ay.Month).Sum(k => k.Total);
+        }
+
+        private static List<TuketimAyDto> TuketimSeri(List<YakitOlcumDto> olcumler)
+        {
+            var mesafeler = new Dictionary<(int Yil, int Ay), int>();
+            var litreler = new Dictionary<(int Yil, int Ay), decimal>();
+
+            for (var i = 1; i < olcumler.Count; i++)
+            {
+                var fark = olcumler[i].Km - olcumler[i - 1].Km;
+                if (fark <= 0)
+                {
+                    continue;
+                }
+
+                var anahtar = (olcumler[i].Tarih.Year, olcumler[i].Tarih.Month);
+                mesafeler.TryGetValue(anahtar, out var mesafe);
+                mesafeler[anahtar] = mesafe + fark;
+                litreler.TryGetValue(anahtar, out var litre);
+                litreler[anahtar] = litre + olcumler[i].Litre;
+            }
+
+            return mesafeler
+                .Where(m => m.Value > 0)
+                .Select(m => new TuketimAyDto
+                {
+                    Yil = m.Key.Yil,
+                    Ay = m.Key.Ay,
+                    Litre100Km = Math.Round(litreler[m.Key] / m.Value * 100, 2)
+                })
+                .OrderBy(t => t.Yil).ThenBy(t => t.Ay)
+                .ToList();
         }
 
         private static void Accumulate(Dictionary<(int Year, int Month), decimal> merged, MonthlyCostDto item)

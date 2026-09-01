@@ -39,5 +39,19 @@ namespace Garajim.API.Controllers
                 return BadRequest(result);
             return Ok(result);
         }
+
+        [HttpGet("filo-maliyet")]
+        public async Task<IActionResult> GetFiloMaliyet([FromQuery] DateTime baslangic, [FromQuery] DateTime bitis)
+        {
+            var result = await _reportService.GetFiloMaliyetAsync(CurrentUserId, baslangic, bitis);
+            if (!result.Success)
+            {
+                if (result.Message == Garajim.Business.Constants.Messages.AuthorizationDenied)
+                    return StatusCode(StatusCodes.Status403Forbidden, result);
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
     }
 }

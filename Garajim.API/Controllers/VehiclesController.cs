@@ -14,13 +14,15 @@ namespace Garajim.API.Controllers
         private readonly IPartMemoryService _partMemoryService;
         private readonly IKarneService _karneService;
         private readonly IEvrakService _evrakService;
+        private readonly IReportService _reportService;
 
-        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService)
         {
             _vehicleService = vehicleService;
             _partMemoryService = partMemoryService;
             _karneService = karneService;
             _evrakService = evrakService;
+            _reportService = reportService;
         }
 
         [HttpPost("{id}/karne")]
@@ -50,6 +52,19 @@ namespace Garajim.API.Controllers
             var result = await _karneService.StatsAsync(CurrentUserId);
             if (!result.Success)
                 return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}/maliyet")]
+        public async Task<IActionResult> Maliyet(int id, [FromQuery] DateTime baslangic, [FromQuery] DateTime bitis)
+        {
+            var result = await _reportService.GetAracMaliyetAsync(CurrentUserId, id, baslangic, bitis);
+            if (!result.Success)
+            {
+                if (result.Message == Garajim.Business.Constants.Messages.VehicleNotFound)
+                    return NotFound(result);
+                return BadRequest(result);
+            }
             return Ok(result);
         }
 

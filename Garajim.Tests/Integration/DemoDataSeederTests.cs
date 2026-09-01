@@ -129,7 +129,7 @@ namespace Garajim.Tests.Integration
             var kullanici = await _db.Context.Users.IgnoreQueryFilters().AsNoTracking().SingleAsync(u => u.Email == DemoDataSeeder.DemoEmail);
             var arac = await _db.Context.Vehicles.IgnoreQueryFilters().AsNoTracking().SingleAsync();
             _db.Tenant.SetCompany(kullanici.CompanyId);
-            var manager = new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal);
+            var manager = new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.UserDal);
 
             var ozet = await manager.GetSummaryAsync(kullanici.Id, arac.Id, DateTime.UtcNow.Date.AddYears(-1), DateTime.UtcNow.Date);
             var yakit = await manager.GetFuelStatsAsync(kullanici.Id, arac.Id);
