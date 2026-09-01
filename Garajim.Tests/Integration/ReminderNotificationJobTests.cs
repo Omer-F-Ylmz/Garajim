@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Jobs;
 using Microsoft.Extensions.Configuration;
 using Garajim.Entity.Concrete;
@@ -38,7 +39,8 @@ namespace Garajim.Tests.Integration
             var yapilandirma = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string> { ["App:BaseUrl"] = baseUrl })
                 .Build();
-            return new ReminderNotificationJob(_db.CompanyDal, _db.ReminderDal, _db.Tenant, emailSender, yapilandirma);
+            return new ReminderNotificationJob(_db.CompanyDal, _db.ReminderDal, _db.Tenant, emailSender, yapilandirma,
+                _db.EvrakDal, _db.UserDal, _db.AssignmentDal, new EvrakKurallari(yapilandirma));
         }
 
         private Reminder HatirlatmaEkle(int gunSonra, bool isCompleted = false, DateTime? lastNotifiedAt = null)

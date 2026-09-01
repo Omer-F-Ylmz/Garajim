@@ -39,6 +39,7 @@ namespace Garajim.Tests.Integration
             ReminderDal = new EfReminderDal(Context);
             AssignmentDal = new EfVehicleAssignmentDal(Context);
             PartDal = new EfMaintenancePartDal(Context);
+            EvrakDal = new EfEvrakDal(Context);
             UnitOfWork = new EfUnitOfWork(Context);
             VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
         }
@@ -68,6 +69,8 @@ namespace Garajim.Tests.Integration
         public EfVehicleAssignmentDal AssignmentDal { get; }
 
         public EfMaintenancePartDal PartDal { get; }
+
+        public EfEvrakDal EvrakDal { get; }
 
         public EfUnitOfWork UnitOfWork { get; }
 
