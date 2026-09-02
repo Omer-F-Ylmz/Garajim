@@ -93,6 +93,18 @@ namespace Garajim.Entity.Dtos
         public decimal Tutar { get; set; }
     }
 
+    public class UstaIstatistikDto
+    {
+        public int Toplam { get; set; }
+        public int Puanlanan { get; set; }
+        public int Olumlu { get; set; }
+        public int KirmiziCizgi { get; set; }
+        public int CozumBagli { get; set; }
+        public long TokenGiris { get; set; }
+        public long TokenCikis { get; set; }
+        public long SureMs { get; set; }
+    }
+
     public class UstaStatsDto
     {
         public int SoruSayisi { get; set; }

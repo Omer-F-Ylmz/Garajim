@@ -1,5 +1,6 @@
 using Garajim.Core.DataAccess;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
 
 namespace Garajim.Dal.Abstract
 {
@@ -15,6 +16,7 @@ namespace Garajim.Dal.Abstract
         Task<List<UstaMesaj>> GetSohbetMesajlariAsync(int sohbetId);
         Task<int> SohbetMesajSayisiAsync(int sohbetId);
         Task<int> KullaniciGunlukSayisiAsync(int sohbetSahibiUserId, DateTime gunBasi);
+        Task<UstaIstatistikDto> IstatistikAsync();
         Task<List<UstaMesaj>> GetOzetlenmemisCozumluMesajlarAsync();
         Task OzetlendiIsaretleAsync(List<int> mesajIds);
         Task DeleteBySohbetAsync(int sohbetId);

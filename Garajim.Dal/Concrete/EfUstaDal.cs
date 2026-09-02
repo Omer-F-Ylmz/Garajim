@@ -2,6 +2,7 @@ using Garajim.Core.DataAccess.EntityFramework;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete.Context;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,7 +81,30 @@ namespace Garajim.Dal.Concrete
                 .CountAsync(u => u == userId);
         }
 
+        public async Task<UstaIstatistikDto> IstatistikAsync()
+        {
+            var sorgu = Context.UstaMesajlari.AsNoTracking().Where(m => m.Rol == UstaRol.Usta);
+
+            var ozet = await sorgu
+                .GroupBy(m => 1)
+                .Select(g => new UstaIstatistikDto
+                {
+                    Toplam = g.Count(),
+                    Puanlanan = g.Count(m => m.GeriBildirim != UstaGeriBildirim.Yok),
+                    Olumlu = g.Count(m => m.GeriBildirim == UstaGeriBildirim.Olumlu),
+                    KirmiziCizgi = g.Count(m => m.KirmiziCizgi),
+                    CozumBagli = g.Count(m => m.CozumBakimId != null),
+                    TokenGiris = g.Sum(m => (long)m.TokenGiris),
+                    TokenCikis = g.Sum(m => (long)m.TokenCikis),
+                    SureMs = g.Sum(m => (long)m.SureMs)
+                })
+                .FirstOrDefaultAsync();
+
+            return ozet ?? new UstaIstatistikDto();
+        }
+
         public async Task<List<UstaMesaj>> GetOzetlenmemisCozumluMesajlarAsync()
+
         {
             return await Context.UstaMesajlari
                 .AsNoTracking()

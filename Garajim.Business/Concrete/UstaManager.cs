@@ -423,26 +423,24 @@ namespace Garajim.Business.Concrete
             if (user.Role != CompanyRole.Owner)
                 return new ErrorDataResult<UstaStatsDto>(Messages.AuthorizationDenied);
 
-            var mesajlar = await _mesajDal.GetListAsync(m => m.Rol == UstaRol.Usta);
-            var stats = new UstaStatsDto { SoruSayisi = mesajlar.Count };
+            var ozet = await _mesajDal.IstatistikAsync();
+            var stats = new UstaStatsDto { SoruSayisi = ozet.Toplam };
 
-            if (mesajlar.Count == 0)
+            if (ozet.Toplam == 0)
             {
                 return new SuccessDataResult<UstaStatsDto>(stats);
             }
 
-            var puanlanan = mesajlar.Count(m => m.GeriBildirim != UstaGeriBildirim.Yok);
-            stats.PuanlananOrani = Oran(puanlanan, mesajlar.Count);
-            stats.OlumluOrani = puanlanan == 0 ? 0m : Oran(mesajlar.Count(m => m.GeriBildirim == UstaGeriBildirim.Olumlu), puanlanan);
-            stats.KirmiziCizgiOrani = Oran(mesajlar.Count(m => m.KirmiziCizgi), mesajlar.Count);
-            stats.CozumBagiOrani = Oran(mesajlar.Count(m => m.CozumBakimId != null), mesajlar.Count);
-            stats.OrtTokenGiris = (int)Math.Round(mesajlar.Average(m => (double)m.TokenGiris));
-            stats.OrtTokenCikis = (int)Math.Round(mesajlar.Average(m => (double)m.TokenCikis));
-            stats.OrtSureMs = (int)Math.Round(mesajlar.Average(m => (double)m.SureMs));
+            stats.PuanlananOrani = Oran(ozet.Puanlanan, ozet.Toplam);
+            stats.OlumluOrani = ozet.Puanlanan == 0 ? 0m : Oran(ozet.Olumlu, ozet.Puanlanan);
+            stats.KirmiziCizgiOrani = Oran(ozet.KirmiziCizgi, ozet.Toplam);
+            stats.CozumBagiOrani = Oran(ozet.CozumBagli, ozet.Toplam);
+            stats.OrtTokenGiris = (int)Math.Round((double)ozet.TokenGiris / ozet.Toplam);
+            stats.OrtTokenCikis = (int)Math.Round((double)ozet.TokenCikis / ozet.Toplam);
+            stats.OrtSureMs = (int)Math.Round((double)ozet.SureMs / ozet.Toplam);
 
             var milyonFiyat = _configuration.GetValue("Usta:TokenFiyat", 0m);
-            var toplamToken = mesajlar.Sum(m => (long)m.TokenGiris + m.TokenCikis);
-            stats.TahminiMaliyetTl = Math.Round(milyonFiyat * toplamToken / 1000000m, 2);
+            stats.TahminiMaliyetTl = Math.Round(milyonFiyat * (ozet.TokenGiris + ozet.TokenCikis) / 1000000m, 2);
 
             return new SuccessDataResult<UstaStatsDto>(stats);
         }
