@@ -166,6 +166,7 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(l => l.DisDerinligiMm).HasPrecision(4, 1);
                 entity.HasIndex(l => l.CompanyId);
                 entity.HasIndex(l => new { l.VehicleId, l.Takili });
+                entity.HasIndex(l => l.VehicleId).IsUnique().HasFilter("[Takili] = 1");
                 entity.HasOne<Company>().WithMany().HasForeignKey(l => l.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(l => l.VehicleId).OnDelete(DeleteBehavior.Cascade);
                 entity.ToTable(t => t.HasCheckConstraint("CK_LastikSeti_Mesafe",

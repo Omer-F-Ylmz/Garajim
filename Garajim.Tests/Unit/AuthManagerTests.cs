@@ -28,7 +28,7 @@ namespace Garajim.Tests.Unit
                 })
                 .Build();
 
-            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci());
+            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci(), new SahteUnitOfWork());
         }
 
         [Theory]

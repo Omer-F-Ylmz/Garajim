@@ -23,7 +23,7 @@ namespace Garajim.Tests.Integration
                 })
                 .Build();
 
-            return new AuthManager(_db.UserDal, _db.CompanyDal, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci());
+            return new AuthManager(_db.UserDal, _db.CompanyDal, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci(), _db.UnitOfWork);
         }
 
         [Fact]

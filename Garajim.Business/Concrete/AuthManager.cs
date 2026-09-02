@@ -20,6 +20,7 @@ namespace Garajim.Business.Concrete
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
         private readonly IKodGonderimSayaci _gonderimSayaci;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<AuthManager> _logger;
 
         public AuthManager(
@@ -28,6 +29,7 @@ namespace Garajim.Business.Concrete
             IConfiguration configuration,
             IEmailSender emailSender,
             IKodGonderimSayaci gonderimSayaci,
+            IUnitOfWork unitOfWork,
             ILogger<AuthManager> logger = null)
         {
             _userDal = userDal;
@@ -35,6 +37,7 @@ namespace Garajim.Business.Concrete
             _configuration = configuration;
             _emailSender = emailSender;
             _gonderimSayaci = gonderimSayaci;
+            _unitOfWork = unitOfWork;
             _logger = logger ?? NullLogger<AuthManager>.Instance;
         }
 
@@ -55,15 +58,17 @@ namespace Garajim.Business.Concrete
                     return new ErrorDataResult<KayitSonucuDto>(Messages.DavetKoduGecersiz);
             }
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
-            var fullName = dto.FullName.Trim();
+            var fullName = Kirp(dto.FullName, 100);
             var companyName = string.IsNullOrWhiteSpace(dto.CompanyName) ? fullName : dto.CompanyName.Trim();
             var company = new Company
             {
-                Name = companyName.Length > 150 ? companyName.Substring(0, 150) : companyName,
+                Name = Kirp(companyName, 150),
                 PlanType = PlanType.Bireysel,
                 DavetEdenCompanyId = davetEden?.Id,
                 CreatedAt = DateTime.UtcNow
             };
+            await using var islem = await _unitOfWork.BeginTransactionAsync();
+
             await _companyDal.AddAsync(company);
             var user = new AppUser
             {
@@ -77,6 +82,8 @@ namespace Garajim.Business.Concrete
                 CreatedAt = DateTime.UtcNow
             };
             await _userDal.AddAsync(user);
+
+            await _unitOfWork.CommitAsync();
 
             await KodUretVeGonderAsync(user);
 
@@ -190,6 +197,12 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<TokenDto>(Messages.EmailDogrulanmadi);
             var company = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
             return new SuccessDataResult<TokenDto>(CreateTokenDto(user, company?.Name), Messages.LoginSuccess);
+        }
+
+        private static string Kirp(string metin, int uzunluk)
+        {
+            var kirpik = (metin ?? string.Empty).Trim();
+            return kirpik.Length > uzunluk ? kirpik.Substring(0, uzunluk) : kirpik;
         }
 
         private TokenDto CreateTokenDto(AppUser user, string companyName)
