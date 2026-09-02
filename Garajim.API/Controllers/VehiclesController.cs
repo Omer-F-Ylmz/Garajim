@@ -15,14 +15,16 @@ namespace Garajim.API.Controllers
         private readonly IKarneService _karneService;
         private readonly IEvrakService _evrakService;
         private readonly IReportService _reportService;
+        private readonly IHasarService _hasarService;
 
-        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService, IHasarService hasarService)
         {
             _vehicleService = vehicleService;
             _partMemoryService = partMemoryService;
             _karneService = karneService;
             _evrakService = evrakService;
             _reportService = reportService;
+            _hasarService = hasarService;
         }
 
         [HttpPost("{id}/karne")]
@@ -72,6 +74,15 @@ namespace Garajim.API.Controllers
         public async Task<IActionResult> AracEvraklari(int id)
         {
             var result = await _evrakService.GetListAsync(CurrentUserId, id);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}/hasar")]
+        public async Task<IActionResult> AracHasarlari(int id)
+        {
+            var result = await _hasarService.GetListAsync(CurrentUserId, id);
             if (!result.Success)
                 return NotFound(result);
             return Ok(result);

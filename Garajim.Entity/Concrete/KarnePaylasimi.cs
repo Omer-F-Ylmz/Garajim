@@ -15,6 +15,7 @@ namespace Garajim.Entity.Concrete
         public bool PlakaGoster { get; set; }
         public bool TutarGoster { get; set; }
         public bool AcilKart { get; set; }
+        public bool HasarGecmisi { get; set; }
         public DateTime? SonKullanma { get; set; }
         public bool Aktif { get; set; }
         public int GoruntulenmeSayisi { get; set; }

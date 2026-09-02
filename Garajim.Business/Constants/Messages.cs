@@ -84,6 +84,16 @@ namespace Garajim.Business.Constants
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
         public const string DavetKoduGecersiz = "Davet kodu geçersiz.";
 
+        public const string HasarDosyasiAcildi = "Hasar dosyası açıldı.";
+        public const string HasarDosyasiGuncellendi = "Hasar dosyası güncellendi.";
+        public const string HasarDosyasiSilindi = "Hasar dosyası ve fotoğrafları silindi.";
+        public const string HasarDosyasiBulunamadi = "Hasar dosyası bulunamadı.";
+        public const string HasarFotoEklendi = "Fotoğraf eklendi.";
+        public const string HasarFotoSilindi = "Fotoğraf silindi.";
+        public const string HasarFotoBulunamadi = "Fotoğraf bulunamadı.";
+        public const string HasarFotoSiniri = "Bir hasar dosyasına en fazla 20 fotoğraf eklenebilir.";
+        public const string HasarTarihiGecersiz = "Olay tarihi geçmiş bir tarih olmalı.";
+
         public const string UstaOnayGerekli = "AI Usta'yı kullanmak için kullanım şartlarını onaylamanız gerekiyor.";
         public const string UstaOnayAlindi = "Onayınız kaydedildi.";
         public const string UstaOnaySurumuEski = "Onay metni güncellendi; lütfen yeni metni onaylayın.";

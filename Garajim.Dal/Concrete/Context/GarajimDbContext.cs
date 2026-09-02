@@ -36,6 +36,8 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<UstaMesaj> UstaMesajlari { get; set; }
         public DbSet<UstaOnay> UstaOnaylari { get; set; }
         public DbSet<UstaCozumOzeti> UstaCozumOzetleri { get; set; }
+        public DbSet<HasarDosyasi> HasarDosyalari { get; set; }
+        public DbSet<HasarFoto> HasarFotograflari { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -211,6 +213,34 @@ namespace Garajim.Dal.Concrete.Context
                 entity.ToTable(t => t.HasCheckConstraint("CK_UstaCozumOzeti_Sayi", "[Sayi] > 0"));
             });
 
+            modelBuilder.Entity<HasarDosyasi>(entity =>
+            {
+                entity.Property(h => h.Konum).HasMaxLength(200);
+                entity.Property(h => h.Aciklama).HasMaxLength(1000).IsRequired();
+                entity.Property(h => h.KarsiTarafPlaka).HasMaxLength(15);
+                entity.Property(h => h.KarsiTarafSigorta).HasMaxLength(100);
+                entity.Property(h => h.KarsiTarafPoliceNo).HasMaxLength(50);
+                entity.Property(h => h.SigortaDosyaNo).HasMaxLength(50);
+                entity.Property(h => h.HasarBedeli).HasPrecision(18, 2);
+                entity.HasIndex(h => h.CompanyId);
+                entity.HasIndex(h => new { h.VehicleId, h.OlayTarihi });
+                entity.HasOne<Company>().WithMany().HasForeignKey(h => h.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(h => h.VehicleId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(h => h.OlusturanUserId).OnDelete(DeleteBehavior.Restrict);
+                entity.ToTable(t => t.HasCheckConstraint("CK_HasarDosyasi_Bedel", "[HasarBedeli] IS NULL OR [HasarBedeli] >= 0"));
+            });
+
+            modelBuilder.Entity<HasarFoto>(entity =>
+            {
+                entity.HasIndex(f => f.CompanyId);
+                entity.HasIndex(f => new { f.HasarDosyasiId, f.Sira });
+                entity.HasIndex(f => f.DocumentId).IsUnique();
+                entity.HasOne<Company>().WithMany().HasForeignKey(f => f.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<HasarDosyasi>().WithMany().HasForeignKey(f => f.HasarDosyasiId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<Document>().WithMany().HasForeignKey(f => f.DocumentId).OnDelete(DeleteBehavior.Restrict);
+                entity.ToTable(t => t.HasCheckConstraint("CK_HasarFoto_Sira", "[Sira] > 0"));
+            });
+
             modelBuilder.Entity<TakvimAbonelik>(entity =>
 
             {
@@ -297,6 +327,8 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<UstaSohbet>().HasQueryFilter(s => s.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<UstaMesaj>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<UstaOnay>().HasQueryFilter(o => o.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<HasarDosyasi>().HasQueryFilter(h => h.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<HasarFoto>().HasQueryFilter(f => f.CompanyId == CurrentCompanyId);
         }
     }
 }

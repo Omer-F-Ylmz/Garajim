@@ -12,7 +12,7 @@ namespace Garajim.Business.Concrete
 {
     public class ExportManager : IExportService
     {
-        private static readonly string[] Turler = { "yakit", "bakim", "masraf", "evrak" };
+        private static readonly string[] Turler = { "yakit", "bakim", "masraf", "evrak", "hasar" };
         private static readonly CultureInfo Kultur = new CultureInfo("tr-TR");
 
         private readonly IVehicleAccessService _vehicleAccess;
@@ -20,19 +20,22 @@ namespace Garajim.Business.Concrete
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IExpenseDal _expenseDal;
         private readonly IEvrakDal _evrakDal;
+        private readonly IHasarDosyasiDal _hasarDosyasiDal;
 
         public ExportManager(
             IVehicleAccessService vehicleAccess,
             IFuelDal fuelDal,
             IMaintenanceDal maintenanceDal,
             IExpenseDal expenseDal,
-            IEvrakDal evrakDal)
+            IEvrakDal evrakDal,
+            IHasarDosyasiDal hasarDosyasiDal)
         {
             _vehicleAccess = vehicleAccess;
             _fuelDal = fuelDal;
             _maintenanceDal = maintenanceDal;
             _expenseDal = expenseDal;
             _evrakDal = evrakDal;
+            _hasarDosyasiDal = hasarDosyasiDal;
         }
 
         public async Task<IDataResult<ExportSonucDto>> CsvAsync(int userId, string tur, int? vehicleId, DateTime? baslangic, DateTime? bitis)
@@ -110,6 +113,21 @@ namespace Garajim.Business.Concrete
                 {
                     sb.AppendLine(Satir(Plaka(plakalar, kayit.VehicleId), Tarih(kayit.Date), kayit.Category.ToString(),
                         Sayi(kayit.Amount), kayit.Note));
+                    satirSayisi++;
+                }
+            }
+            else if (secilen == "hasar")
+            {
+                sb.AppendLine("Plaka;OlayTarihi;Tur;Durum;Konum;Kilometre;Tutanak;KarsiTarafPlaka;SigortaDosyaNo;HasarBedeli;Aciklama");
+                var kayitlar = await _hasarDosyasiDal.GetListeAsync(idler, QueryLimits.MaxListSize);
+
+                foreach (var kayit in kayitlar.Where(k => k.OlayTarihi >= bas && k.OlayTarihi <= son))
+                {
+                    sb.AppendLine(Satir(Plaka(plakalar, kayit.VehicleId), Tarih(kayit.OlayTarihi),
+                        HasarAdlari.Tur(kayit.Tur), HasarAdlari.Durum(kayit.Durum), kayit.Konum,
+                        kayit.OlayKm?.ToString(CultureInfo.InvariantCulture),
+                        HasarAdlari.Tutanak(kayit.TutanakTuru), kayit.KarsiTarafPlaka, kayit.SigortaDosyaNo,
+                        kayit.HasarBedeli == null ? string.Empty : Sayi(kayit.HasarBedeli.Value), kayit.Aciklama));
                     satirSayisi++;
                 }
             }

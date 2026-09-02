@@ -35,7 +35,7 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync((Expression<Func<FuelRecord, bool>> predicate) =>
                     kayitlar.Where(predicate.Compile()).ToList());
 
-            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur());
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>());
         }
 
         private static FuelRecord Kayit(int km, decimal litre, decimal tutar)
@@ -116,7 +116,7 @@ namespace Garajim.Tests.Unit
         public async Task GetFuelStatsAsync_BaskaKullanicininAraciIcinHataDoner()
         {
             _vehicleAccess.Setup(d => d.GetAccessibleAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((Vehicle)null);
-            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur());
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>());
 
             var result = await manager.GetFuelStatsAsync(UserId, VehicleId);
 

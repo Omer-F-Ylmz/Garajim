@@ -37,7 +37,7 @@ namespace Garajim.Tests.Integration
 
         private ReportManager CreateManager()
         {
-            return new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.UserDal, _db.CompanyDal, _db.EvrakDal, _db.ReminderDal, _db.AssignmentDal, _db.ReceiptDraftDal, _db.PlanKurallari, _db.LastikDal, _db.EvrakKurallari);
+            return new ReportManager(_db.VehicleAccess, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.UserDal, _db.CompanyDal, _db.EvrakDal, _db.ReminderDal, _db.AssignmentDal, _db.ReceiptDraftDal, _db.PlanKurallari, _db.LastikDal, _db.EvrakKurallari, _db.HasarDosyasiDal);
         }
 
         [Fact]

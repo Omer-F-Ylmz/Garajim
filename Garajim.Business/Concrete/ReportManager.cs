@@ -25,10 +25,11 @@ namespace Garajim.Business.Concrete
         private readonly PlanKurallari _planKurallari;
         private readonly ILastikDal _lastikDal;
         private readonly EvrakKurallari _evrakKurallari;
+        private readonly IHasarDosyasiDal _hasarDosyasiDal;
 
         public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal,
             ICompanyDal companyDal, IEvrakDal evrakDal, IReminderDal reminderDal, IVehicleAssignmentDal assignmentDal, IReceiptDraftDal receiptDraftDal, PlanKurallari planKurallari,
-            ILastikDal lastikDal, EvrakKurallari evrakKurallari)
+            ILastikDal lastikDal, EvrakKurallari evrakKurallari, IHasarDosyasiDal hasarDosyasiDal)
         {
             _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
@@ -43,6 +44,7 @@ namespace Garajim.Business.Concrete
             _planKurallari = planKurallari;
             _lastikDal = lastikDal;
             _evrakKurallari = evrakKurallari;
+            _hasarDosyasiDal = hasarDosyasiDal;
         }
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
@@ -290,6 +292,7 @@ namespace Garajim.Business.Concrete
             }
 
             panel.AktifZimmet = await _assignmentDal.AktifSayiAsync(idler);
+            panel.AcikHasarDosyasi = await _hasarDosyasiDal.AcikSayisiAsync(idler);
 
             var evrak = await _evrakDal.DurumSayilariAsync(idler, userId, bugun, EvrakKurallari.YaklasiyorGun);
             panel.EvrakGecti = evrak.Gecti;

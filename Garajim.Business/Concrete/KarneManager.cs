@@ -22,6 +22,7 @@ namespace Garajim.Business.Concrete
         private readonly IFuelDal _fuelDal;
         private readonly IDocumentDal _documentDal;
         private readonly IEvrakDal _evrakDal;
+        private readonly IHasarDosyasiDal _hasarDosyasiDal;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IDocumentService _documentService;
         private readonly TenantContext _tenantContext;
@@ -35,6 +36,7 @@ namespace Garajim.Business.Concrete
             IFuelDal fuelDal,
             IDocumentDal documentDal,
             IEvrakDal evrakDal,
+            IHasarDosyasiDal hasarDosyasiDal,
             IVehicleAccessService vehicleAccess,
             IDocumentService documentService,
             TenantContext tenantContext,
@@ -47,6 +49,7 @@ namespace Garajim.Business.Concrete
             _fuelDal = fuelDal;
             _documentDal = documentDal;
             _evrakDal = evrakDal;
+            _hasarDosyasiDal = hasarDosyasiDal;
             _vehicleAccess = vehicleAccess;
             _documentService = documentService;
             _tenantContext = tenantContext;
@@ -76,6 +79,7 @@ namespace Garajim.Business.Concrete
                 PlakaGoster = kapsam.PlakaGoster,
                 TutarGoster = kapsam.TutarGoster,
                 AcilKart = kapsam.AcilKart,
+                HasarGecmisi = kapsam.HasarGecmisi,
                 SonKullanma = dto?.SonKullanmaGun == null ? null : DateTime.UtcNow.AddDays(dto.SonKullanmaGun.Value),
                 Aktif = true,
                 GoruntulenmeSayisi = 0,
@@ -169,6 +173,18 @@ namespace Garajim.Business.Concrete
                     .OrderByDescending(d => d.CreatedAt)
                     .Select(d => new KarneBelgeDto { Id = d.Id, Ad = d.OriginalName, Tarih = d.CreatedAt })
                     .ToList();
+            }
+
+            if (paylasim.HasarGecmisi)
+            {
+                var dosyalar = await _hasarDosyasiDal.GetListeAsync(new List<int> { vehicle.Id }, QueryLimits.MaxListSize);
+                karne.Hasarlar = dosyalar
+                    .Select(d => new HasarKarneSatiriDto
+                    {
+                        OlayTarihi = d.OlayTarihi,
+                        Tur = HasarAdlari.Tur(d.Tur),
+                        Durum = d.Durum == HasarDurumu.Kapandi ? "Onarıldı" : "Açık"
+                    }).ToList();
             }
 
             await _karneDal.GoruntulenmeArtirAsync(paylasim.Id);

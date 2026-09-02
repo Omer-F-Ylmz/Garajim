@@ -117,6 +117,18 @@
             bilgiEkle(yakit, "Son dolum", tarih(karne.yakitOzeti.sonDolumTarihi));
         }
 
+        if (karne.hasarlar && karne.hasarlar.length > 0) {
+            el("hasar-bolumu").classList.remove("hidden");
+            var hasarGovde = el("hasar-satirlari");
+            karne.hasarlar.forEach(function (hasar) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", tarih(hasar.olayTarihi)));
+                tr.appendChild(make("td", hasar.tur));
+                tr.appendChild(make("td", hasar.durum));
+                hasarGovde.appendChild(tr);
+            });
+        }
+
         if (karne.belgeler && karne.belgeler.length > 0) {
             el("belge-bolumu").classList.remove("hidden");
             var belgeListesi = el("belge-listesi");

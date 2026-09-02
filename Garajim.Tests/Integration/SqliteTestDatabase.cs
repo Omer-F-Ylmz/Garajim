@@ -46,6 +46,8 @@ namespace Garajim.Tests.Integration
             EvrakDal = new EfEvrakDal(Context);
             ReceiptDraftDal = new EfReceiptDraftDal(Context);
             LastikDal = new EfLastikDal(Context);
+            HasarDosyasiDal = new EfHasarDosyasiDal(Context);
+            HasarFotoDal = new EfHasarFotoDal(Context);
             YolculukDal = new EfYolculukDal(Context);
             UstaSohbetDal = new EfUstaSohbetDal(Context);
             UstaMesajDal = new EfUstaMesajDal(Context);
@@ -89,6 +91,8 @@ namespace Garajim.Tests.Integration
         public EfReceiptDraftDal ReceiptDraftDal { get; }
 
         public EfLastikDal LastikDal { get; }
+        public EfHasarDosyasiDal HasarDosyasiDal { get; }
+        public EfHasarFotoDal HasarFotoDal { get; }
 
         public EfYolculukDal YolculukDal { get; }
 
