@@ -1,82 +1,24 @@
 [
-  {
-    "id": "tuvturk-periyot",
-    "kategori": "Muayene",
-    "anahtarlar": ["muayene periyodu", "kaç yılda bir muayene", "tüvtürk", "tuvturk", "muayene sıklığı"],
-    "metin": "Hususi otomobiller ilk muayenesini tescilden 3 yıl sonra yaptırır, sonrasında 2 yılda bir muayene olur. Ticari araçlar, taksi, minibüs ve kamyonetler yılda bir muayene olur. Muayene tarihi geçmiş araçla trafiğe çıkmak idari para cezası ve trafikten men sebebidir; ayrıca kaza durumunda sigorta değerlendirmesini olumsuz etkiler.",
-    "kaynak": "TÜVTÜRK araç muayene periyotları",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-evrak",
-    "kategori": "Muayene",
-    "anahtarlar": ["muayeneye ne götürmeli", "muayene evrak", "ruhsat", "zorunlu trafik sigortası", "egzoz pulu"],
-    "metin": "Muayeneye giderken araç tescil belgesi (ruhsat), geçerli zorunlu trafik sigortası poliçesi ve geçerli egzoz emisyon ölçüm pulu gerekir. Trafik sigortası süresi dolmuş araç muayeneye alınmaz. Vergi ve trafik cezası borcu varsa muayene yapılır ancak sonuç kaydı borç kapanana kadar tamamlanmaz. Randevu TÜVTÜRK üzerinden alınır, randevusuz giriş istasyona göre değişir.",
-    "kaynak": "TÜVTÜRK muayene başvuru koşulları",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-fren-testi",
-    "kategori": "Muayene",
-    "anahtarlar": ["fren testi", "fren dengesizliği", "muayene fren", "el freni testi", "fren verimi"],
-    "metin": "Muayenede frenler rulolu test cihazında ölçülür; aynı akstaki iki tekerlek arasındaki fren kuvveti farkı belirli oranı aşarsa ağır kusur verilir. En sık ret nedenleri sıkışmış kaliper pistonu, tek taraf yağlanmış balata ve gerginliği kaçmış el freni telidir. Muayeneden önce balatalar ve disklerin gözle kontrolü, el freninin 5-7 tık aralığında tutması istenir.",
-    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-far-ayari",
-    "kategori": "Muayene",
-    "anahtarlar": ["far ayarı", "far yüksekliği", "muayene far", "far kırık", "aydınlatma kusuru"],
-    "metin": "Far demeti yüksekliği ve şiddeti muayenede ölçülür; yanlış ayarlı far hafif kusur, yanmayan far veya kırık cam ağır kusur olabilir. Sonradan takılan yüksek güçlü LED ve xenon ampuller orijinal reflektörle uyumsuz çalışır, karşıdan gelen sürücüyü kör eder ve muayenede ret sebebidir. Muayeneden önce tüm dış aydınlatma, sinyal, fren ve plaka lambaları tek tek denenmelidir.",
-    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-egzoz-emisyon",
-    "kategori": "Muayene",
-    "anahtarlar": ["egzoz emisyon", "emisyon ölçümü", "egzoz pulu", "opasite", "dizel duman ölçümü"],
-    "metin": "Egzoz emisyon ölçümü muayeneden ayrı bir işlemdir ve yetkili istasyonlarda yapılır; sonucu gösteren pul muayenede istenir. Benzinlide CO ve lambda değerleri, dizelde duman koyuluğu (opasite) ölçülür. Motor arıza lambası yanıkken ölçüme girilmez, önce arıza giderilir. Ölçümden önce motorun çalışma sıcaklığına gelmiş olması gerekir; soğuk motorda değerler yüksek çıkar.",
-    "kaynak": "Egzoz gazı emisyon ölçümü mevzuatı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-ret-nedenleri",
-    "kategori": "Muayene",
-    "anahtarlar": ["muayeneden kaldı", "ağır kusur", "emniyetsiz kusur", "tekrar muayene", "muayene ret"],
-    "metin": "Muayene sonucu hafif kusur, ağır kusur ve emniyetsiz kusur olarak verilir. Hafif kusurla araç geçer, ağır kusurda eksik giderilip belirli süre içinde tekrar muayeneye gelinir ve bu tekrar indirimli ücretlendirilir. Emniyetsiz kusurda araç trafiğe çıkamaz, çekiciyle taşınır. En sık ağır kusur nedenleri fren dengesizliği, süspansiyon boşluğu, aşırı diş aşınmış lastik ve aydınlatma arızalarıdır.",
-    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-suspansiyon",
-    "kategori": "Muayene",
-    "anahtarlar": ["süspansiyon testi", "amortisör muayene", "rotil boşluğu", "oynak boşluk", "ön düzen"],
-    "metin": "Muayenede süspansiyon sarsma platformunda ve gözle kontrol edilir; rotil, rot başı, salıncak burcu ve amortisörde boşluk veya yağ sızıntısı aranır. Amortisörden yağ sızması ağır kusurdur. Muayene öncesi ön düzen ayarı yapılması lastik aşınmasını da düzeltir. Ses veriyor diye değil, boşluk verdiği için kusur yazılır; sesli ama boşluksuz parça geçebilir.",
-    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-tadilat",
-    "kategori": "Muayene",
-    "anahtarlar": ["tadilat", "lpg montajı", "çeki demiri", "jant değişimi", "ruhsata işletme"],
-    "metin": "LPG dönüşümü, çeki demiri, jant ve lastik ölçüsü değişikliği, kasa ve koltuk değişimi gibi tadilatlar ruhsata işlenmeden muayeneden geçmez. LPG'li araçlarda ayrıca sızdırmazlık raporu geçerli olmalıdır; tüp kullanım ömrü 10 yıldır ve süresi dolan tüp değiştirilmelidir. Ruhsata işlenmemiş tadilat ağır kusur sebebidir ve sigorta hasar ödemesinde de sorun çıkarır.",
-    "kaynak": "Araç tadilat ve tescil mevzuatı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-lastik",
-    "kategori": "Muayene",
-    "anahtarlar": ["lastik diş derinliği", "muayene lastik", "1.6 mm", "lastik kusuru", "farklı lastik"],
-    "metin": "Muayenede lastik diş derinliği 1,6 mm yasal sınırın altındaysa, yan duvarda kesik, balon veya kord görünürse kusur yazılır. Aynı aksta farklı ebat, farklı desen veya farklı tip (yaz-kış karışık) lastik kullanmak da kusurdur. Ruhsattaki ebattan farklı ölçü takılıysa tadilat olarak işlenmiş olması gerekir. Stepne ve kriko zorunlu ekipman kontrolünde ayrıca sorulabilir.",
-    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "tuvturk-hazirlik",
-    "kategori": "Muayene",
-    "anahtarlar": ["muayeneye hazırlık", "muayene öncesi kontrol", "muayeneden geçme", "ön kontrol", "muayene ipucu"],
-    "metin": "Muayene öncesi yapılacak basit kontroller ret oranını belirgin düşürür: tüm lambaların yanması, cam sileceklerinin ve su fıskiyesinin çalışması, korna, emniyet kemerlerinin kilitlenmesi, ön cam çatlağı, plakaların okunaklı ve sabit olması, egzozdan kaçak sesi olmaması, motor arıza lambasının sönük olması. Araç yıkanmış ve motor bölmesi temiz gelirse sızıntı kontrolü de doğru yapılır.",
-    "kaynak": "TÜVTÜRK muayene öncesi kontrol önerileri",
-    "guncelleme": "2026-09-01"
-  }
+  {"id":"tvt-001","kategori":"tuvturk","anahtarlar":["muayene","tüvtürk","kusur","hafif kusur","ağır kusur","emniyetsiz","sınıf"],"metin":"TÜVTÜRK muayenesinde sonuç dört sınıftır: Kusursuz ve Hafif Kusurlu araç muayeneden geçer (hafif kusur rapora not düşülür, giderilmesi tavsiye edilir). Ağır Kusurlu araç geçemez; kusur giderilip tekrar muayeneye girmesi gerekir. Emniyetsiz araç trafikten men edilir, muayene o anda durdurulur. Motor arıza lambası emisyon sistemiyle ilgili yanıyorsa ağır kusur sayılabilir.","kaynak":"TÜVTÜRK kusur sınıflandırması; Allianz/arabam.com/arisar rehberleri (2025)","guncelleme":"2026-09-02"},
+  {"id":"tvt-002","kategori":"tuvturk","anahtarlar":["tekrar muayene","ücretsiz tekrar","1 ay","ağır kusur giderme","yeniden muayene"],"metin":"Ağır kusurdan kalan araç, kusurları giderdikten sonra 1 ay içinde aynı araç grubuna hizmet veren herhangi bir TÜVTÜRK istasyonunda yalnızca 1 kez ücretsiz tekrar muayene hakkı kullanır; yeni randevu almadan gidilebilir. 1 ay geçerse ya da ikinci tekrar gerekirse tam ücret yeniden ödenir. Tekrar muayenede yalnız kusurlu bulunan bölümler değil aracın geneli yeniden değerlendirilir.","kaynak":"arabam.com danışman rehberi, arisar 2025","guncelleme":"2026-09-02"},
+  {"id":"tvt-003","kategori":"tuvturk","anahtarlar":["muayene periyodu","kaç yılda bir","ilk muayene","hususi","ticari","yeni araç"],"metin":"Hususi otomobil ilk muayeneye tescilden 3 yıl sonra girer, sonra 2 yılda bir. Ticari amaçla kullanılan otomobil, kamyonet, minibüs, taksi ve benzeri araçlar her yıl muayene olur. Süresi geçen araçlar trafikte cezalı işlem görür ve muayenede gecikme bedeli uygulanır (oran ve tutar TÜVTÜRK'ten doğrulanmalı, yıllık değişir). Muayene tarihi ruhsatın arkasındaki kaşe ya da e-Devlet'ten görülür.","kaynak":"Araç Muayene Yönetmeliği genel uygulama; TÜVTÜRK","guncelleme":"2026-09-02"},
+  {"id":"tvt-004","kategori":"tuvturk","anahtarlar":["muayeneye giderken","gerekli belgeler","ruhsat","trafik sigortası","egzoz pulu","kimlik","randevu"],"metin":"Muayeneye giderken gerekenler: araç ruhsatı (aslı), geçerli zorunlu trafik sigortası (poliçe sorgulanır; sigortası olmayan araç muayeneye alınmaz), geçerli egzoz emisyon ölçümü (hususi araçlarda muayene ile aynı istasyonda yapılabilir; geçerli ölçüm yoksa ağır kusur), sürücü kimliği. Randevu tuvturk.com.tr ya da çağrı merkezinden alınır; randevusuz gidildiğinde bekleme uzun olabilir. Muayene ücreti araç grubuna göre değişir, güncel tutar TÜVTÜRK sitesinde.","kaynak":"TÜVTÜRK; tekirdagbakis 2026","guncelleme":"2026-09-02"},
+  {"id":"tvt-005","kategori":"tuvturk","anahtarlar":["sinyal rengi","turuncu sinyal","sinyal ampulü","beyaz sinyal","ampul rengi"],"metin":"Sık ağır kusur: sinyal lambalarının turuncu (amber) yanmaması. Sinyal ampullerinin üzerindeki turuncu kaplama zamanla dökülür ve sinyal beyaz yanmaya başlar; bu ağır kusurdur. Çözüm: turuncu (PY21W) ampul takmak; LED sinyal kullanılıyorsa yine turuncu ışık ve onaylı olması gerekir. Muayene öncesi dört sinyal ve dörtlüler kontrol edilmeli.","kaynak":"arabam.com 'Sık karşılaşılan ağır kusurlar' (Aralık 2025)","guncelleme":"2026-09-02"},
+  {"id":"tvt-006","kategori":"tuvturk","anahtarlar":["stop lambası","geri vites lambası","arka sis","lamba rengi","kırmızı stop","beyaz geri vites"],"metin":"Sık ağır kusur: arka lamba renklerinin standarda uymaması. Stop ve arka pozisyon kırmızı, geri vites beyaz, arka sis kırmızı yanmalıdır. Model değişikliği ya da yanlış ampul takılması (örneğin geri vites yuvasına kırmızı ampul) renk hatası verir. Stop lambası yanmayan ya da üçüncü stop lambası çalışmayan araçlar da kusur alır. Muayene öncesi tüm arka lambalar bir yardımcıyla kontrol edilmeli.","kaynak":"arabam.com (Aralık 2025)","guncelleme":"2026-09-02"},
+  {"id":"tvt-007","kategori":"tuvturk","anahtarlar":["far","kısa far","uzun far","far ayarı","led far","xenon","far yüksekliği","far sararması"],"metin":"Sık ağır kusur: kısa ya da uzun farlardan birinin yanmaması, far ayarının bozuk olması (karşıyı alacak kadar yüksek ya da çok düşük), onaysız LED/xenon ampul takılması (halojen far kabına LED ampul, mercek olmadan). Sararmış ve ışık geçirgenliği düşen far camları da kusur alabilir. Çözüm: yanmayan ampulü değiştir, far ayarını serviste yaptır, aftermarket LED'i çıkarıp halojene dön ya da onaylı far ünitesi kullan.","kaynak":"arabam.com; şikayetvar TÜVTÜRK kayıtları (LED far ağır kusur örneği, 2026)","guncelleme":"2026-09-02"},
+  {"id":"tvt-008","kategori":"tuvturk","anahtarlar":["fren hortumu","kılcal çatlak","fren hattı","hidrolik kaçağı","fren borusu"],"metin":"Sık ağır kusur: fren hortumlarında kılcal çatlak. Lastik fren hortumları yaşlandıkça yüzeyinde çatlaklar oluşur; kaçak olmasa bile gözle görülen çatlak ağır kusurdur. Paslanmış, ezilmiş ya da sızdıran metal fren boruları da aynı şekilde. Çözüm: hortum başına küçük parça maliyeti, işçilikle birlikte özel serviste makul; muayeneden önce dört tekerleğin hortumlarını kontrol ettirmek en ucuz önlemdir.","kaynak":"arabam.com (Aralık 2025)","guncelleme":"2026-09-02"},
+  {"id":"tvt-009","kategori":"tuvturk","anahtarlar":["fren dengesizliği","fren testi","fren farkı","sağ sol fren","el freni testi","fren kuvveti"],"metin":"Sık ağır kusur: fren test cihazında aynı akstaki sağ-sol fren kuvvetleri arasında büyük fark (dengesizlik) ya da toplam fren veriminin düşük çıkması; el freni kuvvetinin yetersiz olması da kusurdur. Nedenler: yapışık kaliper pistonu, tek tarafta aşınmış balata, yağlanmış balata/disk, gevşek ya da ayarsız el freni teli. Çözüm: muayene öncesi fren bakımı (balata-disk kontrolü, kaliper serbestliği, el freni ayarı).","kaynak":"arabam.com; arisar 2025 (en sık kalma nedeni fren sistemi)","guncelleme":"2026-09-02"},
+  {"id":"tvt-010","kategori":"tuvturk","anahtarlar":["lpg","lpg tankı","tank tarihi","10 yıl","lpg sızdırmazlık","lpg raporu","tank değişimi"],"metin":"Sık ağır kusur: LPG tankının üretim tarihinden itibaren 10 yılı geçmiş olması; tank değişmeden araç muayeneden geçemez. Ayrıca LPG sistemi için geçerli sızdırmazlık raporu istenir ve dönüşüm ruhsata işlenmiş olmalıdır. Muayene öncesi: tank etiketindeki üretim tarihine bak, sızdırmazlık raporunu yenile, gaz kaçağı ve hortum kontrolü yaptır.","kaynak":"arabam.com (Aralık 2025)","guncelleme":"2026-09-02"},
+  {"id":"tvt-011","kategori":"tuvturk","anahtarlar":["plaka","civatalı plaka","plaka deformasyonu","plaka standardı","plaka çerçevesi","okunmayan plaka"],"metin":"Sık ağır kusur: plakanın civata ile monte edilmesi, bükülmüş/deforme olması, okunamaması ya da standart dışı olması; 2026'da plaka standardı kontrolleri sıkılaştı. Çözüm: plakayı plaka basım yerinde standart perçin/yapıştırma yöntemiyle taktır, deformeyse yenile (ruhsatla plakacıdan basılır).","kaynak":"arabam.com; tekirdagbakis 2026","guncelleme":"2026-09-02"},
+  {"id":"tvt-012","kategori":"tuvturk","anahtarlar":["lastik diş derinliği","1,6 mm","lastik yanak","farklı ebat","lastik yaşı","lastik kusuru"],"metin":"Ağır kusur: lastik diş derinliğinin yasal sınır 1,6 mm'nin altında olması, yanakta şişlik/kesik, aynı aksta farklı ebat ya da yapıda lastik, ruhsata uygun olmayan ebat. Çözüm: muayene öncesi diş derinliğini ölç (madeni parayla kaba kontrol yerine ölçüm aleti), aynı aksta çift değiştir. Not: Kış lastiği zorunluluğu muayene kriteri değil, trafik denetimi konusudur.","kaynak":"Allianz TÜVTÜRK ağır kusurlar; tekirdagbakis 2026","guncelleme":"2026-09-02"},
+  {"id":"tvt-013","kategori":"tuvturk","anahtarlar":["cam filmi","ön cam filmi","ışık geçirgenliği","renkli cam","film sökme"],"metin":"Ağır kusur: ön cama ve ön yan camlara mevzuat sınırının altında ışık geçirgenliği veren film; ön camda güneş bandı dışında film kabul edilmez. Arka ve arka yan camlarda standarda uygunluk aranır. Çözüm: muayene öncesi ön camlardaki filmi söktür; arka camlarda onaylı ürün belgesi bulundur.","kaynak":"Allianz TÜVTÜRK ağır kusurlar listesi","guncelleme":"2026-09-02"},
+  {"id":"tvt-014","kategori":"tuvturk","anahtarlar":["emniyet kemeri","kemer kilidi","kemer onayı","kemer arızası","kemer tokası"],"metin":"Ağır kusur: emniyet kemeri kilidinin tutmaması, kemerin yırtık/hasarlı olması, toplama mekanizmasının çalışmaması ya da onaysız kemer takılmış olması (şikayet kayıtlarında 'onaylı olmayan kemer' gerekçesiyle ağır kusur örnekleri var). Çözüm: tüm koltuklarda kemerleri tak-çıkar dene; arıza varsa orijinal ya da E onaylı kemerle değiştir.","kaynak":"Allianz; şikayetvar TÜVTÜRK (2026)","guncelleme":"2026-09-02"},
+  {"id":"tvt-015","kategori":"tuvturk","anahtarlar":["ön cam çatlağı","silecek","cam suyu","yıkama sistemi","ayna","görüş alanı"],"metin":"Ağır kusur: sürücünün görüş alanında çatlak ön cam, çalışmayan silecekler, cam yıkama suyunun fışkırtmaması, eksik ya da kırık yan/iç aynalar. Çözüm: küçük taş izi görüş alanı dışındaysa genelde geçer ama uzayan çatlak geçmez; silecek lastiklerini ve su motorunu muayene öncesi kontrol et, su deposunu doldur.","kaynak":"Allianz; arabam.com","guncelleme":"2026-09-02"},
+  {"id":"tvt-016","kategori":"tuvturk","anahtarlar":["şasi numarası","şasi okunmuyor","ruhsat uyuşmazlığı","fabrika etiketi","tip etiketi","ruhsat yıpranmış"],"metin":"Ağır kusur: şasi numarasının okunamaması (pas, boya, kaplama), ruhsat bilgileriyle araç bilgilerinin uyuşmaması, ruhsatın yıpranmış/kazıntılı olması ya da muayene kaşesi için yer kalmaması. Çözüm: şasi numarasının bulunduğu bölgeyi (motor bölmesi/ön koltuk altı/kapı direği) temizle; ruhsat yıpranmışsa muayeneden önce notere/Nüfus'a yenilet.","kaynak":"Auto King ağır kusurlar tablosu; Allianz","guncelleme":"2026-09-02"},
+  {"id":"tvt-017","kategori":"tuvturk","anahtarlar":["motor arıza lambası","check engine","emisyon","obd","muayene obd","egzoz emisyon ölçümü"],"metin":"Ağır kusur: gösterge panelinde motor arıza lambasının yanması ve OBD'den okunan arızanın emisyon sistemiyle ilgili olması; ayrıca egzoz emisyon değerlerinin sınırı aşması (lambda sensörü, katalitik konvertör, kaçak yapan egzoz). Çözüm: muayene öncesi arıza kodunu okut ve nedeni gider, lambayı sadece silmek yetmez (hazırlık monitörleri tamamlanmadan tekrar yanabilir); egzoz kaçaklarını kapat.","kaynak":"Allianz; tekirdagbakis 2026","guncelleme":"2026-09-02"},
+  {"id":"tvt-018","kategori":"tuvturk","anahtarlar":["rot başı","aks boşluğu","salıncak","süspansiyon boşluğu","amortisör","yay boşta","direksiyon boşluğu"],"metin":"Ağır kusur: rot başı, rotil, salıncak burcu ve aks boşlukları (boşluk test platformunda), kırık/oturmuş yay ('yay boşta' gerekçesiyle kalma örnekleri var), sızdıran amortisör, direksiyonda aşırı boşluk. Çözüm: muayene öncesi ön düzen kontrolü yaptır, boşluklu parçayı değiştir, rot ayarı yap.","kaynak":"Allianz; şikayetvar TÜVTÜRK ('yay boşta')","guncelleme":"2026-09-02"},
+  {"id":"tvt-019","kategori":"tuvturk","anahtarlar":["modifiye","yay kesme","spor yay","air ride","jant","projelendirme","ses sistemi","tadilat"],"metin":"Ağır kusur: projelendirilmemiş tadilatlar — kesilmiş/çok kısa yaylar, air ride, ruhsata işlenmemiş jant ebadı, ağır ses sistemi montajı, LPG dışı motor değişiklikleri. Yapılan tadilat mühendis onaylı projeyle ruhsata işlenmişse geçer. Çözüm: muayene öncesi tadilatı geri al ya da projelendir.","kaynak":"arisar 2025 kusur rehberi","guncelleme":"2026-09-02"},
+  {"id":"tvt-020","kategori":"tuvturk","anahtarlar":["yağ kaçağı","sızıntı","motor altı yağ","şanzıman kaçağı","yakıt kaçağı","egzoz kaçağı"],"metin":"Ağır kusur: motor, şanzıman veya diferansiyelden damlayan yağ kaçağı (terleme genelde hafif kusur, damlama ağır), yakıt sızıntısı (emniyetsiz sayılabilir), delik/kaçaklı egzoz ve gürültü sınırının aşılması. Çözüm: muayene öncesi motor altını yıkat, kaçağı kontrol et; egzoz kaynağı ya da parça değişimi.","kaynak":"Allianz; Auto King","guncelleme":"2026-09-02"},
+  {"id":"tvt-021","kategori":"tuvturk","anahtarlar":["muayene öncesi kontrol listesi","muayeneye hazırlık","kalmamak için","ön kontrol"],"metin":"Muayene öncesi 10 dakikalık kontrol listesi: (1) tüm lambalar ve renkleri (sinyal turuncu, stop kırmızı, geri vites beyaz, plaka lambası); (2) far yanıyor mu, aftermarket LED var mı; (3) lastik diş derinliği ≥1,6 mm, aynı aksta aynı ebat, yedek lastik ve kriko var mı; (4) silecek, cam suyu, kornaya bas; (5) ön cam çatlak, ön camda film; (6) plaka civatasız ve düz; (7) emniyet kemerleri; (8) motor altı kaçak; (9) motor arıza lambası sönük; (10) ruhsat, trafik sigortası, egzoz ölçümü yanında. En sık kalma nedenleri fren, lamba ve lastiktir.","kaynak":"arisar 2025; arabam.com; Allianz — derleme","guncelleme":"2026-09-02"},
+  {"id":"tvt-022","kategori":"tuvturk","anahtarlar":["egzoz emisyon","emisyon pulu","egzoz muayenesi","emisyon ölçümü","egzoz kaç yılda"],"metin":"Egzoz emisyon ölçümü muayeneden ayrı bir zorunluluktur ve muayenede geçerli ölçüm aranır. Hususi otomobillerde periyot araç muayene periyoduyla paralel uygulanır (ilk 3 yıl sonra 2 yılda bir), ticari araçlarda yıllık; ölçüm TÜVTÜRK istasyonlarında ya da yetkili egzoz ölçüm merkezlerinde yapılır. Ölçümden kalma nedenleri: lambda sensörü, katalitik konvertör, kaçaklı egzoz, çok yüksek yağ yakma. Not: dönem uygulamaları değişebilir, güncel bilgi TÜVTÜRK'ten.","kaynak":"tekirdagbakis 2026; genel uygulama","guncelleme":"2026-09-02"}
 ]

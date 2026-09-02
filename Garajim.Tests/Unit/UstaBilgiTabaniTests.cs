@@ -10,14 +10,63 @@ namespace Garajim.Tests.Unit
         private static BilgiSecici Secici() => new BilgiSecici(Kayitlar);
 
         [Fact]
-        public void BesDosyaninTamamiYuklenirVeElliKayitGelir()
+        public void BesDosyaninTamamiYuklenirVeSemayaUyar()
         {
-            Assert.Equal(50, Kayitlar.Count);
-            Assert.Equal(5, Kayitlar.Select(k => k.Kategori).Distinct().Count() >= 5 ? 5 : Kayitlar.Select(k => k.Kategori).Distinct().Count());
+            var dosyalar = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, BilgiYukleyici.KlasorAdi), "*.json");
+
+            Assert.Equal(5, dosyalar.Length);
+            Assert.True(Kayitlar.Count >= 50, $"Bilgi tabanı beklenenden küçük: {Kayitlar.Count}");
             Assert.All(Kayitlar, k => Assert.False(string.IsNullOrWhiteSpace(k.Metin)));
+            Assert.All(Kayitlar, k => Assert.False(string.IsNullOrWhiteSpace(k.Kategori)));
+            Assert.All(Kayitlar, k => Assert.False(string.IsNullOrWhiteSpace(k.Kaynak)));
             Assert.All(Kayitlar, k => Assert.NotEmpty(k.Anahtarlar));
             Assert.Equal(Kayitlar.Count, Kayitlar.Select(k => k.Id).Distinct().Count());
         }
+
+        [Fact]
+        public void HerDosyaEnAzOnKayitTasir()
+        {
+            var klasor = Path.Combine(AppContext.BaseDirectory, BilgiYukleyici.KlasorAdi);
+
+            foreach (var dosya in Directory.GetFiles(klasor, "*.json"))
+            {
+                var tekDosya = System.Text.Json.JsonSerializer.Deserialize<List<BilgiKaydi>>(
+                    File.ReadAllText(dosya),
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                Assert.True(tekDosya.Count >= 10, $"{Path.GetFileName(dosya)} on kayittan az: {tekDosya.Count}");
+            }
+        }
+
+        [Fact]
+        public void FrenMetalikSesiBelirtiKaydiniGetirir()
+        {
+            var secilen = Secici().Sec("Frende metalik ses geliyor");
+
+            Assert.Contains(secilen, k => k.Id == "blr-001");
+            Assert.Equal("blr-001", secilen[0].Id);
+            Assert.Contains(secilen[0].Anahtarlar, a => a.Contains("metalik ses"));
+        }
+
+        [Fact]
+        public void MuayeneSinyalRengiTuvturkKaydiniGetirir()
+        {
+            var secilen = Secici().Sec("muayeneden kaldım sinyal rengi");
+
+            Assert.Contains(secilen, k => k.Id == "tvt-005");
+            Assert.Contains(secilen, k => k.Kategori == "tuvturk");
+        }
+
+        [Fact]
+        public void IkiSoruBirbirininKayitlariniGetirmez()
+        {
+            var fren = Secici().Sec("Frende metalik ses geliyor").Select(k => k.Id).ToList();
+            var muayene = Secici().Sec("muayeneden kaldım sinyal rengi").Select(k => k.Id).ToList();
+
+            Assert.DoesNotContain("tvt-005", fren);
+            Assert.DoesNotContain("blr-001", muayene);
+        }
+
 
         [Fact]
         public void EksikAlanliDosyaAcikMesajlaDurdurur()
