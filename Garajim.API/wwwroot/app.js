@@ -391,6 +391,8 @@
                 state.selectedVehicleId = state.vehicles[0].id;
             }
             select.value = String(state.selectedVehicleId);
+            acilKartiSakla();
+            kuyrugoBosalt();
             loadActiveTab();
         }).catch(function (error) {
             handleError(el("app-message"), error);
@@ -1459,21 +1461,166 @@
         kazaListesiCiz(listeler, "Alınacak bilgiler", rehber.alinacakBilgiler);
     }
 
+    var KAZA_KUYRUK_ANAHTARI = "garajim_hasar_kuyrugu";
+    var KAZA_REHBER_ANAHTARI = "garajim_kaza_rehberi";
+    var ACIL_KART_ANAHTARI = "garajim_acil_kart";
+    var KAZA_SYNC_ETIKETI = "garajim-hasar-kuyruk";
+
+    function yerelOku(anahtar) {
+        try {
+            var ham = localStorage.getItem(anahtar);
+            return ham ? JSON.parse(ham) : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function yerelYaz(anahtar, deger) {
+        try {
+            localStorage.setItem(anahtar, JSON.stringify(deger));
+        } catch (error) {
+            return;
+        }
+    }
+
+    function kuyrugoOku() {
+        var kuyruk = yerelOku(KAZA_KUYRUK_ANAHTARI);
+        return Array.isArray(kuyruk) ? kuyruk : [];
+    }
+
+    function kuyrugaEkle(govde) {
+        var kuyruk = kuyrugoOku();
+        kuyruk.push({ govde: govde, eklenme: new Date().toISOString() });
+        yerelYaz(KAZA_KUYRUK_ANAHTARI, kuyruk);
+        kuyrukRozetiniTazele();
+
+        if ("serviceWorker" in navigator && "SyncManager" in window) {
+            navigator.serviceWorker.ready.then(function (kayit) {
+                return kayit.sync.register(KAZA_SYNC_ETIKETI);
+            }).catch(function () { });
+        }
+    }
+
+    function kuyrukRozetiniTazele() {
+        var sayi = kuyrugoOku().length;
+        var kutu = el("kaza-kuyruk");
+        if (!kutu) {
+            return;
+        }
+        kutu.textContent = sayi === 0 ? "" : sayi + " hasar dosyası bağlantı gelince gönderilecek.";
+        kutu.classList.toggle("hidden", sayi === 0);
+    }
+
+    function kuyrugoBosalt() {
+        var kuyruk = kuyrugoOku();
+        if (kuyruk.length === 0 || !state.token) {
+            return Promise.resolve(0);
+        }
+
+        var kalan = [];
+        var gonderilen = 0;
+        var sira = Promise.resolve();
+
+        kuyruk.forEach(function (kayit) {
+            sira = sira.then(function () {
+                return api("/api/Hasar", { method: "POST", body: kayit.govde })
+                    .then(function () { gonderilen++; })
+                    .catch(function (error) {
+                        if (error && error.durum) {
+                            return;
+                        }
+                        kalan.push(kayit);
+                    });
+            });
+        });
+
+        return sira.then(function () {
+            yerelYaz(KAZA_KUYRUK_ANAHTARI, kalan);
+            kuyrukRozetiniTazele();
+
+            if (gonderilen > 0) {
+                showMessage(el("app-message"), gonderilen + " bekleyen hasar dosyası gönderildi.", true);
+                if (activeTab() === "hasar") {
+                    loadHasar();
+                }
+            }
+
+            return gonderilen;
+        });
+    }
+
+    function acilKartiCiz() {
+        var kart = yerelOku(ACIL_KART_ANAHTARI);
+        var kutu = el("kaza-acil");
+        if (!kutu) {
+            return;
+        }
+
+        clear(kutu);
+
+        if (!kart) {
+            kutu.classList.add("hidden");
+            return;
+        }
+
+        kutu.classList.remove("hidden");
+        kutu.appendChild(make("h3", "Acil kart — " + kart.plaka));
+
+        var dl = document.createElement("dl");
+        [["Araç", [kart.marka, kart.model, kart.yil].filter(Boolean).join(" ")],
+         ["Acil durumda aranacak", kart.acilKisiAd || "-"],
+         ["Telefon", kart.acilKisiTelefon || "-"],
+         ["Not", kart.acilNot || "-"]].forEach(function (satir) {
+            dl.appendChild(make("dt", satir[0]));
+            dl.appendChild(make("dd", satir[1]));
+        });
+
+        kutu.appendChild(dl);
+    }
+
+    function acilKartiSakla() {
+        var arac = state.vehicles.filter(function (v) { return v.id === state.selectedVehicleId; })[0];
+        if (!arac) {
+            return;
+        }
+
+        yerelYaz(ACIL_KART_ANAHTARI, {
+            plaka: arac.plate,
+            marka: arac.brand,
+            model: arac.model,
+            yil: arac.year,
+            acilKisiAd: arac.acilKisiAd,
+            acilKisiTelefon: arac.acilKisiTelefon,
+            acilNot: arac.acilNot
+        });
+    }
+
     function kazaRehberiniAc() {
         el("kaza-modal").classList.remove("hidden");
         showMessage(el("kaza-durum"), "");
         state.kazaDosyaId = null;
+        acilKartiCiz();
+        kuyrukRozetiniTazele();
 
         if (state.kazaRehberi) {
             kazaRehberiCiz(state.kazaRehberi);
             return;
         }
 
+        var saklanan = yerelOku(KAZA_REHBER_ANAHTARI);
+        if (saklanan) {
+            state.kazaRehberi = saklanan;
+            kazaRehberiCiz(saklanan);
+        }
+
         api("/api/Hasar/rehber").then(function (result) {
             state.kazaRehberi = result.data;
+            yerelYaz(KAZA_REHBER_ANAHTARI, result.data);
             kazaRehberiCiz(result.data);
         }).catch(function (error) {
-            handleError(el("kaza-durum"), error);
+            if (!saklanan) {
+                handleError(el("kaza-durum"), error);
+            }
         });
     }
 
@@ -1488,23 +1635,37 @@
             return;
         }
 
+        var govde = {
+            vehicleId: state.selectedVehicleId,
+            olayTarihi: todayInput(),
+            tur: "Kaza",
+            aciklama: "Kaza anı rehberinden açıldı, ayrıntı sonra eklenecek.",
+            tutanakTuru: "Yok"
+        };
+
+        if (!navigator.onLine) {
+            kuyrugaEkle(govde);
+            showMessage(el("kaza-durum"), "Bağlantı yok. Dosya kaydedildi, bağlantı gelince gönderilecek. Fotoğrafları şimdi çekip telefonunuzda tutun.", true);
+            return;
+        }
+
         showMessage(el("kaza-durum"), "Hasar dosyası açılıyor…", true);
 
         api("/api/Hasar", {
             method: "POST",
-            body: {
-                vehicleId: state.selectedVehicleId,
-                olayTarihi: todayInput(),
-                tur: "Kaza",
-                aciklama: "Kaza anı rehberinden açıldı, ayrıntı sonra eklenecek.",
-                tutanakTuru: "Yok"
-            }
+            body: govde
         }).then(function (result) {
             state.kazaDosyaId = result.data.id;
             showMessage(el("kaza-durum"), "Dosya açıldı. Şimdi fotoğrafları çekin.", true);
             el("kaza-foto").click();
         }).catch(function (error) {
-            handleError(el("kaza-durum"), error);
+            if (error && error.durum) {
+                handleError(el("kaza-durum"), error);
+                return;
+            }
+
+            kuyrugaEkle(govde);
+            showMessage(el("kaza-durum"), "Bağlantı kurulamadı. Dosya kaydedildi, bağlantı gelince gönderilecek.", true);
         });
     }
 
@@ -1538,6 +1699,16 @@
 
     function bindKaza() {
         el("kaza-ani").addEventListener("click", kazaRehberiniAc);
+
+        window.addEventListener("online", function () { kuyrugoBosalt(); });
+
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.addEventListener("message", function (event) {
+                if (event.data && event.data.tur === "hasar-kuyrugu-bosalt") {
+                    kuyrugoBosalt();
+                }
+            });
+        }
 
         el("kaza-kapat").addEventListener("click", function () {
             el("kaza-modal").classList.add("hidden");
@@ -3744,6 +3915,7 @@
     function bindVehicle() {
         el("vehicle-select").addEventListener("change", function (event) {
             state.selectedVehicleId = Number(event.target.value);
+            acilKartiSakla();
             clearMessages();
             closeDocuments();
             loadActiveTab();
@@ -4011,6 +4183,7 @@
         bindPlan();
         bindUsta();
         davetKodunuUrldenOku();
+        kuyrukRozetiniTazele();
 
         if (readSession()) {
             enterApp();

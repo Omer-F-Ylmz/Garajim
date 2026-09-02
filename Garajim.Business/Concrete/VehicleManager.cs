@@ -140,6 +140,9 @@ namespace Garajim.Business.Concrete
                 KullanimTuru = vehicle.KullanimTuru,
                 IlkTescilTarihi = vehicle.IlkTescilTarihi,
                 KasaTipi = vehicle.KasaTipi,
+                AcilKisiAd = vehicle.AcilKisiAd,
+                AcilKisiTelefon = vehicle.AcilKisiTelefon,
+                AcilNot = vehicle.AcilNot,
                 CreatedAt = vehicle.CreatedAt
             };
         }

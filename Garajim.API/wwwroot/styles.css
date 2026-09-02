@@ -1003,3 +1003,41 @@ button.compact {
     padding: 10px 12px;
     font-size: 13px;
 }
+
+.kaza-kuyruk {
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    margin: 10px 0 0;
+}
+
+.kaza-acil {
+    border: 1px solid var(--ok);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-top: 12px;
+}
+
+.kaza-acil h3 {
+    margin: 0 0 8px;
+    color: var(--ok);
+    font-size: 14px;
+}
+
+.kaza-acil dl {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 4px 12px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.kaza-acil dt {
+    color: var(--muted);
+}
+
+.kaza-acil dd {
+    margin: 0;
+}

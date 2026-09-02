@@ -1,4 +1,4 @@
-var KABUK_SURUMU = "garajim-kabuk-v1";
+var KABUK_SURUMU = "garajim-kabuk-v2";
 var KABUK_DOSYALARI = [
     "/",
     "/index.html",
@@ -9,6 +9,8 @@ var KABUK_DOSYALARI = [
     "/garajim-icon-512.png",
     "/manifest.json"
 ];
+
+var REHBER_YOLU = "/api/Hasar/rehber";
 
 self.addEventListener("install", function (event) {
     event.waitUntil(
@@ -41,6 +43,23 @@ self.addEventListener("fetch", function (event) {
         return;
     }
 
+    if (url.pathname === REHBER_YOLU) {
+        event.respondWith(
+            fetch(istek).then(function (cevap) {
+                if (cevap && cevap.status === 200) {
+                    var kopya = cevap.clone();
+                    caches.open(KABUK_SURUMU).then(function (cache) { cache.put(REHBER_YOLU, kopya); });
+                }
+                return cevap;
+            }).catch(function () {
+                return caches.match(REHBER_YOLU).then(function (onbellekli) {
+                    return onbellekli || Response.error();
+                });
+            })
+        );
+        return;
+    }
+
     if (url.pathname.indexOf("/api/") === 0) {
         event.respondWith(fetch(istek));
         return;
@@ -61,6 +80,20 @@ self.addEventListener("fetch", function (event) {
         }).catch(function () {
             return caches.match(istek).then(function (onbellekli) {
                 return onbellekli || caches.match("/index.html");
+            });
+        })
+    );
+});
+
+self.addEventListener("sync", function (event) {
+    if (event.tag !== "garajim-hasar-kuyruk") {
+        return;
+    }
+
+    event.waitUntil(
+        self.clients.matchAll({ includeUncontrolled: true }).then(function (istemciler) {
+            istemciler.forEach(function (istemci) {
+                istemci.postMessage({ tur: "hasar-kuyrugu-bosalt" });
             });
         })
     );
