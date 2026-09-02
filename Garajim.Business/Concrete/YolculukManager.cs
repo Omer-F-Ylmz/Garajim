@@ -35,7 +35,7 @@ namespace Garajim.Business.Concrete
             if (kapsam.Araclar.Count == 0)
                 return new SuccessDataResult<List<YolculukDto>>(new List<YolculukDto>());
 
-            var kayitlar = await _yolculukDal.GetListeAsync(kapsam.Araclar.Select(a => a.Id).ToList(), bas, son);
+            var kayitlar = await _yolculukDal.GetListeAsync(kapsam.Araclar.Select(a => a.Id).ToList(), bas, son, QueryLimits.MaxListSize);
             var kullanicilar = await KullanicilarAsync(kayitlar.Select(k => k.UserId));
             var plakalar = kapsam.Araclar.ToDictionary(a => a.Id, a => a.Plate);
 

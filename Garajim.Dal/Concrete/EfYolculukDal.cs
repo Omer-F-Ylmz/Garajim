@@ -13,13 +13,14 @@ namespace Garajim.Dal.Concrete
         {
         }
 
-        public async Task<List<YolculukKaydi>> GetListeAsync(List<int> vehicleIds, DateTime baslangic, DateTime bitis)
+        public async Task<List<YolculukKaydi>> GetListeAsync(List<int> vehicleIds, DateTime baslangic, DateTime bitis, int limit)
         {
             return await Context.YolculukKayitlari
                 .AsNoTracking()
                 .Where(y => vehicleIds.Contains(y.VehicleId) && y.Tarih >= baslangic && y.Tarih <= bitis)
                 .OrderByDescending(y => y.Tarih)
                 .ThenByDescending(y => y.Id)
+                .Take(limit)
                 .ToListAsync();
         }
 

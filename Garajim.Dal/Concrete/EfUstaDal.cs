@@ -14,7 +14,7 @@ namespace Garajim.Dal.Concrete
         {
         }
 
-        public async Task<List<UstaSohbet>> GetListeAsync(int? vehicleId, int? userId)
+        public async Task<List<UstaSohbet>> GetListeAsync(int? vehicleId, int? userId, int limit)
         {
             var sorgu = Context.UstaSohbetleri.AsNoTracking().AsQueryable();
 
@@ -28,7 +28,7 @@ namespace Garajim.Dal.Concrete
                 sorgu = sorgu.Where(s => s.UserId == userId.Value);
             }
 
-            return await sorgu.OrderByDescending(s => s.OlusturmaTarihi).ThenByDescending(s => s.Id).ToListAsync();
+            return await sorgu.OrderByDescending(s => s.OlusturmaTarihi).ThenByDescending(s => s.Id).Take(limit).ToListAsync();
         }
 
         public async Task<List<int>> EskiSohbetIdleriAsync(DateTime sinir)

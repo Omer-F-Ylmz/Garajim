@@ -30,7 +30,7 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<LastikDurumDto>(Messages.VehicleNotFound);
 
-            var setler = await _lastikDal.GetListeAsync(vehicleId);
+            var setler = await _lastikDal.GetListeAsync(vehicleId, QueryLimits.MaxListSize);
             var takili = setler.FirstOrDefault(s => s.Takili);
             var kisDonemi = _evrakKurallari.KisLastigiDonemindeMi(DateTime.UtcNow.Date);
 

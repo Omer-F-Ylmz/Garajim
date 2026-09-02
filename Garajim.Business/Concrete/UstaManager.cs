@@ -268,7 +268,7 @@ namespace Garajim.Business.Concrete
             var araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
             var plakalar = araclar.ToDictionary(a => a.Id, a => a.Plate);
 
-            var sohbetler = await _sohbetDal.GetListeAsync(vehicleId, user.Role == CompanyRole.Driver ? userId : null);
+            var sohbetler = await _sohbetDal.GetListeAsync(vehicleId, user.Role == CompanyRole.Driver ? userId : null, QueryLimits.MaxListSize);
             var liste = sohbetler
                 .Where(s => plakalar.ContainsKey(s.VehicleId))
                 .Select(s => MapSohbet(s, plakalar[s.VehicleId], 0))

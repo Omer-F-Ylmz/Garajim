@@ -6,7 +6,7 @@ namespace Garajim.Dal.Abstract
 {
     public interface IUstaSohbetDal : IEntityRepository<UstaSohbet>
     {
-        Task<List<UstaSohbet>> GetListeAsync(int? vehicleId, int? userId);
+        Task<List<UstaSohbet>> GetListeAsync(int? vehicleId, int? userId, int limit);
         Task<List<int>> EskiSohbetIdleriAsync(DateTime sinir);
         Task SohbetleriSilAsync(List<int> sohbetIds);
     }

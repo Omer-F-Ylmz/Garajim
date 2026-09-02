@@ -12,7 +12,7 @@ namespace Garajim.Dal.Concrete
         {
         }
 
-        public async Task<List<LastikSeti>> GetListeAsync(int vehicleId)
+        public async Task<List<LastikSeti>> GetListeAsync(int vehicleId, int limit)
         {
             return await Context.LastikSetleri
                 .AsNoTracking()
@@ -20,6 +20,7 @@ namespace Garajim.Dal.Concrete
                 .OrderByDescending(l => l.Takili)
                 .ThenByDescending(l => l.TakilmaTarihi)
                 .ThenByDescending(l => l.Id)
+                .Take(limit)
                 .ToListAsync();
         }
 
