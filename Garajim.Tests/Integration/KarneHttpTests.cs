@@ -371,11 +371,35 @@ namespace Garajim.Tests.Integration
             var anonim = _factory.CreateClient();
             var kart = await VeriAsync(await anonim.GetAsync($"/api/karne/{token}/acil"));
 
-            Assert.Equal("34ACL001", kart.GetProperty("plaka").GetString());
+            Assert.Equal("34 *** 001", kart.GetProperty("plaka").GetString());
             Assert.Equal("Ayşe Yılmaz", kart.GetProperty("acilKisiAd").GetString());
             Assert.Equal("0532 000 00 00", kart.GetProperty("acilKisiTelefon").GetString());
             Assert.Equal("Örnek Sigorta", kart.GetProperty("sigortaSaglayici").GetString());
             Assert.Equal("P-777", kart.GetProperty("sigortaPoliceNo").GetString());
+        }
+
+        [Fact]
+        public async Task AcilKartPlakaGosterAcikkenTamPlakayiVerir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34ACL003");
+
+            var karne = await VeriAsync(await KarneOlusturAsync(sahip, aracId, new
+            {
+                bakimGecmisi = false,
+                parcaHafizasi = false,
+                yakitOzeti = false,
+                belgeler = false,
+                plakaGoster = true,
+                tutarGoster = false,
+                acilKart = true
+            }));
+            var token = TokenAl(karne.GetProperty("url").GetString());
+
+            var anonim = _factory.CreateClient();
+            var kart = await VeriAsync(await anonim.GetAsync($"/api/karne/{token}/acil"));
+
+            Assert.Equal("34ACL003", kart.GetProperty("plaka").GetString());
         }
 
         [Fact]

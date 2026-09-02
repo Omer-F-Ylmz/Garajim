@@ -244,7 +244,7 @@ namespace Garajim.Business.Concrete
 
             return new SuccessDataResult<AcilKartDto>(new AcilKartDto
             {
-                Plaka = vehicle.Plate,
+                Plaka = paylasim.PlakaGoster ? vehicle.Plate : PlakaMaskele(vehicle.Plate),
                 Marka = vehicle.Brand,
                 Model = vehicle.Model,
                 Yil = vehicle.Year,
