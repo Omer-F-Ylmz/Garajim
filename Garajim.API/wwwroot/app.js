@@ -243,7 +243,10 @@
                     }
                 }
                 if (payload && payload.success === false) {
-                    throw new Error(payload.message || "İşlem başarısız.");
+                    var hata = new Error(payload.message || "İşlem başarısız.");
+                    hata.kod = payload.kod || null;
+                    hata.durum = response.status;
+                    throw hata;
                 }
                 if (!response.ok) {
                     throw new Error(readProblem(payload) || "Sunucu hatası (" + response.status + ").");
@@ -418,6 +421,8 @@
             loadYolculuk();
         } else if (tab === "lastik") {
             loadLastik();
+        } else if (tab === "usta") {
+            loadUsta();
         } else if (tab === "parca") {
             loadPartMemory();
         } else if (tab === "evrak") {
@@ -1509,6 +1514,430 @@
                 handleError(el("app-message"), error);
             });
         });
+    }
+
+    var USTA_KADEME = {
+        EnSik: "En sık",
+        Sik: "Sık",
+        Nadir: "Nadir"
+    };
+
+    var USTA_ACILIYET = {
+        Bugun: "Bugün",
+        BuHafta: "Bu hafta",
+        Bakimda: "Bakımda"
+    };
+
+    var ustaDurum = { sohbetId: null, surum: null, tanima: null };
+
+    function ustaMetin(etiket, deger) {
+        var satir = document.createElement("p");
+        satir.className = "hint";
+        var baslik = document.createElement("strong");
+        baslik.textContent = etiket + ": ";
+        satir.appendChild(baslik);
+        satir.appendChild(document.createTextNode(deger));
+        return satir;
+    }
+
+    function ustaKademeKarti(kademe) {
+        var kart = document.createElement("div");
+        kart.className = "usta-kademe kademe-" + (kademe.kademe || "").toLowerCase();
+
+        var baslik = document.createElement("div");
+        baslik.className = "usta-kademe-baslik";
+
+        var rozet = document.createElement("span");
+        rozet.className = "usta-rozet";
+        rozet.textContent = USTA_KADEME[kademe.kademe] || kademe.kademe;
+        baslik.appendChild(rozet);
+
+        var neden = document.createElement("span");
+        neden.textContent = kademe.neden || "";
+        baslik.appendChild(neden);
+
+        kart.appendChild(baslik);
+        kart.appendChild(ustaMetin("Belirti uyumu", kademe.belirtiUyumu || "-"));
+        kart.appendChild(ustaMetin("Evde kontrol", kademe.evdeKontrol || "-"));
+
+        var maliyet = kademe.maliyetTl || [];
+        var aralik = maliyet.length === 2 ? money(maliyet[0]) + " – " + money(maliyet[1]) : "-";
+        kart.appendChild(ustaMetin("Tahmini maliyet", aralik));
+        kart.appendChild(ustaMetin("Aciliyet", USTA_ACILIYET[kademe.aciliyet] || kademe.aciliyet || "-"));
+
+        return kart;
+    }
+
+    function ustaYanitKarti(mesaj) {
+        var yanit = mesaj.yanit || {};
+        var kart = document.createElement("div");
+        kart.className = "usta-mesaj usta-yanit";
+
+        if (yanit.kirmiziCizgi) {
+            var bant = document.createElement("div");
+            bant.className = "usta-kirmizi";
+            bant.textContent = "Güvenlik uyarısı — " + (yanit.ozet || "");
+            kart.appendChild(bant);
+        } else {
+            var ozet = document.createElement("p");
+            ozet.className = "usta-ozet";
+            ozet.textContent = yanit.ozet || mesaj.metin;
+            kart.appendChild(ozet);
+        }
+
+        (yanit.kademeler || []).forEach(function (kademe) {
+            kart.appendChild(ustaKademeKarti(kademe));
+        });
+
+        var notlar = yanit.aracVerisindenNotlar || [];
+        if (notlar.length > 0) {
+            var notBaslik = make("h4", "Aracının verisinden");
+            kart.appendChild(notBaslik);
+            var liste = document.createElement("ul");
+            notlar.forEach(function (metin) {
+                liste.appendChild(make("li", metin));
+            });
+            kart.appendChild(liste);
+        }
+
+        if (yanit.ustayaBoyleAnlat) {
+            var anlatKutu = document.createElement("div");
+            anlatKutu.className = "usta-anlat";
+            anlatKutu.appendChild(make("strong", "Ustaya böyle anlat"));
+            anlatKutu.appendChild(make("p", yanit.ustayaBoyleAnlat));
+
+            var kopyala = make("button", "Kopyala", "link-btn");
+            kopyala.type = "button";
+            kopyala.addEventListener("click", function () {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(yanit.ustayaBoyleAnlat).then(function () {
+                        showMessage(el("app-message"), "Metin kopyalandı.", true);
+                    });
+                }
+            });
+            anlatKutu.appendChild(kopyala);
+            kart.appendChild(anlatKutu);
+        }
+
+        var sorular = yanit.takipSorulari || [];
+        if (sorular.length > 0) {
+            var cipKutu = document.createElement("div");
+            cipKutu.className = "usta-cipler";
+            sorular.forEach(function (soru) {
+                var cip = make("button", soru, "usta-cip");
+                cip.type = "button";
+                cip.addEventListener("click", function () {
+                    el("usta-soru").value = soru;
+                    ustaSor(soru);
+                });
+                cipKutu.appendChild(cip);
+            });
+            kart.appendChild(cipKutu);
+        }
+
+        if (yanit.uyari) {
+            var uyari = make("p", yanit.uyari, "usta-uyari");
+            kart.appendChild(uyari);
+        }
+
+        kart.appendChild(ustaGeriBildirimKutusu(mesaj));
+        return kart;
+    }
+
+    function ustaGeriBildirimKutusu(mesaj) {
+        var kutu = document.createElement("div");
+        kutu.className = "usta-geri";
+
+        var durum = make("span", mesaj.geriBildirim === "Olumlu" ? "👍 işaretlendi"
+            : (mesaj.geriBildirim === "Olumsuz" ? "👎 işaretlendi" : ""), "hint");
+
+        var olumlu = make("button", "👍", "link-btn");
+        olumlu.type = "button";
+        olumlu.addEventListener("click", function () { ustaGeriBildirim(mesaj.id, "Olumlu", null); });
+
+        var olumsuz = make("button", "👎", "link-btn");
+        olumsuz.type = "button";
+        olumsuz.addEventListener("click", function () { ustaGeriBildirim(mesaj.id, "Olumsuz", null); });
+
+        var cozum = make("button", "Bunu hangi bakım çözdü?", "link-btn");
+        cozum.type = "button";
+        cozum.addEventListener("click", function () { ustaCozumSec(mesaj.id, kutu); });
+
+        kutu.appendChild(olumlu);
+        kutu.appendChild(olumsuz);
+        kutu.appendChild(cozum);
+        kutu.appendChild(durum);
+        return kutu;
+    }
+
+    function ustaCozumSec(mesajId, kutu) {
+        if (!ustaDurum.sohbetId) {
+            return;
+        }
+
+        api("/api/Usta/sohbet/" + ustaDurum.sohbetId + "/bakimlar").then(function (result) {
+            var bakimlar = (result && result.data) || [];
+            var mevcut = kutu.querySelector(".usta-cozum-liste");
+            if (mevcut) {
+                kutu.removeChild(mevcut);
+            }
+
+            var liste = document.createElement("div");
+            liste.className = "usta-cozum-liste";
+
+            if (bakimlar.length === 0) {
+                liste.appendChild(make("span", "Son 90 günde bu araca ait bakım kaydı yok.", "hint"));
+                kutu.appendChild(liste);
+                return;
+            }
+
+            bakimlar.forEach(function (bakim) {
+                var dugme = make("button",
+                    formatDate(bakim.tarih) + " · " + labelOf(MAINTENANCE_TYPES, bakim.tur) + " · " + money(bakim.tutar),
+                    "usta-cip");
+                dugme.type = "button";
+                dugme.addEventListener("click", function () {
+                    ustaGeriBildirim(mesajId, "Olumlu", bakim.id);
+                });
+                liste.appendChild(dugme);
+            });
+
+            kutu.appendChild(liste);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function ustaGeriBildirim(mesajId, deger, bakimId) {
+        clearMessages();
+        api("/api/Usta/mesaj/" + mesajId + "/geri-bildirim", {
+            method: "POST",
+            body: { geriBildirim: deger, cozumBakimId: bakimId }
+        }).then(function (result) {
+            showMessage(el("app-message"), (result && result.message) || "Geri bildirim alındı.", true);
+            ustaSohbetYukle(ustaDurum.sohbetId);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function ustaSoruKarti(mesaj) {
+        var kart = document.createElement("div");
+        kart.className = "usta-mesaj usta-soru";
+        kart.appendChild(make("p", mesaj.metin));
+        return kart;
+    }
+
+    function ustaAkisCiz(mesajlar) {
+        var akis = el("usta-akis");
+        clear(akis);
+
+        if (mesajlar.length === 0) {
+            akis.appendChild(make("p", "Sorunu yaz, usta aracının kayıtlarına bakarak cevaplasın.", "hint"));
+            return;
+        }
+
+        mesajlar.forEach(function (mesaj) {
+            akis.appendChild(mesaj.rol === "Kullanici" ? ustaSoruKarti(mesaj) : ustaYanitKarti(mesaj));
+        });
+
+        akis.scrollTop = akis.scrollHeight;
+    }
+
+    function ustaSohbetYukle(sohbetId) {
+        if (!sohbetId) {
+            ustaAkisCiz([]);
+            return Promise.resolve();
+        }
+
+        return api("/api/Usta/sohbet/" + sohbetId).then(function (result) {
+            var sohbet = (result && result.data) || {};
+            ustaDurum.sohbetId = sohbet.id;
+            ustaAkisCiz(sohbet.mesajlar || []);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function ustaGecmisYukle() {
+        if (!state.selectedVehicleId) {
+            return Promise.resolve();
+        }
+
+        return api("/api/Usta/sohbet?aracId=" + state.selectedVehicleId).then(function (result) {
+            var sohbetler = (result && result.data) || [];
+            var select = el("usta-gecmis");
+            clear(select);
+
+            var bos = document.createElement("option");
+            bos.value = "";
+            bos.textContent = sohbetler.length === 0 ? "Geçmiş sohbet yok" : "Geçmiş sohbetler";
+            select.appendChild(bos);
+
+            sohbetler.forEach(function (sohbet) {
+                var secenek = document.createElement("option");
+                secenek.value = String(sohbet.id);
+                secenek.textContent = sohbet.baslik;
+                select.appendChild(secenek);
+            });
+
+            if (ustaDurum.sohbetId) {
+                select.value = String(ustaDurum.sohbetId);
+            }
+        }).catch(function () {
+            clear(el("usta-gecmis"));
+        });
+    }
+
+    function ustaSohbetAc() {
+        if (!state.selectedVehicleId) {
+            showMessage(el("app-message"), "Önce bir araç seçin.", false);
+            return Promise.reject(new Error("arac yok"));
+        }
+
+        return api("/api/Usta/sohbet", {
+            method: "POST",
+            body: { vehicleId: state.selectedVehicleId }
+        }).then(function (result) {
+            ustaDurum.sohbetId = result.data.id;
+            ustaAkisCiz([]);
+            return ustaGecmisYukle();
+        });
+    }
+
+    function ustaSor(metin) {
+        var soru = (metin || el("usta-soru").value || "").trim();
+        if (soru.length === 0) {
+            return;
+        }
+
+        clearMessages();
+
+        var gonder = function () {
+            return api("/api/Usta/sohbet/" + ustaDurum.sohbetId + "/mesaj", {
+                method: "POST",
+                body: { metin: soru }
+            }).then(function (result) {
+                el("usta-soru").value = "";
+                el("usta-kalan").textContent = "Bugün kalan hak: " + result.data.kalanGunlukHak
+                    + " · bu sohbette kalan: " + result.data.kalanSohbetMesaji;
+                return ustaSohbetYukle(ustaDurum.sohbetId);
+            });
+        };
+
+        var zincir = ustaDurum.sohbetId ? gonder() : ustaSohbetAc().then(gonder);
+
+        zincir.catch(function (error) {
+            if (error && error.kod === "ONAY_GEREKLI") {
+                ustaOnayGoster(true);
+                return;
+            }
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function ustaOnayGoster(gerekli) {
+        el("usta-onay-kutusu").classList.toggle("hidden", !gerekli);
+        el("usta-govde").classList.toggle("hidden", gerekli);
+    }
+
+    function ustaOnayDurumu() {
+        return api("/api/Usta/onay").then(function (result) {
+            var durum = (result && result.data) || {};
+            ustaDurum.surum = durum.guncelSurum;
+            el("usta-onay-metni").textContent = "AI Usta sorularınızı ve aracınızın bakım/yakıt/evrak özetini yanıt üretmek için "
+                + "Google Gemini servisine gönderir. Sohbetleriniz 24 ay saklanır, dilediğinizde silebilirsiniz. "
+                + "Verilen yanıt tahmindir, teşhis değildir; uygulanmasından doğan sonuçlardan Garajım sorumlu değildir. "
+                + "Onay metni sürümü: " + (durum.guncelSurum || "-");
+            ustaOnayGoster(durum.onayGerekli);
+            return durum;
+        });
+    }
+
+    function loadUsta() {
+        ustaDurum.sohbetId = null;
+        return ustaOnayDurumu().then(function (durum) {
+            if (durum.onayGerekli) {
+                return null;
+            }
+            ustaAkisCiz([]);
+            el("usta-kalan").textContent = "";
+            return ustaGecmisYukle();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function ustaSesliBaslat() {
+        var Tanima = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Tanima) {
+            return;
+        }
+
+        if (ustaDurum.tanima) {
+            ustaDurum.tanima.stop();
+            ustaDurum.tanima = null;
+            return;
+        }
+
+        var tanima = new Tanima();
+        tanima.lang = "tr-TR";
+        tanima.interimResults = false;
+        tanima.maxAlternatives = 1;
+
+        tanima.onresult = function (olay) {
+            el("usta-soru").value = olay.results[0][0].transcript;
+        };
+        tanima.onerror = function () {
+            showMessage(el("app-message"), "Ses tanınamadı, yazarak deneyin.", false);
+        };
+        tanima.onend = function () {
+            ustaDurum.tanima = null;
+        };
+
+        ustaDurum.tanima = tanima;
+        tanima.start();
+    }
+
+    function bindUsta() {
+        el("usta-onay-btn").addEventListener("click", function () {
+            if (!el("usta-onay-kutu").checked) {
+                showMessage(el("app-message"), "Devam etmek için kutuyu işaretleyin.", false);
+                return;
+            }
+
+            clearMessages();
+            api("/api/Usta/onay", { method: "POST", body: { metinSurumu: ustaDurum.surum } }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Onayınız kaydedildi.", true);
+                loadUsta();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("usta-yeni-sohbet").addEventListener("click", function () {
+            clearMessages();
+            ustaSohbetAc().catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
+
+        el("usta-gecmis").addEventListener("change", function () {
+            var deger = el("usta-gecmis").value;
+            ustaDurum.sohbetId = deger ? Number(deger) : null;
+            ustaSohbetYukle(ustaDurum.sohbetId);
+        });
+
+        el("usta-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            ustaSor(null);
+        });
+
+        var sesliDugme = el("usta-sesli");
+        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+            sesliDugme.classList.remove("hidden");
+            sesliDugme.addEventListener("click", ustaSesliBaslat);
+        }
     }
 
     function bindAuth() {
@@ -2957,6 +3386,7 @@
         bindLastik();
         bindDavet();
         bindPlan();
+        bindUsta();
         davetKodunuUrldenOku();
 
         if (readSession()) {

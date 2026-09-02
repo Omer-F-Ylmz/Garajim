@@ -382,6 +382,7 @@
                 <button class="tab-btn" data-tab="parca" type="button">Parça Hafızası</button>
                 <button class="tab-btn" data-tab="lastik" type="button">Lastik</button>
                 <button class="tab-btn" data-tab="yolculuk" type="button">Yolculuk</button>
+                <button class="tab-btn" data-tab="usta" type="button">AI Usta</button>
                 <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
             </nav>
 
@@ -777,6 +778,39 @@
                         </thead>
                         <tbody id="yolculuk-rows"></tbody>
                     </table>
+                </div>
+            </section>
+
+            <section id="panel-usta" class="panel tab-panel hidden">
+                <h2>AI Usta</h2>
+                <p class="hint">Aracının kayıtlarını okuyup olasılık sıralar. Teşhis koymaz; kesin sonuç için ustaya gösterin.</p>
+
+                <div id="usta-onay-kutusu" class="panel-inline hidden">
+                    <h3>Kullanım şartları</h3>
+                    <p id="usta-onay-metni" class="hint"></p>
+                    <div class="inline-form">
+                        <a id="usta-sartlar-bagi" href="/sartlar.html" target="_blank" rel="noopener">Kullanım Şartları ve Aydınlatma Metni</a>
+                    </div>
+                    <div class="inline-form">
+                        <label class="switch-label"><input id="usta-onay-kutu" type="checkbox"> Okudum, kabul ediyorum</label>
+                        <button id="usta-onay-btn" type="button" class="primary">Onayla ve başla</button>
+                    </div>
+                </div>
+
+                <div id="usta-govde" class="hidden">
+                    <div class="inline-form">
+                        <button id="usta-yeni-sohbet" type="button" class="ghost">Yeni sohbet</button>
+                        <select id="usta-gecmis" aria-label="Geçmiş sohbetler"></select>
+                        <span id="usta-kalan" class="hint"></span>
+                    </div>
+
+                    <div id="usta-akis" class="usta-akis"></div>
+
+                    <form id="usta-form" class="inline-form">
+                        <input id="usta-soru" type="text" maxlength="1000" placeholder="Aracında ne oluyor? Örnek: frende ses var" required>
+                        <button id="usta-sesli" type="button" class="ghost hidden" title="Sesli sor">Sesli sor</button>
+                        <button type="submit" class="primary">Sor</button>
+                    </form>
                 </div>
             </section>
 
