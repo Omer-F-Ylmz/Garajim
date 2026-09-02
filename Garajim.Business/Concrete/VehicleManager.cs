@@ -48,6 +48,8 @@ namespace Garajim.Business.Concrete
                 dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var plate = dto.Plate.Trim().ToUpperInvariant().Replace(" ", "");
+            if (plate.Length > AracAlanUzunluklari.Plaka)
+                return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             if (await _vehicleDal.AnyAsync(v => v.Plate == plate))
                 return new ErrorDataResult<VehicleDto>(Messages.PlateAlreadyExists);
             var owner = await _userDal.GetAsync(u => u.Id == userId);
@@ -65,19 +67,19 @@ namespace Garajim.Business.Concrete
                 CompanyId = owner.CompanyId,
                 UserId = userId,
                 Plate = plate,
-                Brand = dto.Brand.Trim(),
-                Model = dto.Model.Trim(),
+                Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka),
+                Model = Kirp(dto.Model, AracAlanUzunluklari.Model),
                 Year = dto.Year,
                 CurrentKm = dto.CurrentKm,
                 FuelType = dto.FuelType,
                 KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
                 IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
                 KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : null,
-                Vites = Kirp(dto.Vites, 50),
-                Motor = Kirp(dto.Motor, 50),
-                AcilKisiAd = dto.AcilKisiAd,
-                AcilKisiTelefon = dto.AcilKisiTelefon,
-                AcilNot = dto.AcilNot,
+                Vites = Kirp(dto.Vites, AracAlanUzunluklari.Vites),
+                Motor = Kirp(dto.Motor, AracAlanUzunluklari.Motor),
+                AcilKisiAd = Kirp(dto.AcilKisiAd, AracAlanUzunluklari.AcilKisiAd),
+                AcilKisiTelefon = Kirp(dto.AcilKisiTelefon, AracAlanUzunluklari.AcilKisiTelefon),
+                AcilNot = Kirp(dto.AcilNot, AracAlanUzunluklari.AcilNot),
                 CreatedAt = DateTime.UtcNow
             };
             await _vehicleDal.AddAsync(vehicle);
@@ -92,19 +94,19 @@ namespace Garajim.Business.Concrete
             if (string.IsNullOrWhiteSpace(dto.Brand) || string.IsNullOrWhiteSpace(dto.Model) ||
                 dto.Year < 1950 || dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorResult(Messages.InvalidValue);
-            vehicle.Brand = dto.Brand.Trim();
-            vehicle.Model = dto.Model.Trim();
+            vehicle.Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka);
+            vehicle.Model = Kirp(dto.Model, AracAlanUzunluklari.Model);
             vehicle.Year = dto.Year;
             vehicle.CurrentKm = dto.CurrentKm;
             vehicle.FuelType = dto.FuelType;
             vehicle.KullanimTuru = dto.KullanimTuru != null && Enum.IsDefined(dto.KullanimTuru.Value) ? dto.KullanimTuru.Value : vehicle.KullanimTuru;
             vehicle.IlkTescilTarihi = dto.IlkTescilTarihi?.Date ?? vehicle.IlkTescilTarihi;
             vehicle.KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : vehicle.KasaTipi;
-            vehicle.Vites = Kirp(dto.Vites, 50) ?? vehicle.Vites;
-            vehicle.Motor = Kirp(dto.Motor, 50) ?? vehicle.Motor;
-            vehicle.AcilKisiAd = dto.AcilKisiAd;
-            vehicle.AcilKisiTelefon = dto.AcilKisiTelefon;
-            vehicle.AcilNot = dto.AcilNot;
+            vehicle.Vites = Kirp(dto.Vites, AracAlanUzunluklari.Vites) ?? vehicle.Vites;
+            vehicle.Motor = Kirp(dto.Motor, AracAlanUzunluklari.Motor) ?? vehicle.Motor;
+            vehicle.AcilKisiAd = Kirp(dto.AcilKisiAd, AracAlanUzunluklari.AcilKisiAd);
+            vehicle.AcilKisiTelefon = Kirp(dto.AcilKisiTelefon, AracAlanUzunluklari.AcilKisiTelefon);
+            vehicle.AcilNot = Kirp(dto.AcilNot, AracAlanUzunluklari.AcilNot);
             await _vehicleDal.UpdateAsync(vehicle);
             return new SuccessResult(Messages.VehicleUpdated);
         }

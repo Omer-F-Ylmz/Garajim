@@ -60,14 +60,14 @@ namespace Garajim.Dal.Concrete.Context
 
             modelBuilder.Entity<Vehicle>(entity =>
             {
-                entity.Property(v => v.Motor).HasMaxLength(40);
-                entity.Property(v => v.Vites).HasMaxLength(40);
-                entity.Property(v => v.Plate).HasMaxLength(20).IsRequired();
-                entity.Property(v => v.Brand).HasMaxLength(100).IsRequired();
-                entity.Property(v => v.Model).HasMaxLength(100).IsRequired();
-                entity.Property(v => v.AcilKisiAd).HasMaxLength(100);
-                entity.Property(v => v.AcilKisiTelefon).HasMaxLength(30);
-                entity.Property(v => v.AcilNot).HasMaxLength(200);
+                entity.Property(v => v.Motor).HasMaxLength(AracAlanUzunluklari.Motor);
+                entity.Property(v => v.Vites).HasMaxLength(AracAlanUzunluklari.Vites);
+                entity.Property(v => v.Plate).HasMaxLength(AracAlanUzunluklari.Plaka).IsRequired();
+                entity.Property(v => v.Brand).HasMaxLength(AracAlanUzunluklari.Marka).IsRequired();
+                entity.Property(v => v.Model).HasMaxLength(AracAlanUzunluklari.Model).IsRequired();
+                entity.Property(v => v.AcilKisiAd).HasMaxLength(AracAlanUzunluklari.AcilKisiAd);
+                entity.Property(v => v.AcilKisiTelefon).HasMaxLength(AracAlanUzunluklari.AcilKisiTelefon);
+                entity.Property(v => v.AcilNot).HasMaxLength(AracAlanUzunluklari.AcilNot);
                 entity.HasIndex(v => new { v.CompanyId, v.Plate }).IsUnique();
                 entity.HasIndex(v => v.CompanyId);
                 entity.HasOne<Company>().WithMany().HasForeignKey(v => v.CompanyId).OnDelete(DeleteBehavior.Restrict);
