@@ -20,11 +20,11 @@ namespace Garajim.Business.Usta
         private static readonly (string Kod, string Baslik, Regex Desen)[] Tablo =
         {
             ("FrenBosaldi", "Fren pedalı boşaldı ya da fren tutmuyor", new Regex(
-                @"(fren\w*\s+(pedal\w*\s+)?(yere\s+(kadar\s+)?(gid|dayan|in)|bosal|kacir|tutmuyor|tutmiyor|gitmiyor)|pedal\w*\s+yere\s+(kadar\s+)?(gid|dayan|in)|fren\w*\s+yok)",
+                @"(fren\w*\s+(pedal\w*\s+)?(yere\s+(kadar\s+)?(gid|dayan|in)|bosal|kacir|tutmuyo|tutmiyo|tutmoyo|gitmiyo)|pedal\w*\s+yere\s+(kadar\s+)?(gid|dayan|in)|fren\w*\s+yok)",
                 RegexOptions.Compiled)),
 
             ("DireksiyonKilit", "Direksiyon kilitlendi ya da ağırlaştı", new Regex(
-                @"(direksiyon\w*\s+(kilitlen|kilitli|donmus|donuyor)|direksiyon\w*\s+(cok\s+)?(agir|sert)\w*.{0,40}(ses|tak|gicirt|catir)|(ses|tak|gicirt|catir)\w*.{0,40}direksiyon\w*\s+(cok\s+)?(agir|sert))",
+                @"(direksiyon\w*(\s+\w+){0,2}\s+(kilitlen|kilitli|donmus|donuyor)|direksiyon\w*(\s+\w+){0,2}\s+(agir|sert)\w*.{0,40}(ses|tak|gicirt|catir)|(ses|tak|gicirt|catir)\w*.{0,40}direksiyon\w*(\s+\w+){0,2}\s+(agir|sert))",
                 RegexOptions.Compiled)),
 
             ("KirmiziLamba", "Kırmızı yağ, sıcaklık ya da şarj lambası yandı", new Regex(
