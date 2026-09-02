@@ -185,6 +185,28 @@ Bilinçli sınırlar: karşı tarafın adı, telefonu, kimlik ve sürücü belge
 
 Aracın kasa tipi araç kartında tutulmadığı için tahmin modeline boş geçilir; uydurma bir kasa tipi göndermek yerine modelin bilinmeyen-kategori davranışına bırakıldı. Kapsam denetimi ayrı bir liste tutmaz, model zip'inin kendi `MarkaEncoded` / `SeriEncoded` slot adlarından okunur — model yeniden eğitildiğinde kapsam kendiliğinden güncellenir.
 
+## Launch Hazırlık — TAMAMLANDI
+
+Yayın öncesi son tur: modelin eksik girdisi, demo hesabının doluluğu, kaza anının çevrimdışı çalışması ve giriş öncesi tanıtım.
+
+| Madde | Commit |
+|---|---|
+| Kasa tipi: araç kartında seçim, tahminde zorunlu alan, model sözlüğüne bağlı enum | `b2729c4` |
+| Demo veri: evrak, lastik, parçalı bakım, hasar, değer ve yolculuk artımlı eklendi | `ac50568` |
+| Çevrimdışı kaza akışı: rehber önbellekte, dosya açma kuyrukta | `cf9ff76` |
+| Tanıtım sayfası: değer önerisi, altı özellik kartı, demo girişi ve davet kodu | `6c4b126` |
+
+Kasa tipi bulgusu: değer tahmini bugüne kadar modele **boş kasa tipi** gönderiyordu; OneHotEncoding bunu sıfır vektöre çevirdiği için tahmin kasa bilgisi olmadan üretiliyordu. Aynı araçta ölçülen fark: boş kasa 1.011.072 TL, gerçek Hatchback/5 894.777 TL (%12). Artık kasa tipi boşken model hiç çağrılmıyor, 422 dönüyor. Kasa kümesi ayrı bir listede tutulmuyor; model zip'inin `KasaTipiEncoded` slot adlarından okunuyor ve `KasaTipiSozlukTests` ile enum'a bağlanıyor.
+
+Çevrimdışı kararı: CLAUDE.md anonim `acil.html` ve `/api/karne/*` yollarının önbelleğe girmesini yasaklıyor, çünkü bayat kopya paylaşılan araç hakkında yanlış bilgi verir. Bu kural korundu; acil kart bunun yerine giriş yapmış kullanıcının **kendi** aracının verisinden localStorage'a yazılıp Kaza anı ekranında çevrimdışı gösteriliyor. Kaza rehberi kişisel veri taşımadığı ve herkes için aynı olduğu için service worker'da önbelleğe alınıyor.
+
+## Sıradaki
+
+Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklardan okunacak:
+
+- [ ] **Kalibrasyon sonucu** — ilk 30 Türk fişinde `tools/Garajim.Calibration` çalıştırılıp `alanDogruluk` raporlanır; %85 eşiğinin altındaysa prompt revizyonu turu açılır.
+- [ ] **Kill-criteria ölçümü** — tutunma (`GET /api/Receipts/stats`) ve karne paylaşım oranı (`GET /api/Vehicles/karne-stats`) 30. günde okunur ve eşiklerle karşılaştırılır.
+
 ## Denetim ve düzeltmeler
 
 | Tur | Commit'ler |

@@ -2,7 +2,7 @@
 
 MonsterASP.NET üzerine Web Deploy (MSDeploy) ile yayın içindir. Adımları sırayla uygula; bir adım beklenenden farklı sonuç verirse **dur**, sonraki adıma geçme.
 
-Yayın öncesi durum: 838 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
+Yayın öncesi durum: 871 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
 
 ## 1. Veritabanı yedeği (atlanamaz)
 
@@ -19,10 +19,31 @@ Sprint 7 iki migration ekler, ikisi de **yalnız eklemeli**:
 |---|---|
 | `HasarDosyasi` | `HasarDosyalari` ve `HasarFotograflari` tablolarını açar; `KarnePaylasimlari`'na `HasarGecmisi bit NOT NULL DEFAULT 0` kolonu ekler |
 | `AracDeger` | `AracDegerleri` tablosunu açar; `KarnePaylasimlari`'na `BeyanDegeri bit NOT NULL DEFAULT 0` kolonu ekler |
+| `AracKasaTipi` | `Vehicles`'a `KasaTipi int NULL` kolonu ekler |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
 Ayrıca: **belgeler veritabanı yedeğinde yoktur.** Sunucuda daha önce yüklenmiş belge varsa, `App_Data/documents` klasörünü de ayrıca indir.
+
+### Publish öncesi migration sayımı
+
+Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştır:
+
+```sql
+SELECT COUNT(*) FROM __EFMigrationsHistory;
+```
+
+Repoda bugün **27** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **15 migration** uygulanacak:
+
+| Tur | Adet |
+|---|---|
+| Sprint 3-6 ve AI Usta | 12 |
+| Sprint 7 (`HasarDosyasi`, `AracDeger`) | 2 |
+| Launch hazırlık (`AracKasaTipi`) | 1 |
+
+Ölçülen süre (LocalDB, 2 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 27 migration **2,2 sn**; `KarnePaylasimi` şemasından sonraki 15 migration **2,0 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
+
+Sayım beklenenden farklıysa **dur**: canlı şema tahmin ettiğinden eski ya da yeni demektir. Hangi migration'ların uygulanacağını görmeden yayına çıkma; `dotnet ef migrations list` ile karşılaştır.
 
 ## 2. Panel ortam değişkenleri
 
@@ -78,7 +99,9 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 8. **AI Usta**: Hangfire panelinde `usta-cozum-ozeti` (04:00) ve `usta-saklama` (05:00) işleri kayıtlı mı? `/sartlar.html` girişsiz açılıyor mu? Onaysiz `POST /api/Usta/sohbet` **403** ve `ONAY_GEREKLI` dönüyor mu? Onaydan sonra bir soru sorup kademeli yanıt geldiğini ve `Usta__SahteYanit` değerinin **ayarlı olmadığını** doğrula.
 
 9. **Hasar dosyası**: bir araca hasar dosyası aç, bir fotoğraf ekle, `GET /api/Hasar/{id}/tutanak.html` yazdırılabilir sayfayı **200** ve `text/html` olarak dönüyor mu? Dosyayı sil ve fotoğrafın belgesinin de silindiğini (`GET /api/Documents/{id}/download` → **404**) doğrula.
-10. **Değer tahmini**: kapsam içi bir araçta `POST /api/Vehicles/{id}/deger/tahmin` **200** ve uyarı metni dönüyor mu? Kapsam dışı bir model adı taşıyan araçta **422** dönüyor mu? Aynı araçta dördüncü tahmin **400** ile reddediliyor mu?
+10. **Değer tahmini**: kasa tipi seçili, kapsam içi bir araçta `POST /api/Vehicles/{id}/deger/tahmin` **200** ve uyarı metni dönüyor mu? Kasa tipi boş araçta **422** ve "kasa tipini seçin" dönüyor mu? Kapsam dışı bir model adı taşıyan araçta **422** dönüyor mu? Aynı araçta dördüncü tahmin **400** ile reddediliyor mu?
+11. **Tanıtım ve demo**: çıkış yapıp `https://<site>` açıldığında tanıtım bölümü ve altı özellik kartı görünüyor mu? `DemoSeed__Enabled` açıksa **Demo ile dene** düğmesi giriş yapıyor mu? Kapalıysa hata yerine "kendi hesabınızı açın" yönlendirmesi mi veriyor?
+12. **Çevrimdışı**: mobil tarayıcıda siteyi açıp uçak moduna al; **Kaza anı** düğmesi rehberi gösteriyor mu, "Hasar dosyası aç" kuyruğa alındığını söylüyor mu? Bağlantı geri gelince dosya listede beliriyor mu?
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

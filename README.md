@@ -15,7 +15,20 @@ Hazır demo hesabıyla girebilirsiniz:
 | E-posta | `demo@garajim.app` |
 | Şifre | `Demo1234!` |
 
-Hesapta bir araç (`34DEMO34`), iki bakım, üç yakıt, iki masraf kaydı ve yaklaşan bir muayene hatırlatması hazır gelir; raporlar ve fiyat tahmini ilk girişte doluyken görünür. Kendi hesabınızı açıp sıfırdan da deneyebilirsiniz.
+Hesapta bir araç (`34DEMO34`), üç bakım (biri üç parçalı), üç yakıt, iki masraf kaydı, yaklaşan bir muayene hatırlatması, muayene ve trafik sigortası evrakları, bir kış ve bir yaz lastik seti, kapanmış bir cam hasarı dosyası, iki değer beyanı ve bir yolculuk hazır gelir; raporlar, değer grafiği ve fiyat tahmini ilk girişte doluyken görünür. Giriş ekranındaki **Demo ile dene** düğmesi bu hesapla doğrudan giriş yapar. Kendi hesabınızı açıp sıfırdan da deneyebilirsiniz.
+
+### Ekran görüntüleri
+
+Görseller `docs/ekran/` altında tutulur; henüz eklenmedi.
+
+| Ekran | Dosya | İçerik |
+|---|---|---|
+| Tanıtım | `docs/ekran/tanitim.png` | Giriş öncesi başlık, altı özellik kartı, demo düğmesi (mobil) |
+| Panel | `docs/ekran/panel.png` | Araç seçili, evrak ve hasar sayaçları, aylık maliyet |
+| Fiş yükleme | `docs/ekran/fis.png` | Fiş fotoğrafı ve çıkarılan alanların onay ekranı |
+| Araç karnesi | `docs/ekran/karne.png` | Paylaşılan karne sayfası ve QR kodu |
+| Kaza anı | `docs/ekran/kaza.png` | Mobilde kaza rehberi ve tek dokunuşluk hasar dosyası |
+| Değer takibi | `docs/ekran/deger.png` | Değer serisi grafiği ve tahmin uyarısı |
 
 ### Bilinen sınırlar
 
@@ -334,7 +347,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `POST /api/plan/yukseltme-talebi` (yalnız Owner)
 - `GET|POST /api/usta/onay`, `POST /api/usta/sohbet`, `POST /api/usta/sohbet/{id}/mesaj`, `GET /api/usta/sohbet`, `GET|DELETE /api/usta/sohbet/{id}`, `GET /api/usta/sohbet/{id}/bakimlar`, `POST /api/usta/mesaj/{id}/geri-bildirim`, `GET /api/usta/stats` (Owner)
 - `GET /api/hasar/rehber`, `GET|POST /api/hasar`, `GET|PUT|DELETE /api/hasar/{id}`, `POST /api/hasar/{id}/foto`, `DELETE /api/hasar/{id}/foto/{fotoId}`, `GET /api/hasar/{id}/tutanak.html`, `GET /api/vehicles/{id}/hasar`
-- `GET|POST /api/vehicles/{id}/deger`, `POST /api/vehicles/{id}/deger/tahmin`
+- `GET|POST /api/vehicles/{id}/deger`, `POST /api/vehicles/{id}/deger/tahmin`, `PUT /api/vehicles/{id}/kasa-tipi`
 - `POST /api/price/estimate`
 
 
