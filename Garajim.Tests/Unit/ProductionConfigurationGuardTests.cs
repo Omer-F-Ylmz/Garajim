@@ -193,6 +193,36 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
+        public void CiSmokeDegiskenleriUretimGuardindanGecer()
+        {
+            var kok = new DirectoryInfo(AppContext.BaseDirectory);
+            while (kok != null && !File.Exists(Path.Combine(kok.FullName, "Garajim.sln")))
+            {
+                kok = kok.Parent;
+            }
+
+            Assert.NotNull(kok);
+
+            var akis = File.ReadAllText(Path.Combine(kok.FullName, ".github", "workflows", "ci.yml"));
+            var degerler = new Dictionary<string, string>();
+
+            var desen = new System.Text.RegularExpressions.Regex("-e \"?([A-Za-z]+__[A-Za-z]+)=([^\"\\r\\n\\\\]*)");
+
+            foreach (System.Text.RegularExpressions.Match eslesme in desen.Matches(akis))
+            {
+                degerler[eslesme.Groups[1].Value.Replace("__", ":")] = eslesme.Groups[2].Value;
+            }
+
+            Assert.Contains("Smtp:Host", degerler.Keys);
+
+            var hatalar = ProductionConfigurationGuard.Topla(
+                new ConfigurationBuilder().AddInMemoryCollection(degerler).Build());
+
+            Assert.True(hatalar.Count == 0,
+                "CI smoke adımındaki değişkenler üretim guardından geçmiyor: " + string.Join(" | ", hatalar));
+        }
+
+        [Fact]
         public void TumHatalarTekMesajdaToplanir()
         {
             var hata = Assert.Throws<InvalidOperationException>(() =>

@@ -35,6 +35,10 @@ jobs:
             -e ASPNETCORE_ENVIRONMENT=Production \
             -e "ConnectionStrings__Default=Server=ci-dummy,1433;Database=GarajimDb;User Id=ci;Password=ci-parola;TrustServerCertificate=True" \
             -e "Jwt__Key=ci-ortami-icin-en-az-32-baytlik-sahte-imzalama-anahtari" \
+            -e "Smtp__Host=ci-dummy-smtp" \
+            -e "Smtp__User=ci" \
+            -e "Smtp__Pass=ci-parola" \
+            -e "Smtp__From=ci@garajim.local" \
             -e UseBackgroundJobs=false \
             garajim-api:ci
 
