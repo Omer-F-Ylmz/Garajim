@@ -87,9 +87,9 @@ namespace Garajim.Tests.Unit
         {
             var pencere = Kurallar().KisLastigiPenceresi();
 
-            Assert.Equal(1, pencere.BaslangicGun);
-            Assert.Equal(12, pencere.BaslangicAy);
-            Assert.Equal(1, pencere.BitisGun);
+            Assert.Equal(15, pencere.BaslangicGun);
+            Assert.Equal(11, pencere.BaslangicAy);
+            Assert.Equal(15, pencere.BitisGun);
             Assert.Equal(4, pencere.BitisAy);
         }
 
@@ -105,25 +105,54 @@ namespace Garajim.Tests.Unit
         }
 
         [Theory]
+        [InlineData(2026, 11, 14, false)]
+        [InlineData(2026, 11, 15, true)]
+        [InlineData(2026, 11, 16, true)]
         [InlineData(2026, 12, 15, true)]
         [InlineData(2027, 1, 20, true)]
-        [InlineData(2027, 3, 31, true)]
-        [InlineData(2027, 4, 1, true)]
-        [InlineData(2027, 4, 2, false)]
+        [InlineData(2027, 4, 14, true)]
+        [InlineData(2027, 4, 15, true)]
+        [InlineData(2027, 4, 16, false)]
         [InlineData(2026, 7, 15, false)]
-        [InlineData(2026, 11, 30, false)]
-        [InlineData(2026, 12, 1, true)]
+        [InlineData(2026, 10, 31, false)]
         public void KisLastigiPenceresiYilAsanAraligiDogruKapsar(int yil, int ay, int gun, bool beklenen)
         {
             Assert.Equal(beklenen, Kurallar().KisLastigiDonemindeMi(new DateTime(yil, ay, gun)));
         }
+
+        [Theory]
+        [InlineData(2026, 10, 14, false)]
+        [InlineData(2026, 10, 15, true)]
+        [InlineData(2027, 5, 15, true)]
+        [InlineData(2027, 5, 16, false)]
+        public void ValilikUzatmasiConfigEzmesiyleKarsilanir(int yil, int ay, int gun, bool beklenen)
+        {
+            var kurallar = Kurallar(new Dictionary<string, string> { ["Evrak:KisLastigi"] = "15-10..15-05" });
+
+            Assert.Equal(beklenen, kurallar.KisLastigiDonemindeMi(new DateTime(yil, ay, gun)));
+        }
+
+        [Fact]
+        public void KisLastigiPenceresiMetniTurkceKisaltmaKullanir()
+        {
+            Assert.Equal("15 Kas–15 Nis", Kurallar().KisLastigiPenceresiMetni());
+        }
+
+        [Fact]
+        public void PencereMetniConfigEzmesiniYansitir()
+        {
+            var kurallar = Kurallar(new Dictionary<string, string> { ["Evrak:KisLastigi"] = "15-10..15-05" });
+
+            Assert.Equal("15 Eki–15 May", kurallar.KisLastigiPenceresiMetni());
+        }
+
 
         [Fact]
         public void KisLastigiSonrakiTarihiPencereBitisinaKurulur()
         {
             var sonuc = Kurallar().SonrakiTarih(EvrakTuru.KisLastigi, KullanimTuru.Ticari, new DateTime(2026, 12, 10), null);
 
-            Assert.Equal(new DateTime(2027, 4, 1), sonuc);
+            Assert.Equal(new DateTime(2027, 4, 15), sonuc);
         }
 
         [Fact]
@@ -131,7 +160,8 @@ namespace Garajim.Tests.Unit
         {
             var pencere = Kurallar(new Dictionary<string, string> { ["Evrak:KisLastigi"] = "saçma" }).KisLastigiPenceresi();
 
-            Assert.Equal(12, pencere.BaslangicAy);
+            Assert.Equal(15, pencere.BaslangicGun);
+            Assert.Equal(11, pencere.BaslangicAy);
             Assert.Equal(4, pencere.BitisAy);
         }
 

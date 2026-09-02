@@ -90,10 +90,12 @@ Muayene ve egzoz aralıkları, kış lastiği penceresi ve uyarı günleri **yal
 
 | Ayar | Varsayılan | Anlamı |
 |---|---|---|
-| `Evrak:KisLastigi` | `01-12..01-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA) |
+| `Evrak:KisLastigi` | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA) |
 | `Evrak:UyariGunleri` | `30,7` | Bitişten kaç gün önce e-posta gönderileceği |
 
 Kod içindeki sabitler: hususi muayene 2 yıl / ticari 1 yıl, egzoz aynı ayrım, ilk muayene tescilden 3 yıl sonra, "yaklaşıyor" eşiği 30 gün. Mevzuat değişirse tek dosya ve tek test dosyası (`EvrakKurallariTests`) güncellenir.
+
+Kış lastiği penceresinin kaynağı: 4 Ekim 2025 tarihli Resmî Gazete tebliği pencereyi **15 Kasım – 15 Nisan** olarak belirledi (önceki düzenlemede 1 Aralık – 1 Nisan'dı). Valilikler pencereyi bir ay öne veya arkaya uzatabildiği için bu değer koda gömülü değil; il bazında `Evrak:KisLastigi` ezmesiyle karşılanır (örn. `15-10..15-05`). Tebliğ M+S işaretli lastiği kabul ettiği için panel uyarısında dört mevsim seti de yeterli sayılır.
 
 ## Sprint 4 — TAMAMLANDI
 

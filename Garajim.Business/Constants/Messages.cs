@@ -87,7 +87,7 @@ namespace Garajim.Business.Constants
         public const string PlanTalebiAlindi = "Plan yükseltme talebiniz destek ekibine iletildi.";
         public const string PlanZatenAktif = "Bu plan zaten aktif.";
         public const string DestekEpostasiTanimsiz = "Destek e-posta adresi yapılandırılmamış; talep gönderilemedi.";
-        public const string TicariKisLastigiUyarisi = "Kış lastiği döneminde ticari araçlarda kış lastiği zorunludur.";
+        public const string TicariKisLastigiUyarisi = "Kış lastiği dönemindesiniz ({0}). Ticari araçlarda M+S işaretli kış ya da dört mevsim lastiği zorunludur.";
 
         public const string LastikTakildi = "Lastik seti takıldı.";
         public const string LastikSokuldu = "Lastik seti söküldü.";

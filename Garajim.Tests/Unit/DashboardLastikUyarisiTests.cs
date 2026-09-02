@@ -35,7 +35,20 @@ namespace Garajim.Tests.Unit
             return $"{bas:dd-MM}..{son:dd-MM}";
         }
 
+        private static string TumYilPenceresiMetni()
+        {
+            var bugun = DateTime.UtcNow.Date;
+            return Ay(bugun.AddDays(-3)) + "\u2013" + Ay(bugun.AddDays(3));
+        }
+
+        private static string Ay(DateTime tarih)
+        {
+            var kisaltmalar = new[] { "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara" };
+            return tarih.Day + " " + kisaltmalar[tarih.Month - 1];
+        }
+
         private static string PencereDisi()
+
         {
             var bugun = DateTime.UtcNow.Date;
             var bas = bugun.AddDays(20);
@@ -138,7 +151,7 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public async Task DortMevsimSetiTicariAracIcinYeterliDegil()
+        public async Task DortMevsimSetiTicariAracIcinYeterli()
         {
             var yonetici = Yonetici(TumYilPenceresi(),
                 new List<Vehicle> { Arac(1, "34AAA111", KullanimTuru.Ticari) },
@@ -146,8 +159,26 @@ namespace Garajim.Tests.Unit
 
             var sonuc = await yonetici.GetDashboardAsync(UserId);
 
-            Assert.Equal(new[] { "34AAA111" }, sonuc.Data.KisLastigiUyariPlakalari);
+            Assert.True(sonuc.Data.KisLastigiDonemi);
+            Assert.Null(sonuc.Data.KisLastigiUyarisi);
+            Assert.Empty(sonuc.Data.KisLastigiUyariPlakalari);
         }
+
+        [Fact]
+        public async Task UyariMetniPencereyiVeMSNotunuTasir()
+        {
+            var yonetici = Yonetici(TumYilPenceresi(),
+                new List<Vehicle> { Arac(1, "34AAA111", KullanimTuru.Ticari) },
+                new List<LastikSeti> { Set(1, LastikMevsimi.Yaz) });
+
+            var sonuc = await yonetici.GetDashboardAsync(UserId);
+
+            Assert.Contains(TumYilPenceresiMetni(), sonuc.Data.KisLastigiUyarisi);
+            Assert.Contains("M+S", sonuc.Data.KisLastigiUyarisi);
+            Assert.Contains("Ticari", sonuc.Data.KisLastigiUyarisi);
+        }
+
+
 
         [Fact]
         public async Task HususiAracUyariyaGirmez()

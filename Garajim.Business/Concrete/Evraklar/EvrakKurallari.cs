@@ -15,7 +15,8 @@ namespace Garajim.Business.Concrete.Evraklar
     public class EvrakKurallari
     {
         public const int YaklasiyorGun = 30;
-        private const string VarsayilanPencere = "01-12..01-04";
+        private const string VarsayilanPencere = "15-11..15-04";
+        private static readonly string[] AyKisaltmalari = { "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara" };
         private static readonly int[] VarsayilanUyariGunleri = { 30, 7 };
         private const int IlkMuayeneYili = 3;
 
@@ -59,7 +60,19 @@ namespace Garajim.Business.Concrete.Evraklar
             return pencere ?? Coz(VarsayilanPencere);
         }
 
+        public string KisLastigiPenceresiMetni()
+        {
+            var pencere = KisLastigiPenceresi();
+            return Gun(pencere.BaslangicGun, pencere.BaslangicAy) + "\u2013" + Gun(pencere.BitisGun, pencere.BitisAy);
+        }
+
+        private static string Gun(int gun, int ay)
+        {
+            return gun + " " + AyKisaltmalari[ay - 1];
+        }
+
         private static KisLastigiPenceresiBilgisi Coz(string deger)
+
         {
             if (string.IsNullOrWhiteSpace(deger))
             {

@@ -161,7 +161,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Documents__MaxFileSizeBytes` | Opsiyonel | `5242880` | Dosya başına sınır |
 | `Documents__CompanyQuotaBytes` | Opsiyonel | `262144000` | Şirket başına toplam belge alanı |
 | `Smtp__Host` `Smtp__Port` `Smtp__User` `Smtp__Pass` `Smtp__From` | Opsiyonel | boş | Eksikse gönderim loglanıp atlanır, uygulama çökmez |
-| `Evrak__KisLastigi` | Opsiyonel | `01-12..01-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA) |
+| `Evrak__KisLastigi` | Opsiyonel | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA); valilik ±1 ay uzatırsa örn. `15-10..15-05` |
 | `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |
 | `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |
 | `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
@@ -238,7 +238,7 @@ Muayene, sigorta, kasko, egzoz, kış lastiği ve kişiye ait belgeler (ehliyet,
 
 Ayarlar → **Planı yükselt** formu `POST /api/plan/yukseltme-talebi` çağırır. Talep, `App:DestekEposta` adresine mevcut e-posta altyapısıyla gönderilir; gövde şirket adını, mevcut ve istenen planı, araç sayısı / limitini, davet sayısını ve talep edeni taşır. Yalnız Owner çağırabilir; mevcut planı istemek ve destek adresi tanımsızken çağırmak 400 döner.
 
-`GET /api/reports/dashboard` kış lastiği penceresindeyken `KullanimTuru = Ticari` olup takılı seti kış olmayan araçları `kisLastigiUyariPlakalari` alanında döner; SPA bunu üst bantta gösterir. Dört mevsim seti ticari araç için yeterli sayılmaz.
+`GET /api/reports/dashboard` kış lastiği penceresindeyken `KullanimTuru = Ticari` olup takılı seti `Yaz` olan ya da hiç seti olmayan araçları `kisLastigiUyariPlakalari` alanında döner; SPA bunu üst bantta gösterir. Tebliğ M+S işaretini kabul ettiği için `Kis` ve `DortMevsim` setleri yeterli sayılır; hususi araçlara uyarı çıkmaz. Uyarı metni yürürlükteki pencereyi (örn. "15 Kas–15 Nis") taşır.
 
 ## Kalibrasyon aracı
 

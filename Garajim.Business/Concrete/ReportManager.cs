@@ -285,7 +285,7 @@ namespace Garajim.Business.Concrete
                 panel.KisLastigiUyariPlakalari = await KisLastigiEksikleriAsync(araclar, idler);
                 if (panel.KisLastigiUyariPlakalari.Count > 0)
                 {
-                    panel.KisLastigiUyarisi = Messages.TicariKisLastigiUyarisi;
+                    panel.KisLastigiUyarisi = string.Format(Messages.TicariKisLastigiUyarisi, _evrakKurallari.KisLastigiPenceresiMetni());
                 }
             }
 
@@ -323,7 +323,7 @@ namespace Garajim.Business.Concrete
 
             var takililar = await _lastikDal.GetTakiliListeAsync(idler);
             var kisliAraclar = takililar
-                .Where(s => s.Mevsim == LastikMevsimi.Kis)
+                .Where(s => s.Mevsim == LastikMevsimi.Kis || s.Mevsim == LastikMevsimi.DortMevsim)
                 .Select(s => s.VehicleId)
                 .ToHashSet();
 
