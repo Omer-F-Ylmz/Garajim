@@ -8,10 +8,10 @@ namespace Garajim.API.Startup
 {
     public class MlDegerTahminEdici : IDegerTahminEdici
     {
-        private readonly PredictionEnginePool<CarPriceInput, CarPricePrediction> _havuz;
-        private readonly FiyatModeliSozlugu _sozluk;
+        private readonly Lazy<PredictionEnginePool<CarPriceInput, CarPricePrediction>> _havuz;
+        private readonly Lazy<FiyatModeliSozlugu> _sozluk;
 
-        public MlDegerTahminEdici(PredictionEnginePool<CarPriceInput, CarPricePrediction> havuz, FiyatModeliSozlugu sozluk)
+        public MlDegerTahminEdici(Lazy<PredictionEnginePool<CarPriceInput, CarPricePrediction>> havuz, Lazy<FiyatModeliSozlugu> sozluk)
         {
             _havuz = havuz;
             _sozluk = sozluk;
@@ -30,7 +30,9 @@ namespace Garajim.API.Startup
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
 
-            if (!_sozluk.MarkaTaniniyor(marka) || !_sozluk.SeriTaniniyor(seri) || !_sozluk.KasaTaniniyor(kasaTipi))
+            var sozluk = _sozluk.Value;
+
+            if (!sozluk.MarkaTaniniyor(marka) || !sozluk.SeriTaniniyor(seri) || !sozluk.KasaTaniniyor(kasaTipi))
             {
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
@@ -46,7 +48,7 @@ namespace Garajim.API.Startup
                 KasaTipi = kasaTipi.Trim()
             };
 
-            var tahmin = _havuz.Predict(PricePredictionController.ModelName, girdi);
+            var tahmin = _havuz.Value.Predict(PricePredictionController.ModelName, girdi);
             var fiyat = PriceScale.FromLog(tahmin.LogFiyat);
 
             if (float.IsNaN(fiyat) || float.IsInfinity(fiyat) || fiyat <= 0)

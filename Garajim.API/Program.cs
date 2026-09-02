@@ -131,6 +131,8 @@ builder.Services.AddScoped<UstaSaklamaJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
 
 builder.Services.AddSingleton(sp => FiyatModeliSozlugu.Yukle(Path.Combine(AppContext.BaseDirectory, "MLModels", "price-model.zip")));
+builder.Services.AddSingleton(sp => new Lazy<FiyatModeliSozlugu>(sp.GetRequiredService<FiyatModeliSozlugu>));
+builder.Services.AddSingleton(sp => new Lazy<PredictionEnginePool<CarPriceInput, CarPricePrediction>>(sp.GetRequiredService<PredictionEnginePool<CarPriceInput, CarPricePrediction>>));
 
 builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
     .FromFile(
