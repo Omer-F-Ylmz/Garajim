@@ -20,6 +20,14 @@ namespace Garajim.Dal.Concrete
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<AppUser> GetForAuthenticationByIdAsync(int id)
+        {
+            return await Context.Users
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
         public async Task<bool> ExistsForRegistrationAsync(string email)
         {
             return await Context.Users

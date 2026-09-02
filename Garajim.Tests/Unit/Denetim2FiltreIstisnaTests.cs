@@ -6,7 +6,7 @@ namespace Garajim.Tests.Unit
     {
         private static readonly Dictionary<string, int> IzinliKullanim = new Dictionary<string, int>(StringComparer.Ordinal)
         {
-            ["EfUserDal.cs"] = 2,
+            ["EfUserDal.cs"] = 3,
             ["EfKarnePaylasimiDal.cs"] = 2,
             ["EfTakvimAbonelikDal.cs"] = 1,
             ["EfCompanyDal.cs"] = 4

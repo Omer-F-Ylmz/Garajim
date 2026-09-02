@@ -7,6 +7,8 @@ namespace Garajim.Dal.Abstract
     {
         Task<AppUser> GetForAuthenticationAsync(string email);
 
+        Task<AppUser> GetForAuthenticationByIdAsync(int id);
+
         Task<bool> ExistsForRegistrationAsync(string email);
     }
 }

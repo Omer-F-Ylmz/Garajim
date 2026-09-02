@@ -164,6 +164,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             NameClaimType = ClaimTypes.Name,
             RoleClaimType = ClaimTypes.Role
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = TokenGecerlilikDenetimi.DenetleAsync
+        };
     });
 builder.Services.AddAuthorization();
 
