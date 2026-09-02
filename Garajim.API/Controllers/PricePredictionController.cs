@@ -3,11 +3,14 @@ using Garajim.Core.Utilities.Results;
 using Garajim.Entity.Dtos;
 using Garajim.ML.DataPrep;
 using Garajim.ML.Models;
+using Garajim.API.Startup;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.ML;
 
 namespace Garajim.API.Controllers
 {
+    [EnableRateLimiting(PahaliUclar.RateLimitPolicy)]
     [Route("api/price")]
     public class PricePredictionController : SecureControllerBase
     {

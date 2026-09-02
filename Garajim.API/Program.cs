@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -210,6 +211,16 @@ builder.Services.AddResponseCompression(options =>
 builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = PahaliUclar.MaxIstekGovdesi(builder.Configuration);
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = PahaliUclar.MaxIstekGovdesi(builder.Configuration);
+});
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -223,6 +234,21 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
+
+    options.AddPolicy(PahaliUclar.RateLimitPolicy, httpContext =>
+    {
+        var pahaliYapilandirma = httpContext.RequestServices.GetRequiredService<IConfiguration>();
+        var pahaliLimit = pahaliYapilandirma.GetValue("RateLimiting:PahaliUcPerMinute", 20);
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            PahaliUclar.Bolum(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = pahaliLimit,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
 
     options.AddPolicy(AuthController.RateLimitPolicy, httpContext =>
     {

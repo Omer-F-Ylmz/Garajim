@@ -1,9 +1,12 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
+using Garajim.API.Startup;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Garajim.API.Controllers
 {
+    [EnableRateLimiting(PahaliUclar.RateLimitPolicy)]
     [Route("api/[controller]")]
     public class ExportController : SecureControllerBase
     {

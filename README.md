@@ -175,6 +175,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Documents__CompanyQuotaBytes` | Opsiyonel | `262144000` | Şirket başına toplam belge alanı |
 | `Smtp__Host` `Smtp__User` `Smtp__Pass` `Smtp__From` | **Üretimde zorunlu** | boş | Kayıt doğrulama kodu buradan gider; üretimde eksikse uygulama başlamaz. Geliştirmede eksik olabilir, kod loga yazılır |
 | `Smtp__Port` | Opsiyonel | `587` | Sağlayıcı farklı port istiyorsa |
+| `RateLimiting__PahaliUcPerMinute` | Opsiyonel | `20` | Fiyat tahmini, içe/dışa aktarma, belge, fiş ve AI Usta uçlarında kullanıcı başına dakikalık istek sınırı |
 | `Evrak__KisLastigi` | Opsiyonel | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA); valilik ±1 ay uzatırsa örn. `15-10..15-05` |
 | `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |
 | `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |

@@ -4,10 +4,13 @@ using Garajim.Core.Utilities.Results;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Garajim.API.Startup;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Garajim.API.Controllers
 {
+    [EnableRateLimiting(PahaliUclar.RateLimitPolicy)]
     [Route("api/[controller]")]
     public class ReceiptsController : SecureControllerBase
     {

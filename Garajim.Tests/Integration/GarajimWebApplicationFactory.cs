@@ -28,6 +28,7 @@ namespace Garajim.Tests.Integration
                 configuration.AddInMemoryCollection(new Dictionary<string, string>
                 {
                     ["RateLimiting:AuthPermitPerMinute"] = "10000",
+                    ["RateLimiting:PahaliUcPerMinute"] = "10000",
                     ["Jwt:Key"] = "test-ortami-icin-en-az-32-karakterlik-gizli-anahtar",
                     ["Jwt:Issuer"] = "Garajim",
                     ["Jwt:Audience"] = "GarajimClient",

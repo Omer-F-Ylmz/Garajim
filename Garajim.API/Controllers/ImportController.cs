@@ -2,7 +2,9 @@ using System.Text.Json;
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
+using Garajim.API.Startup;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Garajim.API.Controllers
 {
@@ -21,6 +23,7 @@ namespace Garajim.API.Controllers
         public bool DryRun { get; set; }
     }
 
+    [EnableRateLimiting(PahaliUclar.RateLimitPolicy)]
     [Route("api/[controller]")]
     public class ImportController : SecureControllerBase
     {
