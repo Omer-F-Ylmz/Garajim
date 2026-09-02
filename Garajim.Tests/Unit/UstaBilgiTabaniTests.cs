@@ -203,6 +203,17 @@ namespace Garajim.Tests.Unit
                 Kayitlar.Single(k => k.Id == BilgiSecici.BakimKuralKaydi).Metin) || secilen.Count > 1);
         }
 
+        [Theory]
+        [InlineData("triger kayışı kaç kilometrede değişir")]
+        [InlineData("yağ ne zaman değişir")]
+        public void GenelBakimSorusuKuralKaydiniBirinciSiradaGetirir(string soru)
+        {
+            var secilen = Secici().Sec(soru);
+
+            Assert.NotEmpty(secilen);
+            Assert.Equal(BilgiSecici.BakimKuralKaydi, secilen[0].Id);
+        }
+
         [Fact]
         public void BakimDisiSorudaKuralKaydiEklenmez()
         {
