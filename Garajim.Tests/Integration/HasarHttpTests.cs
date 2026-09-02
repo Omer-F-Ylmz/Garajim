@@ -268,10 +268,10 @@ namespace Garajim.Tests.Integration
             var sahip = await SahipOlusturAsync();
             var aracId = await AracEkleAsync(sahip);
 
-            var yarin = DateTime.UtcNow.Date.AddDays(1).ToString("yyyy-MM-dd");
+            var gercektenGelecek = DateTime.UtcNow.Date.AddDays(2).ToString("yyyy-MM-dd");
             var bugun = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
-            var gelecek = await DosyaAcAsync(sahip, aracId, yarin);
+            var gelecek = await DosyaAcAsync(sahip, aracId, gercektenGelecek);
             var cokEski = await DosyaAcAsync(sahip, aracId, "1949-12-31");
             var gecerli = await DosyaAcAsync(sahip, aracId, bugun);
 

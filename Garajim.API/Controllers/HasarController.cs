@@ -18,10 +18,12 @@ namespace Garajim.API.Controllers
     public class HasarController : SecureControllerBase
     {
         private readonly IHasarService _hasarService;
+        private readonly IDocumentService _documentService;
 
-        public HasarController(IHasarService hasarService)
+        public HasarController(IHasarService hasarService, IDocumentService documentService)
         {
             _hasarService = hasarService;
+            _documentService = documentService;
         }
 
         [HttpGet("rehber")]
@@ -88,7 +90,19 @@ namespace Garajim.API.Controllers
                 return Sonuc(result);
             }
 
-            return Content(TutanakSayfasi.Olustur(result.Data), "text/html; charset=utf-8");
+            var gomulu = new Dictionary<int, string>();
+
+            foreach (var foto in result.Data.Fotograflar)
+            {
+                var belge = await _documentService.DownloadAsync(CurrentUserId, foto.DocumentId);
+
+                if (belge.Success && belge.Data?.Content != null && belge.Data.ContentType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    gomulu[foto.DocumentId] = "data:" + belge.Data.ContentType + ";base64," + Convert.ToBase64String(belge.Data.Content);
+                }
+            }
+
+            return Content(TutanakSayfasi.Olustur(result.Data, gomulu), "text/html; charset=utf-8");
         }
 
         private IActionResult Sonuc(Core.Utilities.Results.IResult result)

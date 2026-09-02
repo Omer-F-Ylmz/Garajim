@@ -61,7 +61,7 @@ namespace Garajim.Business.Concrete
             if (dto.Deger <= 0)
                 return new ErrorDataResult<AracDegerDto>(Messages.DegerGecersiz);
 
-            if (dto.Tarih == default || dto.Tarih.Date > DateTime.UtcNow.Date || dto.Tarih.Year < 1950)
+            if (dto.Tarih == default || dto.Tarih.Date > TarihToleransi.EnGecGun() || dto.Tarih.Year < 1950)
                 return new ErrorDataResult<AracDegerDto>(Messages.DegerTarihiGecersiz);
 
             var kayit = await EkleAsync(vehicle, dto.Tarih.Date, dto.Deger, dto.Kaynak, dto.Not);

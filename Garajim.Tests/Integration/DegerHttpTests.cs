@@ -133,10 +133,10 @@ namespace Garajim.Tests.Integration
             var sahip = await SahipOlusturAsync();
             var aracId = await AracEkleAsync(sahip);
 
-            var yarin = DateTime.UtcNow.Date.AddDays(1).ToString("yyyy-MM-dd");
+            var gercektenGelecek = DateTime.UtcNow.Date.AddDays(2).ToString("yyyy-MM-dd");
             var bugun = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
-            var gelecek = await BeyanAsync(sahip, aracId, yarin, 900000m);
+            var gelecek = await BeyanAsync(sahip, aracId, gercektenGelecek, 900000m);
             var gecerli = await BeyanAsync(sahip, aracId, bugun, 900000m);
 
             Assert.Equal(HttpStatusCode.BadRequest, gelecek.StatusCode);

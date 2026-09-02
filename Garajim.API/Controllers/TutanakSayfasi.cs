@@ -6,7 +6,7 @@ namespace Garajim.API.Controllers
 {
     public static class TutanakSayfasi
     {
-        public static string Olustur(HasarDto dosya)
+        public static string Olustur(HasarDto dosya, IReadOnlyDictionary<int, string> gomuluFotolar = null)
         {
             var sb = new StringBuilder();
 
@@ -60,8 +60,17 @@ namespace Garajim.API.Controllers
                 foreach (var foto in dosya.Fotograflar)
                 {
                     sb.AppendLine("<div class=\"foto\">");
-                    sb.AppendLine($"<img src=\"/api/Documents/{foto.DocumentId}/download\" alt=\"{Kacir(foto.EtiketAdi)}\">");
-                    sb.AppendLine($"{Kacir(foto.EtiketAdi)}");
+
+                    if (gomuluFotolar != null && gomuluFotolar.TryGetValue(foto.DocumentId, out var veriUrl))
+                    {
+                        sb.AppendLine("<img src=\"" + veriUrl + "\" alt=\"" + Kacir(foto.EtiketAdi) + "\">");
+                    }
+                    else
+                    {
+                        sb.AppendLine("<p class=\"foto-yok\">Görsel yüklenemedi</p>");
+                    }
+
+                    sb.AppendLine(Kacir(foto.EtiketAdi));
                     sb.AppendLine("</div>");
                 }
                 sb.AppendLine("</div>");

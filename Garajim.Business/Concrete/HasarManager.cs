@@ -315,7 +315,7 @@ namespace Garajim.Business.Concrete
             if (string.IsNullOrWhiteSpace(aciklama))
                 return Messages.InvalidValue;
 
-            if (olayTarihi == default || olayTarihi.Date > DateTime.UtcNow.Date || olayTarihi.Year < 1950)
+            if (olayTarihi == default || olayTarihi.Date > TarihToleransi.EnGecGun() || olayTarihi.Year < 1950)
                 return Messages.HasarTarihiGecersiz;
 
             if (olayKm != null && olayKm < 0)
