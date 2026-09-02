@@ -16,10 +16,10 @@ namespace Garajim.Tests.Integration
 
         private static string Eposta(string on) => $"{on}-{Guid.NewGuid():N}@garajim.local";
 
-        private async Task<HttpClient> SahipOlusturAsync()
+        private async Task<HttpClient> SahipOlusturAsync(string davetKodu = null)
         {
             var client = _factory.CreateClient();
-            var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("plan"), fullName = "Plan Sahip", password = "Test1234!" });
+            var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("plan"), fullName = "Plan Sahip", password = "Test1234!", davetKodu });
             var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
@@ -74,8 +74,64 @@ namespace Garajim.Tests.Integration
             Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
         }
 
+        private static async Task<string> DavetKoduAsync(HttpClient client)
+        {
+            var cevap = await client.GetAsync("/api/Davet");
+            return JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("kod").GetString();
+        }
+
+        [Fact]
+        public async Task HerDavetBireyselPlandaBirAracHakkiAcar()
+        {
+            var davetEden = await SahipOlusturAsync();
+            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+
+            for (var i = 1; i <= 3; i++)
+            {
+                await AracEkleAsync(davetEden, $"48{ek}{i}");
+            }
+            Assert.Equal(HttpStatusCode.PaymentRequired, (await AracEkleAsync(davetEden, $"48{ek}4")).StatusCode);
+
+            var kod = await DavetKoduAsync(davetEden);
+            await SahipOlusturAsync(kod);
+
+            Assert.Equal(HttpStatusCode.OK, (await AracEkleAsync(davetEden, $"48{ek}4")).StatusCode);
+            Assert.Equal(HttpStatusCode.PaymentRequired, (await AracEkleAsync(davetEden, $"48{ek}5")).StatusCode);
+        }
+
+        [Fact]
+        public async Task DavetliKendiLimitiniArtirmaz()
+        {
+            var davetEden = await SahipOlusturAsync();
+            var kod = await DavetKoduAsync(davetEden);
+
+            var davetli = await SahipOlusturAsync(kod);
+            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+
+            for (var i = 1; i <= 3; i++)
+            {
+                Assert.Equal(HttpStatusCode.OK, (await AracEkleAsync(davetli, $"49{ek}{i}")).StatusCode);
+            }
+
+            Assert.Equal(HttpStatusCode.PaymentRequired, (await AracEkleAsync(davetli, $"49{ek}4")).StatusCode);
+        }
+
+        [Fact]
+        public async Task PanelKazanilanAracHakkiniLimiteYansitir()
+        {
+            var davetEden = await SahipOlusturAsync();
+            var kod = await DavetKoduAsync(davetEden);
+            await SahipOlusturAsync(kod);
+
+            var panel = JsonDocument.Parse(await (await davetEden.GetAsync("/api/Reports/dashboard")).Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data");
+
+            Assert.Equal(4, panel.GetProperty("aracLimiti").GetInt32());
+        }
+
         [Fact]
         public async Task SilinenAracLimitiSerbestBirakir()
+
         {
             var sahip = await SahipOlusturAsync();
             var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();

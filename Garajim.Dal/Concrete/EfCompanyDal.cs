@@ -26,6 +26,13 @@ namespace Garajim.Dal.Concrete
                 .AnyAsync(c => c.DavetKodu == kod);
         }
 
+        public async Task<int> DavetSayisiAsync(int companyId)
+        {
+            return await Context.Companies
+                .IgnoreQueryFilters()
+                .CountAsync(c => c.DavetEdenCompanyId == companyId);
+        }
+
         public async Task<List<Company>> GetDavetlilerAsync(int companyId)
         {
             return await Context.Companies

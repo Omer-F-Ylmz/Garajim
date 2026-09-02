@@ -165,7 +165,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |
 | `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |
 | `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
-| `Plan__DavetOdulGun` | Opsiyonel | `30` | Davet başına iki tarafa eklenen bonus gün |
+| `Plan__DavetMaxEkArac` | Opsiyonel | `3` | Davetle kazanılabilecek en fazla ek araç (Bireysel); `0` kapatır |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
 
@@ -231,7 +231,7 @@ Muayene, sigorta, kasko, egzoz, kış lastiği ve kişiye ait belgeler (ehliyet,
 
 ## Davet programı
 
-`GET /api/davet` şirkete özel 8 karakterli kodu ilk istekte üretir ve sabit tutar. Kodla kaydolan şirket ve davet eden şirket `Plan:DavetOdulGun` (varsayılan 30) kadar bonus gün kazanır; geçersiz kod kaydı reddeder, sessizce yutulmaz.
+`GET /api/davet` şirkete özel 8 karakterli kodu ilk istekte üretir ve sabit tutar. Kodla bir şirket kaydolduğunda **davet edenin** araç limiti Bireysel pakette +1 artar; üst sınır `Plan:DavetMaxEkArac` (varsayılan 3). Filo paketinde davetler yalnız sayılır, limite dokunmaz; davetli kendi limitini artırmaz. Geçersiz kod kaydı reddeder, sessizce yutulmaz.
 
 ## Kalibrasyon aracı
 

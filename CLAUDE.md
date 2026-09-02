@@ -29,6 +29,8 @@ Mevcut iki istisna korunur, üçüncüsü eklenmez:
 
 `EfKarnePaylasimiDal` token aramasında filtreyi atlar; bu bilinçlidir çünkü anonim istekte tenant bağlamı yoktur ve arama tek satırı token özetinden bulur, sonrası `SystemScope` içinde okunur.
 
+`EfCompanyDal`'ın dört davet sorgusu da filtreyi atlar; davet zinciri doğası gereği şirketler arasıdır. Kod araması (`GetByDavetKoduAsync`, `DavetKoduVarMiAsync`) kayıt sırasında çalışır ve henüz tenant bağlamı yoktur; `GetDavetlilerAsync` ve `DavetSayisiAsync` yalnız `DavetEdenCompanyId == çağıran şirket` satırlarını okur ve dışarı yalnız ad + katılma tarihi verir. Beşincisi eklenmez.
+
 ### Migration yalnız eklemelidir
 
 Canlı veritabanı doludur. `Up()` içinde yalnız `AddColumn`, `CreateTable`, `CreateIndex` bulunur; `DropColumn`, `DropTable`, `AlterColumn` ve `RenameColumn` kullanılmaz. Kolon daraltma ya da tip değiştirme gerekiyorsa yeni kolon açılır, veri taşınır, eski kolon bir sonraki sürümde ele alınır. Migration ekledikten sonra `Up()` içeriğini doğrula.
@@ -38,7 +40,7 @@ Canlı veritabanı doludur. `Up()` içinde yalnız `AddColumn`, `CreateTable`, `
 Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar edilmez ve `appsettings` üzerinden ezilebilir:
 
 - `Business/Concrete/Evraklar/EvrakKurallari.cs` — muayene/egzoz aralıkları, kış lastiği penceresi, uyarı günleri (`Evrak:*`)
-- `Business/Concrete/Planlar/PlanKurallari.cs` — plan araç limitleri, davet ödül günü (`Plan:*`)
+- `Business/Concrete/Planlar/PlanKurallari.cs` — plan araç limitleri, davetle kazanılan ek araç hakkı (`Plan:*`)
 
 Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
 

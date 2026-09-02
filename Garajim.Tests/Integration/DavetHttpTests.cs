@@ -67,11 +67,13 @@ namespace Garajim.Tests.Integration
             Assert.Equal(kod, ikinci.GetProperty("kod").GetString());
             Assert.Contains(kod, birinci.GetProperty("paylasimBaglantisi").GetString());
             Assert.Equal(0, birinci.GetProperty("davetSayisi").GetInt32());
-            Assert.Equal(0, birinci.GetProperty("odulGun").GetInt32());
+            Assert.Equal(0, birinci.GetProperty("kazanilanAracHakki").GetInt32());
+            Assert.Equal(3, birinci.GetProperty("ekAracUstSiniri").GetInt32());
+            Assert.Equal(3, birinci.GetProperty("aracLimiti").GetInt32());
         }
 
         [Fact]
-        public async Task DavetliKayitOlduktaIkiTarafDaOdulKazanir()
+        public async Task DavetEdenAracHakkiKazanirDavetliKazanmaz()
         {
             var davetEden = await SahipOlusturAsync("Davet Eden A.Ş.");
             var kod = (await DurumAsync(davetEden)).GetProperty("kod").GetString();
@@ -80,16 +82,18 @@ namespace Garajim.Tests.Integration
 
             var edenDurum = await DurumAsync(davetEden);
             Assert.Equal(1, edenDurum.GetProperty("davetSayisi").GetInt32());
-            Assert.Equal(30, edenDurum.GetProperty("odulGun").GetInt32());
+            Assert.Equal(1, edenDurum.GetProperty("kazanilanAracHakki").GetInt32());
+            Assert.Equal(4, edenDurum.GetProperty("aracLimiti").GetInt32());
             Assert.Equal("Davetli Ltd.", edenDurum.GetProperty("davetliler")[0].GetProperty("sirketAdi").GetString());
 
             var davetliDurum = await DurumAsync(davetli);
-            Assert.Equal(30, davetliDurum.GetProperty("odulGun").GetInt32());
+            Assert.Equal(0, davetliDurum.GetProperty("kazanilanAracHakki").GetInt32());
+            Assert.Equal(3, davetliDurum.GetProperty("aracLimiti").GetInt32());
             Assert.Equal("Davet Eden A.Ş.", davetliDurum.GetProperty("davetEden").GetString());
         }
 
         [Fact]
-        public async Task IkiDavetOdulleriToplar()
+        public async Task IkiDavetIkiAracHakkiVerir()
         {
             var davetEden = await SahipOlusturAsync();
             var kod = (await DurumAsync(davetEden)).GetProperty("kod").GetString();
@@ -100,7 +104,8 @@ namespace Garajim.Tests.Integration
             var durum = await DurumAsync(davetEden);
 
             Assert.Equal(2, durum.GetProperty("davetSayisi").GetInt32());
-            Assert.Equal(60, durum.GetProperty("odulGun").GetInt32());
+            Assert.Equal(2, durum.GetProperty("kazanilanAracHakki").GetInt32());
+            Assert.Equal(5, durum.GetProperty("aracLimiti").GetInt32());
         }
 
         [Fact]
@@ -137,7 +142,7 @@ namespace Garajim.Tests.Integration
             var durum = await DurumAsync(sahip);
 
             Assert.Equal(JsonValueKind.Null, durum.GetProperty("davetEden").ValueKind);
-            Assert.Equal(0, durum.GetProperty("odulGun").GetInt32());
+            Assert.Equal(0, durum.GetProperty("kazanilanAracHakki").GetInt32());
         }
 
         [Fact]

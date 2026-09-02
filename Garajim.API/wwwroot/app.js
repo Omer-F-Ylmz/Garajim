@@ -1422,7 +1422,8 @@
         return api("/api/Davet").then(function (result) {
             var durum = (result && result.data) || {};
             el("davet-kod").textContent = durum.paylasimBaglantisi || durum.kod || "";
-            el("davet-ozet").textContent = durum.davetSayisi + " davet · " + durum.odulGun + " bonus gün"
+            el("davet-ozet").textContent = durum.davetSayisi + " davet · " + durum.kazanilanAracHakki + "/" + durum.ekAracUstSiniri
+                + " kazanılan araç hakkı · toplam limit " + durum.aracLimiti + " araç"
                 + (durum.davetEden ? " · sizi " + durum.davetEden + " davet etti" : "");
 
             var tbody = el("davet-rows");

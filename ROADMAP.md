@@ -125,7 +125,7 @@ Plan değerleri `Garajim.Business/Concrete/Planlar/PlanKurallari.cs` içinde tek
 |---|---|---|
 | `Plan:BireyselAracLimiti` | `3` | Bireysel pakette araç üst sınırı |
 | `Plan:FiloAracLimiti` | `25` | Filo paketinde araç üst sınırı |
-| `Plan:DavetOdulGun` | `30` | Davet başına iki tarafa da eklenen bonus gün |
+| `Plan:DavetMaxEkArac` | `3` | Davetle kazanılabilecek en fazla ek araç (yalnız Bireysel) |
 
 `Company.AracLimiti` doluysa plan varsayılanını ezer (şirkete özel anlaşma).
 
@@ -137,7 +137,7 @@ Elektrikli/hibrit araçlar, lastik takibi ve davet programı.
 |---|---|
 | EV/hibrit: `FuelRecord.Kwh` + `SarjTuru`, yakıt türüne göre doğrulama, kWh/100km tüketimi | `04bf6d0` |
 | Lastik setleri: takma/sökme geçmişi, otomatik sökme, kış lastiği ve diş derinliği uyarısı | `4573457` |
-| Davet programı: şirkete özel kod, çift taraflı ödül, davetli listesi | `830588a` |
+| Davet programı: şirkete özel kod, davetli listesi | `830588a` |
 
 ## Sonraki (planlanmamış)
 

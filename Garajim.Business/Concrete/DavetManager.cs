@@ -55,7 +55,9 @@ namespace Garajim.Business.Concrete
                 Kod = company.DavetKodu,
                 PaylasimBaglantisi = Taban() + "/?davet=" + company.DavetKodu,
                 DavetSayisi = davetliler.Count,
-                OdulGun = company.OdulGun,
+                KazanilanAracHakki = _planKurallari.KazanilanAracHakki(company.PlanType, davetliler.Count),
+                EkAracUstSiniri = _planKurallari.DavetMaxEkArac(),
+                AracLimiti = _planKurallari.AracLimiti(company.PlanType, company.AracLimiti, davetliler.Count),
                 DavetEden = davetEden?.Name,
                 Davetliler = davetliler.Select(d => new DavetSatiriDto { SirketAdi = d.Name, KatilmaTarihi = d.CreatedAt }).ToList()
             };

@@ -264,7 +264,7 @@ namespace Garajim.Business.Concrete
             {
                 Plan = sirket.PlanType.ToString(),
                 AracSayisi = araclar.Count,
-                AracLimiti = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti)
+                AracLimiti = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, await _companyDal.DavetSayisiAsync(sirket.Id))
             };
 
             if (idler.Count == 0)

@@ -56,7 +56,8 @@ namespace Garajim.Business.Concrete
             var sirket = await _companyDal.GetAsync(c => c.Id == owner.CompanyId);
             if (sirket == null)
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
-            var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti);
+            var davetSayisi = await _companyDal.DavetSayisiAsync(sirket.Id);
+            var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
             if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId) >= limit)
                 return new ErrorDataResult<VehicleDto>(Messages.AracLimitiAsildi);
             var vehicle = new Vehicle

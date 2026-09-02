@@ -23,7 +23,7 @@ namespace Garajim.Tests.Integration
                 })
                 .Build();
 
-            return new AuthManager(_db.UserDal, _db.CompanyDal, configuration, _db.PlanKurallari);
+            return new AuthManager(_db.UserDal, _db.CompanyDal, configuration);
         }
 
         [Fact]

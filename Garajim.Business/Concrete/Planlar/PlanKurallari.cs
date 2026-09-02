@@ -7,7 +7,7 @@ namespace Garajim.Business.Concrete.Planlar
     {
         public const int VarsayilanBireyselLimit = 3;
         public const int VarsayilanFiloLimit = 25;
-        public const int VarsayilanDavetOdulGun = 30;
+        public const int VarsayilanDavetMaxEkArac = 3;
 
         private readonly IConfiguration _configuration;
 
@@ -16,7 +16,32 @@ namespace Garajim.Business.Concrete.Planlar
             _configuration = configuration;
         }
 
-        public int AracLimiti(PlanType plan, int? sirketLimiti)
+        public int AracLimiti(PlanType plan, int? sirketLimiti, int davetSayisi)
+        {
+            return TabanLimit(plan, sirketLimiti) + KazanilanAracHakki(plan, davetSayisi);
+        }
+
+        public int KazanilanAracHakki(PlanType plan, int davetSayisi)
+        {
+            if (plan != PlanType.Bireysel || davetSayisi <= 0)
+            {
+                return 0;
+            }
+
+            return Math.Min(davetSayisi, DavetMaxEkArac());
+        }
+
+        public int DavetMaxEkArac()
+        {
+            if (int.TryParse(_configuration["Plan:DavetMaxEkArac"], out var adet) && adet >= 0)
+            {
+                return adet;
+            }
+
+            return VarsayilanDavetMaxEkArac;
+        }
+
+        private int TabanLimit(PlanType plan, int? sirketLimiti)
         {
             if (sirketLimiti != null && sirketLimiti.Value > 0)
             {
@@ -32,16 +57,6 @@ namespace Garajim.Business.Concrete.Planlar
             }
 
             return varsayilan;
-        }
-
-        public int DavetOdulGun()
-        {
-            if (int.TryParse(_configuration["Plan:DavetOdulGun"], out var gun) && gun > 0)
-            {
-                return gun;
-            }
-
-            return VarsayilanDavetOdulGun;
         }
     }
 }
