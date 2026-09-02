@@ -9,7 +9,9 @@ Yayın öncesi durum: 554 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `
 1. MonsterASP panelinden veritabanı yedeğini al.
 2. Yedeği **bilgisayarına indir** ve dosya boyutunun sıfırdan büyük olduğunu gör. Panelde "yedek alındı" yazması yeterli değil; indirilmemiş yedek yedek sayılmaz.
 
-Neden şart: `Down` migration'ları veri kaybettirir. `AddCompanyTenancy` geri alınırsa `CompanyId` kolonları, `AddCompanyRoles` geri alınırsa rol ve aktiflik bilgisi silinir. Geri dönüşün tek güvenli yolu yedekten dönmektir.
+Neden şart: `Down` migration'ları veri kaybettirir. `AddCompanyTenancy` geri alınırsa `CompanyId` kolonları, `AddCompanyRoles` geri alınırsa rol ve aktiflik bilgisi silinir. Sprint 3-6 ve AI Usta migration'larının `Down` gövdeleri de tablo ve kolon düşürür (evrak, takvim aboneliği, içe aktarma kayıtları, yolculuk defteri, lastik setleri, davet kodları, AI Usta sohbet ve mesajları). **Geri alma yok, yedekten dönülür.** Geri dönüşün tek güvenli yolu yedekten dönmektir.
+
+Migration provası (2 Eylül 2026, LocalDB): sıfır veritabanından 24 migration **4,7 sn**; Sprint 2 şemasından (`KarnePaylasimi`) sonraki 12 migration **3,4 sn**. `ApplyMigrationsAtStartup` açıksa açılış bu kadar gecikir; yayın penceresinde sorun değil, yine de tercihen kapalı tutulup migration ayrı çalıştırılır.
 
 Ayrıca: **belgeler veritabanı yedeğinde yoktur.** Sunucuda daha önce yüklenmiş belge varsa, `App_Data/documents` klasörünü de ayrıca indir.
 
