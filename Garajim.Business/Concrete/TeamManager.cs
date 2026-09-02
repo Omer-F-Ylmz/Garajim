@@ -129,6 +129,7 @@ namespace Garajim.Business.Concrete
                 CompanyId = current.CompanyId,
                 Role = dto.Role,
                 IsActive = true,
+                EmailDogrulandi = true,
                 Email = email,
                 FullName = dto.FullName.Trim(),
                 PasswordHash = passwordHash,

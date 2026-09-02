@@ -242,6 +242,11 @@ namespace Garajim.Dal.Concrete.Context
                 entity.ToTable(t => t.HasCheckConstraint("CK_HasarFoto_Sira", "[Sira] > 0"));
             });
 
+            modelBuilder.Entity<AppUser>(entity =>
+            {
+                entity.Property(u => u.DogrulamaKodHash).HasMaxLength(64);
+            });
+
             modelBuilder.Entity<AracDeger>(entity =>
             {
                 entity.Property(d => d.Deger).HasPrecision(18, 2);

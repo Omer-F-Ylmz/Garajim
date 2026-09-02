@@ -343,6 +343,7 @@ namespace Garajim.Business.Seed
                 CompanyId = companyId,
                 Role = role,
                 IsActive = true,
+                EmailDogrulandi = true,
                 Email = email,
                 FullName = fullName,
                 PasswordHash = passwordHash,

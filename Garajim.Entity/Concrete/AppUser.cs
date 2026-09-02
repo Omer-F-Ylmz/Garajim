@@ -13,6 +13,11 @@ namespace Garajim.Entity.Concrete
         public byte[] PasswordSalt { get; set; }
         public CompanyRole Role { get; set; }
         public bool IsActive { get; set; }
+        public bool EmailDogrulandi { get; set; }
+        public string DogrulamaKodHash { get; set; }
+        public DateTime? DogrulamaKodSonTarih { get; set; }
+        public int DogrulamaDenemeSayisi { get; set; }
+        public DateTime? SonKodGonderim { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
