@@ -265,7 +265,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET /api/vehicles/{id}/parca-hafizasi`, `POST /api/vehicles/{id}/parca-hafizasi/{parcaTuru}/hatirlatma`
 - `POST|DELETE /api/vehicles/{id}/karne`, `GET /api/vehicles/karne-stats`, `GET /api/karne/{token}`, `GET /api/karne/{token}/belge/{documentId}`
 - `GET|POST /api/documents`, `GET /api/documents/{id}/download`, `DELETE /api/documents/{id}`
-- `GET|POST /api/team`, `PUT /api/team/{id}/role`, `PUT /api/team/{id}/deactivate`
+- `GET /api/team` (Owner / Manager), `POST /api/team`, `PUT /api/team/{id}/role`, `PUT /api/team/{id}/deactivate` (yalnız Owner)
 - `GET|POST /api/assignments`, `PUT /api/assignments/transfer`, `PUT /api/assignments/end`
 - `GET|POST /api/evrak`, `PUT|DELETE /api/evrak/{id}`, `POST /api/evrak/{id}/yenile`, `GET /api/vehicles/{id}/evrak`
 - `POST|DELETE /api/takvim/abonelik`, `GET /api/takvim/{token}.ics`
@@ -273,7 +273,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `POST /api/import/onizle`, `POST /api/import/uygula`
 - `GET /api/export/{yakit|bakim|masraf|evrak}.csv?vehicleId=&baslangic=&bitis=`
 - `GET /api/vehicles/{id}/maliyet?baslangic=&bitis=`, `GET /api/reports/filo-maliyet?baslangic=&bitis=`, `GET /api/reports/dashboard`
-- `GET /api/team/belgeler`
+- `GET /api/team/belgeler` (Owner / Manager)
 - `GET|POST /api/yolculuk`, `GET /api/yolculuk/ozet`, `PUT|DELETE /api/yolculuk/{id}`
 - `GET|POST /api/lastik`, `PUT /api/lastik/{id}/sok`, `DELETE /api/lastik/{id}`
 - `GET /api/davet`

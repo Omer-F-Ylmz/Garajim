@@ -303,7 +303,8 @@
 
     function applyRole() {
         el("add-vehicle-btn").classList.toggle("hidden", !canManage());
-        el("team-btn").classList.toggle("hidden", !isOwner());
+        el("team-btn").classList.toggle("hidden", !canManage());
+        el("team-form").classList.toggle("hidden", !isOwner());
         el("karne-btn").classList.toggle("hidden", !canManage());
 
         var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
@@ -313,7 +314,7 @@
                 selectTab("bakim");
             }
         }
-        if (!isOwner()) {
+        if (!canManage()) {
             el("team-box").classList.add("hidden");
         }
         if (!canManage()) {
@@ -580,7 +581,7 @@
                 tr.appendChild(make("td", item.email));
 
                 var roleCell = document.createElement("td");
-                if (state.user && item.email === state.user.email) {
+                if (!isOwner() || (state.user && item.email === state.user.email)) {
                     roleCell.textContent = labelOf(TEAM_ROLES, item.role);
                 } else {
                     var select = document.createElement("select");
@@ -594,7 +595,7 @@
 
                 var actionCell = document.createElement("td");
                 var kendisi = state.user && item.email === state.user.email;
-                if (item.isActive && !kendisi) {
+                if (isOwner() && item.isActive && !kendisi) {
                     var button = make("button", "Pasifleştir", "link-btn");
                     button.type = "button";
                     button.addEventListener("click", function () { deactivateMember(item.id); });

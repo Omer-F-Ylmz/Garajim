@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Garajim.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = CompanyRoles.Owner)]
     public class TeamController : SecureControllerBase
     {
         private readonly ITeamService _teamService;
@@ -27,7 +26,18 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("belgeler")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> GetBelgeler()
+        {
+            var result = await _teamService.GetBelgelerAsync(CurrentUserId);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
         [HttpPost]
+        [Authorize(Roles = CompanyRoles.Owner)]
         public async Task<IActionResult> Add(TeamMemberCreateDto dto)
         {
             var result = await _teamService.AddAsync(CurrentUserId, dto);
@@ -37,6 +47,7 @@ namespace Garajim.API.Controllers
         }
 
         [HttpPut("{id}/role")]
+        [Authorize(Roles = CompanyRoles.Owner)]
         public async Task<IActionResult> ChangeRole(int id, TeamMemberRoleDto dto)
         {
             var result = await _teamService.ChangeRoleAsync(CurrentUserId, id, dto);
@@ -46,32 +57,12 @@ namespace Garajim.API.Controllers
         }
 
         [HttpPut("{id}/deactivate")]
+        [Authorize(Roles = CompanyRoles.Owner)]
         public async Task<IActionResult> Deactivate(int id)
         {
             var result = await _teamService.DeactivateAsync(CurrentUserId, id);
             if (!result.Success)
                 return result.Message == Messages.UserNotFound ? NotFound(result) : BadRequest(result);
-            return Ok(result);
-        }
-    }
-
-    [Route("api/Team")]
-    [Authorize(Roles = CompanyRoles.OwnerOrManager)]
-    public class TeamDocumentsController : SecureControllerBase
-    {
-        private readonly ITeamService _teamService;
-
-        public TeamDocumentsController(ITeamService teamService)
-        {
-            _teamService = teamService;
-        }
-
-        [HttpGet("belgeler")]
-        public async Task<IActionResult> GetBelgeler()
-        {
-            var result = await _teamService.GetBelgelerAsync(CurrentUserId);
-            if (!result.Success)
-                return NotFound(result);
             return Ok(result);
         }
     }
