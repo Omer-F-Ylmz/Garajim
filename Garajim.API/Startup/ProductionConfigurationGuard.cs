@@ -58,6 +58,19 @@ namespace Garajim.API.Startup
                 hatalar.Add("Usta:SahteYanit üretimde açık olamaz. Bu bayrak açıkken AI Usta gerçek modeli çağırmaz ve kullanıcıya sabit sahte yanıt döner; Usta__SahteYanit ortam değişkenini kaldırın ya da false yapın.");
             }
 
+            foreach (var anahtar in new[] { "Smtp:Host", "Smtp:User", "Smtp:From" })
+            {
+                if (Eksik(configuration[anahtar]))
+                {
+                    hatalar.Add(anahtar + " tanımlı değil. E-posta doğrulama kodu gönderilemezse hiç kimse kayıt olamaz; sunucuda " + anahtar.Replace(":", "__") + " ortam değişkenini tanımlayın.");
+                }
+            }
+
+            if (Eksik(configuration["Smtp:Pass"]) && Eksik(configuration["Smtp:Password"]))
+            {
+                hatalar.Add("Smtp:Pass tanımlı değil. E-posta doğrulama kodu gönderilemezse hiç kimse kayıt olamaz; sunucuda Smtp__Pass ortam değişkenini tanımlayın.");
+            }
+
             return hatalar;
         }
 

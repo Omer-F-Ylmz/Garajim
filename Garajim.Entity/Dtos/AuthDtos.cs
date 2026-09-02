@@ -15,6 +15,23 @@ namespace Garajim.Entity.Dtos
         public string Password { get; set; }
     }
 
+    public class DogrulaDto
+    {
+        public string Email { get; set; }
+        public string Kod { get; set; }
+    }
+
+    public class KodGonderDto
+    {
+        public string Email { get; set; }
+    }
+
+    public class KayitSonucuDto
+    {
+        public bool DogrulamaGerekli { get; set; }
+        public string Email { get; set; }
+    }
+
     public class TokenDto
     {
         public string Token { get; set; }

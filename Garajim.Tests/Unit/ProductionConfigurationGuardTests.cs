@@ -17,13 +17,21 @@ namespace Garajim.Tests.Unit
             public Microsoft.Extensions.FileProviders.IFileProvider ContentRootFileProvider { get; set; }
         }
 
-        private static IConfiguration Yapilandirma(string baglanti, string anahtar, string sahteYanit = null)
+        private static IConfiguration Yapilandirma(string baglanti, string anahtar, string sahteYanit = null, bool smtp = true)
         {
             var degerler = new Dictionary<string, string>
             {
                 ["ConnectionStrings:Default"] = baglanti,
                 ["Jwt:Key"] = anahtar
             };
+
+            if (smtp)
+            {
+                degerler["Smtp:Host"] = "smtp-relay.brevo.com";
+                degerler["Smtp:User"] = "garajim";
+                degerler["Smtp:Pass"] = "brevo-anahtari";
+                degerler["Smtp:From"] = "bilgi.app";
+            }
 
             if (sahteYanit != null)
             {
@@ -137,6 +145,53 @@ namespace Garajim.Tests.Unit
             Assert.Contains("en az 32 bayt", hata.Message);
         }
 
+        [Theory]
+        [InlineData("Smtp:Host")]
+        [InlineData("Smtp:User")]
+        [InlineData("Smtp:From")]
+        public void UretimdeEksikSmtpAyariReddedilir(string eksikAnahtar)
+        {
+            var yapilandirma = Yapilandirma(GecerliBaglanti, GecerliAnahtar);
+            yapilandirma[eksikAnahtar] = null;
+
+            var hatalar = ProductionConfigurationGuard.Topla(yapilandirma);
+
+            Assert.Contains(hatalar, h => h.Contains(eksikAnahtar, StringComparison.Ordinal));
+        }
+
+        [Fact]
+        public void UretimdeSmtpParolasiYoksaReddedilir()
+        {
+            var yapilandirma = Yapilandirma(GecerliBaglanti, GecerliAnahtar);
+            yapilandirma["Smtp:Pass"] = null;
+            yapilandirma["Smtp:Password"] = null;
+
+            var hatalar = ProductionConfigurationGuard.Topla(yapilandirma);
+
+            Assert.Contains(hatalar, h => h.Contains("Smtp:Pass", StringComparison.Ordinal));
+        }
+
+        [Fact]
+        public void SmtpTamamenEksikseUretimBaslamaz()
+        {
+            var ortam = new SahteOrtam();
+            var yapilandirma = Yapilandirma(GecerliBaglanti, GecerliAnahtar, smtp: false);
+
+            var hata = Assert.Throws<InvalidOperationException>(
+                () => ProductionConfigurationGuard.Validate(yapilandirma, ortam));
+
+            Assert.Contains("Smtp__Host", hata.Message);
+        }
+
+        [Fact]
+        public void SmtpEksikligiGelistirmeOrtaminiDurdurmaz()
+        {
+            var ortam = new SahteOrtam { EnvironmentName = Environments.Development };
+            var yapilandirma = Yapilandirma(null, null, smtp: false);
+
+            ProductionConfigurationGuard.Validate(yapilandirma, ortam);
+        }
+
         [Fact]
         public void TumHatalarTekMesajdaToplanir()
         {
@@ -169,7 +224,13 @@ namespace Garajim.Tests.Unit
 
             var hatalar = ProductionConfigurationGuard.Topla(yapilandirma);
 
-            Assert.Equal(2, hatalar.Count);
+            Assert.Equal(6, hatalar.Count);
+            Assert.Contains(hatalar, h => h.Contains("ConnectionStrings:Default", StringComparison.Ordinal));
+            Assert.Contains(hatalar, h => h.Contains("Jwt:Key", StringComparison.Ordinal));
+            foreach (var anahtar in new[] { "Smtp:Host", "Smtp:User", "Smtp:From", "Smtp:Pass" })
+            {
+                Assert.Contains(hatalar, h => h.Contains(anahtar, StringComparison.Ordinal));
+            }
         }
 
         private static string ApiKlasoru()

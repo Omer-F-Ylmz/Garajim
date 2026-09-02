@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -19,7 +20,16 @@ namespace Garajim.Tests.Integration
         {
             var client = _factory.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", govde);
-            return JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
+
+            Assert.Equal(HttpStatusCode.Created, cevap.StatusCode);
+
+            var kayit = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
+            var eposta = kayit.GetProperty("email").GetString();
+
+            var dogrula = await client.PostAsJsonAsync("/api/Auth/dogrula",
+                new { email = eposta, kod = SahteEpostaGonderici.Ortak.SonKod(eposta) });
+
+            return JsonDocument.Parse(await dogrula.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
         }
 
         [Fact]
@@ -74,7 +84,7 @@ namespace Garajim.Tests.Integration
                 password = "Test1234!",
                 companyName = "Zimmet AŞ"
             });
-            var sahipToken = JsonDocument.Parse(await kayit.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var sahipToken = await TestKayit.TokenAl(sahipClient, kayit);
             sahipClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sahipToken);
 
             var eposta = Eposta("surucu");

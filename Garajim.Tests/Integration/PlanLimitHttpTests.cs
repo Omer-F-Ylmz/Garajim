@@ -20,7 +20,7 @@ namespace Garajim.Tests.Integration
         {
             var client = _factory.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("plan"), fullName = "Plan Sahip", password = "Test1234!", davetKodu });
-            var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, cevap);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
         }

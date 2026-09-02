@@ -96,7 +96,7 @@ namespace Garajim.Tests.Integration
         {
             var client = _factory.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("owner"), fullName = "Fiş Sahibi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, cevap);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
         }
@@ -264,7 +264,7 @@ namespace Garajim.Tests.Integration
 
             var client = limitliFactory.CreateClient();
             var kayit = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("limit"), fullName = "Limit Testi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await kayit.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, kayit);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             Assert.Equal(HttpStatusCode.OK, (await YukleClientAsync(client)).StatusCode);

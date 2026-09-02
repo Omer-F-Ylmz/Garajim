@@ -65,7 +65,7 @@ namespace Garajim.Tests.Integration
             var f = factory ?? _factory;
             var client = f.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("hasar"), fullName = "Hasar Sahibi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, cevap);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
         }
@@ -328,7 +328,7 @@ namespace Garajim.Tests.Integration
 
             var client = darFactory.CreateClient();
             var kayit = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("hasarkota"), fullName = "Kota Sahibi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await kayit.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, kayit);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var aracId = await AracEkleAsync(client);

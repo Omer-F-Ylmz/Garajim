@@ -28,7 +28,9 @@ namespace Garajim.Business.Concrete
             if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(user) ||
                 string.IsNullOrWhiteSpace(pass) || string.IsNullOrWhiteSpace(from))
             {
-                _logger.LogInformation("E-posta yapılandırılmadı, gönderim atlandı. Alıcı: {Alici}", to);
+                _logger.LogWarning(
+                    "E-posta yapılandırılmadı, gönderim atlandı. Alıcı: {Alici} · Konu: {Konu}{Satir}{Govde}",
+                    to, subject, Environment.NewLine, body);
                 return;
             }
 

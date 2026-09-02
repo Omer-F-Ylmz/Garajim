@@ -28,8 +28,8 @@ namespace Garajim.Tests.Integration
                 davetKodu
             });
 
-            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
-            var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            Assert.Equal(HttpStatusCode.Created, cevap.StatusCode);
+            var token = await TestKayit.TokenAl(client, cevap);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
         }

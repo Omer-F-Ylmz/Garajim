@@ -26,7 +26,7 @@ namespace Garajim.Tests.Integration
             var client = _factory.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("dn"), fullName = "Denetim Sahip", password = "Test1234!" });
             var veri = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", veri.GetProperty("token").GetString());
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await TestKayit.TokenAl(client, cevap));
             await client.PostAsJsonAsync("/api/Usta/onay", new { metinSurumu = Surum });
             return (client, 0);
         }
@@ -39,7 +39,7 @@ namespace Garajim.Tests.Integration
 
             var client = _factory.CreateClient();
             var giris = await client.PostAsJsonAsync("/api/Auth/login", new { email = eposta, password = veri.GetProperty("temporaryPassword").GetString() });
-            var token = JsonDocument.Parse(await giris.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, giris);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             await client.PostAsJsonAsync("/api/Usta/onay", new { metinSurumu = Surum });
             return (client, veri.GetProperty("userId").GetInt32());

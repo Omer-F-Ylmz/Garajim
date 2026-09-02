@@ -1,4 +1,5 @@
 using Garajim.Business.Abstract;
+using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -11,6 +12,7 @@ namespace Garajim.API.Controllers
     public class AuthController : ControllerBase
     {
         public const string RateLimitPolicy = "auth";
+        public const string EmailDogrulanmadiKodu = "EMAIL_DOGRULANMADI";
 
         private readonly IAuthService _authService;
 
@@ -25,7 +27,22 @@ namespace Garajim.API.Controllers
             var result = await _authService.RegisterAsync(dto);
             if (!result.Success)
                 return BadRequest(result);
+            return StatusCode(StatusCodes.Status201Created, result);
+        }
+
+        [HttpPost("dogrula")]
+        public async Task<IActionResult> Dogrula(DogrulaDto dto)
+        {
+            var result = await _authService.DogrulaAsync(dto);
+            if (!result.Success)
+                return BadRequest(result);
             return Ok(result);
+        }
+
+        [HttpPost("kod-gonder")]
+        public async Task<IActionResult> KodGonder(KodGonderDto dto)
+        {
+            return Ok(await _authService.KodGonderAsync(dto));
         }
 
         [HttpPost("login")]
@@ -33,7 +50,13 @@ namespace Garajim.API.Controllers
         {
             var result = await _authService.LoginAsync(dto);
             if (!result.Success)
+            {
+                if (result.Message == Messages.EmailDogrulanmadi)
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                        new { success = false, message = result.Message, kod = EmailDogrulanmadiKodu });
+
                 return Unauthorized(result);
+            }
             return Ok(result);
         }
     }

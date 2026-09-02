@@ -5,6 +5,7 @@ using Garajim.Core.Utilities.Security;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
+using Garajim.Tests.Integration;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
@@ -27,7 +28,7 @@ namespace Garajim.Tests.Unit
                 })
                 .Build();
 
-            return new AuthManager(_userDal.Object, _companyDal.Object, configuration);
+            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci());
         }
 
         [Theory]
@@ -54,6 +55,7 @@ namespace Garajim.Tests.Unit
         {
             _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(false);
             _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
 
             var result = await CreateManager().RegisterAsync(new RegisterDto
             {
@@ -63,8 +65,9 @@ namespace Garajim.Tests.Unit
             });
 
             Assert.True(result.Success);
-            Assert.Equal(Messages.RegisterSuccess, result.Message);
-            Assert.False(string.IsNullOrWhiteSpace(result.Data.Token));
+            Assert.Equal(Messages.DogrulamaKoduGonderildi, result.Message);
+            Assert.True(result.Data.DogrulamaGerekli);
+            Assert.Equal("kullanici@garajim.local", result.Data.Email);
         }
 
         [Theory]
@@ -81,6 +84,7 @@ namespace Garajim.Tests.Unit
             _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>()))
                 .Callback<AppUser>(user => eklenen = user)
                 .Returns(Task.CompletedTask);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
 
             var result = await CreateManager().RegisterAsync(new RegisterDto
             {
@@ -122,6 +126,7 @@ namespace Garajim.Tests.Unit
             {
                 Id = 5,
                 IsActive = true,
+                EmailDogrulandi = true,
                 Email = "kullanici@garajim.local",
                 FullName = "Test Kullanıcı",
                 PasswordHash = hash,

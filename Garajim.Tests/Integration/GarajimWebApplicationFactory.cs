@@ -1,3 +1,4 @@
+using Garajim.Business.Abstract;
 using Garajim.Dal.Concrete.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -36,6 +37,13 @@ namespace Garajim.Tests.Integration
 
             builder.ConfigureServices(services =>
             {
+                foreach (var epostaKaydi in services.Where(d => d.ServiceType == typeof(IEmailSender)).ToList())
+                {
+                    services.Remove(epostaKaydi);
+                }
+
+                services.AddSingleton<IEmailSender>(SahteEpostaGonderici.Ortak);
+
                 var existing = services
                     .Where(descriptor => descriptor.ServiceType == typeof(DbContextOptions<GarajimDbContext>)
                                          || descriptor.ServiceType == typeof(GarajimDbContext))

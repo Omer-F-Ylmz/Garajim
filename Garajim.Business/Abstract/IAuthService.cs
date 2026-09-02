@@ -5,7 +5,9 @@ namespace Garajim.Business.Abstract
 {
     public interface IAuthService
     {
-        Task<IDataResult<TokenDto>> RegisterAsync(RegisterDto dto);
+        Task<IDataResult<KayitSonucuDto>> RegisterAsync(RegisterDto dto);
         Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto);
+        Task<IDataResult<TokenDto>> DogrulaAsync(DogrulaDto dto);
+        Task<IResult> KodGonderAsync(KodGonderDto dto);
     }
 }

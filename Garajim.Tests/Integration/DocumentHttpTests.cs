@@ -56,7 +56,7 @@ namespace Garajim.Tests.Integration
             var f = factory ?? _factory;
             var client = f.CreateClient();
             var cevap = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("owner"), fullName = "Filo Sahibi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, cevap);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return client;
         }
@@ -214,7 +214,7 @@ namespace Garajim.Tests.Integration
             using var darFactory = new BelgeFactory(klasor, 3 * 1024);
             var client = darFactory.CreateClient();
             var kayit = await client.PostAsJsonAsync("/api/Auth/register", new { email = Eposta("kota"), fullName = "Kota Sahibi", password = "Test1234!" });
-            var token = JsonDocument.Parse(await kayit.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("token").GetString();
+            var token = await TestKayit.TokenAl(client, kayit);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var aracId = await AracEkleAsync(client, "34KOT777");
 
