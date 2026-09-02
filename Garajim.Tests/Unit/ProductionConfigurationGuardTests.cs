@@ -17,16 +17,68 @@ namespace Garajim.Tests.Unit
             public Microsoft.Extensions.FileProviders.IFileProvider ContentRootFileProvider { get; set; }
         }
 
-        private static IConfiguration Yapilandirma(string baglanti, string anahtar)
+        private static IConfiguration Yapilandirma(string baglanti, string anahtar, string sahteYanit = null)
         {
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    ["ConnectionStrings:Default"] = baglanti,
-                    ["Jwt:Key"] = anahtar
-                })
-                .Build();
+            var degerler = new Dictionary<string, string>
+            {
+                ["ConnectionStrings:Default"] = baglanti,
+                ["Jwt:Key"] = anahtar
+            };
+
+            if (sahteYanit != null)
+            {
+                degerler["Usta:SahteYanit"] = sahteYanit;
+            }
+
+            return new ConfigurationBuilder().AddInMemoryCollection(degerler).Build();
         }
+
+        [Theory]
+        [InlineData("true")]
+        [InlineData("True")]
+        [InlineData("TRUE")]
+        public void UretimdeSahteUstaYanitiReddedilir(string deger)
+        {
+            var hata = Assert.Throws<InvalidOperationException>(() =>
+                ProductionConfigurationGuard.Validate(Yapilandirma(GecerliBaglanti, GecerliAnahtar, deger), new SahteOrtam()));
+
+            Assert.Contains("Usta:SahteYanit", hata.Message);
+            Assert.Contains("sahte", hata.Message, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("false")]
+        [InlineData("False")]
+        [InlineData("")]
+        public void SahteUstaYanitiKapaliysaUretimGecer(string deger)
+        {
+            var hata = Record.Exception(() =>
+                ProductionConfigurationGuard.Validate(Yapilandirma(GecerliBaglanti, GecerliAnahtar, deger), new SahteOrtam()));
+
+            Assert.Null(hata);
+        }
+
+        [Fact]
+        public void GelistirmedeSahteUstaYanitiSerbesttir()
+        {
+            var ortam = new SahteOrtam { EnvironmentName = Environments.Development };
+
+            var hata = Record.Exception(() =>
+                ProductionConfigurationGuard.Validate(Yapilandirma(null, null, "true"), ortam));
+
+            Assert.Null(hata);
+        }
+
+        [Fact]
+        public void SahteYanitHatasiDigerHatalarlaBirlikteBildirilir()
+        {
+            var hatalar = ProductionConfigurationGuard.Topla(Yapilandirma(null, null, "true"));
+
+            Assert.Equal(3, hatalar.Count);
+            Assert.Contains(hatalar, h => h.Contains("Usta:SahteYanit"));
+        }
+
 
         [Fact]
         public void GecerliUretimYapilandirmasiGecer()

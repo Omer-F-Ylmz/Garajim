@@ -53,8 +53,14 @@ namespace Garajim.API.Startup
                 hatalar.Add($"Jwt:Key en az {MinimumJwtKeyBytes} bayt olmalıdır; HMAC-SHA256 daha kısa anahtarı reddeder.");
             }
 
+            if (bool.TryParse(configuration["Usta:SahteYanit"], out var sahteYanit) && sahteYanit)
+            {
+                hatalar.Add("Usta:SahteYanit üretimde açık olamaz. Bu bayrak açıkken AI Usta gerçek modeli çağırmaz ve kullanıcıya sabit sahte yanıt döner; Usta__SahteYanit ortam değişkenini kaldırın ya da false yapın.");
+            }
+
             return hatalar;
         }
+
 
         private static bool Eksik(string deger)
         {

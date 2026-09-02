@@ -174,7 +174,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Usta__GunlukLimitFilo` | Opsiyonel | `100` | Filo paketinde günlük soru sınırı |
 | `Usta__TokenFiyat` | Opsiyonel | `0` | Milyon token başına TL; `GET /api/usta/stats` tahmini maliyeti bununla hesaplar |
 | `Usta__GarajimVerisi` | Opsiyonel | `false` | Açıkken en az 30 örnekli anonim çözüm satırları prompta eklenir |
-| `Usta__SahteYanit` | Yalnız geliştirme | `false` | Açıkken model çağrılmaz, sabit örnek yanıt döner |
+| `Usta__SahteYanit` | Yalnız geliştirme | `false` | Açıkken model çağrılmaz, sabit örnek yanıt döner; **Production ortamında açıksa uygulama başlamaz** |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
 

@@ -26,7 +26,7 @@ Yayından **önce** ayarla:
 | `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
 | `App__DestekEposta` | Destek kutusu adresi | Plan yükseltme talepleri buraya düşer; boşsa form 400 döner |
 | `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
-| `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; açık kalırsa kullanıcıya sahte yanıt gider |
+| `Usta__SahteYanit` | **canlÄ±da ayarlanmaz** | YalnÄ±z geliÅtirmede `true`; Ã¼retimde aÃ§Ä±k bÄ±rakÄ±lÄ±rsa uygulama aÃ§ılÄ±Åta aÃ§Ä±k hatayla durur |
 
 Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 15-11..15-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet başına en fazla 3 ek araç) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 
