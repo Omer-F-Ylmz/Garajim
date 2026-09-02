@@ -149,7 +149,10 @@ if (useBackgroundJobs)
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
         .UseSqlServerStorage(connectionString));
-    builder.Services.AddHangfireServer();
+    builder.Services.AddHangfireServer(options =>
+    {
+        options.WorkerCount = builder.Configuration.GetValue("Hangfire:WorkerCount", 1);
+    });
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
