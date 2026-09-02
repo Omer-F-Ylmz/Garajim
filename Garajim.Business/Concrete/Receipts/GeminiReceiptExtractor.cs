@@ -16,27 +16,44 @@ namespace Garajim.Business.Concrete.Receipts
 
         protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType)
         {
-            var govde = JsonSerializer.Serialize(new
+            var tampon = IstekGovdesi.Tampon(imageBytes.Length);
+
+            using (var yazici = new Utf8JsonWriter(tampon))
             {
-                contents = new[]
-                {
-                    new
-                    {
-                        parts = new object[]
-                        {
-                            new { text = ReceiptResponseParser.Prompt },
-                            new { inline_data = new { mime_type = mimeType, data = Convert.ToBase64String(imageBytes) } }
-                        }
-                    }
-                },
-                generationConfig = new { temperature = 0, response_mime_type = "application/json" }
-            });
+                yazici.WriteStartObject();
+
+                yazici.WriteStartArray("contents");
+                yazici.WriteStartObject();
+                yazici.WriteStartArray("parts");
+
+                yazici.WriteStartObject();
+                yazici.WriteString("text", ReceiptResponseParser.Prompt);
+                yazici.WriteEndObject();
+
+                yazici.WriteStartObject();
+                yazici.WriteStartObject("inline_data");
+                yazici.WriteString("mime_type", mimeType);
+                yazici.WriteBase64String("data", imageBytes);
+                yazici.WriteEndObject();
+                yazici.WriteEndObject();
+
+                yazici.WriteEndArray();
+                yazici.WriteEndObject();
+                yazici.WriteEndArray();
+
+                yazici.WriteStartObject("generationConfig");
+                yazici.WriteNumber("temperature", 0);
+                yazici.WriteString("response_mime_type", "application/json");
+                yazici.WriteEndObject();
+
+                yazici.WriteEndObject();
+            }
 
             var istek = new HttpRequestMessage(
                 HttpMethod.Post,
                 $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent")
             {
-                Content = new StringContent(govde, Encoding.UTF8, "application/json")
+                Content = IstekGovdesi.Icerik(tampon)
             };
             istek.Headers.Add("x-goog-api-key", apiKey);
             return istek;

@@ -3,6 +3,7 @@ using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
+using Garajim.API.Startup;
 using Garajim.Entity.Enums;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,10 +70,9 @@ namespace Garajim.API.Controllers
             if (form?.File == null || form.File.Length == 0)
                 return BadRequest(new Core.Utilities.Results.ErrorDataResult<HasarFotoDto>(Messages.InvalidValue));
 
-            using var akis = new MemoryStream();
-            await form.File.CopyToAsync(akis);
+            var icerik = await YuklemeOkuyucu.OkuAsync(form.File, HttpContext.RequestAborted);
 
-            return Sonuc(await _hasarService.FotoEkleAsync(CurrentUserId, id, form.Etiket, form.File.FileName, akis.ToArray()));
+            return Sonuc(await _hasarService.FotoEkleAsync(CurrentUserId, id, form.Etiket, form.File.FileName, icerik));
         }
 
         [HttpDelete("{id}/foto/{fotoId}")]

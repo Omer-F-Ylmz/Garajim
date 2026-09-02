@@ -35,15 +35,12 @@ namespace Garajim.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new Core.Utilities.Results.ErrorDataResult<DocumentDto>(Messages.InvalidValue));
 
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-
             var result = await _documentService.UploadAsync(CurrentUserId, new DocumentUploadDto
             {
                 VehicleId = form.VehicleId,
                 MaintenanceRecordId = form.MaintenanceRecordId,
                 FileName = file.FileName,
-                Content = stream.ToArray()
+                Content = await YuklemeOkuyucu.OkuAsync(file, HttpContext.RequestAborted)
             });
 
             if (!result.Success)

@@ -86,9 +86,7 @@ namespace Garajim.API.Controllers
                 return null;
             }
 
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-            return stream.ToArray();
+            return await YuklemeOkuyucu.OkuAsync(file);
         }
 
         private IActionResult Sonuc(Core.Utilities.Results.IResult result)

@@ -57,13 +57,10 @@ namespace Garajim.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new ErrorDataResult<ReceiptUploadResultDto>(Messages.InvalidValue));
 
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-
             var result = await _receiptService.UploadAsync(CurrentUserId, new ReceiptUploadDto
             {
                 FileName = file.FileName,
-                Content = stream.ToArray()
+                Content = await YuklemeOkuyucu.OkuAsync(file, HttpContext.RequestAborted)
             }, otoOnay);
 
             if (!result.Success)
