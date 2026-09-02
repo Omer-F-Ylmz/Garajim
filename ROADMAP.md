@@ -141,11 +141,39 @@ Elektrikli/hibrit araçlar, lastik takibi ve davet programı.
 | Lastik setleri: takma/sökme geçmişi, otomatik sökme, kış lastiği ve diş derinliği uyarısı | `4573457` |
 | Davet programı: şirkete özel kod, davetli listesi | `830588a` |
 
+## Sprint AI Usta — TAMAMLANDI
+
+Aracın kendi kayıtlarını okuyup olasılık sıralayan yardımcı; teşhis koymaz.
+
+| Özellik | Commit |
+|---|---|
+| Bilgi tabanı: 5 JSON dosyası, şema doğrulayan yükleyici, DTC + anahtar puanlı seçici, kırmızı çizgi tablosu | `3fdfa39` |
+| Veri modeli ve uçlar: onay kapısı, günlük kota, sohbet sınırı, şema denetimi, geri bildirim | `da3b62c` |
+| Prompt sözleşmesi: sürümlü `SistemPromptu.md`, sıralama/kırpma/şema testleri | `d59557b` |
+| Arayüz: Usta sekmesi, onay akışı, kademeli yanıt kartı, sesli sorma | `6827f2d` |
+| Ölçüm ve anonim çözüm özeti: `GET /api/usta/stats`, günlük job, eşikli Garajım verisi | `293a250` |
+| Kullanım Şartları ve Aydınlatma Metni, onay sürüm kapısı | `269fc7d` |
+| Üretim kapısı: `Usta__SahteYanit` açıkken uygulama başlamaz | `70d6c6a` |
+| Bilgi tabanı 1. parti: belirtiler (60) + TÜVTÜRK (22) | `ca21390` |
+| Saklama job'ı: 24 aydan eski sohbetler silinir, çözüm özeti birikimli kalır | `44bfb73` |
+
+Bilinçli sınırlar: model çağrısı yalnız Gemini üzerinden yapılır (sağlayıcı seçimi yok); yanıtlar önbelleğe alınmaz; sesli soru yalnız tarayıcıda metne çevrilir, ses kaydı sunucuya gitmez; anonim çözüm özeti `n >= 30` eşiğinin altında prompta girmez ve varsayılan olarak kapalıdır.
+
+## Denetim ve düzeltmeler
+
+| Tur | Commit'ler |
+|---|---|
+| DÜZELTME-3 (davet ödülü → araç hakkı, ekip yetkileri, plan talebi + kış lastiği uyarısı) | `f5507dc` `c735883` `f0f3526` |
+| DÜZELTME-3b (kış lastiği penceresi 15 Kas–15 Nis, dört mevsim M+S sayılır) | `1b9788d` |
+| DENETİM-2 bulguları | `ea3e7e0` `75423f6` `7d9a7b0` `5d4d993` `6f819b7` `5281b7b` `1964557` |
+
 ## Sonraki (planlanmamış)
 
 - [ ] Abonelik ve ödeme sağlayıcı entegrasyonu — bugün plan yükseltme talebi destek kutusuna e-posta olarak düşer, faturalandırma yok
 - [ ] Apple/Google Wallet kartı — sertifika ve geliştirici hesabı gerektiriyor
 - [ ] Ana ekran widget'ı (yerel uygulama kabuğu gerektiriyor)
+- [ ] AI Usta için ikinci sağlayıcı (OpenAI) ve yanıt önbelleği — tek sağlayıcı maliyeti kabul edilebilir kaldığı sürece açılmaz
+- [ ] Bilgi tabanının yönetim arayüzünden düzenlenmesi — bugün JSON dosyaları repoda tutuluyor
 
 ## Kill Criteria
 
