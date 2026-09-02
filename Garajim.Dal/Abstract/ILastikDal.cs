@@ -7,5 +7,6 @@ namespace Garajim.Dal.Abstract
     {
         Task<List<LastikSeti>> GetListeAsync(int vehicleId);
         Task<LastikSeti> GetTakiliAsync(int vehicleId);
+        Task<List<LastikSeti>> GetTakiliListeAsync(List<int> vehicleIds);
     }
 }

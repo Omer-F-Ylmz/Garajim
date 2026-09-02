@@ -4,6 +4,7 @@ using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
+using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
 
@@ -22,9 +23,12 @@ namespace Garajim.Business.Concrete
         private readonly IVehicleAssignmentDal _assignmentDal;
         private readonly IReceiptDraftDal _receiptDraftDal;
         private readonly PlanKurallari _planKurallari;
+        private readonly ILastikDal _lastikDal;
+        private readonly EvrakKurallari _evrakKurallari;
 
         public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal,
-            ICompanyDal companyDal, IEvrakDal evrakDal, IReminderDal reminderDal, IVehicleAssignmentDal assignmentDal, IReceiptDraftDal receiptDraftDal, PlanKurallari planKurallari)
+            ICompanyDal companyDal, IEvrakDal evrakDal, IReminderDal reminderDal, IVehicleAssignmentDal assignmentDal, IReceiptDraftDal receiptDraftDal, PlanKurallari planKurallari,
+            ILastikDal lastikDal, EvrakKurallari evrakKurallari)
         {
             _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
@@ -37,6 +41,8 @@ namespace Garajim.Business.Concrete
             _assignmentDal = assignmentDal;
             _receiptDraftDal = receiptDraftDal;
             _planKurallari = planKurallari;
+            _lastikDal = lastikDal;
+            _evrakKurallari = evrakKurallari;
         }
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
@@ -267,9 +273,20 @@ namespace Garajim.Business.Concrete
                 AracLimiti = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, await _companyDal.DavetSayisiAsync(sirket.Id))
             };
 
+            panel.KisLastigiDonemi = _evrakKurallari.KisLastigiDonemindeMi(bugun);
+
             if (idler.Count == 0)
             {
                 return new SuccessDataResult<DashboardDto>(panel);
+            }
+
+            if (panel.KisLastigiDonemi)
+            {
+                panel.KisLastigiUyariPlakalari = await KisLastigiEksikleriAsync(araclar, idler);
+                if (panel.KisLastigiUyariPlakalari.Count > 0)
+                {
+                    panel.KisLastigiUyarisi = Messages.TicariKisLastigiUyarisi;
+                }
             }
 
             panel.AktifZimmet = await _assignmentDal.AktifSayiAsync(idler);
@@ -296,7 +313,29 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<DashboardDto>(panel);
         }
 
+        private async Task<List<string>> KisLastigiEksikleriAsync(List<Vehicle> araclar, List<int> idler)
+        {
+            var ticariler = araclar.Where(a => a.KullanimTuru == KullanimTuru.Ticari).ToList();
+            if (ticariler.Count == 0)
+            {
+                return new List<string>();
+            }
+
+            var takililar = await _lastikDal.GetTakiliListeAsync(idler);
+            var kisliAraclar = takililar
+                .Where(s => s.Mevsim == LastikMevsimi.Kis)
+                .Select(s => s.VehicleId)
+                .ToHashSet();
+
+            return ticariler
+                .Where(a => !kisliAraclar.Contains(a.Id))
+                .OrderBy(a => a.Plate)
+                .Select(a => a.Plate)
+                .ToList();
+        }
+
         private async Task<decimal> AyMaliyetiAsync(List<int> vehicleIds, DateTime bas, DateTime son)
+
         {
             var yakit = await _fuelDal.GetTotalsByVehicleAsync(vehicleIds, bas, son);
             var bakim = await _maintenanceDal.GetTotalsByVehicleAsync(vehicleIds, bas, son);

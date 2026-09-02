@@ -23,6 +23,14 @@ namespace Garajim.Dal.Concrete
                 .ToListAsync();
         }
 
+        public async Task<List<LastikSeti>> GetTakiliListeAsync(List<int> vehicleIds)
+        {
+            return await Context.LastikSetleri
+                .AsNoTracking()
+                .Where(l => l.Takili && vehicleIds.Contains(l.VehicleId))
+                .ToListAsync();
+        }
+
         public async Task<LastikSeti> GetTakiliAsync(int vehicleId)
         {
             return await Context.LastikSetleri

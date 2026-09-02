@@ -305,6 +305,7 @@
         el("add-vehicle-btn").classList.toggle("hidden", !canManage());
         el("team-btn").classList.toggle("hidden", !canManage());
         el("team-form").classList.toggle("hidden", !isOwner());
+        el("plan-form").classList.toggle("hidden", !isOwner());
         el("karne-btn").classList.toggle("hidden", !canManage());
 
         var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
@@ -337,6 +338,7 @@
     }
 
     function loadVehicles() {
+        loadPanelUyarisi();
         return api("/api/Vehicles").then(function (result) {
             state.vehicles = (result && result.data) || [];
             var select = el("vehicle-select");
@@ -1462,6 +1464,51 @@
             el("register-davet").value = eslesme[1].toUpperCase();
             switchAuthTab(false);
         }
+    }
+
+    var PLAN_TURLERI = [
+        ["Filo", "Filo"],
+        ["Bireysel", "Bireysel"]
+    ];
+
+    function loadPanelUyarisi() {
+        var kutu = el("panel-uyari");
+        return api("/api/Reports/dashboard").then(function (result) {
+            var panel = (result && result.data) || {};
+            var plakalar = panel.kisLastigiUyariPlakalari || [];
+
+            if (!panel.kisLastigiUyarisi || plakalar.length === 0) {
+                kutu.textContent = "";
+                kutu.classList.add("hidden");
+                return;
+            }
+
+            kutu.textContent = panel.kisLastigiUyarisi + " Eksik araçlar: " + plakalar.join(", ");
+            kutu.classList.remove("hidden");
+        }).catch(function () {
+            kutu.textContent = "";
+            kutu.classList.add("hidden");
+        });
+    }
+
+    function bindPlan() {
+        el("plan-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            api("/api/Plan/yukseltme-talebi", {
+                method: "POST",
+                body: {
+                    istenenPlan: el("plan-istenen").value,
+                    mesaj: el("plan-mesaj").value
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Talebiniz iletildi.", true);
+                el("plan-mesaj").value = "";
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
+        });
     }
 
     function bindAuth() {
@@ -2865,6 +2912,7 @@
         fillSelect(el("yolculuk-amac"), YOLCULUK_AMAC);
         fillSelect(el("lastik-mevsim"), LASTIK_MEVSIM);
         fillSelect(el("fuel-sarj"), SARJ_TURU);
+        fillSelect(el("plan-istenen"), PLAN_TURLERI);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
@@ -2908,6 +2956,7 @@
         bindExport();
         bindLastik();
         bindDavet();
+        bindPlan();
         davetKodunuUrldenOku();
 
         if (readSession()) {

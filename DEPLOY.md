@@ -24,6 +24,7 @@ Yayından **önce** ayarla:
 | `Jwt__Key` | 32+ karakter | Boş veya kısa ise uygulama açılmayı reddeder |
 | `DemoSeed__Enabled` | `true` veya `false` | Canlıda demo verisi isteniyor mu, karar ver |
 | `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
+| `App__DestekEposta` | Destek kutusu adresi | Plan yükseltme talepleri buraya düşer; boşsa form 400 döner |
 
 Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 01-12..01-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet başına en fazla 3 ek araç) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 

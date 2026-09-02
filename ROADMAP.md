@@ -141,7 +141,7 @@ Elektrikli/hibrit araçlar, lastik takibi ve davet programı.
 
 ## Sonraki (planlanmamış)
 
-- [ ] Abonelik ve ödeme sağlayıcı entegrasyonu (bonus gün alanı hazır, faturalandırma yok)
+- [ ] Abonelik ve ödeme sağlayıcı entegrasyonu — bugün plan yükseltme talebi destek kutusuna e-posta olarak düşer, faturalandırma yok
 - [ ] Apple/Google Wallet kartı — sertifika ve geliştirici hesabı gerektiriyor
 - [ ] Ana ekran widget'ı (yerel uygulama kabuğu gerektiriyor)
 

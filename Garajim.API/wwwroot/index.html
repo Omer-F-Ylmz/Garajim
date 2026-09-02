@@ -75,6 +75,7 @@
         </header>
 
         <p id="app-message" class="message" role="alert"></p>
+        <p id="panel-uyari" class="message hidden" role="status"></p>
 
         <section id="receipt-box" class="panel hidden">
             <h2>Fiş yükle</h2>
@@ -169,6 +170,22 @@
                 <button id="takvim-kopyala" type="button" class="ghost">Kopyala</button>
             </div>
 
+
+            <h3>Planı yükselt</h3>
+            <p class="hint">Talebiniz destek ekibine e-postayla iletilir; şirket, plan ve araç sayısı otomatik eklenir.</p>
+            <form id="plan-form" class="grid-form">
+                <div>
+                    <label for="plan-istenen">İstenen plan</label>
+                    <select id="plan-istenen"></select>
+                </div>
+                <div>
+                    <label for="plan-mesaj">Not</label>
+                    <input id="plan-mesaj" type="text" maxlength="1000" placeholder="Filo büyüklüğü, beklentiniz…">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Talep gönder</button>
+                </div>
+            </form>
 
             <h3>Arkadaşını davet et</h3>
             <p class="hint">Kodunuzla kaydolan her şirket, Bireysel pakette araç limitinize +1 ekler. Filo paketinde davetler yalnız sayılır.</p>

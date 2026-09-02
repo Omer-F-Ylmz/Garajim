@@ -1,5 +1,6 @@
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
+using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Concrete.Planlar;
 using Microsoft.Extensions.Configuration;
 using Garajim.Dal.Concrete;
@@ -44,6 +45,8 @@ namespace Garajim.Tests.Integration
             PartDal = new EfMaintenancePartDal(Context);
             EvrakDal = new EfEvrakDal(Context);
             ReceiptDraftDal = new EfReceiptDraftDal(Context);
+            LastikDal = new EfLastikDal(Context);
+            EvrakKurallari = new EvrakKurallari(new ConfigurationBuilder().Build());
             UnitOfWork = new EfUnitOfWork(Context);
             VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
         }
@@ -79,6 +82,10 @@ namespace Garajim.Tests.Integration
         public EfEvrakDal EvrakDal { get; }
 
         public EfReceiptDraftDal ReceiptDraftDal { get; }
+
+        public EfLastikDal LastikDal { get; }
+
+        public EvrakKurallari EvrakKurallari { get; }
 
         public EfUnitOfWork UnitOfWork { get; }
 

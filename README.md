@@ -166,6 +166,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |
 | `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
 | `Plan__DavetMaxEkArac` | Opsiyonel | `3` | Davetle kazanılabilecek en fazla ek araç (Bireysel); `0` kapatır |
+| `App__DestekEposta` | Plan talebi için zorunlu | boş | Boşsa `POST /api/plan/yukseltme-talebi` 400 döner; talep sessizce yutulmaz |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
 
@@ -233,6 +234,12 @@ Muayene, sigorta, kasko, egzoz, kış lastiği ve kişiye ait belgeler (ehliyet,
 
 `GET /api/davet` şirkete özel 8 karakterli kodu ilk istekte üretir ve sabit tutar. Kodla bir şirket kaydolduğunda **davet edenin** araç limiti Bireysel pakette +1 artar; üst sınır `Plan:DavetMaxEkArac` (varsayılan 3). Filo paketinde davetler yalnız sayılır, limite dokunmaz; davetli kendi limitini artırmaz. Geçersiz kod kaydı reddeder, sessizce yutulmaz.
 
+## Plan yükseltme talebi
+
+Ayarlar → **Planı yükselt** formu `POST /api/plan/yukseltme-talebi` çağırır. Talep, `App:DestekEposta` adresine mevcut e-posta altyapısıyla gönderilir; gövde şirket adını, mevcut ve istenen planı, araç sayısı / limitini, davet sayısını ve talep edeni taşır. Yalnız Owner çağırabilir; mevcut planı istemek ve destek adresi tanımsızken çağırmak 400 döner.
+
+`GET /api/reports/dashboard` kış lastiği penceresindeyken `KullanimTuru = Ticari` olup takılı seti kış olmayan araçları `kisLastigiUyariPlakalari` alanında döner; SPA bunu üst bantta gösterir. Dört mevsim seti ticari araç için yeterli sayılmaz.
+
 ## Kalibrasyon aracı
 
 
@@ -277,6 +284,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET|POST /api/yolculuk`, `GET /api/yolculuk/ozet`, `PUT|DELETE /api/yolculuk/{id}`
 - `GET|POST /api/lastik`, `PUT /api/lastik/{id}/sok`, `DELETE /api/lastik/{id}`
 - `GET /api/davet`
+- `POST /api/plan/yukseltme-talebi` (yalnız Owner)
 - `POST /api/price/estimate`
 
 
