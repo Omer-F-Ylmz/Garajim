@@ -25,6 +25,8 @@ Yayından **önce** ayarla:
 | `DemoSeed__Enabled` | `true` veya `false` | Canlıda demo verisi isteniyor mu, karar ver |
 | `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
 | `App__DestekEposta` | Destek kutusu adresi | Plan yükseltme talepleri buraya düşer; boşsa form 400 döner |
+| `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
+| `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; açık kalırsa kullanıcıya sahte yanıt gider |
 
 Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 15-11..15-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet başına en fazla 3 ek araç) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 
@@ -62,6 +64,7 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 5. **Eski oturumlar**: yayından önce açık kalmış bir tarayıcı sekmesini yenile. Rol taşımayan oturum giriş ekranına düşmeli. Düşmüyorsa kullanıcıya çıkış-giriş yaptır.
 6. **Anonim uçlar**: bir karne bağlantısı ve bir takvim aboneliği oluştur; `GET /api/karne/{token}` ve `GET /api/takvim/{token}.ics` girişsiz **200** dönüyor mu, ICS `text/calendar` mi? Bu iki bağlantı tam URL içermiyorsa `App__BaseUrl` ayarlanmamıştır.
 7. **Plan limiti**: bireysel bir şirkette limit üstü araç eklemeyi dene; **402** dönmeli.
+8. **AI Usta**: `/sartlar.html` girişsiz açılıyor mu? Onaysiz `POST /api/Usta/sohbet` **403** ve `ONAY_GEREKLI` dönüyor mu? Onaydan sonra bir soru sorup kademeli yanıt geldiğini ve `Usta__SahteYanit` değerinin **ayarlı olmadığını** doğrula.
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

@@ -167,6 +167,14 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
 | `Plan__DavetMaxEkArac` | Opsiyonel | `3` | Davetle kazanılabilecek en fazla ek araç (Bireysel); `0` kapatır |
 | `App__DestekEposta` | Plan talebi için zorunlu | boş | Boşsa `POST /api/plan/yukseltme-talebi` 400 döner; talep sessizce yutulmaz |
+| `Usta__ApiKey` | AI Usta için zorunlu | boş | Boşsa `Receipts__ApiKey` kullanılır; ikisi de boşsa uç 502 döner |
+| `Usta__Model` | Opsiyonel | `Receipts__Model` → `gemini-2.5-flash` | AI Usta için model kimliği |
+| `Usta__OnaySurumu` | Opsiyonel | `2026-09-v1` | Onay metni sürümü; değişirse kullanıcıdan yeniden onay istenir |
+| `Usta__GunlukLimitBireysel` | Opsiyonel | `20` | Bireysel pakette kullanıcı başına günlük soru; aşılırsa 429 |
+| `Usta__GunlukLimitFilo` | Opsiyonel | `100` | Filo paketinde günlük soru sınırı |
+| `Usta__TokenFiyat` | Opsiyonel | `0` | Milyon token başına TL; `GET /api/usta/stats` tahmini maliyeti bununla hesaplar |
+| `Usta__GarajimVerisi` | Opsiyonel | `false` | Açıkken en az 30 örnekli anonim çözüm satırları prompta eklenir |
+| `Usta__SahteYanit` | Yalnız geliştirme | `false` | Açıkken model çağrılmaz, sabit örnek yanıt döner |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
 
@@ -240,7 +248,20 @@ Ayarlar → **Planı yükselt** formu `POST /api/plan/yukseltme-talebi` çağır
 
 `GET /api/reports/dashboard` kış lastiği penceresindeyken `KullanimTuru = Ticari` olup takılı seti `Yaz` olan ya da hiç seti olmayan araçları `kisLastigiUyariPlakalari` alanında döner; SPA bunu üst bantta gösterir. Tebliğ M+S işaretini kabul ettiği için `Kis` ve `DortMevsim` setleri yeterli sayılır; hususi araçlara uyarı çıkmaz. Uyarı metni yürürlükteki pencereyi (örn. "15 Kas–15 Nis") taşır.
 
+## AI Usta
+
+Aracin kendi kayitlarini okuyup belirtiler icin olasilik siralayan yardimci. Teshis koymaz.
+
+- **Onay kapisi:** `GET /api/usta/onay` yururlukteki metin surumunu doner; onaysiz her AI Usta cagrisi `403` ve `kod: ONAY_GEREKLI` ile reddedilir. Metin `wwwroot/sartlar.html`, surum `Usta:OnaySurumu` (varsayilan `2026-09-v1`). Surum degisince onay yeniden istenir.
+- **Kota:** kullanici basina gunluk 20 (Bireysel) / 100 (Filo) soru — asilirsa `429` ve `kod: GUNLUK_LIMIT`. Sohbet basina 12 kullanici mesaji.
+- **Kirmizi cizgi on filtresi:** fren tutmamasi, direksiyon kilidi, kirmizi ikaz lambasi, hararet, yakit kokusu, kabinde duman, metal sesiyle titreme ve seyirde stop iceren sorular **modele hic gonderilmez**; sabit Turkce guvenlik yaniti doner (`Garajim.Business/Usta/KirmiziCizgiler.cs`).
+- **Bilgi tabani:** `Garajim.Business/Usta/Bilgi/*.json` — `{id, kategori, anahtarlar[], metin, kaynak, guncelleme}` semasi. Acilista yuklenir, sema hatasinda uygulama acik mesajla durur. Secici DTC kodlarini (`[PCBU][0-3][0-9A-F]{3}`) dogrudan eslestirir, kalanini anahtar puaniyla siralar; en fazla 25 kayit ve 3.000 token.
+- **Prompt sirasi:** `[sistem promptu + bilgi tabani]`, `[arac baglami]`, `[son 6 mesaj]`, `[soru]`. Sabit blok basta durur; kullanici metni veri olarak islenir, icindeki talimatlar yok sayilir.
+- **Cikti:** `{ozet, kirmiziCizgi, kademeler[{kademe, neden, belirtiUyumu, evdeKontrol, maliyetTl[min,max], aciliyet}], aracVerisindenNotlar, ustayaBoyleAnlat, takipSorulari, uyari}`. Sema disi yanit `502` doner ve kaydedilmez. Son filtre yuzde ifadelerini kademe soyleyisine cevirir ve uyari satirini garanti eder.
+- **Anonim ogrenme:** gunluk `usta-cozum-ozeti` job'i, olumlu isaretlenmis ve bir bakimla eslestirilmis yanitlardan `UstaCozumOzetleri` tablosunu uretir. Tablo `CompanyId` tasimaz; yalnizca marka, model, motor, belirti kategorisi, parca turu ve sayidan olusur. `Usta:GarajimVerisi` acikken yalnizca `n >= 30` satirlar prompta girer.
+
 ## Kalibrasyon aracı
+
 
 
 `tools/Garajim.Calibration`, fiş çıkarımının gerçek doğruluğunu bir cevap anahtarına karşı ölçer.
@@ -285,6 +306,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET|POST /api/lastik`, `PUT /api/lastik/{id}/sok`, `DELETE /api/lastik/{id}`
 - `GET /api/davet`
 - `POST /api/plan/yukseltme-talebi` (yalnız Owner)
+- `GET|POST /api/usta/onay`, `POST /api/usta/sohbet`, `POST /api/usta/sohbet/{id}/mesaj`, `GET /api/usta/sohbet`, `GET|DELETE /api/usta/sohbet/{id}`, `GET /api/usta/sohbet/{id}/bakimlar`, `POST /api/usta/mesaj/{id}/geri-bildirim`, `GET /api/usta/stats` (Owner)
 - `POST /api/price/estimate`
 
 
