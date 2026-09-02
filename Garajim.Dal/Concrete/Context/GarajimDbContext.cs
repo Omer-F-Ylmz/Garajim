@@ -32,6 +32,10 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<ImportKaydi> ImportKayitlari { get; set; }
         public DbSet<YolculukKaydi> YolculukKayitlari { get; set; }
         public DbSet<LastikSeti> LastikSetleri { get; set; }
+        public DbSet<UstaSohbet> UstaSohbetleri { get; set; }
+        public DbSet<UstaMesaj> UstaMesajlari { get; set; }
+        public DbSet<UstaOnay> UstaOnaylari { get; set; }
+        public DbSet<UstaCozumOzeti> UstaCozumOzetleri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,6 +57,8 @@ namespace Garajim.Dal.Concrete.Context
 
             modelBuilder.Entity<Vehicle>(entity =>
             {
+                entity.Property(v => v.Motor).HasMaxLength(40);
+                entity.Property(v => v.Vites).HasMaxLength(40);
                 entity.Property(v => v.Plate).HasMaxLength(20).IsRequired();
                 entity.Property(v => v.Brand).HasMaxLength(100).IsRequired();
                 entity.Property(v => v.Model).HasMaxLength(100).IsRequired();
@@ -163,6 +169,46 @@ namespace Garajim.Dal.Concrete.Context
                     "([SokulmeKm] IS NULL AND [Takili] = 1 AND [ToplamKm] = 0) OR ([SokulmeKm] IS NOT NULL AND [Takili] = 0 AND [SokulmeKm] >= [TakilmaKm] AND [ToplamKm] = [SokulmeKm] - [TakilmaKm])"));
             });
 
+            modelBuilder.Entity<UstaSohbet>(entity =>
+            {
+                entity.Property(s => s.Baslik).HasMaxLength(120).IsRequired();
+                entity.HasIndex(s => s.CompanyId);
+                entity.HasIndex(s => new { s.VehicleId, s.OlusturmaTarihi });
+                entity.HasOne<Company>().WithMany().HasForeignKey(s => s.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(s => s.VehicleId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(s => s.UserId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<UstaMesaj>(entity =>
+            {
+                entity.Property(m => m.Metin).HasMaxLength(4000).IsRequired();
+                entity.HasIndex(m => m.CompanyId);
+                entity.HasIndex(m => new { m.SohbetId, m.Id });
+                entity.HasOne<Company>().WithMany().HasForeignKey(m => m.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<UstaSohbet>().WithMany().HasForeignKey(m => m.SohbetId).OnDelete(DeleteBehavior.Cascade);
+                entity.ToTable(t => t.HasCheckConstraint("CK_UstaMesaj_Token", "[TokenGiris] >= 0 AND [TokenCikis] >= 0 AND [SureMs] >= 0"));
+            });
+
+            modelBuilder.Entity<UstaOnay>(entity =>
+            {
+                entity.Property(o => o.MetinSurumu).HasMaxLength(20).IsRequired();
+                entity.HasIndex(o => o.CompanyId);
+                entity.HasIndex(o => new { o.UserId, o.MetinSurumu }).IsUnique();
+                entity.HasOne<Company>().WithMany().HasForeignKey(o => o.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<UstaCozumOzeti>(entity =>
+            {
+                entity.Property(o => o.Marka).HasMaxLength(60).IsRequired();
+                entity.Property(o => o.Model).HasMaxLength(60).IsRequired();
+                entity.Property(o => o.Motor).HasMaxLength(40);
+                entity.Property(o => o.BelirtiKategori).HasMaxLength(60).IsRequired();
+                entity.Property(o => o.ParcaTuru).HasMaxLength(60).IsRequired();
+                entity.HasIndex(o => new { o.Marka, o.Model, o.BelirtiKategori, o.ParcaTuru });
+                entity.ToTable(t => t.HasCheckConstraint("CK_UstaCozumOzeti_Sayi", "[Sayi] > 0"));
+            });
+
             modelBuilder.Entity<TakvimAbonelik>(entity =>
 
             {
@@ -246,6 +292,9 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<ImportKaydi>().HasQueryFilter(i => i.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<YolculukKaydi>().HasQueryFilter(y => y.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<LastikSeti>().HasQueryFilter(l => l.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<UstaSohbet>().HasQueryFilter(s => s.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<UstaMesaj>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<UstaOnay>().HasQueryFilter(o => o.CompanyId == CurrentCompanyId);
         }
     }
 }

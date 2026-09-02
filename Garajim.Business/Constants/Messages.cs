@@ -84,6 +84,20 @@ namespace Garajim.Business.Constants
         public const string ImportOnizlendi = "Önizleme hazır, kayıt yazılmadı.";
         public const string DavetKoduGecersiz = "Davet kodu geçersiz.";
 
+        public const string UstaOnayGerekli = "AI Usta'yı kullanmak için kullanım şartlarını onaylamanız gerekiyor.";
+        public const string UstaOnayAlindi = "Onayınız kaydedildi.";
+        public const string UstaOnaySurumuEski = "Onay metni güncellendi; lütfen yeni metni onaylayın.";
+        public const string UstaGunlukLimit = "Günlük soru hakkınız doldu; yarın tekrar deneyin.";
+        public const string UstaSohbetLimiti = "Bu sohbet için mesaj sınırına ulaşıldı; yeni sohbet açın.";
+        public const string UstaSohbetBulunamadi = "Sohbet bulunamadı.";
+        public const string UstaMesajBulunamadi = "Mesaj bulunamadı.";
+        public const string UstaSohbetOlusturuldu = "Sohbet açıldı.";
+        public const string UstaSohbetSilindi = "Sohbet silindi.";
+        public const string UstaYanitHazir = "Usta yanıtladı.";
+        public const string UstaYanitAlinamadi = "Usta şu anda yanıt üretemedi; birazdan tekrar deneyin.";
+        public const string UstaGeriBildirimAlindi = "Geri bildiriminiz alındı.";
+        public const string UstaCozumBakimiUygunDegil = "Seçilen bakım bu araca ait değil ya da 90 günden eski.";
+
         public const string PlanTalebiAlindi = "Plan yükseltme talebiniz destek ekibine iletildi.";
         public const string PlanZatenAktif = "Bu plan zaten aktif.";
         public const string DestekEpostasiTanimsiz = "Destek e-posta adresi yapılandırılmamış; talep gönderilemedi.";

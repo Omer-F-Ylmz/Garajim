@@ -10,6 +10,7 @@ using Garajim.Business.Abstract;
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
 using Garajim.Business.Concrete.Receipts;
+using Garajim.Business.Usta;
 using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
@@ -56,6 +57,10 @@ builder.Services.AddScoped<IEvrakDal, EfEvrakDal>();
 builder.Services.AddScoped<ITakvimAbonelikDal, EfTakvimAbonelikDal>();
 builder.Services.AddScoped<IImportKaydiDal, EfImportKaydiDal>();
 builder.Services.AddScoped<IYolculukDal, EfYolculukDal>();
+builder.Services.AddScoped<IUstaSohbetDal, EfUstaSohbetDal>();
+builder.Services.AddScoped<IUstaMesajDal, EfUstaMesajDal>();
+builder.Services.AddScoped<IUstaOnayDal, EfUstaOnayDal>();
+builder.Services.AddScoped<IUstaCozumOzetiDal, EfUstaCozumOzetiDal>();
 builder.Services.AddScoped<ILastikDal, EfLastikDal>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
@@ -77,6 +82,7 @@ builder.Services.AddScoped<IYolculukService, YolculukManager>();
 builder.Services.AddScoped<ILastikService, LastikManager>();
 builder.Services.AddScoped<IDavetService, DavetManager>();
 builder.Services.AddScoped<IPlanService, PlanManager>();
+builder.Services.AddScoped<IUstaService, UstaManager>();
 builder.Services.AddScoped<IVehicleService, VehicleManager>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceManager>();
 builder.Services.AddScoped<IFuelService, FuelManager>();
@@ -85,6 +91,19 @@ builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddHttpClient(ReceiptExtractorBase.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(30));
+builder.Services.AddHttpClient(GeminiUstaIstemci.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(40));
+builder.Services.AddScoped<IUstaIstemci, GeminiUstaIstemci>();
+builder.Services.AddSingleton(sp =>
+{
+    var taban = AppContext.BaseDirectory;
+    var kayitlar = new BilgiYukleyici().Yukle(Path.Combine(taban, BilgiYukleyici.KlasorAdi));
+    var promptYolu = Path.Combine(taban, "Usta", "SistemPromptu.md");
+    if (!File.Exists(promptYolu))
+    {
+        throw new InvalidOperationException("AI Usta sistem promptu bulunamadi: " + promptYolu);
+    }
+    return new UstaBilgiDeposu(kayitlar, File.ReadAllText(promptYolu));
+});
 builder.Services.AddScoped<GeminiReceiptExtractor>();
 builder.Services.AddScoped<OpenAiReceiptExtractor>();
 builder.Services.AddScoped<IReceiptExtractor>(provider =>
