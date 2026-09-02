@@ -201,11 +201,36 @@ Bakım kaydına parça satırları eklenebilir (tür, açıklama, adet, tutar, m
 Aracın belgeli geçmişi tek bağlantıyla paylaşılır — satışta alıcıya gösterilecek karne.
 
 - `POST /api/vehicles/{id}/karne` (Owner / Manager) kapsam ve isteğe bağlı süre alıp bağlantı üretir. Araç başına tek aktif bağlantı vardır; yenisi eskisini pasifleştirir.
-- Kapsam bayrakları bağımsızdır: bakım geçmişi, parça hafızası, yakıt özeti, belgeler, plaka gösterimi, tutar gösterimi. Plaka kapalıysa `34 *** 217` biçiminde maskelenir; tutar kapalıysa bakım tutarları, bakım toplamı ve parça toplamları yanıta hiç girmez.
+- Kapsam bayrakları bağımsızdır: bakım geçmişi, parça hafızası, yakıt özeti, belgeler, plaka gösterimi, tutar gösterimi, hasar geçmişi, beyan edilen değer. Hasar geçmişi ve beyan edilen değer **varsayılan kapalıdır**; açıkken hasar satırı yalnız tarih + tür + onarıldı/açık, değer satırı yalnız son beyan/ekspertiz taşır — hasar tutarı, konum, karşı taraf bilgisi, fotoğraflar ve model tahmini karnede paylaşılmaz. Plaka kapalıysa `34 *** 217` biçiminde maskelenir; tutar kapalıysa bakım tutarları, bakım toplamı ve parça toplamları yanıta hiç girmez.
 - `GET /api/karne/{token}` giriş istemez. Kayıt yok, pasif ya da süresi dolmuşsa hepsi aynı 404'ü döndürür. Uç IP başına dakikada 30 istekle sınırlıdır.
 - Token'ın yalnız SHA-256 özeti saklanır; ham değer sadece oluşturma yanıtındaki bağlantıda görünür.
 - `karne.html` ana uygulamadan bağımsız çalışır, yazdırma düzeni taşır ve QR kodu istemcide üretilir (dış servise istek gitmez). Bu sayfa service worker önbelleğine alınmaz.
 - `GET /api/vehicles/karne-stats` (Owner) araç sayısı, karnesi aktif araç oranı ve toplam görüntülenmeyi verir.
+
+## Hasar dosyası ve kaza anı
+
+Kaza, cam, dolu, hırsızlık ve diğer hasarlar araç bazlı dosyalarda toplanır; dosya bir olayı, etiketli fotoğraflarını ve sigorta sürecini taşır.
+
+- `GET|POST /api/hasar`, `GET|PUT|DELETE /api/hasar/{id}`, `GET /api/vehicles/{id}/hasar`. Sürücü yalnız **aktif zimmetli** aracına dosya açabilir ve fotoğraf ekleyebilir; düzenleme, durum değiştirme ve silme Owner/Manager'dadır.
+- `POST /api/hasar/{id}/foto` multipart alır (`file` + `etiket`), `DELETE /api/hasar/{id}/foto/{fotoId}` kaldırır. Fotoğraflar mevcut belge altyapısını kullanır: uzantı beyaz listesi, sihirli bayt denetimi, boyut sınırı ve **şirket belge kotası** aynen geçerlidir. Dosya başına en fazla 20 fotoğraf vardır.
+- Dosya silindiğinde bağlı fotoğraflar ve belgeler kalıcı silinir, kota geri açılır.
+- **KVKK:** karşı taraf için yalnız plaka, sigorta şirketi ve poliçe numarası saklanır. Karşı sürücünün adı, telefonu, kimlik ve sürücü belgesi bilgisi veritabanına **yazılmaz**; bu alanlar yalnız yazdırılan tutanak özetinde elle doldurulacak boş satır olarak yer alır.
+- `GET /api/hasar/{id}/tutanak.html` olay özetini, karşı taraf/sigorta alanlarını, fotoğraf küçük resimlerini ve elle doldurulacak bilgi değişim kutusunu taşıyan yazdırılabilir sayfa döner. Resmî tutanak yerine geçmez.
+- `GET /api/hasar/rehber` kaza anı rehberini verir: anlaşmalı tutanak koşulları, polis çağrılması gereken haller, çekilecek fotoğraflar, alınacak bilgiler ve 5 iş günü bildirim süresi. Metin tek sınıfta (`Business/Concrete/KazaRehberi.cs`) durur; kaynakları ROADMAP'te.
+- Arayüzde araç çalışma alanının üstünde **Kaza anı** düğmesi vardır; mobilde yapışkandır, rehberi açar ve tek dokunuşla hasar dosyası açıp kamerayı başlatır.
+- Panelde açık hasar dosyası sayacı, `GET /api/export/hasar.csv` ile dışa aktarım vardır.
+
+## Araç değeri
+
+Aracın değeri zaman serisi olarak tutulur; beyan elle, tahmin modelden gelir.
+
+- `POST /api/vehicles/{id}/deger` beyan, ekspertiz ve ilan değerini kaydeder. `Tahmin` kaynağı elle **girilemez**.
+- `GET /api/vehicles/{id}/deger` seriyi, son değeri ve serinin ilk-son farkını (değer kaybı) verir.
+- `POST /api/vehicles/{id}/deger/tahmin` ikinci el fiyat modelini aracın marka, model, yıl, kilometre, yakıt ve vites bilgisiyle çalıştırır. Kapsam denetimi ayrı bir liste tutmaz — model zip'inin kendi `MarkaEncoded` / `SeriEncoded` slot adlarından okunur; kapsam dışı araç **422** döner ve kayıt açılmaz. Araç başına günde 3 tahmin alınabilir.
+- Tahmin yanıtı uyarıyı taşır: model Ağustos 2025 piyasa verisiyle eğitildi, enflasyon düzeltmesi yok, bilgilendirme amaçlıdır.
+- Kasa tipi araç kartında tutulmadığı için modele boş geçilir; uydurma bir kasa tipi göndermek yerine modelin bilinmeyen-kategori davranışına bırakıldı.
+- Maliyet ekranı dönem giderlerine dönem değer kaybını ekleyerek **sahiplik maliyetini** verir; dönemde tek değer kaydı varsa alan boş kalır. Panelde Owner'a filo toplam son değeri gösterilir.
+- AI Usta araç bağlamına değer verisi girmez.
 
 ## Evrak takvimi
 
@@ -300,7 +325,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `POST|DELETE /api/takvim/abonelik`, `GET /api/takvim/{token}.ics`
 - `GET /api/karne/{token}/acil`
 - `POST /api/import/onizle`, `POST /api/import/uygula`
-- `GET /api/export/{yakit|bakim|masraf|evrak}.csv?vehicleId=&baslangic=&bitis=`
+- `GET /api/export/{yakit|bakim|masraf|evrak|hasar}.csv?vehicleId=&baslangic=&bitis=`
 - `GET /api/vehicles/{id}/maliyet?baslangic=&bitis=`, `GET /api/reports/filo-maliyet?baslangic=&bitis=`, `GET /api/reports/dashboard`
 - `GET /api/team/belgeler` (Owner / Manager)
 - `GET|POST /api/yolculuk`, `GET /api/yolculuk/ozet`, `PUT|DELETE /api/yolculuk/{id}`
@@ -308,6 +333,8 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET /api/davet`
 - `POST /api/plan/yukseltme-talebi` (yalnız Owner)
 - `GET|POST /api/usta/onay`, `POST /api/usta/sohbet`, `POST /api/usta/sohbet/{id}/mesaj`, `GET /api/usta/sohbet`, `GET|DELETE /api/usta/sohbet/{id}`, `GET /api/usta/sohbet/{id}/bakimlar`, `POST /api/usta/mesaj/{id}/geri-bildirim`, `GET /api/usta/stats` (Owner)
+- `GET /api/hasar/rehber`, `GET|POST /api/hasar`, `GET|PUT|DELETE /api/hasar/{id}`, `POST /api/hasar/{id}/foto`, `DELETE /api/hasar/{id}/foto/{fotoId}`, `GET /api/hasar/{id}/tutanak.html`, `GET /api/vehicles/{id}/hasar`
+- `GET|POST /api/vehicles/{id}/deger`, `POST /api/vehicles/{id}/deger/tahmin`
 - `POST /api/price/estimate`
 
 

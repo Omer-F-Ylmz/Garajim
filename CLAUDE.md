@@ -43,8 +43,23 @@ Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar e
 
 - `Business/Concrete/Evraklar/EvrakKurallari.cs` — muayene/egzoz aralıkları, kış lastiği penceresi, uyarı günleri (`Evrak:*`)
 - `Business/Concrete/Planlar/PlanKurallari.cs` — plan araç limitleri, davetle kazanılan ek araç hakkı (`Plan:*`)
+- `Business/Concrete/KazaRehberi.cs` — kaza anı rehberi metni (anlaşmalı tutanak koşulları, polis gereken haller, bildirim süresi); SPA ve API bu tek sınıftan okur
 
 Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
+
+### Hasar dosyası ve fotoğraf altyapısı geneldir
+
+`HasarDosyasi` ve `HasarFoto` bilerek **kiralamadan bağımsız** yazıldı: bir araca bağlı, tarihli, durumlu, etiketli fotoğraf taşıyan olay kaydı. İleride rent a car teslim-iade tutanağı aynı parçaların üstüne oturacak — aynı etiket kümesi, aynı 20 fotoğraf sınırı, aynı belge kotası, aynı `TutanakSayfasi` çıktısı.
+
+Bu yüzden:
+
+- Hasar/fotoğraf tarafına kiralama, müşteri, sözleşme ya da başka bir dikeye özgü alan **eklenmez**; yeni bağlam gerekiyorsa ayrı bir entity açılır ve `HasarDosyasiId` ile bağlanır.
+- Fotoğraf yükleme kendi depolama kodunu yazmaz; `IDocumentService.UploadAsync` üzerinden geçer, böylece uzantı beyaz listesi, sihirli bayt denetimi, boyut sınırı ve şirket kotası tek yerde kalır. Kayıt silinirken `DeleteAsync` çağrılır ki kota geri açılsın.
+- Fotoğraf ucu istemciden `DocumentId` **almaz**; belgeyi kendisi üretir. Bir belge en fazla bir hasar fotoğrafına bağlanır (`HasarFotograflari.DocumentId` üzerinde tekil indeks).
+
+### Üçüncü kişinin kimlik verisi kayda değil çıktıya yazılır
+
+Karşı sürücünün adı, telefonu, kimlik ve sürücü belgesi bilgisi veritabanına yazılmaz. Bu alanlar yalnız yazdırılan tutanak çıktısında elle doldurulacak boş satır olarak durur. Yeni bir tutanak/teslim-iade akışı eklenirken aynı kural geçerlidir: uygulamanın işine yarayan alan (plaka, sigorta şirketi, poliçe no) saklanır, kişiyi tanımlayan alan saklanmaz.
 
 ### Anonim uçlar
 

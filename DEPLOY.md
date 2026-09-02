@@ -2,7 +2,7 @@
 
 MonsterASP.NET üzerine Web Deploy (MSDeploy) ile yayın içindir. Adımları sırayla uygula; bir adım beklenenden farklı sonuç verirse **dur**, sonraki adıma geçme.
 
-Yayın öncesi durum: 554 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
+Yayın öncesi durum: 838 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
 
 ## 1. Veritabanı yedeği (atlanamaz)
 
@@ -12,6 +12,15 @@ Yayın öncesi durum: 554 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `
 Neden şart: `Down` migration'ları veri kaybettirir. `AddCompanyTenancy` geri alınırsa `CompanyId` kolonları, `AddCompanyRoles` geri alınırsa rol ve aktiflik bilgisi silinir. Sprint 3-6 ve AI Usta migration'larının `Down` gövdeleri de tablo ve kolon düşürür (evrak, takvim aboneliği, içe aktarma kayıtları, yolculuk defteri, lastik setleri, davet kodları, AI Usta sohbet ve mesajları). **Geri alma yok, yedekten dönülür.** Geri dönüşün tek güvenli yolu yedekten dönmektir.
 
 Migration provası (2 Eylül 2026, LocalDB): sıfır veritabanından 24 migration **4,7 sn**; Sprint 2 şemasından (`KarnePaylasimi`) sonraki 12 migration **3,4 sn**. `ApplyMigrationsAtStartup` açıksa açılış bu kadar gecikir; yayın penceresinde sorun değil, yine de tercihen kapalı tutulup migration ayrı çalıştırılır.
+
+Sprint 7 iki migration ekler, ikisi de **yalnız eklemeli**:
+
+| Migration | Yaptığı |
+|---|---|
+| `HasarDosyasi` | `HasarDosyalari` ve `HasarFotograflari` tablolarını açar; `KarnePaylasimlari`'na `HasarGecmisi bit NOT NULL DEFAULT 0` kolonu ekler |
+| `AracDeger` | `AracDegerleri` tablosunu açar; `KarnePaylasimlari`'na `BeyanDegeri bit NOT NULL DEFAULT 0` kolonu ekler |
+
+İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
 Ayrıca: **belgeler veritabanı yedeğinde yoktur.** Sunucuda daha önce yüklenmiş belge varsa, `App_Data/documents` klasörünü de ayrıca indir.
 
@@ -28,7 +37,7 @@ Yayından **önce** ayarla:
 | `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
 | `App__DestekEposta` | Destek kutusu adresi | Plan yükseltme talepleri buraya düşer; boşsa form 400 döner |
 | `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
-| `Usta__SahteYanit` | **canlÄ±da ayarlanmaz** | YalnÄ±z geliÅtirmede `true`; Ã¼retimde aÃ§Ä±k bÄ±rakÄ±lÄ±rsa uygulama aÃ§ılÄ±Åta aÃ§Ä±k hatayla durur |
+| `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |
 
 Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 15-11..15-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet başına en fazla 3 ek araç) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 
@@ -67,6 +76,9 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 6. **Anonim uçlar**: bir karne bağlantısı ve bir takvim aboneliği oluştur; `GET /api/karne/{token}` ve `GET /api/takvim/{token}.ics` girişsiz **200** dönüyor mu, ICS `text/calendar` mi? Bu iki bağlantı tam URL içermiyorsa `App__BaseUrl` ayarlanmamıştır.
 7. **Plan limiti**: bireysel bir şirkette limit üstü araç eklemeyi dene; **402** dönmeli.
 8. **AI Usta**: Hangfire panelinde `usta-cozum-ozeti` (04:00) ve `usta-saklama` (05:00) işleri kayıtlı mı? `/sartlar.html` girişsiz açılıyor mu? Onaysiz `POST /api/Usta/sohbet` **403** ve `ONAY_GEREKLI` dönüyor mu? Onaydan sonra bir soru sorup kademeli yanıt geldiğini ve `Usta__SahteYanit` değerinin **ayarlı olmadığını** doğrula.
+
+9. **Hasar dosyası**: bir araca hasar dosyası aç, bir fotoğraf ekle, `GET /api/Hasar/{id}/tutanak.html` yazdırılabilir sayfayı **200** ve `text/html` olarak dönüyor mu? Dosyayı sil ve fotoğrafın belgesinin de silindiğini (`GET /api/Documents/{id}/download` → **404**) doğrula.
+10. **Değer tahmini**: kapsam içi bir araçta `POST /api/Vehicles/{id}/deger/tahmin` **200** ve uyarı metni dönüyor mu? Kapsam dışı bir model adı taşıyan araçta **422** dönüyor mu? Aynı araçta dördüncü tahmin **400** ile reddediliyor mu?
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

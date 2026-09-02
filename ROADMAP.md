@@ -170,6 +170,21 @@ Aracın kendi kayıtlarını okuyup olasılık sıralayan yardımcı; teşhis ko
 
 Bilinçli sınırlar: model çağrısı yalnız Gemini üzerinden yapılır (sağlayıcı seçimi yok); yanıtlar önbelleğe alınmaz; sesli soru yalnız tarayıcıda metne çevrilir, ses kaydı sunucuya gitmez; anonim çözüm özeti `n >= 30` eşiğinin altında prompta girmez ve varsayılan olarak kapalıdır.
 
+## Sprint 7 — TAMAMLANDI
+
+Kaza ve hasar dosyası, beyan bazlı değer takibi ve fiyat tahmini bağı.
+
+| Özellik | Commit |
+|---|---|
+| Hasar dosyası: veri modeli, CRUD uçları, etiketli fotoğraflar, tutanak özeti, panel sayacı, CSV, karne bayrağı | `412bc72` |
+| Kaza anı rehberi: tek kaynak metin, `GET /api/Hasar/rehber`, mobil tek dokunuşluk akış | `fec438d` |
+| Değer takibi: beyan serisi, model kapsamlı tahmin (422 kapsam dışı), sahiplik maliyeti, filo toplam değeri | `1746ea3` |
+| Arayüz: Hasar sekmesi ve üç adımlı sihirbaz, Değer kartı ve grafiği, iki yeni karne kutusu | `a3d88ea` |
+
+Bilinçli sınırlar: karşı tarafın adı, telefonu, kimlik ve sürücü belgesi bilgisi **saklanmaz** — yalnız yazdırılan tutanak özetinde elle doldurulacak boş alan olarak yer alır. Dosya başına en fazla 20 fotoğraf ve fotoğraflar mevcut belge kotasından düşer. Değer tahmini araç başına günde 3 kez alınabilir; Kaynak=Tahmin elle girilemez, yalnız modelden üretilir. Karne bayrakları (`HasarGecmisi`, `BeyanDegeri`) varsayılan kapalıdır; açıkken hasar satırı yalnız tarih + tür + onarıldı/açık, değer satırı yalnız son beyan/ekspertiz taşır — tutar, konum, karşı taraf, fotoğraf ve tahmin paylaşılmaz. AI Usta araç bağlamına değer verisi girmez.
+
+Aracın kasa tipi araç kartında tutulmadığı için tahmin modeline boş geçilir; uydurma bir kasa tipi göndermek yerine modelin bilinmeyen-kategori davranışına bırakıldı. Kapsam denetimi ayrı bir liste tutmaz, model zip'inin kendi `MarkaEncoded` / `SeriEncoded` slot adlarından okunur — model yeniden eğitildiğinde kapsam kendiliğinden güncellenir.
+
 ## Denetim ve düzeltmeler
 
 | Tur | Commit'ler |
@@ -219,6 +234,8 @@ Takvime değil koşula bağlı işler; koşul oluşmadan başlanmaz:
 Tetikleyiciler (herhangi biri): 2027 yetki belgesi düzenlemesi kesinleşirse VEYA filo kanalından 5+ kiralamacı talebi gelirse.
 
 Garajım'dan taşınacak ortak çekirdek: belge deposu, fotoğraflı tutanak, takvim, çok kiracılılık. Bu modüller ilerideki ayrıştırma kolay olsun diye genel/taşınabilir yazılır.
+
+Sprint 7'de gelen hasar dosyası ve fotoğraf altyapısı bilinçli olarak **genel** yazıldı: `HasarDosyasi` bir araca bağlı, tarihli, durumlu, etiketli fotoğraf taşıyan bir olay kaydıdır; kiralama sözleşmesine ya da müşteriye bağlı değildir. Teslim-iade tutanağı bu parçaların üstüne oturur — aynı `HasarFoto` etiket kümesi (genel görünüm, yakın çekim, plakalar, belge), aynı 20 fotoğraf sınırı, aynı belge kotası, aynı `TutanakSayfasi` yazdırma çıktısı ve aynı "kişisel veriyi kayda değil çıktıya bırak" kuralı kullanılacak. Teslim-iade için eklenecek olan yalnızca kiralama bağlamı (sözleşme no, teslim/iade yönü, km ve yakıt seviyesi) olacak; hasar kaydının kendisi yeniden yazılmayacak.
 
 ## Birikim (planlanmamış)
 
