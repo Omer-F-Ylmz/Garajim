@@ -46,7 +46,12 @@ jobs:
             kod=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
             if [ "$kod" = "200" ]; then
               swagger=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/swagger/index.html || true)
-              echo "Kök adres 200 döndü ($deneme. deneme), Swagger: $swagger"
+              if [ "$swagger" = "200" ]; then
+                echo "::error::Üretim imajında Swagger açık geldi; API yüzeyi herkese görünür."
+                docker rm -f garajim-smoke > /dev/null
+                exit 1
+              fi
+              echo "Kök adres 200 döndü ($deneme. deneme), Swagger üretimde kapalı ($swagger)."
               docker rm -f garajim-smoke > /dev/null
               exit 0
             fi
