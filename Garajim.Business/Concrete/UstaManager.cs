@@ -186,16 +186,6 @@ namespace Garajim.Business.Concrete
             if (sohbetSayisi >= SohbetMesajLimiti)
                 return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaSohbetLimiti);
 
-            await _mesajDal.AddAsync(new UstaMesaj
-            {
-                CompanyId = sohbet.CompanyId,
-                SohbetId = sohbet.Id,
-                Rol = UstaRol.Kullanici,
-                Metin = metin,
-                GeriBildirim = UstaGeriBildirim.Yok,
-                OlusturmaTarihi = DateTime.UtcNow
-            });
-
             var kirmizi = KirmiziCizgiler.Bul(metin);
             UstaYanitDto yanit;
             string bilgiKategorisi = null;
@@ -228,6 +218,16 @@ namespace Garajim.Business.Concrete
                 yanit = UstaYanitDenetleyici.SonFiltre(sonuc.Yanit);
                 yanit.KirmiziCizgi = false;
             }
+
+            await _mesajDal.AddAsync(new UstaMesaj
+            {
+                CompanyId = sohbet.CompanyId,
+                SohbetId = sohbet.Id,
+                Rol = UstaRol.Kullanici,
+                Metin = metin,
+                GeriBildirim = UstaGeriBildirim.Yok,
+                OlusturmaTarihi = DateTime.UtcNow
+            });
 
             var ustaMesaji = new UstaMesaj
             {
@@ -485,8 +485,7 @@ namespace Garajim.Business.Concrete
 
             return mesajlar
                 .Where(m => m.Rol == UstaRol.Kullanici || !string.IsNullOrWhiteSpace(m.Metin))
-                .TakeLast(GecmisMesajSayisi + 1)
-                .SkipLast(1)
+                .TakeLast(GecmisMesajSayisi)
                 .Select(m => (m.Rol == UstaRol.Kullanici ? "Kullanici" : "Usta", m.Metin))
                 .ToList();
         }
