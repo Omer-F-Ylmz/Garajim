@@ -1,0 +1,82 @@
+[
+  {
+    "id": "bakim-yag-benzin",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["motor yağı", "yağ değişimi", "yag degisimi", "benzinli bakım", "periyodik bakım"],
+    "metin": "Benzinli binek araçlarda tam sentetik motor yağı ve yağ filtresi için yaygın aralık 15.000 km veya 12 aydır; hangisi önce dolarsa o geçerlidir. Kısa mesafe, şehir içi dur-kalk ve LPG kullanımı yağı hızlı yorar, bu kullanımda 10.000 km önerilir. Üreticinin kitapçığındaki aralık her zaman önceliklidir.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-yag-dizel",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["dizel bakım", "dizel yağ", "motor yağı dizel", "dpf yağ", "long life"],
+    "metin": "Dizel binek araçlarda motor yağı ve filtresi genelde 15.000-20.000 km veya 12 ayda değişir. DPF'li araçlarda düşük küllü (low SAPS) yağ zorunludur; yanlış yağ DPF ömrünü kısaltır. Sık kısa mesafede DPF rejenerasyonu yarım kalır ve yağa yakıt karışır, bu durumda aralık 10.000 km'ye çekilir.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-triger",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["triger", "triger kayışı", "eksantrik kayışı", "triger seti", "devirdaim"],
+    "metin": "Triger kayışı seti (kayış, gergi ve avare rulmanları) motora göre 90.000-150.000 km ya da 5-7 yılda değişir; kilometre dolmasa da kauçuk yaşlanır. Kayış kopması valf ile pistonu çarpıştırıp motoru komple hurdaya çıkarabilir. Set değişiminde devirdaim pompası birlikte yenilenir, çünkü işçilik aynıdır. Zincirli motorlarda periyodik değişim yoktur ama zincir gerginliği sesle takip edilir.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-fren-hidroligi",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["fren hidroliği", "fren yağı", "dot4", "hidrolik değişimi", "fren sıvısı"],
+    "metin": "Fren hidroliği (DOT 4) kilometreye bakılmaksızın 2 yılda bir değişir. Hidrolik higroskopiktir, havadan nem çeker; nem oranı arttıkça kaynama noktası düşer ve uzun yokuş inişlerinde pedal boşalır. Nem ölçüm cihazıyla %3 üzeri okunuyorsa süre dolmasa da değişmelidir.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-balata-disk",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["balata", "fren balatası", "disk", "fren diski", "balata ömrü"],
+    "metin": "Ön fren balataları sürüş tarzına göre 30.000-60.000 km, arka balatalar 60.000-90.000 km dayanır. Balata kalınlığı 3 mm altına indiğinde değişir. Fren diski minimum kalınlığı diskin üzerine yazılıdır; iki takım balatada bir disk kontrol edilir, tornalama yerine değişim tercih edilir. Balatalar aks bazında çift değişir, tek taraf değiştirilmez.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-buji",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["buji", "ateşleme bujisi", "iridyum buji", "platin buji", "buji değişimi"],
+    "metin": "Bakır bujilerde aralık 20.000-30.000 km, platin bujilerde 60.000 km, iridyum bujilerde 90.000-100.000 km'dir. LPG'li araçlarda yanma sıcaklığı yüksek olduğu için aralık üçte bir kısalır ve LPG'ye özel buji tercih edilir. Bujiler takım halinde değişir; eski ve yeni buji karışımı rölanti titremesi yapar.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-sanziman-yagi",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["şanzıman yağı", "sanziman yagi", "otomatik şanzıman", "dsg", "cvt", "vites yağı"],
+    "metin": "Otomatik şanzıman yağı tork konvertörlü kutularda 60.000-80.000 km, çift kuplajlı (DSG/DCT) kutularda 60.000 km, CVT'de 40.000-60.000 km'de değişir. 'Ömürlük yağ' pazarlama ifadesidir; Türkiye trafiğinde sık dur-kalk yağı yorar. Manuel şanzımanlarda 100.000-120.000 km yeterlidir. Yanlış spesifikasyonda yağ kutuyu birkaç bin kilometrede bitirir.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-antifriz",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["antifriz", "soğutma suyu", "sogutma suyu", "radyatör suyu", "koelant"],
+    "metin": "Uzun ömürlü organik (OAT/G12+) antifriz 5 yıl veya 150.000 km, geleneksel mavi/yeşil antifriz 2 yılda değişir. Farklı renk ve tipte antifriz karıştırılmaz, jelleşip radyatörü tıkar. Karışım oranı Türkiye iç bölgeleri için -35 °C koruma verecek şekilde yaklaşık yarı yarıya olmalıdır; saf su tek başına yazın da kullanılmaz, korozyon yapar.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-filtreler",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["hava filtresi", "polen filtresi", "yakıt filtresi", "kabin filtresi", "filtre değişimi"],
+    "metin": "Hava filtresi 15.000-30.000 km, polen (kabin) filtresi 15.000 km veya yılda bir, benzinli yakıt filtresi 40.000-60.000 km, dizel yakıt filtresi 20.000-30.000 km'de değişir. Tozlu şantiye ve toprak yol kullanımında hava filtresi yarı sürede tıkanır; tıkalı filtre yakıt tüketimini artırır ve turboyu zorlar. Dizelde su ayırıcı hazne her bakımda boşaltılır.",
+    "kaynak": "Üretici bakım kitapçığı (genel aralık)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "bakim-aku-lastik-omru",
+    "kategori": "BakimAraligi",
+    "anahtarlar": ["akü ömrü", "aku", "lastik ömrü", "lastik yaşı", "dot numarası"],
+    "metin": "Kurşun asit akü ortalama 4-5 yıl dayanır; kısa mesafe kullanımda 3 yıla iner. Start-stop araçlarda AGM veya EFB akü zorunludur, normal akü birkaç ayda biter. Lastikte diş derinliği yasal sınırı 1,6 mm'dir; kış lastiğinde 4 mm altında tutuş belirgin düşer. Lastik yaşı yan duvardaki DOT haftası ile okunur, diş bitmese de 6 yıldan sonra kauçuk sertleşir ve 10 yılda değişmelidir.",
+    "kaynak": "Üretici bakım kitapçığı ve lastik üreticisi genel önerileri",
+    "guncelleme": "2026-09-01"
+  }
+]

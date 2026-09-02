@@ -1,0 +1,82 @@
+[
+  {
+    "id": "obd-p0300",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0300", "rastgele tekleme", "misfire", "silindir teklemesi"],
+    "metin": "P0300 rastgele veya birden çok silindirde tekleme demektir. Tek bir silindire bağlı olmadığı için ortak kaynaklar aranır: eski bujiler, zayıf bobin beslemesi, emme hava kaçağı, düşük yakıt basıncı, tıkalı enjektörler ve zayıf kompresyon. Beraberinde P0301-P0304 varsa o silindirdeki bobin ve buji öne çıkar. Teklemede katalizör hasar görebileceği için araç uzun süre bu hâlde kullanılmamalıdır.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0171",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0171", "fakir karışım", "sistem çok fakir", "yakıt trim yüksek"],
+    "metin": "P0171 birinci sıra silindirlerde karışımın fazla fakir olduğunu (havanın fazla, yakıtın az) bildirir. En sık neden ölçülmemiş hava girişidir: çatlak emme körüğü, gevşek kelepçe, sızdıran vakum hortumu, bozuk PCV valfi. İkinci sıra neden kirlenmiş hava kütle ölçer (MAF) ve düşük yakıt basıncıdır. Uzun süreli yakıt trim değeri +%10'un üzerindeyse belirti doğrulanır; duman makinesiyle kaçak testi en hızlı yöntemdir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0420",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0420", "katalizör verimi", "katalitik konvertör", "arka oksijen sensörü"],
+    "metin": "P0420 katalizör veriminin eşiğin altında olduğunu söyler. Kod her zaman katalizörün bittiği anlamına gelmez; arka oksijen sensörünün yaşlanması, egzoz manifoldu veya flanş kaçağı, motorun yağ ya da antifriz yakması da aynı kodu üretir. Önce egzoz kaçağı ve sensör sinyali kontrol edilir, çünkü katalizör en pahalı parçadır. Muayenede egzoz emisyon değerleri de bu arızayla birlikte sınırın dışına çıkar.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0401",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0401", "EGR yetersiz", "egr valfi", "egzoz gazı geri dönüşü"],
+    "metin": "P0401 EGR akışının yetersiz olduğunu bildirir. Dizel ve benzinli motorlarda EGR valfi ve borusu kurumla tıkanır; belirti rölanti bozukluğu, güç kaybı ve dizelde siyah dumandır. Valf sökülüp temizlendiğinde çoğu araçta kod düşer, ancak soğutucusu (EGR cooler) tıkalıysa sorun kısa sürede tekrarlar. EGR'yi kapatmak veya yazılımdan iptal etmek muayenede emisyon değerini bozar ve yasal değildir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0128",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0128", "termostat", "motor ısınmıyor", "soğutma sıcaklığı düşük"],
+    "metin": "P0128 motorun beklenen sürede çalışma sıcaklığına ulaşmadığını gösterir; neredeyse her zaman açık kalmış termostattır. Belirtileri geç ısınan kalorifer, yüksek yakıt tüketimi ve kışın düşük gösterge sıcaklığıdır. Termostat ucuz bir parçadır ama değişimi ihmal edilirse motor sürekli zengin karışımla çalışıp yakıt tüketir ve yağı sulandırır. Değişimden sonra soğutma sistemi mutlaka havası alınarak doldurulur.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0299",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0299", "turbo düşük basınç", "turbo underboost", "turbo kaçağı"],
+    "metin": "P0299 turbo besleme basıncının hedefin altında kaldığını bildirir. En sık nedenler patlak veya çıkmış intercooler körüğü, kaçıran kelepçe, tutukluk yapan değişken kanat (VNT) mekanizması ve arızalı turbo aktüatörüdür. Belirti düz yolda normal, yokuşta ve yüklü hâlde güç kaybıdır. Turboyu değiştirmeden önce basınç kaçağı testi yapılmalıdır; kaçak varsa yeni turbo da aynı kodu verir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0016",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0016", "krank kam uyumsuz", "eksantrik sensörü", "triger atlamış"],
+    "metin": "P0016 krank ve eksantrik mili sinyalleri arasındaki uyumsuzluğu bildirir. Triger kayışı veya zinciri bir diş atlamış olabilir; zincirli motorlarda gergi tertibatının yorulması tipik nedendir. Değişken supap zamanlaması (VVT) kasnağının kirli yağ nedeniyle kilitlenememesi de aynı kodu üretir. Kod görüldüğünde motor yüksek devirde çalıştırılmamalıdır, zamanlama iyice kayarsa supaplar pistona vurur.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p2002",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P2002", "DPF verimi", "partikül filtresi", "dpf tıkandı"],
+    "metin": "P2002 partikül filtresinin (DPF) verimliliğinin düştüğünü bildirir. Kısa mesafe kullanımında rejenerasyon tamamlanamaz ve kurum birikir; fark basınç sensörü ve hortumlarının tıkanması da yanlış doluluk okutur. Önce sensör ve hortum kontrol edilir, ardından cihazla zorlanmış rejenerasyon denenir, sonuç alınmazsa filtre sökülüp yıkanır. DPF'yi sökmek veya iptal etmek muayenede araca ret verdirir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-p0442",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["P0442", "evap küçük kaçak", "yakıt buharı", "depo kapağı"],
+    "metin": "P0442 yakıt buharı (EVAP) sisteminde küçük kaçak bulunduğunu bildirir. En sık ve en ucuz neden gevşek ya da contası bozulmuş yakıt deposu kapağıdır; kapak sıkıldıktan sonra kod birkaç sürüş çevriminde kendiliğinden düşebilir. Devam ederse kanister valfi, buhar hortumları ve depo boyun contası kontrol edilir. Kod sürüş güvenliğini etkilemez ama emisyon muayenesinde arıza lambası yanık olduğu için ret sebebidir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "obd-u0100",
+    "kategori": "ObdKodu",
+    "anahtarlar": ["U0100", "ECU haberleşme yok", "can bus", "iletişim kaybı"],
+    "metin": "U0100 motor kontrol ünitesiyle CAN hattı üzerinden haberleşmenin kesildiğini bildirir. Genelde tek bir parça arızası değil, besleme ve şase bağlantısı, ezilmiş kablo demeti, korozyona uğramış soket veya zayıf akü gerilimidir. Marş sırasında gerilim 9 V altına düşüyorsa birden çok modülde aynı anda U kodları görülür; önce akü ve şase noktaları ölçülür. Kod varken diğer arıza kodları güvenilir okunmaz, önce haberleşme düzeltilir.",
+    "kaynak": "SAE J2012 genel arıza kodu tanımı",
+    "guncelleme": "2026-09-01"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tuvturk-periyot",
+    "kategori": "Muayene",
+    "anahtarlar": ["muayene periyodu", "kaç yılda bir muayene", "tüvtürk", "tuvturk", "muayene sıklığı"],
+    "metin": "Hususi otomobiller ilk muayenesini tescilden 3 yıl sonra yaptırır, sonrasında 2 yılda bir muayene olur. Ticari araçlar, taksi, minibüs ve kamyonetler yılda bir muayene olur. Muayene tarihi geçmiş araçla trafiğe çıkmak idari para cezası ve trafikten men sebebidir; ayrıca kaza durumunda sigorta değerlendirmesini olumsuz etkiler.",
+    "kaynak": "TÜVTÜRK araç muayene periyotları",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-evrak",
+    "kategori": "Muayene",
+    "anahtarlar": ["muayeneye ne götürmeli", "muayene evrak", "ruhsat", "zorunlu trafik sigortası", "egzoz pulu"],
+    "metin": "Muayeneye giderken araç tescil belgesi (ruhsat), geçerli zorunlu trafik sigortası poliçesi ve geçerli egzoz emisyon ölçüm pulu gerekir. Trafik sigortası süresi dolmuş araç muayeneye alınmaz. Vergi ve trafik cezası borcu varsa muayene yapılır ancak sonuç kaydı borç kapanana kadar tamamlanmaz. Randevu TÜVTÜRK üzerinden alınır, randevusuz giriş istasyona göre değişir.",
+    "kaynak": "TÜVTÜRK muayene başvuru koşulları",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-fren-testi",
+    "kategori": "Muayene",
+    "anahtarlar": ["fren testi", "fren dengesizliği", "muayene fren", "el freni testi", "fren verimi"],
+    "metin": "Muayenede frenler rulolu test cihazında ölçülür; aynı akstaki iki tekerlek arasındaki fren kuvveti farkı belirli oranı aşarsa ağır kusur verilir. En sık ret nedenleri sıkışmış kaliper pistonu, tek taraf yağlanmış balata ve gerginliği kaçmış el freni telidir. Muayeneden önce balatalar ve disklerin gözle kontrolü, el freninin 5-7 tık aralığında tutması istenir.",
+    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-far-ayari",
+    "kategori": "Muayene",
+    "anahtarlar": ["far ayarı", "far yüksekliği", "muayene far", "far kırık", "aydınlatma kusuru"],
+    "metin": "Far demeti yüksekliği ve şiddeti muayenede ölçülür; yanlış ayarlı far hafif kusur, yanmayan far veya kırık cam ağır kusur olabilir. Sonradan takılan yüksek güçlü LED ve xenon ampuller orijinal reflektörle uyumsuz çalışır, karşıdan gelen sürücüyü kör eder ve muayenede ret sebebidir. Muayeneden önce tüm dış aydınlatma, sinyal, fren ve plaka lambaları tek tek denenmelidir.",
+    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-egzoz-emisyon",
+    "kategori": "Muayene",
+    "anahtarlar": ["egzoz emisyon", "emisyon ölçümü", "egzoz pulu", "opasite", "dizel duman ölçümü"],
+    "metin": "Egzoz emisyon ölçümü muayeneden ayrı bir işlemdir ve yetkili istasyonlarda yapılır; sonucu gösteren pul muayenede istenir. Benzinlide CO ve lambda değerleri, dizelde duman koyuluğu (opasite) ölçülür. Motor arıza lambası yanıkken ölçüme girilmez, önce arıza giderilir. Ölçümden önce motorun çalışma sıcaklığına gelmiş olması gerekir; soğuk motorda değerler yüksek çıkar.",
+    "kaynak": "Egzoz gazı emisyon ölçümü mevzuatı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-ret-nedenleri",
+    "kategori": "Muayene",
+    "anahtarlar": ["muayeneden kaldı", "ağır kusur", "emniyetsiz kusur", "tekrar muayene", "muayene ret"],
+    "metin": "Muayene sonucu hafif kusur, ağır kusur ve emniyetsiz kusur olarak verilir. Hafif kusurla araç geçer, ağır kusurda eksik giderilip belirli süre içinde tekrar muayeneye gelinir ve bu tekrar indirimli ücretlendirilir. Emniyetsiz kusurda araç trafiğe çıkamaz, çekiciyle taşınır. En sık ağır kusur nedenleri fren dengesizliği, süspansiyon boşluğu, aşırı diş aşınmış lastik ve aydınlatma arızalarıdır.",
+    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-suspansiyon",
+    "kategori": "Muayene",
+    "anahtarlar": ["süspansiyon testi", "amortisör muayene", "rotil boşluğu", "oynak boşluk", "ön düzen"],
+    "metin": "Muayenede süspansiyon sarsma platformunda ve gözle kontrol edilir; rotil, rot başı, salıncak burcu ve amortisörde boşluk veya yağ sızıntısı aranır. Amortisörden yağ sızması ağır kusurdur. Muayene öncesi ön düzen ayarı yapılması lastik aşınmasını da düzeltir. Ses veriyor diye değil, boşluk verdiği için kusur yazılır; sesli ama boşluksuz parça geçebilir.",
+    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-tadilat",
+    "kategori": "Muayene",
+    "anahtarlar": ["tadilat", "lpg montajı", "çeki demiri", "jant değişimi", "ruhsata işletme"],
+    "metin": "LPG dönüşümü, çeki demiri, jant ve lastik ölçüsü değişikliği, kasa ve koltuk değişimi gibi tadilatlar ruhsata işlenmeden muayeneden geçmez. LPG'li araçlarda ayrıca sızdırmazlık raporu geçerli olmalıdır; tüp kullanım ömrü 10 yıldır ve süresi dolan tüp değiştirilmelidir. Ruhsata işlenmemiş tadilat ağır kusur sebebidir ve sigorta hasar ödemesinde de sorun çıkarır.",
+    "kaynak": "Araç tadilat ve tescil mevzuatı",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-lastik",
+    "kategori": "Muayene",
+    "anahtarlar": ["lastik diş derinliği", "muayene lastik", "1.6 mm", "lastik kusuru", "farklı lastik"],
+    "metin": "Muayenede lastik diş derinliği 1,6 mm yasal sınırın altındaysa, yan duvarda kesik, balon veya kord görünürse kusur yazılır. Aynı aksta farklı ebat, farklı desen veya farklı tip (yaz-kış karışık) lastik kullanmak da kusurdur. Ruhsattaki ebattan farklı ölçü takılıysa tadilat olarak işlenmiş olması gerekir. Stepne ve kriko zorunlu ekipman kontrolünde ayrıca sorulabilir.",
+    "kaynak": "TÜVTÜRK muayene kusur değerlendirmesi",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tuvturk-hazirlik",
+    "kategori": "Muayene",
+    "anahtarlar": ["muayeneye hazırlık", "muayene öncesi kontrol", "muayeneden geçme", "ön kontrol", "muayene ipucu"],
+    "metin": "Muayene öncesi yapılacak basit kontroller ret oranını belirgin düşürür: tüm lambaların yanması, cam sileceklerinin ve su fıskiyesinin çalışması, korna, emniyet kemerlerinin kilitlenmesi, ön cam çatlağı, plakaların okunaklı ve sabit olması, egzozdan kaçak sesi olmaması, motor arıza lambasının sönük olması. Araç yıkanmış ve motor bölmesi temiz gelirse sızıntı kontrolü de doğru yapılır.",
+    "kaynak": "TÜVTÜRK muayene öncesi kontrol önerileri",
+    "guncelleme": "2026-09-01"
+  }
+]

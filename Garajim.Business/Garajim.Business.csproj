@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Garajim.Dal\Garajim.Dal.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Usta\Bilgi\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Usta\*.md" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

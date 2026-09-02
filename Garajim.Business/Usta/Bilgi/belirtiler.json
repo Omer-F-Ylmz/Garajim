@@ -1,0 +1,82 @@
+[
+  {
+    "id": "belirti-fren-titremesi",
+    "kategori": "Fren",
+    "anahtarlar": ["frende titreme", "fren yaparken titriyor", "direksiyon titriyor fren", "disk salgısı", "pedal zıplıyor"],
+    "metin": "Frenlemede direksiyonda veya pedalda ritmik titreme genelde ön fren disklerinin salgı yapmasından gelir; disk yüzeyi ısınıp soğuma çevrimiyle düzlükten çıkmıştır. Titreme yalnız yüksek hızda frende beliriyorsa ön disk, arkadan geliyorsa arka kampana veya disk şüphelidir. Bijon torkunun elle sıkılması ve tekerlek balansının bozukluğu da aynı belirtiyi taklit eder. Disk kalınlık farkı komparatörle ölçülür.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-soguk-calisma-zorlugu",
+    "kategori": "Motor",
+    "anahtarlar": ["soğukta zor çalışıyor", "sabah çalışmıyor", "marş basıyor çalışmıyor", "zor çalışma", "ilk çalıştırma"],
+    "metin": "Soğukta zor çalışıp ısındıktan sonra sorunsuz çalışan motorda ilk bakılacaklar: akü gerilimi ve marş anındaki düşüş, dizelde kızdırma bujileri, benzinlide soğuk çalışma sensörü (hararet müşiri) ve yakıt basıncının marş öncesi düşmesi. Yakıt basıncı kontak açıkken tutmuyorsa enjektör sızdırması ya da pompa çek valfi şüphelidir. Belirti yalnız yağmurdan sonra çıkıyorsa buji kabloları ve bobin izolasyonu kontrol edilir.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-rolanti-dalgalanma",
+    "kategori": "Motor",
+    "anahtarlar": ["rölanti dalgalanıyor", "rolanti düşüyor", "araç stop ediyor rölantide", "titreme rölanti", "devir iniyor çıkıyor"],
+    "metin": "Rölantide devrin inip çıkması en sık emme manifoldu hava kaçağı, kirli gaz kelebeği veya arızalı rölanti kontrol valfinden olur. Vakum hortumu çatlağı ısındıkça kapanır, bu yüzden belirti soğukken belirgindir. Kirli gaz kelebeği temizliğinden sonra çoğu araçta adaptasyon (öğrenme) silinmelidir, yoksa şikayet sürer. Klima açıldığında devrin çökmesi rölanti valfi ve alternatör yükü yönünü işaret eder.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-mavi-duman",
+    "kategori": "Motor",
+    "anahtarlar": ["mavi duman", "egzozdan mavi duman", "yağ yakıyor", "yag yakiyor", "yağ eksiltiyor"],
+    "metin": "Egzozdan mavi duman yağın yanma odasına karıştığını gösterir. Yalnız ilk çalıştırmada geliyorsa supap lastikleri, sürekli ve yükte artıyorsa segman veya silindir aşıntısı, turbolu motorda gaz kesince geliyorsa turbo keçesi şüphelidir. Karter havalandırmasının (PCV) tıkanması da yağı emmeye taşır ve ucuz çözümdür, önce o kontrol edilir. 1.000 km'de 1 litreden fazla yağ eksilmesi normal kabul edilmez.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-beyaz-duman",
+    "kategori": "Motor",
+    "anahtarlar": ["beyaz duman", "egzozdan beyaz duman", "su eksiliyor", "silindir kapak contası", "radyatör kabarcık"],
+    "metin": "Soğuk havada ısınana kadar çıkan ince beyaz buhar normaldir. Motor ısındıktan sonra da süren yoğun beyaz duman, tatlımsı koku ve radyatör suyunun eksilmesi silindir kapak contası veya çatlak kapak anlamına gelir. Radyatör kapağı açıkken suda kabarcık kaynaması ve genleşme deposunda yağ bulaşığı aynı yönü işaret eder. Kimyasal (CO2) test kiti ile suda egzoz gazı aranarak kesinleştirilir.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-direksiyon-sesi",
+    "kategori": "Suspansiyon",
+    "anahtarlar": ["direksiyon çevirince ses", "tak tak sesi", "rot rotil", "salıncak sesi", "bozuk yolda ses"],
+    "metin": "Bozuk yolda ön taraftan gelen tok 'tak tak' sesi en sık rotil, salıncak burcu, viraj demiri (z rot) veya amortisör üst yatağından gelir. Ses yalnız direksiyon çevirirken ve durur haldeyken çıkıyorsa amortisör üst yatağı ve rotil; yalnız tümsekte çıkıyorsa z rot ve burçlar öne çıkar. Z rot en ucuz ve en sık bozulan parçadır, önce o kontrol edilir. Ses aksla birlikte hızla artıyorsa aks körüğü ve tekerlek rulmanı ayrı değerlendirilir.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-klima-sogutmuyor",
+    "kategori": "Klima",
+    "anahtarlar": ["klima soğutmuyor", "klima üflemiyor", "klima gazı", "klima kokuyor", "buğu çözmüyor"],
+    "metin": "Klimanın soğutmaması genelde gaz kaçağıdır; sistem kapalı devredir, düzenli gaz eksiliyorsa kaçak aranmalı, sadece gaz basmak geçici çözümdür. Kompresör kavraması çekmiyorsa basınç şalteri ve düşük gaz koruması bakılır. Hava geliyor ama az geliyorsa polen filtresi tıkanmıştır. Klimadan küf kokusu gelmesi buharlaştırıcıda nem kalmasındandır; park etmeden birkaç dakika önce klimayı kapatıp fanı açık bırakmak kokuyu önler.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-guc-kaybi-dizel",
+    "kategori": "Motor",
+    "anahtarlar": ["güç kaybı", "çekmiyor", "turbo çekmiyor", "arıza moduna girdi", "limp mod", "dpf doldu"],
+    "metin": "Dizelde ani güç kaybı ve motor arıza lambası, aracın koruma (limp) moduna girdiğini gösterir. En sık nedenler tıkanmış DPF, arızalı turbo aktüatörü veya değişken kanat mekanizmasının kurumdan tutukluk yapması, EGR valfi kirliliği ve hava kütle ölçer (MAF) sapmasıdır. Şehir içi kısa mesafe kullanımı DPF rejenerasyonunu yarım bırakır ve doluluk birikir. Kesin ayrım OBD ile canlı veri okunarak yapılır, kod silmek belirtiyi geçici kapatır.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-aku-bitiyor",
+    "kategori": "Elektrik",
+    "anahtarlar": ["akü bitiyor", "sabah marş basmıyor", "akü boşalıyor", "şarj lambası", "alternatör"],
+    "metin": "Araç birkaç gün durunca akü bitiyorsa kaçak akım ölçülmelidir; normal değer modern araçlarda uyku moduna girdikten sonra 50 mA altıdır. Sonradan takılan teyp, takip cihazı ve alarm en sık kaçak kaynağıdır. Motor çalışırken akü uçlarında gerilim 13,8-14,4 V değilse alternatör veya regülatör şüphelidir. Şarj lambasının seyir hâlinde yanması alternatörün şarj etmediğini gösterir ve araç akü bitince yolda kalır.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "belirti-debriyaj-kayiyor",
+    "kategori": "Sanziman",
+    "anahtarlar": ["debriyaj kayıyor", "devir yükseliyor hız artmıyor", "debriyaj sertleşti", "vites atmıyor", "kavrama"],
+    "metin": "Yokuşta veya hızlanmada motor devri yükselirken hızın aynı oranda artmaması debriyaj balatasının kaydığını gösterir. Test için düz yolda 4. viteste düşük hızda tam gaz verilir; devir fırlıyorsa kavrama bitmiştir. Debriyaj pedalı sertleştiyse baskı balansı, ayağı kaldırırken titreme varsa volant (kademeli volant) kontrol edilir. Set değişiminde baskı, disk, rulman ve gerekiyorsa volant birlikte yenilenir; işçilik aynı olduğu için parça tek tek değiştirilmez.",
+    "kaynak": "Genel arıza teşhis pratiği",
+    "guncelleme": "2026-09-01"
+  }
+]

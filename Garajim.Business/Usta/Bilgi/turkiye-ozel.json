@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tr-lpg-bakim",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["lpg", "otogaz", "lpg bakımı", "lpg filtresi", "sıralı sistem"],
+    "metin": "Türkiye'de otogazlı araç oranı yüksektir. Sıralı LPG sistemlerinde gaz filtresi 15.000 km'de, buharlaştırıcı (regülatör) bakımı 40.000 km'de yapılır. LPG'de yanma sıcaklığı yüksektir; buji aralığı kısalır ve supap kanalları için kurşun ikamesi (valve saver) kullanan araçlarda seviye takip edilmelidir. LPG tüpünün 10 yıllık kullanım ömrü dolduğunda değişimi ve sızdırmazlık raporunun yenilenmesi zorunludur.",
+    "kaynak": "Otogaz dönüşüm ve bakım uygulamaları",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-yakit-kalitesi",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["yakıt kalitesi", "kötü benzin", "sulu mazot", "enjektör tıkanması", "yakıt katkısı"],
+    "metin": "Bilinmeyen istasyondan alınan düşük kaliteli veya su karışmış yakıt, dizelde enjektör ve yüksek basınç pompasını hızla bozar; onarımı motor onarımı kadar pahalıya çıkar. Belirtiler ani güç kaybı, tekleme ve zor çalışmadır. Depoyu çok dipte kullanmamak, dipteki tortunun pompaya gitmesini engeller. Depoya su girdiğinden şüpheleniliyorsa motor çalıştırılmadan depo boşaltılmalıdır.",
+    "kaynak": "Saha bakım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-kis-lastigi",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["kış lastiği", "kis lastigi", "zorunluluk", "M+S", "dört mevsim lastik"],
+    "metin": "Ticari araçlarda kış lastiği kullanımı 15 Kasım - 15 Nisan arasında zorunludur; valilikler bu dönemi bir ay öne veya arkaya uzatabilir. M+S işaretli kış ve dört mevsim lastikleri kabul edilir. Hususi araçlarda zorunluluk yoktur ama kar ve buzda tutuş belirgin farklıdır. Kış lastiğinde diş derinliği 4 mm altına indiğinde kış performansı büyük ölçüde kaybolur.",
+    "kaynak": "Kış lastiği kullanım zorunluluğu tebliği (4 Ekim 2025)",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-yol-kosullari",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["bozuk yol", "kasis", "rekor çukur", "süspansiyon ömrü", "jant eğildi"],
+    "metin": "Şehir içi kasis ve bozuk asfalt, Türkiye'de süspansiyon parçalarının ömrünü kısaltır; rotil, salıncak burcu ve amortisör beklenenden erken bozulur. Sert kasise hızlı girmek jant kenarını eğip lastikte yavaş hava kaçağı yapar. Düşük profilli lastik ve büyük jant kombinasyonu bu riski artırır. Balans ve ön düzen ayarının yılda bir kez veya belirgin darbeden sonra kontrolü önerilir.",
+    "kaynak": "Saha bakım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-yedek-parca-secimi",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["yan sanayi", "orijinal parça", "muadil", "OEM", "parça seçimi"],
+    "metin": "Türkiye'de yedek parça üç kademedir: orijinal (üretici ambalajlı), OEM eşdeğeri (aynı fabrikanın kendi markası) ve yan sanayi. Fren, süspansiyon, triger seti ve debriyaj gibi güvenlik ve emek yoğun kalemlerde orijinal veya OEM eşdeğeri tercih edilmeli; ucuz yan sanayi kısa sürede tekrar işçilik doğurur. Filtre ve silecek gibi kalemlerde iyi marka yan sanayi yeterlidir. Parça faturasında marka ve parça numarasının yazılı olması sonraki garanti tartışmasını önler.",
+    "kaynak": "Saha bakım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-servis-secimi",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["yetkili servis", "özel servis", "servis farkı", "garanti", "işçilik ücreti"],
+    "metin": "Yetkili servis işçilik saati özel servise göre belirgin yüksektir, buna karşılık marka cihazı, güncel yazılım ve işlem kaydı sunar. Garanti süresi içindeki araçta periyodik bakımın yetkili serviste veya bakım kitapçığına uygun şekilde yapılması garantiyi korur; sadece özel serviste yaptırmak tek başına garantiyi düşürmez, ancak kullanılan parça ve işlemin belgelenmesi gerekir. Yazılım ve kodlama gerektiren işler ile karmaşık elektronik arızalarda yetkili servis avantajlıdır.",
+    "kaynak": "Saha bakım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-ikinci-el-ekspertiz",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["ikinci el", "ekspertiz", "boya değişen", "km düşürme", "hasar kaydı"],
+    "metin": "İkinci el alımında boya kalınlığı ölçümü, şase kontrolü, motor ve şanzıman testi içeren ekspertiz raporu alınmalıdır. Hasar kaydı ve ağır hasar bilgisi e-Devlet üzerinden araç sorgulamayla görülebilir. Kilometre tutarlılığı muayene ve bakım kayıtlarındaki kilometre ilerlemesiyle karşılaştırılır; geriye giden bir kayıt varsa kilometre düşürülmüş olabilir. Düzenli tutulmuş bakım geçmişi aracın satış değerini yükseltir.",
+    "kaynak": "İkinci el araç alım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-sicak-iklim",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["yaz sıcağı", "hararet", "klima yükü", "akü sıcak", "yaz bakımı"],
+    "metin": "Türkiye'nin güney ve iç bölgelerinde yaz sıcağı soğutma sistemini zorlar; radyatör peteklerinin böcek ve tozdan tıkanması, fan arızası ve yorulmuş termostat hararetin en sık nedenleridir. Yaz öncesi antifriz seviyesi ve fan çalışması kontrol edilmelidir. Yüksek sıcaklık akü elektrolitini buharlaştırıp ömrünü kısaltır; sıcak bölgede akü ortalama ömrü daha kısadır. Uzun yolda klima ile birlikte yokuş çıkarken sıcaklık göstergesi takip edilmelidir.",
+    "kaynak": "Saha bakım pratiği",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-kasko-sigorta",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["kasko", "trafik sigortası", "hasar", "eksper", "muafiyet"],
+    "metin": "Zorunlu trafik sigortası karşı tarafın zararını, kasko kendi aracınızın hasarını karşılar. Kaskoda anlaşmalı serviste orijinal parça, anlaşmasız serviste eşdeğer parça uygulaması poliçeye göre değişir; poliçedeki 'onarım servisi' maddesi satın almadan önce okunmalıdır. Küçük hasarda hasarsızlık indiriminin kaybı, onarım bedelinden pahalıya gelebilir. Kaza sonrası tutanak, fotoğraf ve varsa kamera kaydı hasar dosyasını hızlandırır.",
+    "kaynak": "Sigorta genel şartları özeti",
+    "guncelleme": "2026-09-01"
+  },
+  {
+    "id": "tr-mtv-vergi",
+    "kategori": "TurkiyeOzel",
+    "anahtarlar": ["mtv", "motorlu taşıtlar vergisi", "vergi taksiti", "ocak temmuz", "araç vergisi"],
+    "metin": "Motorlu taşıtlar vergisi yılda iki taksitte, Ocak ve Temmuz aylarında ödenir. Ödenmemiş MTV borcu araç satışında ve muayene işleminde önünüze çıkar. Vergi tutarı otomobillerde motor hacmi, araç yaşı ve aracın vergi değerine göre belirlenir; elektrikli araçlarda motor gücü esas alınır. Aracı sattığınızda noter satışının ardından tescil kaydının güncellendiğini kontrol etmek, sonraki dönem vergisinin üzerinize kalmasını önler.",
+    "kaynak": "Motorlu Taşıtlar Vergisi uygulaması",
+    "guncelleme": "2026-09-01"
+  }
+]
