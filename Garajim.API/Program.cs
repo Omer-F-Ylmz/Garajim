@@ -372,8 +372,11 @@ if (builder.Configuration.GetValue("DemoSeed:Enabled", false))
     }
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Configuration.GetValue("Swagger:Enabled", !app.Environment.IsProduction()))
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseResponseCompression();
 
