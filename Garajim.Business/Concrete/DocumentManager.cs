@@ -104,19 +104,38 @@ namespace Garajim.Business.Concrete
 
         public async Task<IResult> DeleteAsync(int userId, int documentId)
         {
+            var satir = await SatirSilAsync(userId, documentId);
+            if (!satir.Success)
+                return new ErrorResult(satir.Message);
+
+            DosyaSil(satir.Data);
+
+            return new SuccessResult(Messages.DocumentDeleted);
+        }
+
+        public async Task<IDataResult<string>> SatirSilAsync(int userId, int documentId)
+        {
             var document = await ErisilebilirBelgeAsync(userId, documentId);
             if (document == null)
-                return new ErrorResult(Messages.DocumentNotFound);
+                return new ErrorDataResult<string>(Messages.DocumentNotFound);
 
             await _documentDal.DeleteAsync(document);
 
-            var tamYol = Path.Combine(KlasorYolu(), document.StoredName);
+            return new SuccessDataResult<string>(document.StoredName);
+        }
+
+        public void DosyaSil(string saklananAd)
+        {
+            if (string.IsNullOrWhiteSpace(saklananAd))
+            {
+                return;
+            }
+
+            var tamYol = Path.Combine(KlasorYolu(), saklananAd);
             if (File.Exists(tamYol))
             {
                 File.Delete(tamYol);
             }
-
-            return new SuccessResult(Messages.DocumentDeleted);
         }
 
         private async Task<Document> ErisilebilirBelgeAsync(int userId, int documentId)

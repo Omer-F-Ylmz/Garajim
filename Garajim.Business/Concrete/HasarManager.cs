@@ -18,6 +18,7 @@ namespace Garajim.Business.Concrete
         private readonly IDocumentDal _documentDal;
         private readonly IUserDal _userDal;
         private readonly IVehicleAccessService _vehicleAccess;
+        private readonly IUnitOfWork _unitOfWork;
 
         public HasarManager(
             IHasarDosyasiDal dosyaDal,
@@ -25,8 +26,10 @@ namespace Garajim.Business.Concrete
             IDocumentService documentService,
             IDocumentDal documentDal,
             IUserDal userDal,
-            IVehicleAccessService vehicleAccess)
+            IVehicleAccessService vehicleAccess,
+            IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _dosyaDal = dosyaDal;
             _fotoDal = fotoDal;
             _documentService = documentService;
@@ -168,13 +171,30 @@ namespace Garajim.Business.Concrete
                 return new ErrorResult(erisim.Hata);
 
             var fotolar = await _fotoDal.GetByDosyaAsync(id);
-            foreach (var foto in fotolar)
+            var silinecekDosyalar = new List<string>();
+
+            await using (var islem = await _unitOfWork.BeginTransactionAsync())
             {
-                await _fotoDal.DeleteAsync(foto);
-                await _documentService.DeleteAsync(userId, foto.DocumentId);
+                foreach (var foto in fotolar)
+                {
+                    await _fotoDal.DeleteAsync(foto);
+
+                    var satir = await _documentService.SatirSilAsync(userId, foto.DocumentId);
+                    if (!satir.Success)
+                        return new ErrorResult(satir.Message);
+
+                    silinecekDosyalar.Add(satir.Data);
+                }
+
+                await _dosyaDal.DeleteAsync(erisim.Dosya);
+                await _unitOfWork.CommitAsync();
             }
 
-            await _dosyaDal.DeleteAsync(erisim.Dosya);
+            foreach (var saklananAd in silinecekDosyalar)
+            {
+                _documentService.DosyaSil(saklananAd);
+            }
+
             return new SuccessResult(Messages.HasarDosyasiSilindi);
         }
 
@@ -235,8 +255,21 @@ namespace Garajim.Business.Concrete
             if (foto == null)
                 return new ErrorResult(Messages.HasarFotoBulunamadi);
 
-            await _fotoDal.DeleteAsync(foto);
-            await _documentService.DeleteAsync(userId, foto.DocumentId);
+            string saklananAd;
+
+            await using (var islem = await _unitOfWork.BeginTransactionAsync())
+            {
+                await _fotoDal.DeleteAsync(foto);
+
+                var satir = await _documentService.SatirSilAsync(userId, foto.DocumentId);
+                if (!satir.Success)
+                    return new ErrorResult(satir.Message);
+
+                saklananAd = satir.Data;
+                await _unitOfWork.CommitAsync();
+            }
+
+            _documentService.DosyaSil(saklananAd);
 
             return new SuccessResult(Messages.HasarFotoSilindi);
         }
