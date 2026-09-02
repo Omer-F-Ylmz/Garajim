@@ -372,6 +372,8 @@
         </div>
 
         <div id="workspace" class="hidden">
+            <button id="kaza-ani" class="kaza-ani" type="button">Kaza anı — ne yapmalıyım?</button>
+
             <nav class="tabs" role="tablist">
                 <button class="tab-btn active" data-tab="bakim" type="button">Bakım</button>
                 <button class="tab-btn" data-tab="yakit" type="button">Yakıt</button>
@@ -884,6 +886,25 @@
                     </table>
                 </div>
             </section>
+        </div>
+    </div>
+
+    <div id="kaza-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="kaza-baslik">
+        <div class="kaza-kutu">
+            <div class="kaza-ust">
+                <h2 id="kaza-baslik">Kaza anı</h2>
+                <button id="kaza-kapat" class="ghost" type="button">Kapat</button>
+            </div>
+            <p id="kaza-ozet" class="kaza-ozet"></p>
+            <div id="kaza-adimlar"></div>
+            <div id="kaza-listeler"></div>
+            <p id="kaza-bildirim" class="kaza-bildirim"></p>
+            <div class="kaza-eylem">
+                <button id="kaza-dosya-ac" class="primary" type="button">Hasar dosyası aç ve fotoğraf çek</button>
+                <input id="kaza-foto" class="hidden" type="file" accept="image/*" capture="environment" multiple>
+                <p id="kaza-durum" class="hint"></p>
+            </div>
+            <p id="kaza-kaynak" class="hint"></p>
         </div>
     </div>
 

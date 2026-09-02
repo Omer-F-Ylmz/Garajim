@@ -1,5 +1,6 @@
 using System.Text;
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
@@ -21,6 +22,12 @@ namespace Garajim.API.Controllers
         public HasarController(IHasarService hasarService)
         {
             _hasarService = hasarService;
+        }
+
+        [HttpGet("rehber")]
+        public IActionResult Rehber()
+        {
+            return Ok(new Core.Utilities.Results.SuccessDataResult<KazaRehberiDto>(KazaRehberi.Olustur()));
         }
 
         [HttpGet]

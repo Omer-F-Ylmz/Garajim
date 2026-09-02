@@ -97,6 +97,17 @@ Kod içindeki sabitler: hususi muayene 2 yıl / ticari 1 yıl, egzoz aynı ayrı
 
 Kış lastiği penceresinin kaynağı: 4 Ekim 2025 tarihli Resmî Gazete tebliği pencereyi **15 Kasım – 15 Nisan** olarak belirledi (önceki düzenlemede 1 Aralık – 1 Nisan'dı). Valilikler pencereyi bir ay öne veya arkaya uzatabildiği için bu değer koda gömülü değil; il bazında `Evrak:KisLastigi` ezmesiyle karşılanır (örn. `15-10..15-05`). Tebliğ M+S işaretli lastiği kabul ettiği için panel uyarısında dört mevsim seti de yeterli sayılır.
 
+### Kaza anı rehberinin kaynağı
+
+Kaza anında ne yapılacağına dair metin **yalnız** `Garajim.Business/Concrete/KazaRehberi.cs` içinde durur; SPA ve API bu tek sınıftan okur, metin başka dosyada tekrar edilmez. `GET /api/Hasar/rehber` bu sınıfı döner.
+
+Rehberin dayandığı kaynaklar:
+
+- **Anlaşmalı tutanak koşulları ve polis çağrılması gereken haller:** 2918 sayılı Karayolları Trafik Kanunu ile Maddi Hasarlı Trafik Kazası Tespit Tutanağı düzenleme esasları. Yalnız maddi hasar, iki sürücünün de olay yerinde ve ehliyetli olması, alkol/uyuşturucu bulunmaması, kamu malına zarar gelmemiş olması ve iki araçta da geçerli ZMSS bulunması koşullarının tamamı aranır.
+- **Sigortaya bildirim süresi:** Karayolları Motorlu Araçlar Zorunlu Mali Sorumluluk Sigortası Genel Şartları — kazanın öğrenildiği tarihten itibaren **5 iş günü**.
+
+Mevzuat değişirse tek dosya ve tek test dosyası (`KazaRehberiHttpTests`) güncellenir. Metin bilgilendirme amaçlıdır, resmî tutanak yerine geçmez; `GET /api/Hasar/{id}/tutanak.html` çıktısı da bu notu taşır.
+
 ## Sprint 4 — TAMAMLANDI
 
 Rakip uygulamalardan geçiş ve maliyet analizi.

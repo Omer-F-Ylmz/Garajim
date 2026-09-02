@@ -9,6 +9,8 @@
         user: null,
         vehicles: [],
         selectedVehicleId: null,
+        kazaRehberi: null,
+        kazaDosyaId: null,
         documentRecordId: null,
         receiptDraft: null,
         chart: null,
@@ -1388,6 +1390,145 @@
             loadLastik();
         }).catch(function (error) {
             handleError(el("app-message"), error);
+        });
+    }
+
+    function kazaListesiCiz(kap, baslik, maddeler) {
+        if (!maddeler || maddeler.length === 0) {
+            return;
+        }
+
+        var bolum = make("div", null, "kaza-liste");
+        bolum.appendChild(make("h3", baslik));
+        var ul = document.createElement("ul");
+        maddeler.forEach(function (madde) {
+            ul.appendChild(make("li", madde));
+        });
+        bolum.appendChild(ul);
+        kap.appendChild(bolum);
+    }
+
+    function kazaRehberiCiz(rehber) {
+        el("kaza-ozet").textContent = rehber.ozet || "";
+        el("kaza-bildirim").textContent = rehber.bildirimSuresi || "";
+        el("kaza-kaynak").textContent = rehber.kaynak || "";
+
+        var adimlar = el("kaza-adimlar");
+        adimlar.textContent = "";
+        (rehber.adimlar || []).forEach(function (adim) {
+            var kutu = make("div", null, "kaza-adim");
+            kutu.appendChild(make("h3", adim.baslik));
+            var ul = document.createElement("ul");
+            (adim.maddeler || []).forEach(function (madde) {
+                ul.appendChild(make("li", madde));
+            });
+            kutu.appendChild(ul);
+            adimlar.appendChild(kutu);
+        });
+
+        var listeler = el("kaza-listeler");
+        listeler.textContent = "";
+        kazaListesiCiz(listeler, "Anlaşmalı tutanak koşulları", rehber.anlasmaliTutanakKosullari);
+        kazaListesiCiz(listeler, "Polis çağrılması gereken haller", rehber.polisGerekliHaller);
+        kazaListesiCiz(listeler, "Çekilecek fotoğraflar", rehber.fotografListesi);
+        kazaListesiCiz(listeler, "Alınacak bilgiler", rehber.alinacakBilgiler);
+    }
+
+    function kazaRehberiniAc() {
+        el("kaza-modal").classList.remove("hidden");
+        showMessage(el("kaza-durum"), "");
+        state.kazaDosyaId = null;
+
+        if (state.kazaRehberi) {
+            kazaRehberiCiz(state.kazaRehberi);
+            return;
+        }
+
+        api("/api/Hasar/rehber").then(function (result) {
+            state.kazaRehberi = result.data;
+            kazaRehberiCiz(result.data);
+        }).catch(function (error) {
+            handleError(el("kaza-durum"), error);
+        });
+    }
+
+    function kazaDosyasiAc() {
+        if (!state.selectedVehicleId) {
+            showMessage(el("kaza-durum"), "Önce bir araç seçin.", false);
+            return;
+        }
+
+        if (state.kazaDosyaId) {
+            el("kaza-foto").click();
+            return;
+        }
+
+        showMessage(el("kaza-durum"), "Hasar dosyası açılıyor…", true);
+
+        api("/api/Hasar", {
+            method: "POST",
+            body: {
+                vehicleId: state.selectedVehicleId,
+                olayTarihi: todayInput(),
+                tur: "Kaza",
+                aciklama: "Kaza anı rehberinden açıldı, ayrıntı sonra eklenecek.",
+                tutanakTuru: "Yok"
+            }
+        }).then(function (result) {
+            state.kazaDosyaId = result.data.id;
+            showMessage(el("kaza-durum"), "Dosya açıldı. Şimdi fotoğrafları çekin.", true);
+            el("kaza-foto").click();
+        }).catch(function (error) {
+            handleError(el("kaza-durum"), error);
+        });
+    }
+
+    function kazaFotoYukle(dosyalar) {
+        if (!state.kazaDosyaId || dosyalar.length === 0) {
+            return;
+        }
+
+        var sira = Promise.resolve();
+        var yuklenen = 0;
+
+        Array.prototype.forEach.call(dosyalar, function (dosya) {
+            sira = sira.then(function () {
+                var form = new FormData();
+                form.append("file", dosya);
+                form.append("etiket", "Genel");
+                return api("/api/Hasar/" + state.kazaDosyaId + "/foto", { method: "POST", body: form })
+                    .then(function () {
+                        yuklenen++;
+                        showMessage(el("kaza-durum"), yuklenen + " fotoğraf yüklendi.", true);
+                    });
+            });
+        });
+
+        sira.then(function () {
+            showMessage(el("kaza-durum"), yuklenen + " fotoğraf yüklendi. Ayrıntıları Hasar sekmesinden tamamlayabilirsiniz.", true);
+        }).catch(function (error) {
+            handleError(el("kaza-durum"), error);
+        });
+    }
+
+    function bindKaza() {
+        el("kaza-ani").addEventListener("click", kazaRehberiniAc);
+
+        el("kaza-kapat").addEventListener("click", function () {
+            el("kaza-modal").classList.add("hidden");
+        });
+
+        el("kaza-modal").addEventListener("click", function (event) {
+            if (event.target === el("kaza-modal")) {
+                el("kaza-modal").classList.add("hidden");
+            }
+        });
+
+        el("kaza-dosya-ac").addEventListener("click", kazaDosyasiAc);
+
+        el("kaza-foto").addEventListener("change", function (event) {
+            kazaFotoYukle(event.target.files);
+            event.target.value = "";
         });
     }
 
@@ -3384,6 +3525,7 @@
         bindYolculuk();
         bindExport();
         bindLastik();
+        bindKaza();
         bindDavet();
         bindPlan();
         bindUsta();
