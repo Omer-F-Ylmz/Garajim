@@ -74,7 +74,7 @@ namespace Garajim.Business.Concrete
             {
                 CompanyId = vehicle.CompanyId,
                 VehicleId = vehicle.Id,
-                Ad = dto.Ad.Trim(),
+                Ad = Kirp(dto.Ad, 100),
                 Mevsim = dto.Mevsim,
                 Marka = Kirp(dto.Marka, 100),
                 Ebat = Kirp(dto.Ebat, 50),

@@ -115,9 +115,9 @@ namespace Garajim.Business.Concrete
                 EvrakTuru = dto.EvrakTuru,
                 BaslangicTarihi = dto.BaslangicTarihi?.Date,
                 BitisTarihi = bitis.Date,
-                Saglayici = dto.Saglayici,
-                PoliceNo = dto.PoliceNo,
-                Not = dto.Not,
+                Saglayici = Kirp(dto.Saglayici, 100),
+                PoliceNo = Kirp(dto.PoliceNo, 50),
+                Not = Kirp(dto.Not, 300),
                 DocumentId = dto.DocumentId,
                 Aktif = true,
                 OlusturmaTarihi = DateTime.UtcNow
@@ -146,9 +146,9 @@ namespace Garajim.Business.Concrete
             kayit.EvrakTuru = dto.EvrakTuru;
             kayit.BaslangicTarihi = dto.BaslangicTarihi?.Date;
             kayit.BitisTarihi = dto.BitisTarihi.Date;
-            kayit.Saglayici = dto.Saglayici;
-            kayit.PoliceNo = dto.PoliceNo;
-            kayit.Not = dto.Not;
+            kayit.Saglayici = Kirp(dto.Saglayici, 100);
+            kayit.PoliceNo = Kirp(dto.PoliceNo, 50);
+            kayit.Not = Kirp(dto.Not, 300);
             kayit.DocumentId = dto.DocumentId;
 
             await _evrakDal.UpdateAsync(kayit);
@@ -272,7 +272,19 @@ namespace Garajim.Business.Concrete
             };
         }
 
+        private static string Kirp(string metin, int uzunluk)
+        {
+            if (string.IsNullOrWhiteSpace(metin))
+            {
+                return null;
+            }
+
+            var kirpik = metin.Trim();
+            return kirpik.Length > uzunluk ? kirpik.Substring(0, uzunluk) : kirpik;
+        }
+
         private static bool AyCoz(string ay, out DateTime baslangic)
+
         {
             baslangic = default;
 
