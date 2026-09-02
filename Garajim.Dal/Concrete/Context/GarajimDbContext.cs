@@ -38,6 +38,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<UstaCozumOzeti> UstaCozumOzetleri { get; set; }
         public DbSet<HasarDosyasi> HasarDosyalari { get; set; }
         public DbSet<HasarFoto> HasarFotograflari { get; set; }
+        public DbSet<AracDeger> AracDegerleri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -241,6 +242,17 @@ namespace Garajim.Dal.Concrete.Context
                 entity.ToTable(t => t.HasCheckConstraint("CK_HasarFoto_Sira", "[Sira] > 0"));
             });
 
+            modelBuilder.Entity<AracDeger>(entity =>
+            {
+                entity.Property(d => d.Deger).HasPrecision(18, 2);
+                entity.Property(d => d.Not).HasMaxLength(200);
+                entity.HasIndex(d => d.CompanyId);
+                entity.HasIndex(d => new { d.VehicleId, d.Tarih });
+                entity.HasOne<Company>().WithMany().HasForeignKey(d => d.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Vehicle>().WithMany().HasForeignKey(d => d.VehicleId).OnDelete(DeleteBehavior.Cascade);
+                entity.ToTable(t => t.HasCheckConstraint("CK_AracDeger_Deger", "[Deger] > 0"));
+            });
+
             modelBuilder.Entity<TakvimAbonelik>(entity =>
 
             {
@@ -329,6 +341,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<UstaOnay>().HasQueryFilter(o => o.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<HasarDosyasi>().HasQueryFilter(h => h.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<HasarFoto>().HasQueryFilter(f => f.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<AracDeger>().HasQueryFilter(d => d.CompanyId == CurrentCompanyId);
         }
     }
 }

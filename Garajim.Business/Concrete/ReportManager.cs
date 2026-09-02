@@ -26,10 +26,11 @@ namespace Garajim.Business.Concrete
         private readonly ILastikDal _lastikDal;
         private readonly EvrakKurallari _evrakKurallari;
         private readonly IHasarDosyasiDal _hasarDosyasiDal;
+        private readonly IDegerService _degerService;
 
         public ReportManager(IVehicleAccessService vehicleAccess, IMaintenanceDal maintenanceDal, IFuelDal fuelDal, IExpenseDal expenseDal, IUserDal userDal,
             ICompanyDal companyDal, IEvrakDal evrakDal, IReminderDal reminderDal, IVehicleAssignmentDal assignmentDal, IReceiptDraftDal receiptDraftDal, PlanKurallari planKurallari,
-            ILastikDal lastikDal, EvrakKurallari evrakKurallari, IHasarDosyasiDal hasarDosyasiDal)
+            ILastikDal lastikDal, EvrakKurallari evrakKurallari, IHasarDosyasiDal hasarDosyasiDal, IDegerService degerService)
         {
             _vehicleAccess = vehicleAccess;
             _maintenanceDal = maintenanceDal;
@@ -45,6 +46,7 @@ namespace Garajim.Business.Concrete
             _lastikDal = lastikDal;
             _evrakKurallari = evrakKurallari;
             _hasarDosyasiDal = hasarDosyasiDal;
+            _degerService = degerService;
         }
 
         public async Task<IDataResult<ExpenseSummaryDto>> GetSummaryAsync(int userId, int vehicleId, DateTime start, DateTime end)
@@ -174,6 +176,12 @@ namespace Garajim.Business.Concrete
                 maliyet.TuketimSeri = TuketimSeri(olcumler);
             }
 
+            maliyet.DonemDegerKaybi = await _degerService.DonemDegerKaybiAsync(vehicleId, bas, son);
+            if (maliyet.DonemDegerKaybi != null)
+            {
+                maliyet.SahiplikMaliyeti = maliyet.ToplamMaliyet + maliyet.DonemDegerKaybi.Value;
+            }
+
             return new SuccessDataResult<AracMaliyetDto>(maliyet);
         }
 
@@ -293,6 +301,11 @@ namespace Garajim.Business.Concrete
 
             panel.AktifZimmet = await _assignmentDal.AktifSayiAsync(idler);
             panel.AcikHasarDosyasi = await _hasarDosyasiDal.AcikSayisiAsync(idler);
+
+            if (user.Role == CompanyRole.Owner)
+            {
+                panel.FiloToplamDeger = await _degerService.FiloToplamDegerAsync(idler);
+            }
 
             var evrak = await _evrakDal.DurumSayilariAsync(idler, userId, bugun, EvrakKurallari.YaklasiyorGun);
             panel.EvrakGecti = evrak.Gecti;

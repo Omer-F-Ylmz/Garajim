@@ -48,6 +48,7 @@ namespace Garajim.Tests.Integration
             LastikDal = new EfLastikDal(Context);
             HasarDosyasiDal = new EfHasarDosyasiDal(Context);
             HasarFotoDal = new EfHasarFotoDal(Context);
+            AracDegerDal = new EfAracDegerDal(Context);
             YolculukDal = new EfYolculukDal(Context);
             UstaSohbetDal = new EfUstaSohbetDal(Context);
             UstaMesajDal = new EfUstaMesajDal(Context);
@@ -56,6 +57,7 @@ namespace Garajim.Tests.Integration
             EvrakKurallari = new EvrakKurallari(new ConfigurationBuilder().Build());
             UnitOfWork = new EfUnitOfWork(Context);
             VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
+            DegerService = new DegerManager(AracDegerDal, VehicleAccess, new SahteDegerTahminEdici());
         }
 
         public GarajimDbContext Context { get; }
@@ -93,6 +95,8 @@ namespace Garajim.Tests.Integration
         public EfLastikDal LastikDal { get; }
         public EfHasarDosyasiDal HasarDosyasiDal { get; }
         public EfHasarFotoDal HasarFotoDal { get; }
+        public EfAracDegerDal AracDegerDal { get; }
+        public DegerManager DegerService { get; }
 
         public EfYolculukDal YolculukDal { get; }
 

@@ -35,7 +35,7 @@ namespace Garajim.Tests.Unit
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>());
+            return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>(), Mock.Of<IDegerService>());
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Garajim.Tests.Unit
             _expenseDal.Setup(d => d.GetCategoryTotalsAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<CategoryTotalDto>());
 
-            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>());
+            var manager = new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object, _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object, _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, TestEvrakKurallari.Olustur(), Mock.Of<IHasarDosyasiDal>(), Mock.Of<IDegerService>());
             await manager.GetSummaryAsync(UserId, VehicleId, new DateTime(2026, 5, 1), new DateTime(2026, 5, 1));
 
             Assert.Equal(new DateTime(2026, 5, 1, 23, 59, 59), kullanilanBitis, TimeSpan.FromSeconds(1));

@@ -23,6 +23,7 @@ namespace Garajim.Business.Concrete
         private readonly IDocumentDal _documentDal;
         private readonly IEvrakDal _evrakDal;
         private readonly IHasarDosyasiDal _hasarDosyasiDal;
+        private readonly IDegerService _degerService;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IDocumentService _documentService;
         private readonly TenantContext _tenantContext;
@@ -37,6 +38,7 @@ namespace Garajim.Business.Concrete
             IDocumentDal documentDal,
             IEvrakDal evrakDal,
             IHasarDosyasiDal hasarDosyasiDal,
+            IDegerService degerService,
             IVehicleAccessService vehicleAccess,
             IDocumentService documentService,
             TenantContext tenantContext,
@@ -50,6 +52,7 @@ namespace Garajim.Business.Concrete
             _documentDal = documentDal;
             _evrakDal = evrakDal;
             _hasarDosyasiDal = hasarDosyasiDal;
+            _degerService = degerService;
             _vehicleAccess = vehicleAccess;
             _documentService = documentService;
             _tenantContext = tenantContext;
@@ -80,6 +83,7 @@ namespace Garajim.Business.Concrete
                 TutarGoster = kapsam.TutarGoster,
                 AcilKart = kapsam.AcilKart,
                 HasarGecmisi = kapsam.HasarGecmisi,
+                BeyanDegeri = kapsam.BeyanDegeri,
                 SonKullanma = dto?.SonKullanmaGun == null ? null : DateTime.UtcNow.AddDays(dto.SonKullanmaGun.Value),
                 Aktif = true,
                 GoruntulenmeSayisi = 0,
@@ -185,6 +189,11 @@ namespace Garajim.Business.Concrete
                         Tur = HasarAdlari.Tur(d.Tur),
                         Durum = d.Durum == HasarDurumu.Kapandi ? "Onarıldı" : "Açık"
                     }).ToList();
+            }
+
+            if (paylasim.BeyanDegeri)
+            {
+                karne.BeyanDegeri = await _degerService.KarneDegeriAsync(vehicle.Id);
             }
 
             await _karneDal.GoruntulenmeArtirAsync(paylasim.Id);

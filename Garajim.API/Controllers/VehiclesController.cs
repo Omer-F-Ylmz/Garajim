@@ -16,8 +16,9 @@ namespace Garajim.API.Controllers
         private readonly IEvrakService _evrakService;
         private readonly IReportService _reportService;
         private readonly IHasarService _hasarService;
+        private readonly IDegerService _degerService;
 
-        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService, IHasarService hasarService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService, IHasarService hasarService, IDegerService degerService)
         {
             _vehicleService = vehicleService;
             _partMemoryService = partMemoryService;
@@ -25,6 +26,7 @@ namespace Garajim.API.Controllers
             _evrakService = evrakService;
             _reportService = reportService;
             _hasarService = hasarService;
+            _degerService = degerService;
         }
 
         [HttpPost("{id}/karne")]
@@ -85,6 +87,39 @@ namespace Garajim.API.Controllers
             var result = await _hasarService.GetListAsync(CurrentUserId, id);
             if (!result.Success)
                 return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}/deger")]
+        public async Task<IActionResult> DegerSerisi(int id)
+        {
+            var result = await _degerService.GetSeriAsync(CurrentUserId, id);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/deger")]
+        public async Task<IActionResult> DegerGir(int id, DegerGirDto dto)
+        {
+            var result = await _degerService.GirAsync(CurrentUserId, id, dto);
+            if (!result.Success)
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/deger/tahmin")]
+        public async Task<IActionResult> DegerTahmini(int id)
+        {
+            var result = await _degerService.TahminAsync(CurrentUserId, id);
+            if (!result.Success)
+            {
+                if (result.Message == Messages.VehicleNotFound)
+                    return NotFound(result);
+                if (result.Message == Messages.DegerModelKapsamDisi)
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, result);
+                return BadRequest(result);
+            }
             return Ok(result);
         }
 

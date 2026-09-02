@@ -14,6 +14,7 @@ namespace Garajim.Entity.Dtos
         public decimal GecenAyMaliyet { get; set; }
         public decimal? DegisimYuzde { get; set; }
         public int AcikHasarDosyasi { get; set; }
+        public decimal? FiloToplamDeger { get; set; }
         public bool KisLastigiDonemi { get; set; }
         public string KisLastigiUyarisi { get; set; }
         public List<string> KisLastigiUyariPlakalari { get; set; } = new List<string>();

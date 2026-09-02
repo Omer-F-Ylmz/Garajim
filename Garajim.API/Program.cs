@@ -64,6 +64,7 @@ builder.Services.AddScoped<IUstaCozumOzetiDal, EfUstaCozumOzetiDal>();
 builder.Services.AddScoped<ILastikDal, EfLastikDal>();
 builder.Services.AddScoped<IHasarDosyasiDal, EfHasarDosyasiDal>();
 builder.Services.AddScoped<IHasarFotoDal, EfHasarFotoDal>();
+builder.Services.AddScoped<IAracDegerDal, EfAracDegerDal>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
@@ -83,6 +84,8 @@ builder.Services.AddScoped<IExportService, ExportManager>();
 builder.Services.AddScoped<IYolculukService, YolculukManager>();
 builder.Services.AddScoped<ILastikService, LastikManager>();
 builder.Services.AddScoped<IHasarService, HasarManager>();
+builder.Services.AddScoped<IDegerService, DegerManager>();
+builder.Services.AddScoped<IDegerTahminEdici, MlDegerTahminEdici>();
 builder.Services.AddScoped<IDavetService, DavetManager>();
 builder.Services.AddScoped<IPlanService, PlanManager>();
 builder.Services.AddScoped<IUstaService, UstaManager>();
@@ -124,6 +127,8 @@ builder.Services.AddScoped<ReminderNotificationJob>();
 builder.Services.AddScoped<UstaOzetJob>();
 builder.Services.AddScoped<UstaSaklamaJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
+
+builder.Services.AddSingleton(sp => FiyatModeliSozlugu.Yukle(Path.Combine(AppContext.BaseDirectory, "MLModels", "price-model.zip")));
 
 builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
     .FromFile(

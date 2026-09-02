@@ -94,6 +94,14 @@ namespace Garajim.Business.Constants
         public const string HasarFotoSiniri = "Bir hasar dosyasına en fazla 20 fotoğraf eklenebilir.";
         public const string HasarTarihiGecersiz = "Olay tarihi geçmiş bir tarih olmalı.";
 
+        public const string DegerKaydedildi = "Araç değeri kaydedildi.";
+        public const string DegerGecersiz = "Araç değeri sıfırdan büyük olmalı.";
+        public const string DegerTarihiGecersiz = "Değer tarihi gelecekte olamaz.";
+        public const string DegerModelKapsamDisi = "Bu araç modeli tahmin modelinin kapsamı dışında; değeri elle beyan edebilirsiniz.";
+        public const string DegerTahminSiniri = "Bir araç için günde en fazla 3 tahmin alınabilir.";
+        public const string DegerTahminUyarisi = "Ağustos 2025 piyasa verisiyle eğitilmiş model, enflasyon düzeltmesi yok, bilgilendirme amaçlıdır.";
+        public const string DegerTahminAlindi = "Tahmini değer kaydedildi.";
+
         public const string UstaOnayGerekli = "AI Usta'yı kullanmak için kullanım şartlarını onaylamanız gerekiyor.";
         public const string UstaOnayAlindi = "Onayınız kaydedildi.";
         public const string UstaOnaySurumuEski = "Onay metni güncellendi; lütfen yeni metni onaylayın.";

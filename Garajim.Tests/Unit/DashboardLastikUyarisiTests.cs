@@ -83,7 +83,7 @@ namespace Garajim.Tests.Unit
 
             return new ReportManager(_vehicleAccess.Object, _maintenanceDal.Object, _fuelDal.Object, _expenseDal.Object,
                 _userDal.Object, _companyDal.Object, _evrakDal.Object, _reminderDal.Object, _assignmentDal.Object,
-                _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, new EvrakKurallari(yapilandirma), Mock.Of<IHasarDosyasiDal>());
+                _receiptDraftDal.Object, TestPlanKurallari.Olustur(), _lastikDal.Object, new EvrakKurallari(yapilandirma), Mock.Of<IHasarDosyasiDal>(), Mock.Of<IDegerService>());
         }
 
         private static Vehicle Arac(int id, string plaka, KullanimTuru kullanim)

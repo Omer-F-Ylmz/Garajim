@@ -10,6 +10,7 @@ namespace Garajim.Entity.Dtos
         public bool TutarGoster { get; set; }
         public bool AcilKart { get; set; }
         public bool HasarGecmisi { get; set; }
+        public bool BeyanDegeri { get; set; }
     }
 
     public class KarneOlusturDto
@@ -80,6 +81,7 @@ namespace Garajim.Entity.Dtos
         public KarneYakitOzetiDto YakitOzeti { get; set; }
         public List<KarneBelgeDto> Belgeler { get; set; } = new List<KarneBelgeDto>();
         public List<HasarKarneSatiriDto> Hasarlar { get; set; } = new List<HasarKarneSatiriDto>();
+        public AracDegerDto BeyanDegeri { get; set; }
         public decimal? BakimToplami { get; set; }
     }
 
