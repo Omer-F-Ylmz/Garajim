@@ -1,4 +1,6 @@
 using Garajim.Core.Multitenancy;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Enums;
@@ -14,6 +16,7 @@ namespace Garajim.Business.Jobs
         private readonly IMaintenancePartDal _partDal;
         private readonly IUstaCozumOzetiDal _ozetDal;
         private readonly TenantContext _tenantContext;
+        private readonly ILogger<UstaOzetJob> _logger;
 
         public UstaOzetJob(
             ICompanyDal companyDal,
@@ -22,8 +25,10 @@ namespace Garajim.Business.Jobs
             IVehicleDal vehicleDal,
             IMaintenancePartDal partDal,
             IUstaCozumOzetiDal ozetDal,
-            TenantContext tenantContext)
+            TenantContext tenantContext,
+            ILogger<UstaOzetJob> logger = null)
         {
+            _logger = logger ?? NullLogger<UstaOzetJob>.Instance;
             _companyDal = companyDal;
             _mesajDal = mesajDal;
             _sohbetDal = sohbetDal;
@@ -38,13 +43,25 @@ namespace Garajim.Business.Jobs
             var sayaclar = new Dictionary<(string Marka, string Model, string Motor, string Kategori, string Parca), int>();
             var companies = await _companyDal.GetListAsync();
 
-            foreach (var company in companies)
+            try
             {
-                _tenantContext.SetCompany(company.Id);
-                await SirketIcinTopla(sayaclar);
+                foreach (var company in companies)
+                {
+                    try
+                    {
+                        _tenantContext.SetCompany(company.Id);
+                        await SirketIcinTopla(sayaclar);
+                    }
+                    catch (Exception hata)
+                    {
+                        _logger.LogError(hata, "AI Usta özeti {SirketId} numaralı şirkette başarısız oldu, diğer şirketlerle devam ediliyor.", company.Id);
+                    }
+                }
             }
-
-            _tenantContext.Clear();
+            finally
+            {
+                _tenantContext.Clear();
+            }
 
             foreach (var kayit in sayaclar)
             {

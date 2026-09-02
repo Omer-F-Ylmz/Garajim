@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete.Evraklar;
 using Garajim.Core.Multitenancy;
@@ -16,6 +18,7 @@ namespace Garajim.Business.Jobs
         private readonly ICompanyDal _companyDal;
         private readonly IReminderDal _reminderDal;
         private readonly TenantContext _tenantContext;
+        private readonly ILogger<ReminderNotificationJob> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
         private readonly IEvrakDal _evrakDal;
@@ -24,8 +27,10 @@ namespace Garajim.Business.Jobs
         private readonly EvrakKurallari _evrakKurallari;
 
         public ReminderNotificationJob(ICompanyDal companyDal, IReminderDal reminderDal, TenantContext tenantContext, IEmailSender emailSender, IConfiguration configuration,
-            IEvrakDal evrakDal, IUserDal userDal, IVehicleAssignmentDal assignmentDal, EvrakKurallari evrakKurallari)
+            IEvrakDal evrakDal, IUserDal userDal, IVehicleAssignmentDal assignmentDal, EvrakKurallari evrakKurallari,
+            ILogger<ReminderNotificationJob> logger = null)
         {
+            _logger = logger ?? NullLogger<ReminderNotificationJob>.Instance;
             _companyDal = companyDal;
             _reminderDal = reminderDal;
             _tenantContext = tenantContext;
@@ -41,14 +46,26 @@ namespace Garajim.Business.Jobs
         {
             var companies = await _companyDal.GetListAsync();
 
-            foreach (var company in companies)
+            try
             {
-                _tenantContext.SetCompany(company.Id);
-                await SirketIcinCalistirAsync();
-                await EvraklariTaraAsync();
+                foreach (var company in companies)
+                {
+                    try
+                    {
+                        _tenantContext.SetCompany(company.Id);
+                        await SirketIcinCalistirAsync();
+                        await EvraklariTaraAsync();
+                    }
+                    catch (Exception hata)
+                    {
+                        _logger.LogError(hata, "Hatırlatma taraması {SirketId} numaralı şirkette başarısız oldu, diğer şirketlerle devam ediliyor.", company.Id);
+                    }
+                }
             }
-
-            _tenantContext.Clear();
+            finally
+            {
+                _tenantContext.Clear();
+            }
         }
 
         private async Task EvraklariTaraAsync()
