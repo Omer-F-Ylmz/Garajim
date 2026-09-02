@@ -528,9 +528,9 @@ namespace Garajim.Tests.Integration
             var aracId = await AracEkleAsync(sahip);
             var sohbetId = await SohbetAcAsync(sahip, aracId);
 
-            await SorAsync(sahip, sohbetId, "Triger kayisi kac kilometrede degisir");
+            await SorAsync(sahip, sohbetId, "Motor yagi ne zaman degisir");
 
-            Assert.Contains("bakim-triger", _factory.Istemci.Cagrilar.Last().SabitBlok);
+            Assert.Contains(BilgiSecici.BakimKategorisi, _factory.Istemci.Cagrilar.Last().SabitBlok);
         }
 
         [Fact]

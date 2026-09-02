@@ -8,6 +8,9 @@ namespace Garajim.Business.Usta
         public const int MaxKayit = 25;
         public const int MaxToken = 3000;
 
+        public const string BakimKategorisi = "bakim-araliklari";
+        public const string BakimKuralKaydi = "bkm-000";
+
         private static readonly Regex DtcDeseni = new Regex(@"\b[PCBU][0-3][0-9A-F]{3}\b",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -84,6 +87,42 @@ namespace Garajim.Business.Usta
             return string.IsNullOrEmpty(metin) ? 0 : (metin.Length + 3) / 4;
         }
 
+        private static int IfadePuani(string anahtar, string normalSoru)
+        {
+            if (normalSoru.Contains(anahtar, StringComparison.Ordinal))
+            {
+                return 10;
+            }
+
+            var kelimeler = anahtar.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (kelimeler.Length < 3)
+            {
+                return 0;
+            }
+
+            var enUzun = 0;
+
+            for (var bas = 0; bas < kelimeler.Length; bas++)
+            {
+                for (var son = kelimeler.Length; son - bas >= 2; son--)
+                {
+                    if (son - bas <= enUzun)
+                    {
+                        break;
+                    }
+
+                    var parca = string.Join(' ', kelimeler[bas..son]);
+                    if (normalSoru.Contains(parca, StringComparison.Ordinal))
+                    {
+                        enUzun = son - bas;
+                        break;
+                    }
+                }
+            }
+
+            return enUzun < 2 ? 0 : 10 * enUzun / kelimeler.Length;
+        }
+
         public List<BilgiKaydi> Sec(string soru)
         {
             var normalSoru = Normalize(soru);
@@ -110,10 +149,7 @@ namespace Garajim.Business.Usta
 
                     if (anahtar.Contains(' '))
                     {
-                        if (normalSoru.Contains(anahtar, StringComparison.Ordinal))
-                        {
-                            puan += 10;
-                        }
+                        puan += IfadePuani(anahtar, normalSoru);
                         continue;
                     }
 
@@ -149,7 +185,32 @@ namespace Garajim.Business.Usta
                 token += maliyet;
             }
 
+            BakimKuralKaydiniEkle(secilen);
+
             return secilen;
+        }
+
+        private void BakimKuralKaydiniEkle(List<BilgiKaydi> secilen)
+        {
+            if (!secilen.Any(k => string.Equals(k.Kategori, BakimKategorisi, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            var mevcut = secilen.FindIndex(k => string.Equals(k.Id, BakimKuralKaydi, StringComparison.OrdinalIgnoreCase));
+            if (mevcut >= 0)
+            {
+                var tasinan = secilen[mevcut];
+                secilen.RemoveAt(mevcut);
+                secilen.Insert(0, tasinan);
+                return;
+            }
+
+            var kural = _kayitlar.FirstOrDefault(k => string.Equals(k.Id, BakimKuralKaydi, StringComparison.OrdinalIgnoreCase));
+            if (kural != null)
+            {
+                secilen.Insert(0, kural);
+            }
         }
     }
 }

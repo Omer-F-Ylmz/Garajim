@@ -154,7 +154,8 @@ namespace Garajim.Tests.Unit
 
             Assert.Contains("SURUM: 2026-09-v1", blok);
             Assert.Contains("BILGI TABANI", blok);
-            Assert.Contains("bakim-triger", blok);
+            Assert.Contains(BilgiSecici.BakimKuralKaydi, blok);
+            Assert.Contains(BilgiSecici.BakimKategorisi, blok);
             Assert.Contains("kaynak:", blok);
         }
 

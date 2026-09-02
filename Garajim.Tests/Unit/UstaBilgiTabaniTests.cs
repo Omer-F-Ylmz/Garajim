@@ -139,18 +139,84 @@ namespace Garajim.Tests.Unit
         {
             var secilen = Secici().Sec("Aracın motor arıza lambası yandı, cihaz P0420 gösteriyor");
 
-            Assert.Equal("obd-p0420", secilen[0].Id);
+            Assert.Equal("obd-P0420", secilen[0].Id);
         }
 
         [Theory]
-        [InlineData("motor yagi ne zaman degisir")]
-        [InlineData("MOTOR YAĞI ne zaman değişir")]
-        [InlineData("motor yagı, ne zaman değişir?")]
+        [InlineData("periyodik bakim ne zaman")]
+        [InlineData("PERİYODİK BAKIM ne zaman")]
+        [InlineData("periyodik bakım, ne zaman?")]
         public void TurkceKarakterVeNoktalamaDuyarsizEslesir(string soru)
         {
             var secilen = Secici().Sec(soru);
 
-            Assert.Contains(secilen, k => k.Id == "bakim-yag-benzin");
+            Assert.Contains(secilen, k => k.Id == BilgiSecici.BakimKuralKaydi);
+        }
+
+        [Fact]
+        public void DtcKoduYeniSemadaKaydiGetirir()
+        {
+            var secilen = Secici().Sec("P0420 kodu çıktı");
+
+            Assert.Contains(secilen, k => k.Id == "obd-P0420");
+        }
+
+        [Fact]
+        public void TrigerSorusuBakimKaydiniGetirir()
+        {
+            var secilen = Secici().Sec("egea 1.4 triger ne zaman");
+
+            Assert.Contains(secilen, k => k.Id == "bkm-001");
+        }
+
+        [Fact]
+        public void KisLastigiSorusuTurkiyeKaydiniGetirir()
+        {
+            var secilen = Secici().Sec("kış lastiği zorunlu mu");
+
+            Assert.Contains(secilen, k => k.Id == "tro-001");
+        }
+
+        [Fact]
+        public void BakimKaydiSecilinceKuralKaydiHerZamanEklenir()
+        {
+            var secilen = Secici().Sec("egea 1.4 triger ne zaman");
+
+            Assert.Contains(secilen, k => k.Kategori == BilgiSecici.BakimKategorisi && k.Id != BilgiSecici.BakimKuralKaydi);
+            Assert.Contains(secilen, k => k.Id == BilgiSecici.BakimKuralKaydi);
+            Assert.Equal(BilgiSecici.BakimKuralKaydi, secilen[0].Id);
+        }
+
+        [Fact]
+        public void KuralKaydiButceDolsaBileEklenir()
+        {
+            var secici = Secici();
+            var soru = string.Join(" ", Kayitlar
+                .Where(k => k.Kategori == BilgiSecici.BakimKategorisi)
+                .SelectMany(k => k.Anahtarlar));
+
+            var secilen = secici.Sec(soru);
+            var token = secilen.Sum(k => BilgiSecici.TokenTahmini(k.Metin));
+
+            Assert.Contains(secilen, k => k.Id == BilgiSecici.BakimKuralKaydi);
+            Assert.True(token > BilgiSecici.MaxToken - BilgiSecici.TokenTahmini(
+                Kayitlar.Single(k => k.Id == BilgiSecici.BakimKuralKaydi).Metin) || secilen.Count > 1);
+        }
+
+        [Fact]
+        public void BakimDisiSorudaKuralKaydiEklenmez()
+        {
+            var secilen = Secici().Sec("P0420 kodu çıktı");
+
+            Assert.DoesNotContain(secilen, k => k.Id == BilgiSecici.BakimKuralKaydi);
+        }
+
+        [Fact]
+        public void KuralKaydiTekrarEtmez()
+        {
+            var secilen = Secici().Sec("bakım aralığı periyodik bakım tablosu");
+
+            Assert.Single(secilen.Where(k => k.Id == BilgiSecici.BakimKuralKaydi));
         }
 
         [Fact]

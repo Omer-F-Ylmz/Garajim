@@ -1,82 +1,2342 @@
 [
-  {
-    "id": "obd-p0300",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0300", "rastgele tekleme", "misfire", "silindir teklemesi"],
-    "metin": "P0300 rastgele veya birden çok silindirde tekleme demektir. Tek bir silindire bağlı olmadığı için ortak kaynaklar aranır: eski bujiler, zayıf bobin beslemesi, emme hava kaçağı, düşük yakıt basıncı, tıkalı enjektörler ve zayıf kompresyon. Beraberinde P0301-P0304 varsa o silindirdeki bobin ve buji öne çıkar. Teklemede katalizör hasar görebileceği için araç uzun süre bu hâlde kullanılmamalıdır.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0171",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0171", "fakir karışım", "sistem çok fakir", "yakıt trim yüksek"],
-    "metin": "P0171 birinci sıra silindirlerde karışımın fazla fakir olduğunu (havanın fazla, yakıtın az) bildirir. En sık neden ölçülmemiş hava girişidir: çatlak emme körüğü, gevşek kelepçe, sızdıran vakum hortumu, bozuk PCV valfi. İkinci sıra neden kirlenmiş hava kütle ölçer (MAF) ve düşük yakıt basıncıdır. Uzun süreli yakıt trim değeri +%10'un üzerindeyse belirti doğrulanır; duman makinesiyle kaçak testi en hızlı yöntemdir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0420",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0420", "katalizör verimi", "katalitik konvertör", "arka oksijen sensörü"],
-    "metin": "P0420 katalizör veriminin eşiğin altında olduğunu söyler. Kod her zaman katalizörün bittiği anlamına gelmez; arka oksijen sensörünün yaşlanması, egzoz manifoldu veya flanş kaçağı, motorun yağ ya da antifriz yakması da aynı kodu üretir. Önce egzoz kaçağı ve sensör sinyali kontrol edilir, çünkü katalizör en pahalı parçadır. Muayenede egzoz emisyon değerleri de bu arızayla birlikte sınırın dışına çıkar.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0401",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0401", "EGR yetersiz", "egr valfi", "egzoz gazı geri dönüşü"],
-    "metin": "P0401 EGR akışının yetersiz olduğunu bildirir. Dizel ve benzinli motorlarda EGR valfi ve borusu kurumla tıkanır; belirti rölanti bozukluğu, güç kaybı ve dizelde siyah dumandır. Valf sökülüp temizlendiğinde çoğu araçta kod düşer, ancak soğutucusu (EGR cooler) tıkalıysa sorun kısa sürede tekrarlar. EGR'yi kapatmak veya yazılımdan iptal etmek muayenede emisyon değerini bozar ve yasal değildir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0128",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0128", "termostat", "motor ısınmıyor", "soğutma sıcaklığı düşük"],
-    "metin": "P0128 motorun beklenen sürede çalışma sıcaklığına ulaşmadığını gösterir; neredeyse her zaman açık kalmış termostattır. Belirtileri geç ısınan kalorifer, yüksek yakıt tüketimi ve kışın düşük gösterge sıcaklığıdır. Termostat ucuz bir parçadır ama değişimi ihmal edilirse motor sürekli zengin karışımla çalışıp yakıt tüketir ve yağı sulandırır. Değişimden sonra soğutma sistemi mutlaka havası alınarak doldurulur.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0299",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0299", "turbo düşük basınç", "turbo underboost", "turbo kaçağı"],
-    "metin": "P0299 turbo besleme basıncının hedefin altında kaldığını bildirir. En sık nedenler patlak veya çıkmış intercooler körüğü, kaçıran kelepçe, tutukluk yapan değişken kanat (VNT) mekanizması ve arızalı turbo aktüatörüdür. Belirti düz yolda normal, yokuşta ve yüklü hâlde güç kaybıdır. Turboyu değiştirmeden önce basınç kaçağı testi yapılmalıdır; kaçak varsa yeni turbo da aynı kodu verir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0016",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0016", "krank kam uyumsuz", "eksantrik sensörü", "triger atlamış"],
-    "metin": "P0016 krank ve eksantrik mili sinyalleri arasındaki uyumsuzluğu bildirir. Triger kayışı veya zinciri bir diş atlamış olabilir; zincirli motorlarda gergi tertibatının yorulması tipik nedendir. Değişken supap zamanlaması (VVT) kasnağının kirli yağ nedeniyle kilitlenememesi de aynı kodu üretir. Kod görüldüğünde motor yüksek devirde çalıştırılmamalıdır, zamanlama iyice kayarsa supaplar pistona vurur.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p2002",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P2002", "DPF verimi", "partikül filtresi", "dpf tıkandı"],
-    "metin": "P2002 partikül filtresinin (DPF) verimliliğinin düştüğünü bildirir. Kısa mesafe kullanımında rejenerasyon tamamlanamaz ve kurum birikir; fark basınç sensörü ve hortumlarının tıkanması da yanlış doluluk okutur. Önce sensör ve hortum kontrol edilir, ardından cihazla zorlanmış rejenerasyon denenir, sonuç alınmazsa filtre sökülüp yıkanır. DPF'yi sökmek veya iptal etmek muayenede araca ret verdirir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-p0442",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["P0442", "evap küçük kaçak", "yakıt buharı", "depo kapağı"],
-    "metin": "P0442 yakıt buharı (EVAP) sisteminde küçük kaçak bulunduğunu bildirir. En sık ve en ucuz neden gevşek ya da contası bozulmuş yakıt deposu kapağıdır; kapak sıkıldıktan sonra kod birkaç sürüş çevriminde kendiliğinden düşebilir. Devam ederse kanister valfi, buhar hortumları ve depo boyun contası kontrol edilir. Kod sürüş güvenliğini etkilemez ama emisyon muayenesinde arıza lambası yanık olduğu için ret sebebidir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  },
-  {
-    "id": "obd-u0100",
-    "kategori": "ObdKodu",
-    "anahtarlar": ["U0100", "ECU haberleşme yok", "can bus", "iletişim kaybı"],
-    "metin": "U0100 motor kontrol ünitesiyle CAN hattı üzerinden haberleşmenin kesildiğini bildirir. Genelde tek bir parça arızası değil, besleme ve şase bağlantısı, ezilmiş kablo demeti, korozyona uğramış soket veya zayıf akü gerilimidir. Marş sırasında gerilim 9 V altına düşüyorsa birden çok modülde aynı anda U kodları görülür; önce akü ve şase noktaları ölçülür. Kod varken diğer arıza kodları güvenilir okunmaz, önce haberleşme düzeltilir.",
-    "kaynak": "SAE J2012 genel arıza kodu tanımı",
-    "guncelleme": "2026-09-01"
-  }
+ {
+  "id": "obd-P0010",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0010",
+   "p0010",
+   "Eksantrik konum aktüatörü"
+  ],
+  "metin": "P0010 — Eksantrik konum aktüatörü (VVT) devresi, Bank 1. Sık nedenler (en sıktan nadire): kirli/düşük motor yağı, VVT solenoidi, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0011",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0011",
+   "p0011",
+   "Eksantrik zamanlaması ileride"
+  ],
+  "metin": "P0011 — Eksantrik zamanlaması ileride, Bank 1 (VVT performans). Sık nedenler (en sıktan nadire): eski/düşük yağ, VVT solenoidi tıkalı, faz ayarlayıcı, zincir gerdirici. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0012",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0012",
+   "p0012",
+   "Eksantrik zamanlaması geride"
+  ],
+  "metin": "P0012 — Eksantrik zamanlaması geride, Bank 1. Sık nedenler (en sıktan nadire): aynı: yağ, VVT solenoidi, faz ayarlayıcı, zincir esnemesi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0014",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0014",
+   "p0014",
+   "Egzoz eksantrik zamanlaması ileride"
+  ],
+  "metin": "P0014 — Egzoz eksantrik zamanlaması ileride, Bank 1. Sık nedenler (en sıktan nadire): yağ, VVT solenoidi, faz ayarlayıcı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0016",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0016",
+   "p0016",
+   "Krank–eksantrik konum uyumsuzluğu"
+  ],
+  "metin": "P0016 — Krank–eksantrik konum uyumsuzluğu, Bank 1 sensör A. Sık nedenler (en sıktan nadire): triger kayışı/zinciri atlamış, gerdirici, PureTech ıslak kayış, sensör. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır. | Kırmızı: hemen dur/sürme.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0017",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0017",
+   "p0017",
+   "Krank–egzoz eksantrik konum uyumsuzluğu"
+  ],
+  "metin": "P0017 — Krank–egzoz eksantrik konum uyumsuzluğu, Bank 1. Sık nedenler (en sıktan nadire): zincir/kayış esnemesi, faz ayarlayıcı, sensör. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır. | Kırmızı: hemen dur/sürme.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0030",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0030",
+   "p0030",
+   "Isıtmalı O2 sensörü ısıtıcı devresi"
+  ],
+  "metin": "P0030 — Isıtmalı O2 sensörü ısıtıcı devresi, Bank 1 Sensör 1. Sık nedenler (en sıktan nadire): lambda sensörü ısıtıcısı, sigorta, kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0036",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0036",
+   "p0036",
+   "O2 sensörü ısıtıcı devresi"
+  ],
+  "metin": "P0036 — O2 sensörü ısıtıcı devresi, Bank 1 Sensör 2. Sık nedenler (en sıktan nadire): katalizör sonrası lambda ısıtıcısı, kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0068",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0068",
+   "p0068",
+   "MAP/MAF gaz kelebeği konumu ile uyumsuz"
+  ],
+  "metin": "P0068 — MAP/MAF gaz kelebeği konumu ile uyumsuz. Sık nedenler (en sıktan nadire): emme hava kaçağı, kirli MAF, MAP sensörü, gaz kelebeği. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0087",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0087",
+   "p0087",
+   "Yakıt rayı/sistem basıncı çok düşük"
+  ],
+  "metin": "P0087 — Yakıt rayı/sistem basıncı çok düşük. Sık nedenler (en sıktan nadire): tıkalı yakıt filtresi, zayıf yakıt pompası (dizel: yüksek basınç pompası), basınç regülatörü, hava kaçağı emişte, enjektör dönüşü. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0088",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0088",
+   "p0088",
+   "Yakıt rayı basıncı çok yüksek"
+  ],
+  "metin": "P0088 — Yakıt rayı basıncı çok yüksek. Sık nedenler (en sıktan nadire): basınç regülatörü/ölçüm valfi, ray basınç sensörü, dönüş hattı tıkalı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0100",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0100",
+   "p0100",
+   "Hava kütle ölçer"
+  ],
+  "metin": "P0100 — Hava kütle ölçer (MAF) devresi. Sık nedenler (en sıktan nadire): MAF kablosu/soketi, sensör arızası. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0101",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0101",
+   "p0101",
+   "MAF aralık/performans"
+  ],
+  "metin": "P0101 — MAF aralık/performans. Sık nedenler (en sıktan nadire): kirli MAF, emme kaçağı (MAF sonrası), tıkalı hava filtresi, turbo hortumu. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0102",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0102",
+   "p0102",
+   "MAF düşük sinyal"
+  ],
+  "metin": "P0102 — MAF düşük sinyal. Sık nedenler (en sıktan nadire): MAF kablosu, kirli sensör, hava kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0103",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0103",
+   "p0103",
+   "MAF yüksek sinyal"
+  ],
+  "metin": "P0103 — MAF yüksek sinyal. Sık nedenler (en sıktan nadire): MAF sensörü, kablo kısa devresi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0105",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0105",
+   "p0105",
+   "Manifold mutlak basınç"
+  ],
+  "metin": "P0105 — Manifold mutlak basınç (MAP) devresi. Sık nedenler (en sıktan nadire): MAP sensörü/kablo, vakum hortumu. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0106",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0106",
+   "p0106",
+   "MAP aralık/performans"
+  ],
+  "metin": "P0106 — MAP aralık/performans. Sık nedenler (en sıktan nadire): vakum kaçağı, MAP sensörü kirli, egzoz kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0107",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0107",
+   "p0107",
+   "MAP düşük sinyal"
+  ],
+  "metin": "P0107 — MAP düşük sinyal. Sık nedenler (en sıktan nadire): kablo/soket, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0108",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0108",
+   "p0108",
+   "MAP yüksek sinyal"
+  ],
+  "metin": "P0108 — MAP yüksek sinyal. Sık nedenler (en sıktan nadire): sensör, vakum hortumu çıkmış. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0110",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0110",
+   "p0110",
+   "Emme hava sıcaklığı"
+  ],
+  "metin": "P0110 — Emme hava sıcaklığı (IAT) devresi. Sık nedenler (en sıktan nadire): IAT sensörü (MAF içinde olabilir), kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0112",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0112",
+   "p0112",
+   "IAT düşük giriş"
+  ],
+  "metin": "P0112 — IAT düşük giriş. Sık nedenler (en sıktan nadire): sensör kısa devre. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0113",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0113",
+   "p0113",
+   "IAT yüksek giriş"
+  ],
+  "metin": "P0113 — IAT yüksek giriş. Sık nedenler (en sıktan nadire): sensör açık devre/soket. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0115",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0115",
+   "p0115",
+   "Soğutma sıvısı sıcaklık"
+  ],
+  "metin": "P0115 — Soğutma sıvısı sıcaklık (ECT) sensörü devresi. Sık nedenler (en sıktan nadire): ECT sensörü, kablo, düşük antifriz. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0116",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0116",
+   "p0116",
+   "ECT aralık/performans"
+  ],
+  "metin": "P0116 — ECT aralık/performans. Sık nedenler (en sıktan nadire): termostat açık kalmış, ECT sensörü. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0117",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0117",
+   "p0117",
+   "ECT düşük giriş"
+  ],
+  "metin": "P0117 — ECT düşük giriş (aşırı sıcak okuma). Sık nedenler (en sıktan nadire): sensör kısa devre. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0118",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0118",
+   "p0118",
+   "ECT yüksek giriş"
+  ],
+  "metin": "P0118 — ECT yüksek giriş (aşırı soğuk okuma). Sık nedenler (en sıktan nadire): sensör açık devre/soket — fan sürekli çalışır, soğuk çalışma bozulur. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0120",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0120",
+   "p0120",
+   "Gaz kelebeği/pedal konum sensörü A devresi"
+  ],
+  "metin": "P0120 — Gaz kelebeği/pedal konum sensörü A devresi. Sık nedenler (en sıktan nadire): TPS sensörü, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0121",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0121",
+   "p0121",
+   "TPS A aralık/performans"
+  ],
+  "metin": "P0121 — TPS A aralık/performans. Sık nedenler (en sıktan nadire): kirli gaz kelebeği, TPS aşınmış. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0122",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0122",
+   "p0122",
+   "TPS A düşük"
+  ],
+  "metin": "P0122 — TPS A düşük. Sık nedenler (en sıktan nadire): kablo/soket, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0123",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0123",
+   "p0123",
+   "TPS A yüksek"
+  ],
+  "metin": "P0123 — TPS A yüksek. Sık nedenler (en sıktan nadire): sensör kısa devre. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0125",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0125",
+   "p0125",
+   "Kapalı çevrim için yetersiz soğutma sıvısı sıcaklığı"
+  ],
+  "metin": "P0125 — Kapalı çevrim için yetersiz soğutma sıvısı sıcaklığı. Sık nedenler (en sıktan nadire): termostat açık kalmış, ECT sensörü, düşük antifriz. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0128",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0128",
+   "p0128",
+   "Soğutma sıvısı termostat sıcaklığının altında"
+  ],
+  "metin": "P0128 — Soğutma sıvısı termostat sıcaklığının altında. Sık nedenler (en sıktan nadire): termostat açık kalmış (en sık), ECT sensörü, düşük antifriz. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0130",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0130",
+   "p0130",
+   "O2 sensörü devresi"
+  ],
+  "metin": "P0130 — O2 sensörü devresi, Bank 1 Sensör 1. Sık nedenler (en sıktan nadire): lambda sensörü, kablo, egzoz kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0131",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0131",
+   "p0131",
+   "O2 sensörü düşük voltaj"
+  ],
+  "metin": "P0131 — O2 sensörü düşük voltaj (fakir), B1S1. Sık nedenler (en sıktan nadire): egzoz kaçağı, sensör, hava kaçağı, yakıt basıncı düşük. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0132",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0132",
+   "p0132",
+   "O2 sensörü yüksek voltaj"
+  ],
+  "metin": "P0132 — O2 sensörü yüksek voltaj (zengin), B1S1. Sık nedenler (en sıktan nadire): sensör, yakıt basıncı yüksek, sızdıran enjektör, kısa devre. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0133",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0133",
+   "p0133",
+   "O2 sensörü yavaş tepki"
+  ],
+  "metin": "P0133 — O2 sensörü yavaş tepki, B1S1. Sık nedenler (en sıktan nadire): yaşlanmış lambda, egzoz kaçağı, kirli MAF. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0134",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0134",
+   "p0134",
+   "O2 sensörü aktivite yok"
+  ],
+  "metin": "P0134 — O2 sensörü aktivite yok, B1S1. Sık nedenler (en sıktan nadire): sensör ısıtıcı, kablo kopuk, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0135",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0135",
+   "p0135",
+   "O2 ısıtıcı devresi"
+  ],
+  "metin": "P0135 — O2 ısıtıcı devresi, B1S1. Sık nedenler (en sıktan nadire): sensör ısıtıcı, sigorta. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0136",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0136",
+   "p0136",
+   "O2 sensörü devresi"
+  ],
+  "metin": "P0136 — O2 sensörü devresi, B1S2 (katalizör sonrası). Sık nedenler (en sıktan nadire): sensör, kablo, egzoz kaçağı. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0137",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0137",
+   "p0137",
+   "O2 düşük voltaj"
+  ],
+  "metin": "P0137 — O2 düşük voltaj, B1S2. Sık nedenler (en sıktan nadire): egzoz kaçağı, sensör. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0138",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0138",
+   "p0138",
+   "O2 yüksek voltaj"
+  ],
+  "metin": "P0138 — O2 yüksek voltaj, B1S2. Sık nedenler (en sıktan nadire): sensör, kısa devre. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0140",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0140",
+   "p0140",
+   "O2 aktivite yok"
+  ],
+  "metin": "P0140 — O2 aktivite yok, B1S2. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0141",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0141",
+   "p0141",
+   "O2 ısıtıcı devresi"
+  ],
+  "metin": "P0141 — O2 ısıtıcı devresi, B1S2. Sık nedenler (en sıktan nadire): sensör ısıtıcı, sigorta. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0150",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0150",
+   "p0150",
+   "O2 sensörü devresi"
+  ],
+  "metin": "P0150 — O2 sensörü devresi, Bank 2 Sensör 1 (V motor). Sık nedenler (en sıktan nadire): sensör, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0171",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0171",
+   "p0171",
+   "Sistem çok fakir"
+  ],
+  "metin": "P0171 — Sistem çok fakir, Bank 1. Sık nedenler (en sıktan nadire): emme hava kaçağı (PCV hortumu, manifold contası, körük), kirli MAF, düşük yakıt basıncı, tıkalı enjektör, egzoz kaçağı, lambda. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0172",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0172",
+   "p0172",
+   "Sistem çok zengin"
+  ],
+  "metin": "P0172 — Sistem çok zengin, Bank 1. Sık nedenler (en sıktan nadire): kirli MAF, sızdıran enjektör, yakıt basıncı yüksek, tıkalı hava filtresi, ECT sensörü, EVAP purge valfi açık kalmış. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0174",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0174",
+   "p0174",
+   "Sistem çok fakir"
+  ],
+  "metin": "P0174 — Sistem çok fakir, Bank 2. Sık nedenler (en sıktan nadire): P0171 ile aynı (V motor). Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0175",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0175",
+   "p0175",
+   "Sistem çok zengin"
+  ],
+  "metin": "P0175 — Sistem çok zengin, Bank 2. Sık nedenler (en sıktan nadire): P0172 ile aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0180",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0180",
+   "p0180",
+   "Yakıt sıcaklık sensörü A devresi"
+  ],
+  "metin": "P0180 — Yakıt sıcaklık sensörü A devresi. Sık nedenler (en sıktan nadire): sensör (dizel yakıt filtresi/ray üzerinde), kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0190",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0190",
+   "p0190",
+   "Yakıt rayı basınç sensörü devresi"
+  ],
+  "metin": "P0190 — Yakıt rayı basınç sensörü devresi. Sık nedenler (en sıktan nadire): sensör, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0191",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0191",
+   "p0191",
+   "Yakıt rayı basınç sensörü aralık/performans"
+  ],
+  "metin": "P0191 — Yakıt rayı basınç sensörü aralık/performans. Sık nedenler (en sıktan nadire): sensör, yakıt pompası, tıkalı filtre. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0200",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0200",
+   "p0200",
+   "Enjektör devresi"
+  ],
+  "metin": "P0200 — Enjektör devresi (genel). Sık nedenler (en sıktan nadire): enjektör kablo demeti, sürücü devresi, enjektör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0201",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0201",
+   "p0201",
+   "Enjektör devresi"
+  ],
+  "metin": "P0201 — Enjektör devresi, silindir 1. Sık nedenler (en sıktan nadire): enjektör bobini, soket, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0202",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0202",
+   "p0202",
+   "Enjektör devresi"
+  ],
+  "metin": "P0202 — Enjektör devresi, silindir 2. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0203",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0203",
+   "p0203",
+   "Enjektör devresi"
+  ],
+  "metin": "P0203 — Enjektör devresi, silindir 3. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0204",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0204",
+   "p0204",
+   "Enjektör devresi"
+  ],
+  "metin": "P0204 — Enjektör devresi, silindir 4. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0217",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0217",
+   "p0217",
+   "Motor aşırı ısınma durumu"
+  ],
+  "metin": "P0217 — Motor aşırı ısınma durumu. Sık nedenler (en sıktan nadire): düşük antifriz, termostat kapalı, fan, radyatör tıkalı, su pompası, kapak contası — ARACI SÜRME. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır. | Kırmızı: hemen dur/sürme.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0218",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0218",
+   "p0218",
+   "Şanzıman aşırı ısınma"
+  ],
+  "metin": "P0218 — Şanzıman aşırı ısınma. Sık nedenler (en sıktan nadire): düşük/eski şanzıman yağı, soğutucu tıkalı, ağır yük. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0219",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0219",
+   "p0219",
+   "Motor aşırı devir"
+  ],
+  "metin": "P0219 — Motor aşırı devir. Sık nedenler (en sıktan nadire): sürüş hatası, kilitlenen gaz kelebeği, şanzıman kaçırma. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0230",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0230",
+   "p0230",
+   "Yakıt pompası birincil devre"
+  ],
+  "metin": "P0230 — Yakıt pompası birincil devre. Sık nedenler (en sıktan nadire): pompa rölesi, sigorta, kablo, pompa. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0234",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0234",
+   "p0234",
+   "Turbo/süperşarj aşırı basınç"
+  ],
+  "metin": "P0234 — Turbo/süperşarj aşırı basınç. Sık nedenler (en sıktan nadire): wastegate/aktüatör takılı, geometri (VNT) kirli, basınç sensörü, solenoid. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0235",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0235",
+   "p0235",
+   "Turbo basınç sensörü A devresi"
+  ],
+  "metin": "P0235 — Turbo basınç sensörü A devresi. Sık nedenler (en sıktan nadire): sensör, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0237",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0237",
+   "p0237",
+   "Turbo basınç sensörü düşük"
+  ],
+  "metin": "P0237 — Turbo basınç sensörü düşük. Sık nedenler (en sıktan nadire): sensör, hortum. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0299",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0299",
+   "p0299",
+   "Turbo/süperşarj düşük basınç"
+  ],
+  "metin": "P0299 — Turbo/süperşarj düşük basınç (underboost). Sık nedenler (en sıktan nadire): basınç hattı kaçağı (intercooler hortumu), VNT mekanizması yapışık, aktüatör, EGR açık kalmış, tıkalı hava filtresi, turbo aşınması. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0300",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0300",
+   "p0300",
+   "Rastgele/çoklu silindir teklemesi"
+  ],
+  "metin": "P0300 — Rastgele/çoklu silindir teklemesi. Sık nedenler (en sıktan nadire): buji, bobin, enjektör, yakıt basıncı, vakum kaçağı, düşük kompresyon, zamanlama — lamba yanıp sönüyorsa katalizör riski. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0301",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0301",
+   "p0301",
+   "Silindir 1 teklemesi"
+  ],
+  "metin": "P0301 — Silindir 1 teklemesi. Sık nedenler (en sıktan nadire): o silindirin bujisi/bobini (yer değiştirip kod taşınıyor mu bak), enjektör, kompresyon. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0302",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0302",
+   "p0302",
+   "Silindir 2 teklemesi"
+  ],
+  "metin": "P0302 — Silindir 2 teklemesi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0303",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0303",
+   "p0303",
+   "Silindir 3 teklemesi"
+  ],
+  "metin": "P0303 — Silindir 3 teklemesi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0304",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0304",
+   "p0304",
+   "Silindir 4 teklemesi"
+  ],
+  "metin": "P0304 — Silindir 4 teklemesi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0305",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0305",
+   "p0305",
+   "Silindir 5 teklemesi"
+  ],
+  "metin": "P0305 — Silindir 5 teklemesi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0306",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0306",
+   "p0306",
+   "Silindir 6 teklemesi"
+  ],
+  "metin": "P0306 — Silindir 6 teklemesi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0325",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0325",
+   "p0325",
+   "Vuruntu"
+  ],
+  "metin": "P0325 — Vuruntu (knock) sensörü devresi, Bank 1. Sık nedenler (en sıktan nadire): sensör, kablo, gevşek montaj. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0327",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0327",
+   "p0327",
+   "Vuruntu sensörü düşük giriş"
+  ],
+  "metin": "P0327 — Vuruntu sensörü düşük giriş. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0335",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0335",
+   "p0335",
+   "Krank mili konum sensörü A devresi"
+  ],
+  "metin": "P0335 — Krank mili konum sensörü A devresi. Sık nedenler (en sıktan nadire): sensör (ısınınca kesen), kablo, sinyal dişlisi — çalışmama/stop nedeni. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0336",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0336",
+   "p0336",
+   "Krank konum sensörü aralık/performans"
+  ],
+  "metin": "P0336 — Krank konum sensörü aralık/performans. Sık nedenler (en sıktan nadire): sensör kirli, dişli hasarı, hava boşluğu. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0340",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0340",
+   "p0340",
+   "Eksantrik konum sensörü A devresi"
+  ],
+  "metin": "P0340 — Eksantrik konum sensörü A devresi, Bank 1. Sık nedenler (en sıktan nadire): sensör, kablo, zamanlama. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0341",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0341",
+   "p0341",
+   "Eksantrik konum sensörü aralık/performans"
+  ],
+  "metin": "P0341 — Eksantrik konum sensörü aralık/performans. Sık nedenler (en sıktan nadire): sensör, zincir/kayış esnemesi, VVT. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0345",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0345",
+   "p0345",
+   "Eksantrik konum sensörü A devresi"
+  ],
+  "metin": "P0345 — Eksantrik konum sensörü A devresi, Bank 2. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0350",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0350",
+   "p0350",
+   "Ateşleme bobini birincil/ikincil devre"
+  ],
+  "metin": "P0350 — Ateşleme bobini birincil/ikincil devre (genel). Sık nedenler (en sıktan nadire): bobin, kablo, sürücü. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0351",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0351",
+   "p0351",
+   "Ateşleme bobini A"
+  ],
+  "metin": "P0351 — Ateşleme bobini A (silindir 1) devresi. Sık nedenler (en sıktan nadire): bobin, soket. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0352",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0352",
+   "p0352",
+   "Ateşleme bobini B"
+  ],
+  "metin": "P0352 — Ateşleme bobini B (silindir 2) devresi. Sık nedenler (en sıktan nadire): bobin, soket. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0353",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0353",
+   "p0353",
+   "Ateşleme bobini C"
+  ],
+  "metin": "P0353 — Ateşleme bobini C (silindir 3) devresi. Sık nedenler (en sıktan nadire): bobin, soket. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0354",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0354",
+   "p0354",
+   "Ateşleme bobini D"
+  ],
+  "metin": "P0354 — Ateşleme bobini D (silindir 4) devresi. Sık nedenler (en sıktan nadire): bobin, soket. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0380",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0380",
+   "p0380",
+   "Kızdırma bujisi/ısıtıcı devresi A"
+  ],
+  "metin": "P0380 — Kızdırma bujisi/ısıtıcı devresi A (dizel). Sık nedenler (en sıktan nadire): kızdırma bujisi, rölesi, kablo — soğuk çalışma zorlaşır. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0381",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0381",
+   "p0381",
+   "Kızdırma bujisi gösterge devresi"
+  ],
+  "metin": "P0381 — Kızdırma bujisi gösterge devresi. Sık nedenler (en sıktan nadire): gösterge lambası devresi, rölesi. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0400",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0400",
+   "p0400",
+   "EGR akışı arızası"
+  ],
+  "metin": "P0400 — EGR akışı arızası. Sık nedenler (en sıktan nadire): EGR valfi kirli/yapışık, kanal tıkalı, solenoid, vakum. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0401",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0401",
+   "p0401",
+   "EGR akışı yetersiz"
+  ],
+  "metin": "P0401 — EGR akışı yetersiz. Sık nedenler (en sıktan nadire): tıkalı EGR valfi/kanalı, DPFE/fark basınç sensörü, vakum. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0402",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0402",
+   "p0402",
+   "EGR akışı aşırı"
+  ],
+  "metin": "P0402 — EGR akışı aşırı. Sık nedenler (en sıktan nadire): EGR açık kalmış, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0403",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0403",
+   "p0403",
+   "EGR kontrol devresi"
+  ],
+  "metin": "P0403 — EGR kontrol devresi. Sık nedenler (en sıktan nadire): EGR solenoidi/motoru, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0404",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0404",
+   "p0404",
+   "EGR aralık/performans"
+  ],
+  "metin": "P0404 — EGR aralık/performans. Sık nedenler (en sıktan nadire): EGR konum sensörü, kirli valf. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0405",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0405",
+   "p0405",
+   "EGR sensörü A düşük"
+  ],
+  "metin": "P0405 — EGR sensörü A düşük. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0410",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0410",
+   "p0410",
+   "İkincil hava enjeksiyonu sistemi"
+  ],
+  "metin": "P0410 — İkincil hava enjeksiyonu sistemi. Sık nedenler (en sıktan nadire): hava pompası, valf, sigorta (bazı benzinliler). Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0411",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0411",
+   "p0411",
+   "İkincil hava akışı yanlış"
+  ],
+  "metin": "P0411 — İkincil hava akışı yanlış. Sık nedenler (en sıktan nadire): hortum kaçağı, valf. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0420",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0420",
+   "p0420",
+   "Katalizör verimi eşik altı"
+  ],
+  "metin": "P0420 — Katalizör verimi eşik altı, Bank 1. Sık nedenler (en sıktan nadire): yaşlanmış/zehirlenmiş katalitik konvertör, egzoz kaçağı, lambda sensörü, uzun süren tekleme/yağ yakma (kök neden), sahte/DPF-KAT sökme. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0430",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0430",
+   "p0430",
+   "Katalizör verimi eşik altı"
+  ],
+  "metin": "P0430 — Katalizör verimi eşik altı, Bank 2. Sık nedenler (en sıktan nadire): P0420 ile aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0440",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0440",
+   "p0440",
+   "EVAP sistemi arızası"
+  ],
+  "metin": "P0440 — EVAP sistemi arızası (genel). Sık nedenler (en sıktan nadire): depo kapağı gevşek/contası, EVAP hortumu, purge/vent valfi. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0441",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0441",
+   "p0441",
+   "EVAP purge akışı yanlış"
+  ],
+  "metin": "P0441 — EVAP purge akışı yanlış. Sık nedenler (en sıktan nadire): purge valfi, hortum, karbon kanister. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0442",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0442",
+   "p0442",
+   "EVAP küçük kaçak"
+  ],
+  "metin": "P0442 — EVAP küçük kaçak. Sık nedenler (en sıktan nadire): depo kapağı, çatlak hortum, kanister valfi. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0443",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0443",
+   "p0443",
+   "EVAP purge kontrol valfi devresi"
+  ],
+  "metin": "P0443 — EVAP purge kontrol valfi devresi. Sık nedenler (en sıktan nadire): purge valfi/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0446",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0446",
+   "p0446",
+   "EVAP vent kontrol devresi"
+  ],
+  "metin": "P0446 — EVAP vent kontrol devresi. Sık nedenler (en sıktan nadire): vent valfi, kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0455",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0455",
+   "p0455",
+   "EVAP büyük kaçak"
+  ],
+  "metin": "P0455 — EVAP büyük kaçak. Sık nedenler (en sıktan nadire): depo kapağı açık/yanlış, kopuk hortum. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0456",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0456",
+   "p0456",
+   "EVAP çok küçük kaçak"
+  ],
+  "metin": "P0456 — EVAP çok küçük kaçak. Sık nedenler (en sıktan nadire): depo kapağı contası, kanister valfi. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0457",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0457",
+   "p0457",
+   "EVAP kaçak"
+  ],
+  "metin": "P0457 — EVAP kaçak (depo kapağı gevşek). Sık nedenler (en sıktan nadire): depo kapağını sık/değiştir. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0460",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0460",
+   "p0460",
+   "Yakıt seviye sensörü devresi"
+  ],
+  "metin": "P0460 — Yakıt seviye sensörü devresi. Sık nedenler (en sıktan nadire): şamandıra/gösterge sensörü. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0461",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0461",
+   "p0461",
+   "Yakıt seviye sensörü aralık/performans"
+  ],
+  "metin": "P0461 — Yakıt seviye sensörü aralık/performans. Sık nedenler (en sıktan nadire): şamandıra takılıyor, sensör. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0462",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0462",
+   "p0462",
+   "Yakıt seviye sensörü düşük"
+  ],
+  "metin": "P0462 — Yakıt seviye sensörü düşük. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0463",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0463",
+   "p0463",
+   "Yakıt seviye sensörü yüksek"
+  ],
+  "metin": "P0463 — Yakıt seviye sensörü yüksek. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0480",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0480",
+   "p0480",
+   "Soğutma fanı 1 kontrol devresi"
+  ],
+  "metin": "P0480 — Soğutma fanı 1 kontrol devresi. Sık nedenler (en sıktan nadire): fan rölesi, fan motoru, sigorta, kablo — hararet riski. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0481",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0481",
+   "p0481",
+   "Soğutma fanı 2 kontrol devresi"
+  ],
+  "metin": "P0481 — Soğutma fanı 2 kontrol devresi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0500",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0500",
+   "p0500",
+   "Araç hız sensörü"
+  ],
+  "metin": "P0500 — Araç hız sensörü (VSS) arızası. Sık nedenler (en sıktan nadire): hız sensörü, kablo, ABS sinyali, gösterge. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0501",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0501",
+   "p0501",
+   "VSS aralık/performans"
+  ],
+  "metin": "P0501 — VSS aralık/performans. Sık nedenler (en sıktan nadire): sensör, dişli. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0505",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0505",
+   "p0505",
+   "Rölanti kontrol sistemi arızası"
+  ],
+  "metin": "P0505 — Rölanti kontrol sistemi arızası. Sık nedenler (en sıktan nadire): kirli gaz kelebeği/rölanti valfi, vakum kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0506",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0506",
+   "p0506",
+   "Rölanti devri beklenenden düşük"
+  ],
+  "metin": "P0506 — Rölanti devri beklenenden düşük. Sık nedenler (en sıktan nadire): kirli kelebek, vakum kaçağı, PCV. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0507",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0507",
+   "p0507",
+   "Rölanti devri beklenenden yüksek"
+  ],
+  "metin": "P0507 — Rölanti devri beklenenden yüksek. Sık nedenler (en sıktan nadire): vakum kaçağı, kelebek gövdesi, PCV, adaptasyon sıfırlama. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0520",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0520",
+   "p0520",
+   "Motor yağ basıncı sensörü devresi"
+  ],
+  "metin": "P0520 — Motor yağ basıncı sensörü devresi. Sık nedenler (en sıktan nadire): müşir/sensör, kablo — gerçek düşük basınç olabilir. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0521",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0521",
+   "p0521",
+   "Yağ basıncı sensörü aralık/performans"
+  ],
+  "metin": "P0521 — Yağ basıncı sensörü aralık/performans. Sık nedenler (en sıktan nadire): sensör, gerçekten düşük basınç (yağ seviyesi, pompa). Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0522",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0522",
+   "p0522",
+   "Yağ basıncı sensörü düşük voltaj"
+  ],
+  "metin": "P0522 — Yağ basıncı sensörü düşük voltaj. Sık nedenler (en sıktan nadire): sensör kısa devre ya da GERÇEK düşük basınç — kırmızı lamba varsa dur. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır. | Kırmızı: hemen dur/sürme.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0523",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0523",
+   "p0523",
+   "Yağ basıncı sensörü yüksek voltaj"
+  ],
+  "metin": "P0523 — Yağ basıncı sensörü yüksek voltaj. Sık nedenler (en sıktan nadire): sensör açık devre. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0560",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0560",
+   "p0560",
+   "Sistem voltajı arızası"
+  ],
+  "metin": "P0560 — Sistem voltajı arızası. Sık nedenler (en sıktan nadire): akü, alternatör, kutup başı, şase. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0562",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0562",
+   "p0562",
+   "Sistem voltajı düşük"
+  ],
+  "metin": "P0562 — Sistem voltajı düşük. Sık nedenler (en sıktan nadire): zayıf akü, alternatör şarj etmiyor, gevşek kayış. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0563",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0563",
+   "p0563",
+   "Sistem voltajı yüksek"
+  ],
+  "metin": "P0563 — Sistem voltajı yüksek. Sık nedenler (en sıktan nadire): alternatör regülatörü — aküye zarar verir. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0600",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0600",
+   "p0600",
+   "Seri iletişim bağlantısı"
+  ],
+  "metin": "P0600 — Seri iletişim bağlantısı. Sık nedenler (en sıktan nadire): CAN hattı, modül, kablo, düşük voltaj. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0601",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0601",
+   "p0601",
+   "ECU iç bellek hatası"
+  ],
+  "metin": "P0601 — ECU iç bellek hatası. Sık nedenler (en sıktan nadire): ECU (kontrol ünitesi) — yazılım/değişim. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0602",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0602",
+   "p0602",
+   "ECU programlama hatası"
+  ],
+  "metin": "P0602 — ECU programlama hatası. Sık nedenler (en sıktan nadire): yazılım güncellemesi/kodlama. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0603",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0603",
+   "p0603",
+   "ECU KAM bellek hatası"
+  ],
+  "metin": "P0603 — ECU KAM bellek hatası. Sık nedenler (en sıktan nadire): akü bağlantısı kesilmesi, ECU. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0604",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0604",
+   "p0604",
+   "ECU RAM hatası"
+  ],
+  "metin": "P0604 — ECU RAM hatası. Sık nedenler (en sıktan nadire): ECU. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0605",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0605",
+   "p0605",
+   "ECU ROM hatası"
+  ],
+  "metin": "P0605 — ECU ROM hatası. Sık nedenler (en sıktan nadire): ECU. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0606",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0606",
+   "p0606",
+   "ECU işlemci arızası"
+  ],
+  "metin": "P0606 — ECU işlemci arızası. Sık nedenler (en sıktan nadire): ECU, voltaj, şase. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P062F",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P062F",
+   "p062f",
+   "ECU EEPROM hatası"
+  ],
+  "metin": "P062F — ECU EEPROM hatası. Sık nedenler (en sıktan nadire): ECU. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0670",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0670",
+   "p0670",
+   "Kızdırma bujisi kontrol modülü devresi"
+  ],
+  "metin": "P0670 — Kızdırma bujisi kontrol modülü devresi (dizel). Sık nedenler (en sıktan nadire): kızdırma modülü/rölesi, sigorta, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0671",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0671",
+   "p0671",
+   "Kızdırma bujisi silindir 1 devresi"
+  ],
+  "metin": "P0671 — Kızdırma bujisi silindir 1 devresi. Sık nedenler (en sıktan nadire): kızdırma bujisi 1. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0672",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0672",
+   "p0672",
+   "Kızdırma bujisi silindir 2 devresi"
+  ],
+  "metin": "P0672 — Kızdırma bujisi silindir 2 devresi. Sık nedenler (en sıktan nadire): kızdırma bujisi 2. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0673",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0673",
+   "p0673",
+   "Kızdırma bujisi silindir 3 devresi"
+  ],
+  "metin": "P0673 — Kızdırma bujisi silindir 3 devresi. Sık nedenler (en sıktan nadire): kızdırma bujisi 3. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0674",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0674",
+   "p0674",
+   "Kızdırma bujisi silindir 4 devresi"
+  ],
+  "metin": "P0674 — Kızdırma bujisi silindir 4 devresi. Sık nedenler (en sıktan nadire): kızdırma bujisi 4. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0700",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0700",
+   "p0700",
+   "Şanzıman kontrol sistemi"
+  ],
+  "metin": "P0700 — Şanzıman kontrol sistemi (TCM) arızası — ayrıntı TCM kodlarında. Sık nedenler (en sıktan nadire): TCM'de ek kod okut; şanzıman yağı, solenoid, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0705",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0705",
+   "p0705",
+   "Vites konum sensörü"
+  ],
+  "metin": "P0705 — Vites konum sensörü (PRNDL) devresi. Sık nedenler (en sıktan nadire): vites konum anahtarı, kablo — marş basmama nedeni. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0710",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0710",
+   "p0710",
+   "Şanzıman yağ sıcaklık sensörü devresi"
+  ],
+  "metin": "P0710 — Şanzıman yağ sıcaklık sensörü devresi. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0715",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0715",
+   "p0715",
+   "Türbin/giriş devir sensörü devresi"
+  ],
+  "metin": "P0715 — Türbin/giriş devir sensörü devresi. Sık nedenler (en sıktan nadire): sensör, kablo, metal talaş. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0720",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0720",
+   "p0720",
+   "Çıkış devir sensörü devresi"
+  ],
+  "metin": "P0720 — Çıkış devir sensörü devresi. Sık nedenler (en sıktan nadire): sensör, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0730",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0730",
+   "p0730",
+   "Yanlış vites oranı"
+  ],
+  "metin": "P0730 — Yanlış vites oranı. Sık nedenler (en sıktan nadire): düşük/eski şanzıman yağı, kayan kavrama, solenoid. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0740",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0740",
+   "p0740",
+   "Tork konvertör kilitleme"
+  ],
+  "metin": "P0740 — Tork konvertör kilitleme (TCC) devresi. Sık nedenler (en sıktan nadire): TCC solenoidi, yağ, konvertör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0741",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0741",
+   "p0741",
+   "TCC performans/kilitlenmiyor"
+  ],
+  "metin": "P0741 — TCC performans/kilitlenmiyor. Sık nedenler (en sıktan nadire): konvertör kilit kavraması, solenoid, yağ. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0750",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0750",
+   "p0750",
+   "Vites solenoidi A devresi"
+  ],
+  "metin": "P0750 — Vites solenoidi A devresi. Sık nedenler (en sıktan nadire): solenoid, kablo, yağ kirliliği. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0841",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0841",
+   "p0841",
+   "Şanzıman yağ basınç sensörü A aralık/performans"
+  ],
+  "metin": "P0841 — Şanzıman yağ basınç sensörü A aralık/performans. Sık nedenler (en sıktan nadire): düşük yağ, sensör, valf gövdesi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2002",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2002",
+   "p2002",
+   "Dizel partikül filtresi"
+  ],
+  "metin": "P2002 — Dizel partikül filtresi (DPF) verimi eşik altı, Bank 1. Sık nedenler (en sıktan nadire): DPF dolu/hasarlı, fark basınç sensörü/hortumu, rejenerasyon tamamlanamıyor, DPF sökülmüş. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2015",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2015",
+   "p2015",
+   "Emme manifold kanat konum sensörü aralığı"
+  ],
+  "metin": "P2015 — Emme manifold kanat konum sensörü aralığı. Sık nedenler (en sıktan nadire): emme manifold swirl kanatları/motoru (dizel). Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2096",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2096",
+   "p2096",
+   "Katalizör sonrası yakıt trim sistemi çok fakir"
+  ],
+  "metin": "P2096 — Katalizör sonrası yakıt trim sistemi çok fakir. Sık nedenler (en sıktan nadire): egzoz kaçağı, arka lambda, hava kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2097",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2097",
+   "p2097",
+   "Katalizör sonrası yakıt trim sistemi çok zengin"
+  ],
+  "metin": "P2097 — Katalizör sonrası yakıt trim sistemi çok zengin. Sık nedenler (en sıktan nadire): arka lambda, sızdıran enjektör, katalizör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2100",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2100",
+   "p2100",
+   "Gaz kelebeği aktüatör motoru açık devre"
+  ],
+  "metin": "P2100 — Gaz kelebeği aktüatör motoru açık devre. Sık nedenler (en sıktan nadire): kelebek gövdesi motoru, soket. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2101",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2101",
+   "p2101",
+   "Gaz kelebeği aktüatör kontrolü aralık/performans"
+  ],
+  "metin": "P2101 — Gaz kelebeği aktüatör kontrolü aralık/performans. Sık nedenler (en sıktan nadire): kirli/yapışık kelebek, motor, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2135",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2135",
+   "p2135",
+   "Gaz kelebeği/pedal konum sensörü A/B uyumsuzluğu"
+  ],
+  "metin": "P2135 — Gaz kelebeği/pedal konum sensörü A/B uyumsuzluğu. Sık nedenler (en sıktan nadire): TPS ya da pedal sensörü, soket, kirli kelebek. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2138",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2138",
+   "p2138",
+   "Pedal konum sensörü D/E uyumsuzluğu"
+  ],
+  "metin": "P2138 — Pedal konum sensörü D/E uyumsuzluğu. Sık nedenler (en sıktan nadire): gaz pedalı sensörü, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2177",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2177",
+   "p2177",
+   "Sistem fakir orta yükte"
+  ],
+  "metin": "P2177 — Sistem fakir orta yükte, Bank 1. Sık nedenler (en sıktan nadire): hava kaçağı, MAF, yakıt basıncı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2187",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2187",
+   "p2187",
+   "Sistem fakir rölantide"
+  ],
+  "metin": "P2187 — Sistem fakir rölantide, Bank 1. Sık nedenler (en sıktan nadire): vakum kaçağı (PCV, hortum), enjektör, MAF. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2188",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2188",
+   "p2188",
+   "Sistem zengin rölantide"
+  ],
+  "metin": "P2188 — Sistem zengin rölantide, Bank 1. Sık nedenler (en sıktan nadire): sızdıran enjektör, yakıt basıncı, MAF, purge valfi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2195",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2195",
+   "p2195",
+   "O2 sensörü sinyali fakirde takılı"
+  ],
+  "metin": "P2195 — O2 sensörü sinyali fakirde takılı, B1S1. Sık nedenler (en sıktan nadire): lambda sensörü, egzoz kaçağı, hava kaçağı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2196",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2196",
+   "p2196",
+   "O2 sensörü sinyali zenginde takılı"
+  ],
+  "metin": "P2196 — O2 sensörü sinyali zenginde takılı, B1S1. Sık nedenler (en sıktan nadire): lambda sensörü, sızdıran enjektör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2263",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2263",
+   "p2263",
+   "Turbo basınç sistemi performansı"
+  ],
+  "metin": "P2263 — Turbo basınç sistemi performansı. Sık nedenler (en sıktan nadire): turbo geometri/aktüatör, basınç kaçağı, EGR, DPF geri basıncı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2279",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2279",
+   "p2279",
+   "Emme hava sistemi kaçağı"
+  ],
+  "metin": "P2279 — Emme hava sistemi kaçağı. Sık nedenler (en sıktan nadire): emme manifold/hortum kaçağı, PCV, gaz kelebeği contası. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2281",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2281",
+   "p2281",
+   "Gaz kelebeği ile emme valfi arası hava kaçağı"
+  ],
+  "metin": "P2281 — Gaz kelebeği ile emme valfi arası hava kaçağı. Sık nedenler (en sıktan nadire): manifold contası, hortum. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P242F",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P242F",
+   "p242f",
+   "DPF kül birikimi sınırı"
+  ],
+  "metin": "P242F — DPF kül birikimi sınırı. Sık nedenler (en sıktan nadire): DPF kül dolu — temizlik/değişim (yüksek km). Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2452",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2452",
+   "p2452",
+   "DPF fark basınç sensörü A devresi"
+  ],
+  "metin": "P2452 — DPF fark basınç sensörü A devresi. Sık nedenler (en sıktan nadire): sensör, hortumlar tıkalı/çatlak. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2453",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2453",
+   "p2453",
+   "DPF fark basınç sensörü aralık/performans"
+  ],
+  "metin": "P2453 — DPF fark basınç sensörü aralık/performans. Sık nedenler (en sıktan nadire): sensör hortumları, sensör, DPF. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2454",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2454",
+   "p2454",
+   "DPF fark basınç sensörü düşük"
+  ],
+  "metin": "P2454 — DPF fark basınç sensörü düşük. Sık nedenler (en sıktan nadire): sensör/kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2455",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2455",
+   "p2455",
+   "DPF fark basınç sensörü yüksek"
+  ],
+  "metin": "P2455 — DPF fark basınç sensörü yüksek. Sık nedenler (en sıktan nadire): sensör, tıkalı DPF. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2458",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2458",
+   "p2458",
+   "DPF rejenerasyon süresi aşımı"
+  ],
+  "metin": "P2458 — DPF rejenerasyon süresi aşımı. Sık nedenler (en sıktan nadire): rejenerasyon tamamlanamıyor (kısa mesafe), enjektör, sensör. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P2463",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P2463",
+   "p2463",
+   "DPF kurum birikimi sınırı"
+  ],
+  "metin": "P2463 — DPF kurum birikimi sınırı. Sık nedenler (en sıktan nadire): DPF dolu — zorlanmış rejenerasyon/temizlik; kısa mesafe kullanım. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0A0F",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0A0F",
+   "p0a0f",
+   "Hibrit: motor çalışmadı/çalıştırılamadı"
+  ],
+  "metin": "P0A0F — Hibrit: motor çalışmadı/çalıştırılamadı. Sık nedenler (en sıktan nadire): hibrit sistem, 12 V akü, yakıt sistemi (Toyota/Lexus). Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0A80",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0A80",
+   "p0a80",
+   "Hibrit batarya paketi değiştirilmeli"
+  ],
+  "metin": "P0A80 — Hibrit batarya paketi değiştirilmeli. Sık nedenler (en sıktan nadire): hibrit batarya hücre zayıflığı — SoH ölçümü, hücre/paket değişimi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0AA6",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0AA6",
+   "p0aa6",
+   "Hibrit yüksek voltaj izolasyon hatası"
+  ],
+  "metin": "P0AA6 — Hibrit yüksek voltaj izolasyon hatası. Sık nedenler (en sıktan nadire): izolasyon kaçağı (kablo, kompresör, batarya) — yetkili servis. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-P0C73",
+  "kategori": "obd",
+  "anahtarlar": [
+   "P0C73",
+   "p0c73",
+   "Hibrit: batarya sıcaklığı yüksek"
+  ],
+  "metin": "P0C73 — Hibrit: batarya sıcaklığı yüksek. Sık nedenler (en sıktan nadire): batarya fanı/filtresi tıkalı, soğutma. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0035",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0035",
+   "c0035",
+   "Sol ön tekerlek hız sensörü devresi"
+  ],
+  "metin": "C0035 — Sol ön tekerlek hız sensörü devresi (ABS). Sık nedenler (en sıktan nadire): sensör, kablo, dişli (tone ring), poyra rulmanı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0040",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0040",
+   "c0040",
+   "Sağ ön tekerlek hız sensörü devresi"
+  ],
+  "metin": "C0040 — Sağ ön tekerlek hız sensörü devresi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0045",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0045",
+   "c0045",
+   "Sol arka tekerlek hız sensörü devresi"
+  ],
+  "metin": "C0045 — Sol arka tekerlek hız sensörü devresi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0050",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0050",
+   "c0050",
+   "Sağ arka tekerlek hız sensörü devresi"
+  ],
+  "metin": "C0050 — Sağ arka tekerlek hız sensörü devresi. Sık nedenler (en sıktan nadire): aynı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0110",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0110",
+   "c0110",
+   "ABS pompa motoru devresi"
+  ],
+  "metin": "C0110 — ABS pompa motoru devresi. Sık nedenler (en sıktan nadire): ABS modülü/pompası, sigorta, kablo. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0121",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0121",
+   "c0121",
+   "ABS valf rölesi devresi"
+  ],
+  "metin": "C0121 — ABS valf rölesi devresi. Sık nedenler (en sıktan nadire): ABS modülü, röle. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0161",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0161",
+   "c0161",
+   "ABS/TCS fren pedalı anahtarı devresi"
+  ],
+  "metin": "C0161 — ABS/TCS fren pedalı anahtarı devresi. Sık nedenler (en sıktan nadire): fren lambası anahtarı. Aciliyet: Bakimda. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0196",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0196",
+   "c0196",
+   "Yaw/ivme sensörü arızası"
+  ],
+  "metin": "C0196 — Yaw/ivme sensörü arızası (ESP). Sık nedenler (en sıktan nadire): ESP sensörü, kalibrasyon. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-C0710",
+  "kategori": "obd",
+  "anahtarlar": [
+   "C0710",
+   "c0710",
+   "Direksiyon açı sensörü arızası"
+  ],
+  "metin": "C0710 — Direksiyon açı sensörü arızası (ESP). Sık nedenler (en sıktan nadire): direksiyon açı sensörü kalibrasyonu (akü sökülünce), sensör, saat yayı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-B0001",
+  "kategori": "obd",
+  "anahtarlar": [
+   "B0001",
+   "b0001",
+   "Sürücü hava yastığı devresi"
+  ],
+  "metin": "B0001 — Sürücü hava yastığı devresi. Sık nedenler (en sıktan nadire): saat yayı (direksiyon spiral kablosu), soket, modül. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-B0010",
+  "kategori": "obd",
+  "anahtarlar": [
+   "B0010",
+   "b0010",
+   "Yolcu hava yastığı devresi"
+  ],
+  "metin": "B0010 — Yolcu hava yastığı devresi. Sık nedenler (en sıktan nadire): soket, modül, kapatma anahtarı. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-B0028",
+  "kategori": "obd",
+  "anahtarlar": [
+   "B0028",
+   "b0028",
+   "Yan hava yastığı devresi"
+  ],
+  "metin": "B0028 — Yan hava yastığı devresi. Sık nedenler (en sıktan nadire): koltuk altı soket teması (en sık), modül. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-B0050",
+  "kategori": "obd",
+  "anahtarlar": [
+   "B0050",
+   "b0050",
+   "Sürücü emniyet kemeri gergisi devresi"
+  ],
+  "metin": "B0050 — Sürücü emniyet kemeri gergisi devresi. Sık nedenler (en sıktan nadire): koltuk altı soket, gergi. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-B0081",
+  "kategori": "obd",
+  "anahtarlar": [
+   "B0081",
+   "b0081",
+   "Yolcu koltuğu ağırlık/oturma sensörü"
+  ],
+  "metin": "B0081 — Yolcu koltuğu ağırlık/oturma sensörü. Sık nedenler (en sıktan nadire): koltuk sensörü, kalibrasyon. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0001",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0001",
+   "u0001",
+   "Yüksek hızlı CAN veri yolu arızası"
+  ],
+  "metin": "U0001 — Yüksek hızlı CAN veri yolu arızası. Sık nedenler (en sıktan nadire): CAN kablosu/soketi, kısa devre, arızalı modül, düşük voltaj. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0073",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0073",
+   "u0073",
+   "Kontrol modülü iletişim veri yolu kapalı"
+  ],
+  "metin": "U0073 — Kontrol modülü iletişim veri yolu kapalı. Sık nedenler (en sıktan nadire): CAN hattı kısa devre, modül, akü/şase. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0100",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0100",
+   "u0100",
+   "ECM/PCM ile iletişim kaybı"
+  ],
+  "metin": "U0100 — ECM/PCM ile iletişim kaybı. Sık nedenler (en sıktan nadire): motor beyni kablo/soket, sigorta, CAN, beyin. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0101",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0101",
+   "u0101",
+   "TCM"
+  ],
+  "metin": "U0101 — TCM (şanzıman) ile iletişim kaybı. Sık nedenler (en sıktan nadire): TCM kablo/soket, sigorta, CAN. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0121",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0121",
+   "u0121",
+   "ABS modülü ile iletişim kaybı"
+  ],
+  "metin": "U0121 — ABS modülü ile iletişim kaybı. Sık nedenler (en sıktan nadire): ABS modülü, sigorta, CAN. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0131",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0131",
+   "u0131",
+   "Elektrikli direksiyon"
+  ],
+  "metin": "U0131 — Elektrikli direksiyon (EPS) modülü ile iletişim kaybı. Sık nedenler (en sıktan nadire): EPS modülü, sigorta, CAN — direksiyon ağırlaşabilir. Aciliyet: Bugun. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0140",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0140",
+   "u0140",
+   "Karoser kontrol modülü"
+  ],
+  "metin": "U0140 — Karoser kontrol modülü (BCM) ile iletişim kaybı. Sık nedenler (en sıktan nadire): BCM, sigorta, CAN. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0155",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0155",
+   "u0155",
+   "Gösterge paneli ile iletişim kaybı"
+  ],
+  "metin": "U0155 — Gösterge paneli ile iletişim kaybı. Sık nedenler (en sıktan nadire): gösterge paneli, CAN, sigorta. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U0401",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U0401",
+   "u0401",
+   "ECM'den geçersiz veri alındı"
+  ],
+  "metin": "U0401 — ECM'den geçersiz veri alındı. Sık nedenler (en sıktan nadire): CAN gürültüsü, modül yazılımı, düşük voltaj. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "obd-U1000",
+  "kategori": "obd",
+  "anahtarlar": [
+   "U1000",
+   "u1000",
+   "Üreticiye özel CAN iletişim hatası"
+  ],
+  "metin": "U1000 — Üreticiye özel CAN iletişim hatası (jenerik değil). Sık nedenler (en sıktan nadire): kablo/soket, düşük akü voltajı; ayrıntı üretici kodlarında. Aciliyet: BuHafta. Kodu silmeden önce dondurulmuş veri (freeze frame) okunmalı; aynı kod tekrar geliyorsa parça değil kök neden aranır.",
+  "kaynak": "SAE J2012 jenerik kod tanımları (Türkçe özet); sık nedenler genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ }
 ]

@@ -1,62 +1,1717 @@
 [
-  {"id":"blr-001","kategori":"fren","anahtarlar":["fren sesi","metalik ses","gıcırtı","fren gıcırdıyor","balata sesi","fren cızırtı"],"metin":"Belirti: frene basınca metalik/gıcırtı sesi. | En sık: fren balatası bitmiş, aşınma ikaz sacı diske sürtüyor — kontrol: jant aralığından balata kalınlığı (<3 mm bitmiş), diskte çizik; maliyet: balata takımı 1.500–4.000 TL, disk+balata 4.000–10.000 TL; aciliyet: BuHafta. | Sık: yeni balatanın ilk günlerde gıcırdaması, balata toz/paslanma (yağmur sonrası ilk frenlerde geçer); maliyet: 0; aciliyet: Bakimda. | Nadir: kaliper pimi kuruması, disk çarpılması, yanlış (sert) balata. | Kırmızı: sürekli öğütme sesi + fren mesafesi uzadıysa metal metale — hemen serviste. | Ustaya: 'Frende metalik ses var, balata kalınlığına ve diske bakar mısın.'","kaynak":"genel servis pratiği; fiyatlar 2026 TR bandı tahmini (özel–yetkili servis)","guncelleme":"2026-09-02"},
-  {"id":"blr-002","kategori":"fren","anahtarlar":["frende titreme","direksiyon titriyor frende","fren titremesi","pedal titriyor","disk çarpık"],"metin":"Belirti: frene basınca direksiyonda/pedalda titreme. | En sık: ön fren diski çarpılmış (ısınıp ani soğuma, aşırı aşınma) — kontrol: yüksek hızdan frenlemede belirginleşir; maliyet: ön disk+balata 4.000–10.000 TL; aciliyet: BuHafta. | Sık: arka diskte çarpılma (pedalda hissedilir, direksiyonda az), balatanın diske eşitsiz yapışması (kalıntı). | Nadir: gevşek bijon, aşınmış rot başı/rotil (titremeyi büyütür), poyra rulmanı. | Kırmızı: hayır. | Ustaya: 'Frende titreme var, disk salgısını ölçüp ön takıma da bakar mısın.'","kaynak":"genel servis pratiği; fiyat 2026 tahmini","guncelleme":"2026-09-02"},
-  {"id":"blr-003","kategori":"fren","anahtarlar":["fren pedalı sert","fren sertleşti","pedal taş gibi","fren zor basılıyor","servo"],"metin":"Belirti: fren pedalı çok sert, basmak için güç gerekiyor. | En sık: fren servosu (booster) vakum kaybı — vakum hortumu çatlak/çıkmış ya da servo diyaframı — kontrol: motor kapalıyken pedala birkaç kez bas, motoru çalıştır; pedal yumuşayıp çökmüyorsa servo/vakum sorunu; maliyet: hortum 300–1.000 TL, servo 4.000–12.000 TL; aciliyet: Bugun. | Sık: dizel/turbolu araçta vakum pompası arızası; motor çalışmıyorken sertlik normaldir. | Nadir: kaliper yapışması, fren hortumu iç çökmesi. | Kırmızı: fren mesafesi uzadıysa aracı kullanma, çekici. | Ustaya: 'Pedal sertleşti, servo vakumunu ve pompayı kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-004","kategori":"fren","anahtarlar":["fren pedalı yumuşak","pedal derin","fren boşluğu","süngerimsi pedal","fren hidroliği","hava yapmış"],"metin":"Belirti: pedal süngerimsi, derine gidiyor ama tutuyor. | En sık: hidrolik sistemde hava (balata/disk değişimi sonrası hava alınmamış, düşük hidrolik seviyesi) — kontrol: hidrolik deposu seviyesi ve rengi (koyu kahve = eski); maliyet: hava alma + hidrolik değişimi 800–2.000 TL; aciliyet: Bugun. | Sık: fren hidroliği 2 yılı geçmiş (nem çekmiş, kaynıyor), arka fren kampana ayarsızlığı. | Nadir: ana merkez iç kaçağı (pedal yavaş yavaş yere iniyor — bu kırmızı), hortum şişmesi. | Kırmızı: pedal yere kadar gidiyorsa ya da tutmuyorsa sürme, çekici. | Ustaya: 'Pedal derin ve süngerimsi, hidrolik seviyesi/yaşı ve kaçak kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-005","kategori":"uyari-lambasi","anahtarlar":["abs lambası","abs ışığı","abs yanıyor","abs uyarısı","esp lambası"],"metin":"Belirti: ABS (ve genelde ESP/ESC) lambası sabit yanıyor. | En sık: tekerlek hız sensörü arızası ya da sensör ucunda kir/pas, sensör kablosu kopuk — kontrol: OBD ile kod (C00xx serisi), hangi tekerlek olduğu okunur; maliyet: sensör 800–3.000 TL; aciliyet: BuHafta (normal fren çalışır, ABS devre dışı). | Sık: sensör dişlisi (tone ring) çatlak/kirli, düşük akü voltajı sonrası hatalı kayıt. | Nadir: ABS modülü/pompası arızası (pahalı, 10.000 TL+), fren lambası anahtarı. | Kırmızı: ABS ile birlikte kırmızı fren lambası da yanıyorsa hidrolik seviyesi/hat sorunu — sürme. | Ustaya: 'ABS lambası yanıyor, ABS kodunu okuyup tekerlek sensörlerine bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-006","kategori":"uyari-lambasi","anahtarlar":["el freni lambası","fren lambası yanıyor","kırmızı fren uyarısı","hidrolik seviye lambası","el freni indi ama yanıyor"],"metin":"Belirti: el freni indirildiği halde kırmızı fren/ünlem lambası yanıyor. | En sık: fren hidroliği seviyesi düşük (balata aşınınca seviye iner; kaçak da olabilir) — kontrol: depo MIN çizgisinin altında mı, tekerlek içinde ıslaklık var mı; maliyet: balata 1.500–4.000 TL, kaçak onarımı değişken; aciliyet: Bugun. | Sık: el freni seviye anahtarı ayarsız/arızalı (0–1 tık farkı), balata aşınma sensörü (bazı araçlarda aynı lamba). | Nadir: fren basınç farkı anahtarı, gösterge arızası. | Kırmızı: seviye düşük + pedal derinse sürme. | Ustaya: 'Kırmızı fren lambası sönmüyor, hidrolik seviyesine ve kaçağa bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-007","kategori":"fren","anahtarlar":["frende sağa çekiyor","frende sola çekiyor","frenlerken çekme","tek taraf tutuyor","kaliper yapışık"],"metin":"Belirti: frene basınca araç bir tarafa çekiyor. | En sık: tek tarafta kaliper pistonu/pimi yapışık ya da fren hortumu iç çökmüş — kontrol: sürüş sonrası jantlardan biri diğerinden çok sıcak/kokuyor; maliyet: kaliper bakımı 800–2.500 TL, kaliper 2.500–7.000 TL, hortum 500–1.500 TL; aciliyet: BuHafta. | Sık: tek taraf balata yağlanmış (aks keçesi/kaliper kaçağı), farklı lastik basıncı. | Nadir: ön düzen bozukluğu (frende belirginleşir), rot/salıncak burcu. | Kırmızı: şiddetli çekme + fren mesafesi uzaması — dikkatli, hızlı serviste. | Ustaya: 'Frende tek tarafa çekiyor, kaliper serbestliği ve hortumları kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-008","kategori":"koku","anahtarlar":["yanık kokusu","fren kokusu","balata kokusu","tekerlek sıcak","jant yanıyor"],"metin":"Belirti: yanık/keskin koku, jantlardan biri çok sıcak. | En sık: kaliper yapışması ya da el freninin tam bırakılmaması — kontrol: hangi jant sıcak; maliyet: kaliper bakımı 800–2.500 TL; aciliyet: Bugun. | Sık: uzun inişte sürekli frenleme (normal, motor freni kullan), yeni balata alıştırma kokusu (ilk 100–200 km). | Nadir: debriyaj balatası yanığı (kalkışta kaçırma ile birlikte), kayış kokusu. | Kırmızı: jant tutulamayacak kadar sıcak + duman: dur, soğumasını bekle, çekici düşün (lastik patlayabilir). | Ustaya: 'Sağ/sol ön tekerlek aşırı ısınıyor ve yanık kokuyor, kaliper ve el freni bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-009","kategori":"motor","anahtarlar":["rölantide titreme","rölanti titriyor","motor titriyor","dururken sallanıyor","rölanti düzensiz"],"metin":"Belirti: motor rölantide titriyor/sallanıyor. | En sık: buji ve/veya ateşleme bobini (benzinli), kirli gaz kelebeği/rölanti valfi — kontrol: klima açınca artıyor mu, motor arıza lambası var mı (P030x tekleme kodları); maliyet: buji takımı 800–3.000 TL, bobin 800–2.500 TL/adet, kelebek temizliği 500–1.500 TL; aciliyet: BuHafta. | Sık: motor takozu (kulak) yırtık — özellikle vitese alınca titreme artar; maliyet 1.500–6.000 TL; hava kaçağı (emme manifold contası, PCV hortumu). | Nadir: enjektör kirliliği, düşük kompresyon, LPG'de ayar/enjektör raylı sorunu, dizelde enjektör dönüş miktarı. | Kırmızı: hayır (motor lambası yanıp sönüyorsa bkz. tekleme). | Ustaya: 'Rölantide titreme var, tekleme kodu ve motor takozlarına bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-010","kategori":"uyari-lambasi","anahtarlar":["motor arıza lambası","check engine","sarı motor lambası","arıza lambası sabit","motor ikaz"],"metin":"Belirti: sarı motor arıza lambası sabit yanıyor, araç normal gidiyor. | En sık: oksijen (lambda) sensörü, gevşek/bozuk yakıt deposu kapağı (EVAP), katalitik konvertör verimi (P0420), hava kütle ölçer — kontrol: OBD kod okutmak (500–1.000 TL ya da sanayide ücretsiz); maliyet: depo kapağı 200–600 TL, lambda 1.500–5.000 TL, katalitik 8.000–30.000 TL; aciliyet: BuHafta. | Sık: buji/bobin (tekleme), EGR valfi (dizel), DPF doluluğu. | Nadir: gaz kelebeği sensörü, ECU. | Kırmızı: lamba YANIP SÖNÜYORSA ciddi tekleme (katalitik yanabilir) — gazı az kullan, en yakın servise. | Ustaya: 'Motor lambası sabit yanıyor, kodu okuyup dondurulmuş veriye bakar mısın.'","kaynak":"genel servis pratiği; OBD-II jenerik kod bilgisi","guncelleme":"2026-09-02"},
-  {"id":"blr-011","kategori":"motor","anahtarlar":["tekleme","motor tekliyor","lamba yanıp sönüyor","silindir çalışmıyor","p0300","misfire"],"metin":"Belirti: motor tekliyor, güç düşük, lamba yanıp sönüyor olabilir. | En sık: buji, ateşleme bobini (genelde tek silindir P030X kodu ile) — kontrol: bobinleri yer değiştirip kodun taşınıp taşınmadığına bakmak klasik test; maliyet: buji 800–3.000 TL, bobin 800–2.500 TL; aciliyet: Bugun. | Sık: enjektör tıkanması/arızası, yakıt basıncı düşük (yakıt pompası, filtre), hava kaçağı. | Nadir: kompresyon kaybı (sübap, segman, silindir kapak contası — beyaz duman ve antifriz eksiltme eşlik eder), zamanlama kayması. | Kırmızı: lamba yanıp sönerken uzun sürme — katalitik konvertör hasar görür; hemen serviste. | Ustaya: 'Motor tekliyor, P030x kodu var, buji-bobin ve enjektör kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-012","kategori":"motor","anahtarlar":["güç kaybı","çekişten düştü","çekmiyor","hızlanmıyor","gaz verince cevap vermiyor","yokuşta zorlanıyor"],"metin":"Belirti: çekiş düştü, gaz verince yavaş tepki. | En sık: tıkalı hava filtresi/yakıt filtresi, kirli hava kütle ölçer (MAF), dizelde EGR/DPF tıkanması — kontrol: son filtre değişimi ne zaman, siyah duman var mı; maliyet: filtreler 500–2.500 TL, MAF temizliği 300–1.000 TL, DPF temizliği 3.000–8.000 TL; aciliyet: BuHafta. | Sık: turbo basınç kaçağı (hortum/intercooler), tıkalı katalitik konvertör (tavuk yumurtası kokusu, sıcakta güç kaybı), buji/bobin. | Nadir: yakıt pompası zayıf, zamanlama kayması, gaz kelebeği sensörü, debriyaj kaçırması (devir yükselir hız artmaz — bkz. debriyaj). | Kırmızı: 'limp mode' (acil sürüş) + lamba: yavaşça servise. | Ustaya: 'Çekiş düştü, filtreler, MAF ve turbo basıncı/EGR-DPF kontrolü ister misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-013","kategori":"calismama","anahtarlar":["soğukta zor çalışıyor","sabah çalışmıyor","marş uzun basıyor","soğuk çalışma","kışın zor çalışma"],"metin":"Belirti: soğukta zor çalışıyor, sıcakken normal. | En sık: zayıflamış akü (3+ yaş, kışın kapasite düşer) — kontrol: marş sesi yavaşsa akü; maliyet: 3.000–7.000 TL; aciliyet: BuHafta. | Sık: dizelde kızdırma bujileri (ısıtma lambası kısa sönüyor ama duman/sarsıntı), yıpranmış buji, kirli enjektör, soğutma sıvısı sıcaklık sensörü (ECU soğuk karışımı vermiyor). | Nadir: yakıt basıncı düşmesi (çek valf), zamanlama, LPG'de benzin deposu boş/pompa. | Kırmızı: hayır. | Ustaya: 'Soğukta zor çalışıyor, akü testi + kızdırma/buji kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-014","kategori":"calismama","anahtarlar":["sıcakta çalışmıyor","sıcak motor çalışmıyor","durunca tekrar çalışmıyor","sıcakken marş basıyor çalışmıyor"],"metin":"Belirti: soğukta çalışıyor, sıcakken stop sonrası tekrar çalışmıyor. | En sık: krank/eksantrik devir sensörü ısınınca sinyal kesiyor — kontrol: soğuyunca yeniden çalışıyorsa güçlü işaret; maliyet: 800–3.000 TL; aciliyet: BuHafta. | Sık: yakıt pompası ısınınca zayıflıyor, yakıt buharlaşması (eski karbüratör/LPG), ateşleme bobini ısı arızası. | Nadir: marş motoru ısıl arıza (marş hiç dönmüyor), ECU rölesi. | Kırmızı: hayır; yolda kalma riski yüksek, kısa zamanda serviste. | Ustaya: 'Sıcakken çalışmıyor, krank sensörü ve yakıt basıncını sıcak motorda ölçer misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-015","kategori":"egzoz","anahtarlar":["mavi duman","egzozdan mavi duman","yağ yakıyor","yağ kokulu duman","mavimsi duman"],"metin":"Belirti: egzozdan mavi/mavimsi duman, yağ kokusu. | En sık: sübap yağ keçeleri (özellikle sabah ilk çalıştırmada bulut), segman aşınması (gaz verince/sürekli), PCV/karter havalandırma tıkalı — kontrol: 1.000 km'de ne kadar yağ eksiltiyor; maliyet: sübap keçesi 5.000–15.000 TL, PCV 500–2.000 TL, segman/revizyon 40.000 TL+; aciliyet: BuHafta. | Sık: turbo yağ keçesi (turbolu araçta, gaz kesince mavi), turbodan yağ kaçırma. | Nadir: yanlış viskozite yağ, yağ aşırı dolu. | Kırmızı: hayır; yağ seviyesini her 500 km kontrol et, düşürme. | Ustaya: 'Egzozdan mavi duman var, kompresyon ve turbo/keçe kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-016","kategori":"egzoz","anahtarlar":["beyaz duman","egzozdan beyaz duman","tatlı koku","antifriz yakıyor","silindir kapak contası","conta yaktı"],"metin":"Belirti: egzozdan beyaz duman, tatlımsı koku, antifriz eksiliyor. | En sık: silindir kapak contası (soğutma sıvısı yanma odasına) — kontrol: antifriz eksiliyor ama kaçak yok, yağ kapağında mayonez, hararet; maliyet: kapak contası 8.000–25.000 TL (kapak rektefiye ile); aciliyet: Bugun. | Sık: soğuk havada egzozdan buhar (normal, birkaç dakikada geçer), EGR soğutucu sızıntısı (dizel). | Nadir: silindir kapak çatlağı, emme manifold contası (bazı motorlarda su geçişi), enjektör aşırı yakıt (gri-beyaz, dizel). | Kırmızı: hararet yükseliyorsa dur, motoru sürme. | Ustaya: 'Beyaz duman + antifriz eksiltme var, soğutma sistemi basınç testi ve CO2 sızıntı testi yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-017","kategori":"egzoz","anahtarlar":["siyah duman","egzozdan siyah duman","dizel siyah duman","zengin karışım","is"],"metin":"Belirti: egzozdan siyah duman, özellikle gaz verince. | En sık: dizelde tıkalı hava filtresi, EGR valfi takılı/kirli, enjektör aşırı yakıt; benzinlide zengin karışım (MAF/lambda hatası, basınç regülatörü) — kontrol: hava filtresi durumu, yakıt tüketimi artmış mı; maliyet: filtre 300–1.500 TL, EGR temizliği 1.500–4.000 TL, EGR valfi 4.000–12.000 TL, enjektör 3.000–10.000 TL/adet; aciliyet: BuHafta. | Sık: turbo basınç kaçağı (hava az, yakıt normal → is), DPF sökülmüş araçlarda normal olarak görülür (mevzuata aykırı). | Nadir: chip-tuning aşırı yakıt, enjektör sızdırması. | Kırmızı: hayır. | Ustaya: 'Gaz verince siyah duman, hava filtresi-EGR-turbo hortumlarını ve enjektörleri kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-018","kategori":"motor","anahtarlar":["yağ eksiltiyor","yağ eksiltme","yağ seviyesi düşüyor","yağ kaçağı","motor altı yağ","yağ lambası"],"metin":"Belirti: yağ eksiltiyor / altında yağ lekesi. | En sık: dış kaçak — külbütör kapak contası, yağ filtresi/karter tapası, krank keçesi, yağ soğutucu — kontrol: park yerinde leke, motor altı ıslaklık; maliyet: kapak contası 800–3.000 TL, keçe 2.000–6.000 TL; aciliyet: BuHafta. | Sık: iç tüketim (mavi duman ile — bkz. mavi duman), bazı motorlar için 1.000 km'de 0,5 L üretici sınırında normal sayılır. | Nadir: turbo yağ hattı, PCV arızası basınç yapıp keçelerden kaçırma. | Kırmızı: kırmızı yağ basıncı lambası yanıyorsa hemen dur, motoru çalıştırma (motor ölür). | Ustaya: 'Yağ eksiltiyor, kaçağı boya/UV ile bulur musun, kompresyona da bak.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-019","kategori":"ses","anahtarlar":["motor tıkırtı","tıkırtı sesi","sübap sesi","hidrolik itici","tak tak motor","dizel vuruntu"],"metin":"Belirti: motordan tıkırtı/tak tak sesi. | En sık: hidrolik itici (sübap) sesi — soğukta artar, ısınınca azalır; düşük/eski yağ, yanlış viskozite — kontrol: yağ seviyesi/yaşı; maliyet: yağ değişimi 2.500–6.000 TL, itici seti 5.000–15.000 TL; aciliyet: BuHafta. | Sık: benzinli motorda düşük oktan/vuruntu (gazda ping sesi), gevşek ısı kalkanı (egzoz altı tıngırtı), eksantrik zincir gerdiricisi (soğukta ilk saniyeler). | Nadir: kol yatağı sesi (derin, devirle artan tok vuruntu — kırmızı), piston sesi. | Kırmızı: derin, yüklü tok vuruntu + yağ lambası → hemen dur. | Ustaya: 'Motorda tıkırtı var, stetoskopla sübap/itici ve zincir gerdiricisine bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-020","kategori":"motor","anahtarlar":["rölanti dalgalanıyor","devir iniyor çıkıyor","rölanti yükseliyor","devir düşmüyor","rölanti düşük"],"metin":"Belirti: rölanti devri dalgalanıyor ya da normalden yüksek/düşük. | En sık: hava kaçağı (emme hortumu çatlak, manifold contası, PCV), kirli gaz kelebeği/rölanti kontrol valfi — kontrol: motor çalışırken emme hortumlarına bak, kaçak sesi (ıslık); maliyet: kelebek temizliği 500–1.500 TL, hortum 300–1.500 TL; aciliyet: BuHafta. | Sık: kirli MAF, soğutma sıcaklık sensörü, LPG'de ayar. | Nadir: gaz kelebeği konum sensörü, ECU adaptasyon sıfırlama gerekliliği (akü sökülünce), alternatör aşırı yük. | Kırmızı: hayır. | Ustaya: 'Rölanti dalgalanıyor, duman testiyle hava kaçağı ve gaz kelebeği temizliği yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-021","kategori":"calismama","anahtarlar":["stop ediyor","rölantide stop","dururken stop ediyor","motor duruyor","aniden stop"],"metin":"Belirti: rölantide/dururken motor stop ediyor. | En sık: kirli gaz kelebeği/rölanti valfi, hava kaçağı — kontrol: klima açıkken daha sık mı; maliyet: temizlik 500–1.500 TL; aciliyet: BuHafta. | Sık: krank devir sensörü aralıklı arıza (seyirde de stop — kırmızı), zayıf yakıt pompası/tıkalı filtre, alternatör şarj etmiyor (akü lambası). | Nadir: EGR takılı kalma (dizel), LPG beyni/ayar, immobilizer. | Kırmızı: SEYİR HALİNDE stop ediyorsa (direksiyon ve fren desteği gider) aracı kullanma, servise çektir. | Ustaya: 'Rölantide stop ediyor, gaz kelebeği/hava kaçağı ve krank sensörü kontrolü ister misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-022","kategori":"sogutma","anahtarlar":["hararet","hararet yaptı","sıcaklık göstergesi yüksek","motor ısınıyor","kaynıyor","buhar çıkıyor"],"metin":"Belirti: sıcaklık göstergesi kırmızıya yakın / kaputtan buhar. | En sık: düşük soğutma sıvısı (kaçak: radyatör, hortum, su pompası, genleşme deposu) ya da termostat kapalı kalmış — kontrol: SOĞUDUKTAN sonra depo seviyesi, altta pembe/yeşil leke; maliyet: termostat 800–3.000 TL, hortum 500–2.000 TL, radyatör 3.000–10.000 TL, su pompası 3.000–10.000 TL; aciliyet: Bugun. | Sık: fan çalışmıyor (fan motoru, rölesi, sensörü — trafikte ısınır, yolda soğur), tıkalı radyatör. | Nadir: silindir kapak contası (beyaz duman), kilitli su pompası pervanesi. | Kırmızı: gösterge kırmızıdaysa ya da buhar varsa HEMEN dur, kaputu sıcakken açma, radyatör kapağını açma, çekici; sürmeye devam motoru öldürür. | Ustaya: 'Hararet yaptı, soğutma sistemi basınç testi, termostat ve fan kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-023","kategori":"sogutma","anahtarlar":["antifriz eksiliyor","su eksiltiyor","soğutma sıvısı azalıyor","genleşme deposu boşalıyor"],"metin":"Belirti: antifriz eksiliyor, görünür kaçak yok. | En sık: küçük dış kaçak (hortum kelepçesi, genleşme deposu çatlağı, radyatör üst tank, su pompası keçesi — yolda buharlaşır iz bırakmaz) — kontrol: serviste basınç testi; maliyet: 300–5.000 TL parçaya göre; aciliyet: BuHafta. | Sık: kalorifer radyatörü sızıntısı (kabinde tatlı koku, buğulanma), depo kapağı basınç tutmuyor. | Nadir: silindir kapak contası (beyaz duman, yağ kapağında mayonez, hararet), EGR soğutucu. | Kırmızı: hararet yükseliyorsa dur. | Ustaya: 'Antifriz eksiltiyor, basınç testi ve kalorifer radyatörü kontrolü ister misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-024","kategori":"sogutma","anahtarlar":["kalorifer ısıtmıyor","kalorifer soğuk üflüyor","ısıtma çalışmıyor","kalorifer geç ısınıyor"],"metin":"Belirti: kalorifer ısıtmıyor ya da geç ısınıyor. | En sık: termostat açık kalmış (motor da geç ısınır, gösterge orta çizgiye gelmiyor) — maliyet: 800–3.000 TL; aciliyet: Bakimda. | Sık: düşük soğutma sıvısı/hava kabarcığı (sistemden hava alma), tıkalı kalorifer radyatörü (tortu), kalorifer musluğu/karışım kapağı motoru. | Nadir: su pompası pervanesi aşınmış, kabin sıcaklık sensörü. | Kırmızı: hayır — ama gösterge YÜKSEK ve kalorifer soğuksa su pompası/sıvı kaybı, dur. | Ustaya: 'Kalorifer ısıtmıyor, termostat ve kalorifer radyatörü giriş-çıkış sıcaklık farkına bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-025","kategori":"sogutma","anahtarlar":["fan sürekli çalışıyor","radyatör fanı durmuyor","fan çok ses yapıyor","fan motor kapalıyken çalışıyor"],"metin":"Belirti: radyatör fanı sürekli/tam devir çalışıyor. | En sık: soğutma sıcaklık sensörü arızası (ECU güvenli moda geçip fanı sürekli açar) ya da klima basınç sensörü; motor kapatılınca birkaç dakika çalışması normal — kontrol: motor arıza lambası kodu; maliyet: sensör 500–2.000 TL; aciliyet: Bakimda. | Sık: fan rölesi yapışık, gerçek ısınma (termostat/radyatör tıkalı), klima yüksek basınç. | Nadir: fan kontrol modülü, kablo kısa devresi. | Kırmızı: gösterge yüksekse hararet — dur. | Ustaya: 'Fan sürekli çalışıyor, sıcaklık sensörü ve röleyi kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-026","kategori":"aku","anahtarlar":["marş basmıyor","tık sesi","marş tık tık","çalışmıyor tık","marş motoru dönmüyor","kontak açılıyor marş yok"],"metin":"Belirti: kontak açılıyor, marşa basınca tık sesi ya da hiç ses yok. | En sık: akü bitik/zayıf (yaş, ışık açık unutma) — kontrol: farlar sönük mü, gösterge titriyor mu; takviye ile çalışıyorsa akü/şarj; maliyet: akü 3.000–7.000 TL; aciliyet: Bugun. | Sık: oksitli/gevşek akü kutup başı (temizle-sık), marş motoru fırçası/selenoid (tek tık, akü dolu), gevşek şase kablosu. | Nadir: kontak anahtarı, immobilizer (anahtar simgesi yanıp söner), vites P/N sensörü (otomatik). | Kırmızı: hayır. | Ustaya: 'Marş basmıyor tık sesi var, akü ve marş motoru voltaj düşüm testi yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-027","kategori":"uyari-lambasi","anahtarlar":["akü lambası","şarj lambası","akü ikazı yanıyor","alternatör","şarj yapmıyor","dinamo"],"metin":"Belirti: kırmızı akü lambası sürerken yanıyor. | En sık: alternatör şarj etmiyor (fırça/regülatör, diyot) — kontrol: motor çalışırken akü voltajı 13,5–14,5 V olmalı; maliyet: alternatör tamiri 1.500–4.000 TL, yenisi 5.000–15.000 TL; aciliyet: Bugun. | Sık: kopmuş/kaymış V kayışı (direksiyon da ağırlaşır, hararet başlar — hemen dur), gevşek kayış gerdiricisi. | Nadir: kablo/sigorta, akü iç kısa devresi. | Kırmızı: kayış koptuysa dur (su pompası da döner, motor ısınır); kayış sağlamsa araç akü bitene kadar gider (~20–60 dk), gereksiz elektrik kapat, doğrudan servise. | Ustaya: 'Şarj lambası yanıyor, alternatör çıkışı ve kayışı kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-028","kategori":"elektrik","anahtarlar":["farlar sönükleşiyor","ışıklar zayıf","far titriyor","rölantide far kısılıyor","gösterge ışıkları sönüp yanıyor"],"metin":"Belirti: farlar/iç ışıklar rölantide sönükleşiyor, gazda parlıyor. | En sık: alternatör zayıf şarj (diyot/regülatör) ya da aşınmış V kayışı kayması — kontrol: rölantide voltaj <13 V; maliyet: kayış 500–2.000 TL, alternatör 1.500–15.000 TL; aciliyet: BuHafta. | Sık: kötü şase/akü kutup bağlantısı, yaşlı akü. | Nadir: gevşek kablo demeti, far rölesi. | Kırmızı: hayır. | Ustaya: 'Rölantide ışıklar sönükleşiyor, şarj sistemi ve şase bağlantılarını ölçer misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-029","kategori":"elektrik","anahtarlar":["gösterge paneli titriyor","gösterge sönüp yanıyor","panel ışıkları rastgele","elektrik kesiliyor","tüm lambalar yandı"],"metin":"Belirti: gösterge paneli titriyor, ikaz lambaları rastgele yanıp sönüyor. | En sık: zayıf akü/kutup başı temassızlığı (özellikle marşta) — kontrol: kutup başlarını sık, akü testi; maliyet: 0–7.000 TL; aciliyet: BuHafta. | Sık: alternatör dalgalı çıkış (regülatör), gevşek şase kablosu. | Nadir: kontak anahtarı kontakları, gösterge paneli lehim çatlağı, CAN hattı sorunu (birden çok modül hata). | Kırmızı: seyirde tüm elektrik kesiliyorsa (hidrolik direksiyon/ışık gider) sürme. | Ustaya: 'Panel titriyor, akü-alternatör ve şase bağlantılarını ölçer misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-030","kategori":"aku","anahtarlar":["akü boşalıyor","park halinde akü bitiyor","sabah akü bitik","kaçak akım","akü çabuk bitiyor"],"metin":"Belirti: araç dururken akü boşalıyor, sabah çalışmıyor. | En sık: kaçak akım — sonradan takılan alarm/müzik sistemi/kamera, kapanmayan bagaj/torpido lambası, kapı kontak anahtarı — kontrol: serviste ampermetreyle bekleme akımı (>50 mA sorun); maliyet: 500–2.000 TL bulma + parçaya göre; aciliyet: BuHafta. | Sık: yaşlı akü (kapasitesi bitmiş, şarjı tutmuyor), kısa mesafe kullanım (alternatör dolduramıyor). | Nadir: alternatör diyotu ters akım, modül uyumaması (araç 'uyanık' kalıyor). | Kırmızı: hayır. | Ustaya: 'Park halinde akü boşalıyor, kaçak akım ölçümü ve akü kapasite testi yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-031","kategori":"elektrik","anahtarlar":["sigorta atıyor","sigorta sürekli atıyor","çakmak çalışmıyor","kısa devre","sigorta yanıyor"],"metin":"Belirti: aynı sigorta tekrar tekrar atıyor. | En sık: o hatta kısa devre — sıyrılmış kablo (kapı menteşe geçişi, bagaj), sonradan takılan aksesuar, çakmağa düşen metal — kontrol: sigorta hangi devreye ait (kapaktaki şema), o devredeki tüketicileri tek tek çıkar; maliyet: 500–3.000 TL; aciliyet: Bakimda. | Sık: arızalı motor (fan, silecek, cam motoru) aşırı akım çekiyor, yanlış amperde sigorta takılmış (daha büyük sigorta TAKMA — yangın riski). | Nadir: kablo demetinde su/oksitlenme. | Kırmızı: yanık plastik kokusu/duman varsa aküyü sök. | Ustaya: 'X sigortası sürekli atıyor, hattaki kısa devreyi bulur musun.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-032","kategori":"sanziman","anahtarlar":["vites zor giriyor","vites girmiyor","vites sert","vites takılıyor","vites geçişi zor"],"metin":"Belirti: manuel viteste geçişler zor/sert. | En sık: debriyaj tam ayırmıyor — debriyaj hidroliği/hava, aşınmış baskı, ayarsız tel — kontrol: motor kapalıyken vites kolay giriyorsa debriyaj; maliyet: hava alma/hidrolik 500–1.500 TL, debriyaj seti 6.000–20.000 TL; aciliyet: BuHafta. | Sık: şanzıman yağı eski/az (özellikle soğukta 1–2. vites), vites kolu mafsalı/telleri aşınmış. | Nadir: senkromeç aşınması (belli viteste ses/geçmeme), debriyaj merkezi kaçağı. | Kırmızı: hayır. | Ustaya: 'Vites zor giriyor, debriyaj ayırma ve şanzıman yağı kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-033","kategori":"sanziman","anahtarlar":["debriyaj kaçırıyor","devir yükseliyor hız artmıyor","debriyaj bitti","balata yanık kokusu","kavrama kaçırma"],"metin":"Belirti: gazda devir yükseliyor, hız aynı oranda artmıyor; yanık koku. | En sık: debriyaj balatası bitmiş (yüksek viteste yokuşta belirgin) — kontrol: 4–5. viteste düşük devirde gaz kökle, devir fırlıyorsa kaçırıyor; maliyet: debriyaj seti + işçilik 6.000–20.000 TL, çift kütleli volanla 15.000–40.000 TL; aciliyet: BuHafta. | Sık: debriyaj hidrolik/tel ayarı (pedal boşluğu yok, balata sürekli yarım basılı), yağ kaçağı balataya (krank/şanzıman keçesi). | Nadir: baskı yayı kırık, otomatik şanzımanda kaçırma (bkz. otomatik). | Kırmızı: hayır; uzun yola çıkma. | Ustaya: 'Debriyaj kaçırıyor, set değişimi gerekir mi, volanı da kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-034","kategori":"sanziman","anahtarlar":["debriyaj pedalı ağır","debriyaj sert","pedal titriyor","debriyaj ses yapıyor","pedal basınca ses"],"metin":"Belirti: debriyaj pedalı ağır, titreşimli ya da basınca ses geliyor. | En sık: aşınmış debriyaj rulmanı (pedala basınca uğultu/ıslık, bırakınca kesilir) ya da baskı diyaframı — maliyet: rulman genelde setle 6.000–20.000 TL; aciliyet: BuHafta. | Sık: debriyaj teli paslanmış/kuru (telli sistem), pedal mili burcu, hidrolik merkez sızdırması. | Nadir: çift kütleli volan aşınması (rölantide tıkırtı, kalkışta titreme). | Kırmızı: pedal yerde kalıyorsa (hidrolik boşalmış) vites atamazsın — sürme. | Ustaya: 'Debriyaj pedalı ağır ve ses var, rulman/baskı ve hidrolik kontrolü yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-035","kategori":"sanziman","anahtarlar":["otomatik şanzıman sert geçiş","otomatik vites vuruyor","vites geçişi gecikiyor","şanzıman yağı","otomatik vites kaçırıyor","dsg titreme"],"metin":"Belirti: otomatik şanzıman sert/gecikmeli vites geçiyor ya da titriyor. | En sık: şanzıman yağı eski/seviyesi düşük (üretici 'ömür boyu' dese de 60–80 bin km'de değişim tavsiye edilir) — kontrol: son ATF değişimi; maliyet: yağ+filtre 4.000–12.000 TL; aciliyet: BuHafta. | Sık: çift kavramalı (DSG/DCT) şanzımanda mekatronik/kavrama adaptasyonu (kalkışta titreme, düşük hızda sarsıntı), solenoid arızası, adaptasyon sıfırlama. | Nadir: tork konvertörü, kavrama paketleri aşınması (revizyon 40.000 TL+). | Kırmızı: şanzıman uyarı lambası + acil sürüş modu (3. viteste kilitli) → servise. | Ustaya: 'Otomatik vites sert geçiyor, ATF seviyesi/yağı ve adaptasyon değerlerine bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-036","kategori":"sanziman","anahtarlar":["geri vites girmiyor","geri vites ses yapıyor","geri vites zor","geri viteste dişli sesi"],"metin":"Belirti: geri vites zor giriyor ya da dişli sesiyle giriyor. | En sık: geri viteste senkromeç yoktur; debriyaj tam ayırmıyorsa dişli sesi normaldir — önce 1. vitese alıp sonra geri vitese geç; kalıcıysa debriyaj ayırma sorunu; maliyet: hidrolik 500–1.500 TL, debriyaj 6.000–20.000 TL; aciliyet: Bakimda. | Sık: vites kolu kilit halkası/mekanizması (geri vites kilidi), şanzıman yağı eski. | Nadir: geri vites dişlisi/ara dişli aşınması. | Kırmızı: hayır. | Ustaya: 'Geri vites zor giriyor, debriyaj ayırma ve vites mekanizmasına bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-037","kategori":"ses","anahtarlar":["şanzımandan uğultu","vites ses yapıyor","hızla artan uğultu","viteste uğultu","rulman sesi"],"metin":"Belirti: uğultu — hızla artıyor, viteste/boşta değişiyor. | En sık: poyra (tekerlek) rulmanı — dönüşlerde ses tarafa göre artar/azalır, vitesten bağımsız — maliyet: 1.500–5.000 TL/tekerlek; aciliyet: BuHafta. | Sık: şanzıman yağı az/eski (belirli viteste uğultu), diferansiyel/aks rulmanı. | Nadir: şanzıman rulmanı (boşta da ses, debriyaja basınca kesilir), lastik düzensiz aşınması (uğultu gibi). | Kırmızı: rulman ileri seviyede ise tekerlek kilitlenebilir — kısa sürede değiştir. | Ustaya: 'Hızla artan uğultu var, poyra rulmanlarını ve şanzıman yağını kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-038","kategori":"direksiyon","anahtarlar":["direksiyon titremesi","hızda direksiyon titriyor","100 km titreme","balans","direksiyon sallanıyor"],"metin":"Belirti: belirli hızda (genelde 90–120 km/s) direksiyon titriyor. | En sık: ön lastik balans ayarı bozuk (ağırlık düşmüş, çamur/buz) — maliyet: balans 400–1.000 TL; aciliyet: Bakimda. | Sık: lastik deformasyonu/yanak şişliği (balansla geçmez), jant eğik (çukur çarpması), aşınmış rot başı/rotil/salıncak burcu. | Nadir: aks (CV) mafsalı, poyra rulmanı, fren diski (yalnız frende). | Kırmızı: şiddetli titreme + tekerlek sesi → dur, lastiği kontrol et. | Ustaya: 'Yüksek hızda direksiyon titriyor, balans + lastik/jant salgısı ve ön takım boşluklarına bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-039","kategori":"direksiyon","anahtarlar":["araç sağa çekiyor","sola çekiyor","direksiyon çekiyor","düz gitmiyor","rot ayarı","direksiyon eğik"],"metin":"Belirti: düz yolda araç bir tarafa çekiyor / direksiyon eğik duruyor. | En sık: lastik basınç farkı ya da ön düzen (rot) ayarı bozuk (çukur, kaldırım) — kontrol: sağ-sol basıncı eşitle, dene; maliyet: rot ayarı 800–2.000 TL; aciliyet: Bakimda. | Sık: lastik konikliği (lastikleri sağ-sol değiştir, çekme yön değiştirirse lastik), aşınmış salıncak burcu/rotil, kaliper yapışması (frende belirginleşir). | Nadir: yay çökmesi, şasi/kaster farkı (kaza sonrası), yol eğimi (Türkiye'de sağ eğim normal hafif sağa çekme). | Kırmızı: hayır. | Ustaya: 'Araç sola çekiyor, basınç ve lastik çapraz denemesi sonrası rot ayarı ve ön takım kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-040","kategori":"direksiyon","anahtarlar":["direksiyon ağır","direksiyon zor dönüyor","direksiyon sertleşti","hidrolik direksiyon","elektrikli direksiyon arızası","direksiyon ses"],"metin":"Belirti: direksiyon ağırlaştı. | En sık: hidrolik sistemde düşük yağ (kaçak: pompa, hortum, kutu) — kontrol: depo seviyesi, dönüşte inleme sesi; maliyet: yağ 500–1.500 TL, hortum 1.500–5.000 TL, pompa 4.000–12.000 TL; aciliyet: BuHafta. | Sık: elektrikli (EPS) direksiyonda modül/sensör arızası (direksiyon lambası, aniden ağırlaşma), V kayışı kaymış/kopmuş (akü lambası eşlik eder), düşük lastik basıncı. | Nadir: direksiyon kutusu, kolon mafsalı. | Kırmızı: seyirde ANİDEN ağırlaşma + ses/lamba → güvenle kenara çek, sürme. | Ustaya: 'Direksiyon ağırlaştı, hidrolik seviye/kaçak ya da EPS kodu kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-041","kategori":"suspansiyon","anahtarlar":["tümsekte tak tak","kasis sesi","ön takım sesi","tak tuk ses","çukurda ses","süspansiyon sesi"],"metin":"Belirti: tümsek/çukur geçişinde önden tak-tuk sesi. | En sık: viraj denge çubuğu (z rot) mafsalı, salıncak burcu — maliyet: z rot 500–1.500 TL/adet, burç 1.000–3.000 TL; aciliyet: BuHafta. | Sık: amortisör üst takozu/yatağı (direksiyon çevirince de ses), rotil, aşınmış amortisör (araç sekiyor). | Nadir: gevşek alt koruma sacı, egzoz askısı, motor takozu (kalkışta), bagajdaki eşya. | Kırmızı: seste birlikte tekerlekte oynama hissi → rotil kopabilir, hemen kontrol. | Ustaya: 'Tümsekte tak tak sesi, z rot, salıncak burcu ve amortisör takozlarını kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-042","kategori":"ses","anahtarlar":["dönüşte tık tık","virajda tıkırtı","aks sesi","cv mafsal","aks körüğü yırtık","kırık aks"],"metin":"Belirti: dönüşte/tam kilitte tık-tık sesi, hızlanınca artıyor. | En sık: aks CV mafsalı aşınmış — genelde körük yırtılıp gres kaçmasından — kontrol: körükte yırtık/gres sıçraması; maliyet: körük 800–2.000 TL, aks 3.000–10.000 TL; aciliyet: BuHafta. | Sık: iç mafsal (düz yolda gazda titreme), rotil (aynı taraf). | Nadir: poyra rulmanı, diferansiyel. | Kırmızı: ses çok şiddetliyse aks kopabilir, uzun yola çıkma. | Ustaya: 'Dönüşte tıkırtı var, aks körükleri ve CV mafsallarını kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-043","kategori":"suspansiyon","anahtarlar":["araç sallanıyor","yalpalıyor","sekiyor","amortisör bitti","kasis sonrası sallanma","yatıyor"],"metin":"Belirti: kasis sonrası araç 2–3 kez sallanıyor, virajda yatıyor. | En sık: amortisörler bitmiş (kaçak, 80–120 bin km) — kontrol: köşeden bastır bırak, 1'den fazla salınım; amortisör gövdesinde yağ; maliyet: ön çift 4.000–12.000 TL, arka çift 3.000–8.000 TL (takoz/toz körüğüyle); aciliyet: Bakimda. | Sık: yorulmuş/kırık yay (araç bir köşede alçak), viraj denge çubuğu bağlantıları. | Nadir: aşırı yük, yanlış lastik basıncı. | Kırmızı: hayır — fren mesafesi ve ABS etkinliği düşer, geciktirme. | Ustaya: 'Araç kasiste sallanıyor, amortisör testi ve yayları kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-044","kategori":"lastik","anahtarlar":["lastik iç aşınma","lastik dıştan aşınıyor","düzensiz aşınma","lastik tek taraf aşınma","lastik yeniyor"],"metin":"Belirti: lastikler bir kenardan ya da düzensiz aşınıyor. | En sık: ön düzen (rot/kamber) ayarı bozuk — iç kenar aşınması tipik; maliyet: rot ayarı 800–2.000 TL, lastik çifti 4.000–12.000 TL; aciliyet: Bakimda. | Sık: düşük basınç (iki kenar), yüksek basınç (orta), aşınmış rotil/salıncak burcu (ayar tutmaz), bitmiş amortisör (dalgalı/pullu aşınma). | Nadir: eğik jant, yay çökmesi. | Kırmızı: kord teli görünüyorsa lastiği kullanma. | Ustaya: 'Lastikler içten aşınıyor, önce ön takım boşluğu sonra rot-kamber ayarı yapar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-045","kategori":"yakit","anahtarlar":["yakıt tüketimi arttı","çok yakıyor","tüketim yükseldi","benzin çok gidiyor","mazot tüketimi"],"metin":"Belirti: yakıt tüketimi belirgin arttı. | En sık: kirli hava filtresi, eski buji, düşük lastik basıncı, kirli/aşınmış lambda sensörü (karışım zenginleşir) — kontrol: parça hafızasında filtre/buji tarihleri, basınç; maliyet: filtre 300–1.500 TL, buji 800–3.000 TL, lambda 1.500–5.000 TL; aciliyet: Bakimda. | Sık: sürtünen fren (kaliper yapışık), termostat açık kalmış (motor soğuk çalışır), kışın kısa mesafe (normal artış %10–20), tam depo/yük/portbagaj. | Nadir: enjektör sızdırması, yakıt kaçağı (koku!), MAF hatası, hız/ivme sensörü. | Kırmızı: yakıt kokusu varsa kaçak — sürme. | Ustaya: 'Tüketim arttı, lambda/MAF değerleri, buji-filtre ve fren sürtme kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-046","kategori":"koku","anahtarlar":["benzin kokusu","yakıt kokusu","mazot kokusu","kabinde benzin kokusu","yakıt kaçağı","lpg kokusu","gaz kokusu"],"metin":"Belirti: benzin/mazot/LPG kokusu (kabinde ya da araç dışında). | KIRMIZI: yakıt kaçağı yangın riskidir — aracı kapalı alanda çalıştırma, sigara/kıvılcım uzak tut, LPG'de tüpü kapat, çekici. | En sık: enjektör o-ring/yakıt rampası sızıntısı, yakıt hortumu/kelepçesi, depo kapağı contası, LPG'de enjektör rayı/hortum bağlantısı — maliyet: 300–3.000 TL; aciliyet: Bugun. | Sık: taşan depo (doldurma sonrası geçici), EVAP/karbon kanister (benzinli, depo dolduktan sonra koku). | Nadir: depo çatlağı/pas, yakıt pompası flanş contası (arka koltuk altı). | Ustaya: 'Yakıt kokusu var, tüm yakıt hattını ve LPG bağlantılarını kaçak için kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-047","kategori":"egzoz","anahtarlar":["egzoz sesi arttı","egzoz gürültü","egzoz delindi","egzoz kaçağı","egzoz sallanıyor","susturucu"],"metin":"Belirti: egzoz sesi arttı / altından tıngırtı. | En sık: paslanıp delinen orta/arka susturucu ya da boru bağlantı contası — maliyet: kaynak 500–1.500 TL, susturucu 1.500–6.000 TL; aciliyet: Bakimda (muayenede ağır kusur). | Sık: kopmuş egzoz askısı (tıngırtı), manifold contası/kırık manifold saplaması (motor bölmesinden tıs sesi, soğukta belirgin). | Nadir: esnek boru (körük) yırtılması, katalitik konvertör iç parçalanması (şıngırtı). | Kırmızı: kabine egzoz kokusu giriyorsa (CO) camları aç, hemen serviste. | Ustaya: 'Egzoz sesi arttı, kaçak yerini ve askıları kontrol edip kaynak/parça der misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-048","kategori":"yakit","anahtarlar":["lpg'ye geçmiyor","lpg dalgalanma","lpg tekliyor","lpg gaz kesiyor","lpg filtresi","lpg'de çekmiyor","gazda stop"],"metin":"Belirti: LPG'ye geçmiyor / LPG'de tekliyor-dalgalanıyor. | En sık: tıkalı LPG filtresi (gaz fazı ve sıvı fazı, 10.000 km'de değişim), kirli LPG enjektörleri — maliyet: filtre 300–800 TL, enjektör temizliği 800–2.000 TL; aciliyet: BuHafta. | Sık: regülatör (beyin/buharlaştırıcı) diyaframı/ısınmaması (termostat açık kalmışsa geçmez), tüp seviye sensörü/multivalf, ayar (kalibrasyon). | Nadir: LPG beyni, kablo/röle, bujiler (LPG bujiyi daha çabuk bitirir). | Kırmızı: gaz kokusu varsa tüpü kapat, sürme. | Ustaya: 'LPG'de dalgalanma var, filtreler, enjektör temizliği ve regülatör basıncı kontrolü.'","kaynak":"genel servis pratiği (LPG dönüşüm bakımı)","guncelleme":"2026-09-02"},
-  {"id":"blr-049","kategori":"uyari-lambasi","anahtarlar":["dpf lambası","partikül filtresi","dpf doldu","dpf uyarısı","rejenerasyon","dizel filtre lambası"],"metin":"Belirti: DPF (partikül filtresi) lambası yandı. | En sık: filtre dolu, şehir içi kısa mesafede rejenerasyon tamamlanamıyor — kontrol: 20–30 dk 2.500+ devirde sabit sürüş (şehir dışı) rejenerasyonu tetikler, lamba sönerse tamam; maliyet: 0; aciliyet: BuHafta. | Sık: zorlanmış rejenerasyon serviste (1.000–2.500 TL), DPF temizliği (3.000–8.000 TL), fark basınç sensörü/hortumu arızası (yanlış doluluk okuması). | Nadir: DPF kül dolumu (300k km+), yeni DPF (15.000–40.000 TL), EGR/enjektör sorunu is üretimini artırıyor. | Kırmızı: lamba + güç kaybı + hararet → dur. DPF söktürmek mevzuata aykırı ve muayeneden kalma nedeni. | Ustaya: 'DPF lambası yandı, doluluk yüzdesi ve fark basınç sensörünü okuyup gerekirse zorlanmış rejenerasyon.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-050","kategori":"klima","anahtarlar":["klima soğutmuyor","klima üflüyor soğutmuyor","klima gazı","klima kompresörü","klima çalışmıyor"],"metin":"Belirti: klima soğuk üflemiyor. | En sık: düşük soğutucu gaz (küçük kaçak, kondanser/o-ring) — kontrol: serviste gaz dolum + UV kaçak boyası; maliyet: dolum 1.500–3.000 TL, kondanser 3.000–8.000 TL; aciliyet: Bakimda. | Sık: kompresör kavraması devreye girmiyor (röle, basınç anahtarı, sigorta), tıkalı polen filtresi/evaporatör (az üflüyor), kondanser önü kirli/tıkalı (trafikte soğutmaz). | Nadir: kompresör arızası (8.000–25.000 TL), genleşme valfi, kabin sıcaklık kapağı motoru. | Kırmızı: hayır. | Ustaya: 'Klima soğutmuyor, gaz basıncını ölçüp kaçak testi ve kompresör kavramasını kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-051","kategori":"klima","anahtarlar":["klima kötü kokuyor","klima küf kokusu","klima ayak kokusu","evaporatör temizliği","polen filtresi"],"metin":"Belirti: klima açınca küf/ekşi koku. | En sık: evaporatörde bakteri/küf — kontrol: polen filtresi ne zaman değişti; maliyet: polen filtresi 300–1.000 TL, evaporatör köpük temizliği 500–1.500 TL; aciliyet: Bakimda. | Sık: tıkalı drenaj hortumu (paspas altı ıslak), sürekli iç sirkülasyon kullanımı. | Nadir: kalorifer radyatörü sızıntısı (tatlı koku), yaprak/hayvan kalıntısı. | Kırmızı: hayır. | Önlem: varışa 2–3 dk kala klimayı kapatıp fanı açık bırakmak evaporatörü kurutur. | Ustaya: 'Klimadan küf kokusu, polen filtresi + evaporatör temizliği ve drenaj kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-052","kategori":"klima","anahtarlar":["klima açınca devir düşüyor","klima açınca titreme","klima açınca stop","kompresör yükü","klima ses"],"metin":"Belirti: klima açınca rölanti düşüyor/titriyor ya da stop ediyor. | En sık: kirli gaz kelebeği/rölanti kontrolü (kompresör yükünü telafi edemiyor) — maliyet: temizlik 500–1.500 TL; aciliyet: Bakimda. | Sık: aşırı dolu klima gazı (yüksek basınç, kompresör zorlanır), kompresör rulmanı/kavraması (klima açınca gıcırtı), gevşek kayış. | Nadir: kompresör tutukluk yapıyor (kayışı koparabilir), buji/bobin zayıf. | Kırmızı: kompresörden metalik ses + kayış dumanı → klimayı kapat, kayış koparsa hararet/şarj gider. | Ustaya: 'Klima açınca devir düşüyor, gaz kelebeği temizliği ve klima basınçları.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-053","kategori":"lastik","anahtarlar":["lastik basınç uyarısı","tpms","lastik lambası yandı","lastik basıncı düşük uyarısı","lastik ikaz"],"metin":"Belirti: lastik basınç (TPMS) uyarısı yandı. | En sık: bir lastikte gerçek basınç düşüşü (çivi, sübap) ya da soğuk hava (her 10°C düşüşte ~0,1 bar) — kontrol: dördünü ölç, üretici değerine (kapı direği etiketi) getir, sistemi sıfırla; maliyet: 0 – tamir 200–500 TL; aciliyet: Bugun (düşükse). | Sık: sistem sıfırlanmamış (lastik değişimi sonrası), sensör pili bitmiş (5–8 yıl; 800–2.500 TL/sensör). | Nadir: ABS sensör tabanlı dolaylı sistemde tekerlek hızı farkı (rulman/lastik ebadı). | Kırmızı: hızla sönüyorsa yanak hasarı olabilir, hızı düşür, kontrol. | Ustaya: 'TPMS uyarısı, basınçları ölçtüm, sensör ve sızdırmazlık kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-054","kategori":"lastik","anahtarlar":["lastik yanak şişkinliği","lastikte şişlik","lastik balonlaşma","lastik yanak yumru","lastik patlar mı"],"metin":"Belirti: lastik yanağında şişkinlik/yumru. | KIRMIZI: yanak şişliği iç kord kopmasıdır, tamir edilmez, her an patlayabilir — o lastiği kullanma, yedeğe geç, yeni lastik (aynı akstaki çiftle değiştirmek tavsiye). | En sık: çukur/kaldırım darbesi; maliyet: lastik 2.000–6.000 TL/adet; aciliyet: Bugun. | Sık: düşük basınçla darbe. | Nadir: üretim hatası (garanti). | Ustaya: 'Yanakta şişlik var, bu lastiği ve jantı kontrol edip değiştirir misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-055","kategori":"ses","anahtarlar":["hızla artan uğultu","uçak sesi","poyra rulmanı","tekerlek sesi","virajda uğultu artıyor"],"metin":"Belirti: hızla artan uğultu (uçak sesi), virajda tarafa göre değişiyor. | En sık: poyra (tekerlek) rulmanı — sağa dönünce artıyorsa genelde sol tekerlek; maliyet: 1.500–5.000 TL/tekerlek; aciliyet: BuHafta. | Sık: pullu/düzensiz aşınmış lastik (elle diş kenarlarını yokla), agresif desenli lastik (normal). | Nadir: diferansiyel, aks mafsalı iç bilezik. | Kırmızı: rulman ileri aşınmada tekerlek kilitlenebilir/ısınabilir — geciktirme. | Ustaya: 'Uğultu virajda değişiyor, poyra rulmanlarını kaldırıp kontrol eder misin.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-056","kategori":"elektrik","anahtarlar":["silecek çalışmıyor","cam suyu gelmiyor","silecek yavaş","silecek motoru","cam suyu motoru","silecek kolu"],"metin":"Belirti: silecek çalışmıyor/yavaş ya da cam suyu gelmiyor. | En sık: cam suyu — depo boş/donmuş, tıkalı fıskiye, su pompası arızası; silecek — sigorta, silecek motoru, mekanizma mafsalı çıkmış — maliyet: pompa 300–1.000 TL, silecek motoru 1.500–4.000 TL, mafsal 500–1.500 TL; aciliyet: Bakimda (muayenede kusur). | Sık: silecek kol anahtarı (kolçak), buz/kara yapışmış silecek zorlanınca sigorta. | Nadir: kablo demeti, yağmur sensörü. | Kırmızı: yağmurda sileceksiz sürüş tehlikeli — hemen düzelt. | Ustaya: 'Silecek çalışmıyor, sigorta-motor-mafsal sırayla kontrol.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-057","kategori":"elektrik","anahtarlar":["cam inmiyor","cam çıkmıyor","cam motoru","cam kriko","cam yavaş iniyor","cam düştü"],"metin":"Belirti: kapı camı inmiyor/çıkmıyor ya da içeri düştü. | En sık: cam krikosu (mekanizma) teli kopmuş/plastik kızak kırılmış (cam düşer, motor sesi var) — maliyet: kriko 1.500–4.000 TL; aciliyet: Bakimda. | Sık: cam motoru (ses yok), cam düğmesi/ana düğme (sürücü tarafından çalışıyor yolcudan çalışmıyorsa düğme), sigorta. | Nadir: kapı içi kablo demeti kopuğu (menteşe geçişi), kızak fitili sertleşmiş (yavaş iniyor — silikon sprey). | Kırmızı: hayır. | Ustaya: 'Sağ ön cam inmiyor, kriko/motor ve düğme kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-058","kategori":"motor","anahtarlar":["turbo ıslık","turbo sesi","turbo basınç","turbo kaçırıyor","turbodan ses","turbo yağ","güç kaybı turbo"],"metin":"Belirti: turbodan ıslık/uğultu, güç kaybı, mavi duman. | En sık: turbo basınç hattında kaçak — intercooler hortumu patlak/kelepçe gevşek (ıslık + güç kaybı + siyah duman) — maliyet: hortum 1.000–4.000 TL; aciliyet: BuHafta. | Sık: turbo geometri (VNT) mekanizması takılı (aralıklı güç kaybı, acil mod), aşınmış turbo yatağı (metalik hışırtı, yağ kaçağı, mavi duman), kirli hava filtresi. | Nadir: wastegate/aktüatör, tıkalı turbo yağ hattı, EGR. | Kırmızı: turbodan metalik sürtünme sesi + mavi duman → sürme, turbo dağılırsa motora parça gider. | Ustaya: 'Turbo ıslık çalıyor ve güç düşük, basınç hattı duman testi ve turbo mili boşluğu kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-059","kategori":"uyari-lambasi","anahtarlar":["hava yastığı lambası","airbag lambası","srs lambası","airbag yanıyor","emniyet kemeri lambası"],"metin":"Belirti: hava yastığı (SRS/airbag) lambası sabit yanıyor. | En sık: koltuk altı kemer tokası/koltuk kablo soketi teması (koltuk oynatılınca) ya da direksiyon spiral (saat yayı) kablosu — kontrol: SRS kod okutma; maliyet: soket temizliği 300–800 TL, saat yayı 2.000–6.000 TL; aciliyet: BuHafta. | Sık: yolcu koltuğu ağırlık/oturma sensörü, düşük akü sonrası kayıtlı hata (silinir). | Nadir: SRS beyni (kaza sonrası kilitlenir), hava yastığı modülü. | Kırmızı: lamba yanarken hava yastıkları KAZADA AÇILMAYABİLİR — muayenede kusur; geciktirme. | Ustaya: 'Airbag lambası yanıyor, SRS kodunu okuyup kemer tokası ve saat yayına bakar mısın.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"},
-  {"id":"blr-060","kategori":"calismama","anahtarlar":["kontak dönmüyor","direksiyon kilitlendi","anahtar dönmüyor","kontak sıkıştı","anahtar simgesi yanıp sönüyor","immobilizer"],"metin":"Belirti: kontak anahtarı dönmüyor / anahtar simgesi yanıp sönüyor, marş yok. | En sık: direksiyon kilidi yük altında — direksiyonu hafifçe sağa-sola zorlarken anahtarı çevir; maliyet: 0; aciliyet: Bugun. | Sık: aşınmış anahtar/kontak silindiri, immobilizer çipi tanımıyor (yedek anahtarla dene, anahtar pili), otomatikte vites P'de değil. | Nadir: kontak anahtarı elektrik kontağı, start-stop düğmeli araçlarda akıllı anahtar pili/anten. | Kırmızı: hayır. | Ustaya: 'Anahtar dönmüyor/immobilizer lambası, kontak silindiri ve anahtar tanımlama kontrolü.'","kaynak":"genel servis pratiği","guncelleme":"2026-09-02"}
+ {
+  "id": "blr-001",
+  "kategori": "fren",
+  "anahtarlar": [
+   "fren sesi",
+   "metalik ses",
+   "gıcırtı",
+   "fren gıcırdıyor",
+   "balata sesi",
+   "fren cızırtı"
+  ],
+  "metin": "Belirti: frene basınca metalik/gıcırtı sesi. | En sık: fren balatası bitmiş, aşınma ikaz sacı diske sürtüyor — kontrol: jant aralığından balata kalınlığı (<3 mm bitmiş), diskte çizik; maliyet: balata takımı 1.500–4.000 TL, disk+balata 4.000–10.000 TL; aciliyet: BuHafta. | Sık: yeni balatanın ilk günlerde gıcırdaması, balata toz/paslanma (yağmur sonrası ilk frenlerde geçer); maliyet: 0; aciliyet: Bakimda. | Nadir: kaliper pimi kuruması, disk çarpılması, yanlış (sert) balata. | Kırmızı: sürekli öğütme sesi + fren mesafesi uzadıysa metal metale — hemen serviste. | Ustaya: 'Frende metalik ses var, balata kalınlığına ve diske bakar mısın.'",
+  "kaynak": "genel servis pratiği; fiyatlar 2026 TR bandı tahmini (özel–yetkili servis)",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-002",
+  "kategori": "fren",
+  "anahtarlar": [
+   "frende titreme",
+   "direksiyon titriyor frende",
+   "fren titremesi",
+   "pedal titriyor",
+   "disk çarpık"
+  ],
+  "metin": "Belirti: frene basınca direksiyonda/pedalda titreme. | En sık: ön fren diski çarpılmış (ısınıp ani soğuma, aşırı aşınma) — kontrol: yüksek hızdan frenlemede belirginleşir; maliyet: ön disk+balata 4.000–10.000 TL; aciliyet: BuHafta. | Sık: arka diskte çarpılma (pedalda hissedilir, direksiyonda az), balatanın diske eşitsiz yapışması (kalıntı). | Nadir: gevşek bijon, aşınmış rot başı/rotil (titremeyi büyütür), poyra rulmanı. | Kırmızı: hayır. | Ustaya: 'Frende titreme var, disk salgısını ölçüp ön takıma da bakar mısın.'",
+  "kaynak": "genel servis pratiği; fiyat 2026 tahmini",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-003",
+  "kategori": "fren",
+  "anahtarlar": [
+   "fren pedalı sert",
+   "fren sertleşti",
+   "pedal taş gibi",
+   "fren zor basılıyor",
+   "servo"
+  ],
+  "metin": "Belirti: fren pedalı çok sert, basmak için güç gerekiyor. | En sık: fren servosu (booster) vakum kaybı — vakum hortumu çatlak/çıkmış ya da servo diyaframı — kontrol: motor kapalıyken pedala birkaç kez bas, motoru çalıştır; pedal yumuşayıp çökmüyorsa servo/vakum sorunu; maliyet: hortum 300–1.000 TL, servo 4.000–12.000 TL; aciliyet: Bugun. | Sık: dizel/turbolu araçta vakum pompası arızası; motor çalışmıyorken sertlik normaldir. | Nadir: kaliper yapışması, fren hortumu iç çökmesi. | Kırmızı: fren mesafesi uzadıysa aracı kullanma, çekici. | Ustaya: 'Pedal sertleşti, servo vakumunu ve pompayı kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-004",
+  "kategori": "fren",
+  "anahtarlar": [
+   "fren pedalı yumuşak",
+   "pedal derin",
+   "fren boşluğu",
+   "süngerimsi pedal",
+   "fren hidroliği",
+   "hava yapmış"
+  ],
+  "metin": "Belirti: pedal süngerimsi, derine gidiyor ama tutuyor. | En sık: hidrolik sistemde hava (balata/disk değişimi sonrası hava alınmamış, düşük hidrolik seviyesi) — kontrol: hidrolik deposu seviyesi ve rengi (koyu kahve = eski); maliyet: hava alma + hidrolik değişimi 800–2.000 TL; aciliyet: Bugun. | Sık: fren hidroliği 2 yılı geçmiş (nem çekmiş, kaynıyor), arka fren kampana ayarsızlığı. | Nadir: ana merkez iç kaçağı (pedal yavaş yavaş yere iniyor — bu kırmızı), hortum şişmesi. | Kırmızı: pedal yere kadar gidiyorsa ya da tutmuyorsa sürme, çekici. | Ustaya: 'Pedal derin ve süngerimsi, hidrolik seviyesi/yaşı ve kaçak kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-005",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "abs lambası",
+   "abs ışığı",
+   "abs yanıyor",
+   "abs uyarısı",
+   "esp lambası"
+  ],
+  "metin": "Belirti: ABS (ve genelde ESP/ESC) lambası sabit yanıyor. | En sık: tekerlek hız sensörü arızası ya da sensör ucunda kir/pas, sensör kablosu kopuk — kontrol: OBD ile kod (C00xx serisi), hangi tekerlek olduğu okunur; maliyet: sensör 800–3.000 TL; aciliyet: BuHafta (normal fren çalışır, ABS devre dışı). | Sık: sensör dişlisi (tone ring) çatlak/kirli, düşük akü voltajı sonrası hatalı kayıt. | Nadir: ABS modülü/pompası arızası (pahalı, 10.000 TL+), fren lambası anahtarı. | Kırmızı: ABS ile birlikte kırmızı fren lambası da yanıyorsa hidrolik seviyesi/hat sorunu — sürme. | Ustaya: 'ABS lambası yanıyor, ABS kodunu okuyup tekerlek sensörlerine bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-006",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "el freni lambası",
+   "fren lambası yanıyor",
+   "kırmızı fren uyarısı",
+   "hidrolik seviye lambası",
+   "el freni indi ama yanıyor"
+  ],
+  "metin": "Belirti: el freni indirildiği halde kırmızı fren/ünlem lambası yanıyor. | En sık: fren hidroliği seviyesi düşük (balata aşınınca seviye iner; kaçak da olabilir) — kontrol: depo MIN çizgisinin altında mı, tekerlek içinde ıslaklık var mı; maliyet: balata 1.500–4.000 TL, kaçak onarımı değişken; aciliyet: Bugun. | Sık: el freni seviye anahtarı ayarsız/arızalı (0–1 tık farkı), balata aşınma sensörü (bazı araçlarda aynı lamba). | Nadir: fren basınç farkı anahtarı, gösterge arızası. | Kırmızı: seviye düşük + pedal derinse sürme. | Ustaya: 'Kırmızı fren lambası sönmüyor, hidrolik seviyesine ve kaçağa bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-007",
+  "kategori": "fren",
+  "anahtarlar": [
+   "frende sağa çekiyor",
+   "frende sola çekiyor",
+   "frenlerken çekme",
+   "tek taraf tutuyor",
+   "kaliper yapışık"
+  ],
+  "metin": "Belirti: frene basınca araç bir tarafa çekiyor. | En sık: tek tarafta kaliper pistonu/pimi yapışık ya da fren hortumu iç çökmüş — kontrol: sürüş sonrası jantlardan biri diğerinden çok sıcak/kokuyor; maliyet: kaliper bakımı 800–2.500 TL, kaliper 2.500–7.000 TL, hortum 500–1.500 TL; aciliyet: BuHafta. | Sık: tek taraf balata yağlanmış (aks keçesi/kaliper kaçağı), farklı lastik basıncı. | Nadir: ön düzen bozukluğu (frende belirginleşir), rot/salıncak burcu. | Kırmızı: şiddetli çekme + fren mesafesi uzaması — dikkatli, hızlı serviste. | Ustaya: 'Frende tek tarafa çekiyor, kaliper serbestliği ve hortumları kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-008",
+  "kategori": "koku",
+  "anahtarlar": [
+   "yanık kokusu",
+   "fren kokusu",
+   "balata kokusu",
+   "tekerlek sıcak",
+   "jant yanıyor"
+  ],
+  "metin": "Belirti: yanık/keskin koku, jantlardan biri çok sıcak. | En sık: kaliper yapışması ya da el freninin tam bırakılmaması — kontrol: hangi jant sıcak; maliyet: kaliper bakımı 800–2.500 TL; aciliyet: Bugun. | Sık: uzun inişte sürekli frenleme (normal, motor freni kullan), yeni balata alıştırma kokusu (ilk 100–200 km). | Nadir: debriyaj balatası yanığı (kalkışta kaçırma ile birlikte), kayış kokusu. | Kırmızı: jant tutulamayacak kadar sıcak + duman: dur, soğumasını bekle, çekici düşün (lastik patlayabilir). | Ustaya: 'Sağ/sol ön tekerlek aşırı ısınıyor ve yanık kokuyor, kaliper ve el freni bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-009",
+  "kategori": "motor",
+  "anahtarlar": [
+   "rölantide titreme",
+   "rölanti titriyor",
+   "motor titriyor",
+   "dururken sallanıyor",
+   "rölanti düzensiz"
+  ],
+  "metin": "Belirti: motor rölantide titriyor/sallanıyor. | En sık: buji ve/veya ateşleme bobini (benzinli), kirli gaz kelebeği/rölanti valfi — kontrol: klima açınca artıyor mu, motor arıza lambası var mı (P030x tekleme kodları); maliyet: buji takımı 800–3.000 TL, bobin 800–2.500 TL/adet, kelebek temizliği 500–1.500 TL; aciliyet: BuHafta. | Sık: motor takozu (kulak) yırtık — özellikle vitese alınca titreme artar; maliyet 1.500–6.000 TL; hava kaçağı (emme manifold contası, PCV hortumu). | Nadir: enjektör kirliliği, düşük kompresyon, LPG'de ayar/enjektör raylı sorunu, dizelde enjektör dönüş miktarı. | Kırmızı: hayır (motor lambası yanıp sönüyorsa bkz. tekleme). | Ustaya: 'Rölantide titreme var, tekleme kodu ve motor takozlarına bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-010",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "motor arıza lambası",
+   "check engine",
+   "sarı motor lambası",
+   "arıza lambası sabit",
+   "motor ikaz"
+  ],
+  "metin": "Belirti: sarı motor arıza lambası sabit yanıyor, araç normal gidiyor. | En sık: oksijen (lambda) sensörü, gevşek/bozuk yakıt deposu kapağı (EVAP), katalitik konvertör verimi (P0420), hava kütle ölçer — kontrol: OBD kod okutmak (500–1.000 TL ya da sanayide ücretsiz); maliyet: depo kapağı 200–600 TL, lambda 1.500–5.000 TL, katalitik 8.000–30.000 TL; aciliyet: BuHafta. | Sık: buji/bobin (tekleme), EGR valfi (dizel), DPF doluluğu. | Nadir: gaz kelebeği sensörü, ECU. | Kırmızı: lamba YANIP SÖNÜYORSA ciddi tekleme (katalitik yanabilir) — gazı az kullan, en yakın servise. | Ustaya: 'Motor lambası sabit yanıyor, kodu okuyup dondurulmuş veriye bakar mısın.'",
+  "kaynak": "genel servis pratiği; OBD-II jenerik kod bilgisi",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-011",
+  "kategori": "motor",
+  "anahtarlar": [
+   "tekleme",
+   "motor tekliyor",
+   "lamba yanıp sönüyor",
+   "silindir çalışmıyor",
+   "p0300",
+   "misfire"
+  ],
+  "metin": "Belirti: motor tekliyor, güç düşük, lamba yanıp sönüyor olabilir. | En sık: buji, ateşleme bobini (genelde tek silindir P030X kodu ile) — kontrol: bobinleri yer değiştirip kodun taşınıp taşınmadığına bakmak klasik test; maliyet: buji 800–3.000 TL, bobin 800–2.500 TL; aciliyet: Bugun. | Sık: enjektör tıkanması/arızası, yakıt basıncı düşük (yakıt pompası, filtre), hava kaçağı. | Nadir: kompresyon kaybı (sübap, segman, silindir kapak contası — beyaz duman ve antifriz eksiltme eşlik eder), zamanlama kayması. | Kırmızı: lamba yanıp sönerken uzun sürme — katalitik konvertör hasar görür; hemen serviste. | Ustaya: 'Motor tekliyor, P030x kodu var, buji-bobin ve enjektör kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-012",
+  "kategori": "motor",
+  "anahtarlar": [
+   "güç kaybı",
+   "çekişten düştü",
+   "çekmiyor",
+   "hızlanmıyor",
+   "gaz verince cevap vermiyor",
+   "yokuşta zorlanıyor"
+  ],
+  "metin": "Belirti: çekiş düştü, gaz verince yavaş tepki. | En sık: tıkalı hava filtresi/yakıt filtresi, kirli hava kütle ölçer (MAF), dizelde EGR/DPF tıkanması — kontrol: son filtre değişimi ne zaman, siyah duman var mı; maliyet: filtreler 500–2.500 TL, MAF temizliği 300–1.000 TL, DPF temizliği 3.000–8.000 TL; aciliyet: BuHafta. | Sık: turbo basınç kaçağı (hortum/intercooler), tıkalı katalitik konvertör (tavuk yumurtası kokusu, sıcakta güç kaybı), buji/bobin. | Nadir: yakıt pompası zayıf, zamanlama kayması, gaz kelebeği sensörü, debriyaj kaçırması (devir yükselir hız artmaz — bkz. debriyaj). | Kırmızı: 'limp mode' (acil sürüş) + lamba: yavaşça servise. | Ustaya: 'Çekiş düştü, filtreler, MAF ve turbo basıncı/EGR-DPF kontrolü ister misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-013",
+  "kategori": "calismama",
+  "anahtarlar": [
+   "soğukta zor çalışıyor",
+   "sabah çalışmıyor",
+   "marş uzun basıyor",
+   "soğuk çalışma",
+   "kışın zor çalışma"
+  ],
+  "metin": "Belirti: soğukta zor çalışıyor, sıcakken normal. | En sık: zayıflamış akü (3+ yaş, kışın kapasite düşer) — kontrol: marş sesi yavaşsa akü; maliyet: 3.000–7.000 TL; aciliyet: BuHafta. | Sık: dizelde kızdırma bujileri (ısıtma lambası kısa sönüyor ama duman/sarsıntı), yıpranmış buji, kirli enjektör, soğutma sıvısı sıcaklık sensörü (ECU soğuk karışımı vermiyor). | Nadir: yakıt basıncı düşmesi (çek valf), zamanlama, LPG'de benzin deposu boş/pompa. | Kırmızı: hayır. | Ustaya: 'Soğukta zor çalışıyor, akü testi + kızdırma/buji kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-014",
+  "kategori": "calismama",
+  "anahtarlar": [
+   "sıcakta çalışmıyor",
+   "sıcak motor çalışmıyor",
+   "durunca tekrar çalışmıyor",
+   "sıcakken marş basıyor çalışmıyor"
+  ],
+  "metin": "Belirti: soğukta çalışıyor, sıcakken stop sonrası tekrar çalışmıyor. | En sık: krank/eksantrik devir sensörü ısınınca sinyal kesiyor — kontrol: soğuyunca yeniden çalışıyorsa güçlü işaret; maliyet: 800–3.000 TL; aciliyet: BuHafta. | Sık: yakıt pompası ısınınca zayıflıyor, yakıt buharlaşması (eski karbüratör/LPG), ateşleme bobini ısı arızası. | Nadir: marş motoru ısıl arıza (marş hiç dönmüyor), ECU rölesi. | Kırmızı: hayır; yolda kalma riski yüksek, kısa zamanda serviste. | Ustaya: 'Sıcakken çalışmıyor, krank sensörü ve yakıt basıncını sıcak motorda ölçer misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-015",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "mavi duman",
+   "egzozdan mavi duman",
+   "yağ yakıyor",
+   "yağ kokulu duman",
+   "mavimsi duman"
+  ],
+  "metin": "Belirti: egzozdan mavi/mavimsi duman, yağ kokusu. | En sık: sübap yağ keçeleri (özellikle sabah ilk çalıştırmada bulut), segman aşınması (gaz verince/sürekli), PCV/karter havalandırma tıkalı — kontrol: 1.000 km'de ne kadar yağ eksiltiyor; maliyet: sübap keçesi 5.000–15.000 TL, PCV 500–2.000 TL, segman/revizyon 40.000 TL+; aciliyet: BuHafta. | Sık: turbo yağ keçesi (turbolu araçta, gaz kesince mavi), turbodan yağ kaçırma. | Nadir: yanlış viskozite yağ, yağ aşırı dolu. | Kırmızı: hayır; yağ seviyesini her 500 km kontrol et, düşürme. | Ustaya: 'Egzozdan mavi duman var, kompresyon ve turbo/keçe kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-016",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "beyaz duman",
+   "egzozdan beyaz duman",
+   "tatlı koku",
+   "antifriz yakıyor",
+   "silindir kapak contası",
+   "conta yaktı"
+  ],
+  "metin": "Belirti: egzozdan beyaz duman, tatlımsı koku, antifriz eksiliyor. | En sık: silindir kapak contası (soğutma sıvısı yanma odasına) — kontrol: antifriz eksiliyor ama kaçak yok, yağ kapağında mayonez, hararet; maliyet: kapak contası 8.000–25.000 TL (kapak rektefiye ile); aciliyet: Bugun. | Sık: soğuk havada egzozdan buhar (normal, birkaç dakikada geçer), EGR soğutucu sızıntısı (dizel). | Nadir: silindir kapak çatlağı, emme manifold contası (bazı motorlarda su geçişi), enjektör aşırı yakıt (gri-beyaz, dizel). | Kırmızı: hararet yükseliyorsa dur, motoru sürme. | Ustaya: 'Beyaz duman + antifriz eksiltme var, soğutma sistemi basınç testi ve CO2 sızıntı testi yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-017",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "siyah duman",
+   "egzozdan siyah duman",
+   "dizel siyah duman",
+   "zengin karışım",
+   "is"
+  ],
+  "metin": "Belirti: egzozdan siyah duman, özellikle gaz verince. | En sık: dizelde tıkalı hava filtresi, EGR valfi takılı/kirli, enjektör aşırı yakıt; benzinlide zengin karışım (MAF/lambda hatası, basınç regülatörü) — kontrol: hava filtresi durumu, yakıt tüketimi artmış mı; maliyet: filtre 300–1.500 TL, EGR temizliği 1.500–4.000 TL, EGR valfi 4.000–12.000 TL, enjektör 3.000–10.000 TL/adet; aciliyet: BuHafta. | Sık: turbo basınç kaçağı (hava az, yakıt normal → is), DPF sökülmüş araçlarda normal olarak görülür (mevzuata aykırı). | Nadir: chip-tuning aşırı yakıt, enjektör sızdırması. | Kırmızı: hayır. | Ustaya: 'Gaz verince siyah duman, hava filtresi-EGR-turbo hortumlarını ve enjektörleri kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-018",
+  "kategori": "motor",
+  "anahtarlar": [
+   "yağ eksiltiyor",
+   "yağ eksiltme",
+   "yağ seviyesi düşüyor",
+   "yağ kaçağı",
+   "motor altı yağ",
+   "yağ lambası"
+  ],
+  "metin": "Belirti: yağ eksiltiyor / altında yağ lekesi. | En sık: dış kaçak — külbütör kapak contası, yağ filtresi/karter tapası, krank keçesi, yağ soğutucu — kontrol: park yerinde leke, motor altı ıslaklık; maliyet: kapak contası 800–3.000 TL, keçe 2.000–6.000 TL; aciliyet: BuHafta. | Sık: iç tüketim (mavi duman ile — bkz. mavi duman), bazı motorlar için 1.000 km'de 0,5 L üretici sınırında normal sayılır. | Nadir: turbo yağ hattı, PCV arızası basınç yapıp keçelerden kaçırma. | Kırmızı: kırmızı yağ basıncı lambası yanıyorsa hemen dur, motoru çalıştırma (motor ölür). | Ustaya: 'Yağ eksiltiyor, kaçağı boya/UV ile bulur musun, kompresyona da bak.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-019",
+  "kategori": "ses",
+  "anahtarlar": [
+   "motor tıkırtı",
+   "tıkırtı sesi",
+   "sübap sesi",
+   "hidrolik itici",
+   "tak tak motor",
+   "dizel vuruntu"
+  ],
+  "metin": "Belirti: motordan tıkırtı/tak tak sesi. | En sık: hidrolik itici (sübap) sesi — soğukta artar, ısınınca azalır; düşük/eski yağ, yanlış viskozite — kontrol: yağ seviyesi/yaşı; maliyet: yağ değişimi 2.500–6.000 TL, itici seti 5.000–15.000 TL; aciliyet: BuHafta. | Sık: benzinli motorda düşük oktan/vuruntu (gazda ping sesi), gevşek ısı kalkanı (egzoz altı tıngırtı), eksantrik zincir gerdiricisi (soğukta ilk saniyeler). | Nadir: kol yatağı sesi (derin, devirle artan tok vuruntu — kırmızı), piston sesi. | Kırmızı: derin, yüklü tok vuruntu + yağ lambası → hemen dur. | Ustaya: 'Motorda tıkırtı var, stetoskopla sübap/itici ve zincir gerdiricisine bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-020",
+  "kategori": "motor",
+  "anahtarlar": [
+   "rölanti dalgalanıyor",
+   "devir iniyor çıkıyor",
+   "rölanti yükseliyor",
+   "devir düşmüyor",
+   "rölanti düşük"
+  ],
+  "metin": "Belirti: rölanti devri dalgalanıyor ya da normalden yüksek/düşük. | En sık: hava kaçağı (emme hortumu çatlak, manifold contası, PCV), kirli gaz kelebeği/rölanti kontrol valfi — kontrol: motor çalışırken emme hortumlarına bak, kaçak sesi (ıslık); maliyet: kelebek temizliği 500–1.500 TL, hortum 300–1.500 TL; aciliyet: BuHafta. | Sık: kirli MAF, soğutma sıcaklık sensörü, LPG'de ayar. | Nadir: gaz kelebeği konum sensörü, ECU adaptasyon sıfırlama gerekliliği (akü sökülünce), alternatör aşırı yük. | Kırmızı: hayır. | Ustaya: 'Rölanti dalgalanıyor, duman testiyle hava kaçağı ve gaz kelebeği temizliği yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-021",
+  "kategori": "calismama",
+  "anahtarlar": [
+   "stop ediyor",
+   "rölantide stop",
+   "dururken stop ediyor",
+   "motor duruyor",
+   "aniden stop"
+  ],
+  "metin": "Belirti: rölantide/dururken motor stop ediyor. | En sık: kirli gaz kelebeği/rölanti valfi, hava kaçağı — kontrol: klima açıkken daha sık mı; maliyet: temizlik 500–1.500 TL; aciliyet: BuHafta. | Sık: krank devir sensörü aralıklı arıza (seyirde de stop — kırmızı), zayıf yakıt pompası/tıkalı filtre, alternatör şarj etmiyor (akü lambası). | Nadir: EGR takılı kalma (dizel), LPG beyni/ayar, immobilizer. | Kırmızı: SEYİR HALİNDE stop ediyorsa (direksiyon ve fren desteği gider) aracı kullanma, servise çektir. | Ustaya: 'Rölantide stop ediyor, gaz kelebeği/hava kaçağı ve krank sensörü kontrolü ister misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-022",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "hararet",
+   "hararet yaptı",
+   "sıcaklık göstergesi yüksek",
+   "motor ısınıyor",
+   "kaynıyor",
+   "buhar çıkıyor"
+  ],
+  "metin": "Belirti: sıcaklık göstergesi kırmızıya yakın / kaputtan buhar. | En sık: düşük soğutma sıvısı (kaçak: radyatör, hortum, su pompası, genleşme deposu) ya da termostat kapalı kalmış — kontrol: SOĞUDUKTAN sonra depo seviyesi, altta pembe/yeşil leke; maliyet: termostat 800–3.000 TL, hortum 500–2.000 TL, radyatör 3.000–10.000 TL, su pompası 3.000–10.000 TL; aciliyet: Bugun. | Sık: fan çalışmıyor (fan motoru, rölesi, sensörü — trafikte ısınır, yolda soğur), tıkalı radyatör. | Nadir: silindir kapak contası (beyaz duman), kilitli su pompası pervanesi. | Kırmızı: gösterge kırmızıdaysa ya da buhar varsa HEMEN dur, kaputu sıcakken açma, radyatör kapağını açma, çekici; sürmeye devam motoru öldürür. | Ustaya: 'Hararet yaptı, soğutma sistemi basınç testi, termostat ve fan kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-023",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "antifriz eksiliyor",
+   "su eksiltiyor",
+   "soğutma sıvısı azalıyor",
+   "genleşme deposu boşalıyor"
+  ],
+  "metin": "Belirti: antifriz eksiliyor, görünür kaçak yok. | En sık: küçük dış kaçak (hortum kelepçesi, genleşme deposu çatlağı, radyatör üst tank, su pompası keçesi — yolda buharlaşır iz bırakmaz) — kontrol: serviste basınç testi; maliyet: 300–5.000 TL parçaya göre; aciliyet: BuHafta. | Sık: kalorifer radyatörü sızıntısı (kabinde tatlı koku, buğulanma), depo kapağı basınç tutmuyor. | Nadir: silindir kapak contası (beyaz duman, yağ kapağında mayonez, hararet), EGR soğutucu. | Kırmızı: hararet yükseliyorsa dur. | Ustaya: 'Antifriz eksiltiyor, basınç testi ve kalorifer radyatörü kontrolü ister misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-024",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "kalorifer ısıtmıyor",
+   "kalorifer soğuk üflüyor",
+   "ısıtma çalışmıyor",
+   "kalorifer geç ısınıyor"
+  ],
+  "metin": "Belirti: kalorifer ısıtmıyor ya da geç ısınıyor. | En sık: termostat açık kalmış (motor da geç ısınır, gösterge orta çizgiye gelmiyor) — maliyet: 800–3.000 TL; aciliyet: Bakimda. | Sık: düşük soğutma sıvısı/hava kabarcığı (sistemden hava alma), tıkalı kalorifer radyatörü (tortu), kalorifer musluğu/karışım kapağı motoru. | Nadir: su pompası pervanesi aşınmış, kabin sıcaklık sensörü. | Kırmızı: hayır — ama gösterge YÜKSEK ve kalorifer soğuksa su pompası/sıvı kaybı, dur. | Ustaya: 'Kalorifer ısıtmıyor, termostat ve kalorifer radyatörü giriş-çıkış sıcaklık farkına bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-025",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "fan sürekli çalışıyor",
+   "radyatör fanı durmuyor",
+   "fan çok ses yapıyor",
+   "fan motor kapalıyken çalışıyor"
+  ],
+  "metin": "Belirti: radyatör fanı sürekli/tam devir çalışıyor. | En sık: soğutma sıcaklık sensörü arızası (ECU güvenli moda geçip fanı sürekli açar) ya da klima basınç sensörü; motor kapatılınca birkaç dakika çalışması normal — kontrol: motor arıza lambası kodu; maliyet: sensör 500–2.000 TL; aciliyet: Bakimda. | Sık: fan rölesi yapışık, gerçek ısınma (termostat/radyatör tıkalı), klima yüksek basınç. | Nadir: fan kontrol modülü, kablo kısa devresi. | Kırmızı: gösterge yüksekse hararet — dur. | Ustaya: 'Fan sürekli çalışıyor, sıcaklık sensörü ve röleyi kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-026",
+  "kategori": "aku",
+  "anahtarlar": [
+   "marş basmıyor",
+   "tık sesi",
+   "marş tık tık",
+   "çalışmıyor tık",
+   "marş motoru dönmüyor",
+   "kontak açılıyor marş yok"
+  ],
+  "metin": "Belirti: kontak açılıyor, marşa basınca tık sesi ya da hiç ses yok. | En sık: akü bitik/zayıf (yaş, ışık açık unutma) — kontrol: farlar sönük mü, gösterge titriyor mu; takviye ile çalışıyorsa akü/şarj; maliyet: akü 3.000–7.000 TL; aciliyet: Bugun. | Sık: oksitli/gevşek akü kutup başı (temizle-sık), marş motoru fırçası/selenoid (tek tık, akü dolu), gevşek şase kablosu. | Nadir: kontak anahtarı, immobilizer (anahtar simgesi yanıp söner), vites P/N sensörü (otomatik). | Kırmızı: hayır. | Ustaya: 'Marş basmıyor tık sesi var, akü ve marş motoru voltaj düşüm testi yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-027",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "akü lambası",
+   "şarj lambası",
+   "akü ikazı yanıyor",
+   "alternatör",
+   "şarj yapmıyor",
+   "dinamo"
+  ],
+  "metin": "Belirti: kırmızı akü lambası sürerken yanıyor. | En sık: alternatör şarj etmiyor (fırça/regülatör, diyot) — kontrol: motor çalışırken akü voltajı 13,5–14,5 V olmalı; maliyet: alternatör tamiri 1.500–4.000 TL, yenisi 5.000–15.000 TL; aciliyet: Bugun. | Sık: kopmuş/kaymış V kayışı (direksiyon da ağırlaşır, hararet başlar — hemen dur), gevşek kayış gerdiricisi. | Nadir: kablo/sigorta, akü iç kısa devresi. | Kırmızı: kayış koptuysa dur (su pompası da döner, motor ısınır); kayış sağlamsa araç akü bitene kadar gider (~20–60 dk), gereksiz elektrik kapat, doğrudan servise. | Ustaya: 'Şarj lambası yanıyor, alternatör çıkışı ve kayışı kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-028",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "farlar sönükleşiyor",
+   "ışıklar zayıf",
+   "far titriyor",
+   "rölantide far kısılıyor",
+   "gösterge ışıkları sönüp yanıyor"
+  ],
+  "metin": "Belirti: farlar/iç ışıklar rölantide sönükleşiyor, gazda parlıyor. | En sık: alternatör zayıf şarj (diyot/regülatör) ya da aşınmış V kayışı kayması — kontrol: rölantide voltaj <13 V; maliyet: kayış 500–2.000 TL, alternatör 1.500–15.000 TL; aciliyet: BuHafta. | Sık: kötü şase/akü kutup bağlantısı, yaşlı akü. | Nadir: gevşek kablo demeti, far rölesi. | Kırmızı: hayır. | Ustaya: 'Rölantide ışıklar sönükleşiyor, şarj sistemi ve şase bağlantılarını ölçer misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-029",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "gösterge paneli titriyor",
+   "gösterge sönüp yanıyor",
+   "panel ışıkları rastgele",
+   "elektrik kesiliyor",
+   "tüm lambalar yandı"
+  ],
+  "metin": "Belirti: gösterge paneli titriyor, ikaz lambaları rastgele yanıp sönüyor. | En sık: zayıf akü/kutup başı temassızlığı (özellikle marşta) — kontrol: kutup başlarını sık, akü testi; maliyet: 0–7.000 TL; aciliyet: BuHafta. | Sık: alternatör dalgalı çıkış (regülatör), gevşek şase kablosu. | Nadir: kontak anahtarı kontakları, gösterge paneli lehim çatlağı, CAN hattı sorunu (birden çok modül hata). | Kırmızı: seyirde tüm elektrik kesiliyorsa (hidrolik direksiyon/ışık gider) sürme. | Ustaya: 'Panel titriyor, akü-alternatör ve şase bağlantılarını ölçer misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-030",
+  "kategori": "aku",
+  "anahtarlar": [
+   "akü boşalıyor",
+   "park halinde akü bitiyor",
+   "sabah akü bitik",
+   "kaçak akım",
+   "akü çabuk bitiyor"
+  ],
+  "metin": "Belirti: araç dururken akü boşalıyor, sabah çalışmıyor. | En sık: kaçak akım — sonradan takılan alarm/müzik sistemi/kamera, kapanmayan bagaj/torpido lambası, kapı kontak anahtarı — kontrol: serviste ampermetreyle bekleme akımı (>50 mA sorun); maliyet: 500–2.000 TL bulma + parçaya göre; aciliyet: BuHafta. | Sık: yaşlı akü (kapasitesi bitmiş, şarjı tutmuyor), kısa mesafe kullanım (alternatör dolduramıyor). | Nadir: alternatör diyotu ters akım, modül uyumaması (araç 'uyanık' kalıyor). | Kırmızı: hayır. | Ustaya: 'Park halinde akü boşalıyor, kaçak akım ölçümü ve akü kapasite testi yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-031",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "sigorta atıyor",
+   "sigorta sürekli atıyor",
+   "çakmak çalışmıyor",
+   "kısa devre",
+   "sigorta yanıyor"
+  ],
+  "metin": "Belirti: aynı sigorta tekrar tekrar atıyor. | En sık: o hatta kısa devre — sıyrılmış kablo (kapı menteşe geçişi, bagaj), sonradan takılan aksesuar, çakmağa düşen metal — kontrol: sigorta hangi devreye ait (kapaktaki şema), o devredeki tüketicileri tek tek çıkar; maliyet: 500–3.000 TL; aciliyet: Bakimda. | Sık: arızalı motor (fan, silecek, cam motoru) aşırı akım çekiyor, yanlış amperde sigorta takılmış (daha büyük sigorta TAKMA — yangın riski). | Nadir: kablo demetinde su/oksitlenme. | Kırmızı: yanık plastik kokusu/duman varsa aküyü sök. | Ustaya: 'X sigortası sürekli atıyor, hattaki kısa devreyi bulur musun.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-032",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "vites zor giriyor",
+   "vites girmiyor",
+   "vites sert",
+   "vites takılıyor",
+   "vites geçişi zor"
+  ],
+  "metin": "Belirti: manuel viteste geçişler zor/sert. | En sık: debriyaj tam ayırmıyor — debriyaj hidroliği/hava, aşınmış baskı, ayarsız tel — kontrol: motor kapalıyken vites kolay giriyorsa debriyaj; maliyet: hava alma/hidrolik 500–1.500 TL, debriyaj seti 6.000–20.000 TL; aciliyet: BuHafta. | Sık: şanzıman yağı eski/az (özellikle soğukta 1–2. vites), vites kolu mafsalı/telleri aşınmış. | Nadir: senkromeç aşınması (belli viteste ses/geçmeme), debriyaj merkezi kaçağı. | Kırmızı: hayır. | Ustaya: 'Vites zor giriyor, debriyaj ayırma ve şanzıman yağı kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-033",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "debriyaj kaçırıyor",
+   "devir yükseliyor hız artmıyor",
+   "debriyaj bitti",
+   "balata yanık kokusu",
+   "kavrama kaçırma"
+  ],
+  "metin": "Belirti: gazda devir yükseliyor, hız aynı oranda artmıyor; yanık koku. | En sık: debriyaj balatası bitmiş (yüksek viteste yokuşta belirgin) — kontrol: 4–5. viteste düşük devirde gaz kökle, devir fırlıyorsa kaçırıyor; maliyet: debriyaj seti + işçilik 6.000–20.000 TL, çift kütleli volanla 15.000–40.000 TL; aciliyet: BuHafta. | Sık: debriyaj hidrolik/tel ayarı (pedal boşluğu yok, balata sürekli yarım basılı), yağ kaçağı balataya (krank/şanzıman keçesi). | Nadir: baskı yayı kırık, otomatik şanzımanda kaçırma (bkz. otomatik). | Kırmızı: hayır; uzun yola çıkma. | Ustaya: 'Debriyaj kaçırıyor, set değişimi gerekir mi, volanı da kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-034",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "debriyaj pedalı ağır",
+   "debriyaj sert",
+   "pedal titriyor",
+   "debriyaj ses yapıyor",
+   "pedal basınca ses"
+  ],
+  "metin": "Belirti: debriyaj pedalı ağır, titreşimli ya da basınca ses geliyor. | En sık: aşınmış debriyaj rulmanı (pedala basınca uğultu/ıslık, bırakınca kesilir) ya da baskı diyaframı — maliyet: rulman genelde setle 6.000–20.000 TL; aciliyet: BuHafta. | Sık: debriyaj teli paslanmış/kuru (telli sistem), pedal mili burcu, hidrolik merkez sızdırması. | Nadir: çift kütleli volan aşınması (rölantide tıkırtı, kalkışta titreme). | Kırmızı: pedal yerde kalıyorsa (hidrolik boşalmış) vites atamazsın — sürme. | Ustaya: 'Debriyaj pedalı ağır ve ses var, rulman/baskı ve hidrolik kontrolü yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-035",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "otomatik şanzıman sert geçiş",
+   "otomatik vites vuruyor",
+   "vites geçişi gecikiyor",
+   "şanzıman yağı",
+   "otomatik vites kaçırıyor",
+   "dsg titreme"
+  ],
+  "metin": "Belirti: otomatik şanzıman sert/gecikmeli vites geçiyor ya da titriyor. | En sık: şanzıman yağı eski/seviyesi düşük (üretici 'ömür boyu' dese de 60–80 bin km'de değişim tavsiye edilir) — kontrol: son ATF değişimi; maliyet: yağ+filtre 4.000–12.000 TL; aciliyet: BuHafta. | Sık: çift kavramalı (DSG/DCT) şanzımanda mekatronik/kavrama adaptasyonu (kalkışta titreme, düşük hızda sarsıntı), solenoid arızası, adaptasyon sıfırlama. | Nadir: tork konvertörü, kavrama paketleri aşınması (revizyon 40.000 TL+). | Kırmızı: şanzıman uyarı lambası + acil sürüş modu (3. viteste kilitli) → servise. | Ustaya: 'Otomatik vites sert geçiyor, ATF seviyesi/yağı ve adaptasyon değerlerine bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-036",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "geri vites girmiyor",
+   "geri vites ses yapıyor",
+   "geri vites zor",
+   "geri viteste dişli sesi"
+  ],
+  "metin": "Belirti: geri vites zor giriyor ya da dişli sesiyle giriyor. | En sık: geri viteste senkromeç yoktur; debriyaj tam ayırmıyorsa dişli sesi normaldir — önce 1. vitese alıp sonra geri vitese geç; kalıcıysa debriyaj ayırma sorunu; maliyet: hidrolik 500–1.500 TL, debriyaj 6.000–20.000 TL; aciliyet: Bakimda. | Sık: vites kolu kilit halkası/mekanizması (geri vites kilidi), şanzıman yağı eski. | Nadir: geri vites dişlisi/ara dişli aşınması. | Kırmızı: hayır. | Ustaya: 'Geri vites zor giriyor, debriyaj ayırma ve vites mekanizmasına bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-037",
+  "kategori": "ses",
+  "anahtarlar": [
+   "şanzımandan uğultu",
+   "vites ses yapıyor",
+   "hızla artan uğultu",
+   "viteste uğultu",
+   "rulman sesi"
+  ],
+  "metin": "Belirti: uğultu — hızla artıyor, viteste/boşta değişiyor. | En sık: poyra (tekerlek) rulmanı — dönüşlerde ses tarafa göre artar/azalır, vitesten bağımsız — maliyet: 1.500–5.000 TL/tekerlek; aciliyet: BuHafta. | Sık: şanzıman yağı az/eski (belirli viteste uğultu), diferansiyel/aks rulmanı. | Nadir: şanzıman rulmanı (boşta da ses, debriyaja basınca kesilir), lastik düzensiz aşınması (uğultu gibi). | Kırmızı: rulman ileri seviyede ise tekerlek kilitlenebilir — kısa sürede değiştir. | Ustaya: 'Hızla artan uğultu var, poyra rulmanlarını ve şanzıman yağını kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-038",
+  "kategori": "direksiyon",
+  "anahtarlar": [
+   "direksiyon titremesi",
+   "hızda direksiyon titriyor",
+   "100 km titreme",
+   "balans",
+   "direksiyon sallanıyor"
+  ],
+  "metin": "Belirti: belirli hızda (genelde 90–120 km/s) direksiyon titriyor. | En sık: ön lastik balans ayarı bozuk (ağırlık düşmüş, çamur/buz) — maliyet: balans 400–1.000 TL; aciliyet: Bakimda. | Sık: lastik deformasyonu/yanak şişliği (balansla geçmez), jant eğik (çukur çarpması), aşınmış rot başı/rotil/salıncak burcu. | Nadir: aks (CV) mafsalı, poyra rulmanı, fren diski (yalnız frende). | Kırmızı: şiddetli titreme + tekerlek sesi → dur, lastiği kontrol et. | Ustaya: 'Yüksek hızda direksiyon titriyor, balans + lastik/jant salgısı ve ön takım boşluklarına bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-039",
+  "kategori": "direksiyon",
+  "anahtarlar": [
+   "araç sağa çekiyor",
+   "sola çekiyor",
+   "direksiyon çekiyor",
+   "düz gitmiyor",
+   "rot ayarı",
+   "direksiyon eğik"
+  ],
+  "metin": "Belirti: düz yolda araç bir tarafa çekiyor / direksiyon eğik duruyor. | En sık: lastik basınç farkı ya da ön düzen (rot) ayarı bozuk (çukur, kaldırım) — kontrol: sağ-sol basıncı eşitle, dene; maliyet: rot ayarı 800–2.000 TL; aciliyet: Bakimda. | Sık: lastik konikliği (lastikleri sağ-sol değiştir, çekme yön değiştirirse lastik), aşınmış salıncak burcu/rotil, kaliper yapışması (frende belirginleşir). | Nadir: yay çökmesi, şasi/kaster farkı (kaza sonrası), yol eğimi (Türkiye'de sağ eğim normal hafif sağa çekme). | Kırmızı: hayır. | Ustaya: 'Araç sola çekiyor, basınç ve lastik çapraz denemesi sonrası rot ayarı ve ön takım kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-040",
+  "kategori": "direksiyon",
+  "anahtarlar": [
+   "direksiyon ağır",
+   "direksiyon zor dönüyor",
+   "direksiyon sertleşti",
+   "hidrolik direksiyon",
+   "elektrikli direksiyon arızası",
+   "direksiyon ses"
+  ],
+  "metin": "Belirti: direksiyon ağırlaştı. | En sık: hidrolik sistemde düşük yağ (kaçak: pompa, hortum, kutu) — kontrol: depo seviyesi, dönüşte inleme sesi; maliyet: yağ 500–1.500 TL, hortum 1.500–5.000 TL, pompa 4.000–12.000 TL; aciliyet: BuHafta. | Sık: elektrikli (EPS) direksiyonda modül/sensör arızası (direksiyon lambası, aniden ağırlaşma), V kayışı kaymış/kopmuş (akü lambası eşlik eder), düşük lastik basıncı. | Nadir: direksiyon kutusu, kolon mafsalı. | Kırmızı: seyirde ANİDEN ağırlaşma + ses/lamba → güvenle kenara çek, sürme. | Ustaya: 'Direksiyon ağırlaştı, hidrolik seviye/kaçak ya da EPS kodu kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-041",
+  "kategori": "suspansiyon",
+  "anahtarlar": [
+   "tümsekte tak tak",
+   "kasis sesi",
+   "ön takım sesi",
+   "tak tuk ses",
+   "çukurda ses",
+   "süspansiyon sesi"
+  ],
+  "metin": "Belirti: tümsek/çukur geçişinde önden tak-tuk sesi. | En sık: viraj denge çubuğu (z rot) mafsalı, salıncak burcu — maliyet: z rot 500–1.500 TL/adet, burç 1.000–3.000 TL; aciliyet: BuHafta. | Sık: amortisör üst takozu/yatağı (direksiyon çevirince de ses), rotil, aşınmış amortisör (araç sekiyor). | Nadir: gevşek alt koruma sacı, egzoz askısı, motor takozu (kalkışta), bagajdaki eşya. | Kırmızı: seste birlikte tekerlekte oynama hissi → rotil kopabilir, hemen kontrol. | Ustaya: 'Tümsekte tak tak sesi, z rot, salıncak burcu ve amortisör takozlarını kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-042",
+  "kategori": "ses",
+  "anahtarlar": [
+   "dönüşte tık tık",
+   "virajda tıkırtı",
+   "aks sesi",
+   "cv mafsal",
+   "aks körüğü yırtık",
+   "kırık aks"
+  ],
+  "metin": "Belirti: dönüşte/tam kilitte tık-tık sesi, hızlanınca artıyor. | En sık: aks CV mafsalı aşınmış — genelde körük yırtılıp gres kaçmasından — kontrol: körükte yırtık/gres sıçraması; maliyet: körük 800–2.000 TL, aks 3.000–10.000 TL; aciliyet: BuHafta. | Sık: iç mafsal (düz yolda gazda titreme), rotil (aynı taraf). | Nadir: poyra rulmanı, diferansiyel. | Kırmızı: ses çok şiddetliyse aks kopabilir, uzun yola çıkma. | Ustaya: 'Dönüşte tıkırtı var, aks körükleri ve CV mafsallarını kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-043",
+  "kategori": "suspansiyon",
+  "anahtarlar": [
+   "araç sallanıyor",
+   "yalpalıyor",
+   "sekiyor",
+   "amortisör bitti",
+   "kasis sonrası sallanma",
+   "yatıyor"
+  ],
+  "metin": "Belirti: kasis sonrası araç 2–3 kez sallanıyor, virajda yatıyor. | En sık: amortisörler bitmiş (kaçak, 80–120 bin km) — kontrol: köşeden bastır bırak, 1'den fazla salınım; amortisör gövdesinde yağ; maliyet: ön çift 4.000–12.000 TL, arka çift 3.000–8.000 TL (takoz/toz körüğüyle); aciliyet: Bakimda. | Sık: yorulmuş/kırık yay (araç bir köşede alçak), viraj denge çubuğu bağlantıları. | Nadir: aşırı yük, yanlış lastik basıncı. | Kırmızı: hayır — fren mesafesi ve ABS etkinliği düşer, geciktirme. | Ustaya: 'Araç kasiste sallanıyor, amortisör testi ve yayları kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-044",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik iç aşınma",
+   "lastik dıştan aşınıyor",
+   "düzensiz aşınma",
+   "lastik tek taraf aşınma",
+   "lastik yeniyor"
+  ],
+  "metin": "Belirti: lastikler bir kenardan ya da düzensiz aşınıyor. | En sık: ön düzen (rot/kamber) ayarı bozuk — iç kenar aşınması tipik; maliyet: rot ayarı 800–2.000 TL, lastik çifti 4.000–12.000 TL; aciliyet: Bakimda. | Sık: düşük basınç (iki kenar), yüksek basınç (orta), aşınmış rotil/salıncak burcu (ayar tutmaz), bitmiş amortisör (dalgalı/pullu aşınma). | Nadir: eğik jant, yay çökmesi. | Kırmızı: kord teli görünüyorsa lastiği kullanma. | Ustaya: 'Lastikler içten aşınıyor, önce ön takım boşluğu sonra rot-kamber ayarı yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-045",
+  "kategori": "yakit",
+  "anahtarlar": [
+   "yakıt tüketimi arttı",
+   "çok yakıyor",
+   "tüketim yükseldi",
+   "benzin çok gidiyor",
+   "mazot tüketimi"
+  ],
+  "metin": "Belirti: yakıt tüketimi belirgin arttı. | En sık: kirli hava filtresi, eski buji, düşük lastik basıncı, kirli/aşınmış lambda sensörü (karışım zenginleşir) — kontrol: parça hafızasında filtre/buji tarihleri, basınç; maliyet: filtre 300–1.500 TL, buji 800–3.000 TL, lambda 1.500–5.000 TL; aciliyet: Bakimda. | Sık: sürtünen fren (kaliper yapışık), termostat açık kalmış (motor soğuk çalışır), kışın kısa mesafe (normal artış %10–20), tam depo/yük/portbagaj. | Nadir: enjektör sızdırması, yakıt kaçağı (koku!), MAF hatası, hız/ivme sensörü. | Kırmızı: yakıt kokusu varsa kaçak — sürme. | Ustaya: 'Tüketim arttı, lambda/MAF değerleri, buji-filtre ve fren sürtme kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-046",
+  "kategori": "koku",
+  "anahtarlar": [
+   "benzin kokusu",
+   "yakıt kokusu",
+   "mazot kokusu",
+   "kabinde benzin kokusu",
+   "yakıt kaçağı",
+   "lpg kokusu",
+   "gaz kokusu"
+  ],
+  "metin": "Belirti: benzin/mazot/LPG kokusu (kabinde ya da araç dışında). | KIRMIZI: yakıt kaçağı yangın riskidir — aracı kapalı alanda çalıştırma, sigara/kıvılcım uzak tut, LPG'de tüpü kapat, çekici. | En sık: enjektör o-ring/yakıt rampası sızıntısı, yakıt hortumu/kelepçesi, depo kapağı contası, LPG'de enjektör rayı/hortum bağlantısı — maliyet: 300–3.000 TL; aciliyet: Bugun. | Sık: taşan depo (doldurma sonrası geçici), EVAP/karbon kanister (benzinli, depo dolduktan sonra koku). | Nadir: depo çatlağı/pas, yakıt pompası flanş contası (arka koltuk altı). | Ustaya: 'Yakıt kokusu var, tüm yakıt hattını ve LPG bağlantılarını kaçak için kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-047",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "egzoz sesi arttı",
+   "egzoz gürültü",
+   "egzoz delindi",
+   "egzoz kaçağı",
+   "egzoz sallanıyor",
+   "susturucu"
+  ],
+  "metin": "Belirti: egzoz sesi arttı / altından tıngırtı. | En sık: paslanıp delinen orta/arka susturucu ya da boru bağlantı contası — maliyet: kaynak 500–1.500 TL, susturucu 1.500–6.000 TL; aciliyet: Bakimda (muayenede ağır kusur). | Sık: kopmuş egzoz askısı (tıngırtı), manifold contası/kırık manifold saplaması (motor bölmesinden tıs sesi, soğukta belirgin). | Nadir: esnek boru (körük) yırtılması, katalitik konvertör iç parçalanması (şıngırtı). | Kırmızı: kabine egzoz kokusu giriyorsa (CO) camları aç, hemen serviste. | Ustaya: 'Egzoz sesi arttı, kaçak yerini ve askıları kontrol edip kaynak/parça der misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-048",
+  "kategori": "yakit",
+  "anahtarlar": [
+   "lpg'ye geçmiyor",
+   "lpg dalgalanma",
+   "lpg tekliyor",
+   "lpg gaz kesiyor",
+   "lpg filtresi",
+   "lpg'de çekmiyor",
+   "gazda stop"
+  ],
+  "metin": "Belirti: LPG'ye geçmiyor / LPG'de tekliyor-dalgalanıyor. | En sık: tıkalı LPG filtresi (gaz fazı ve sıvı fazı, 10.000 km'de değişim), kirli LPG enjektörleri — maliyet: filtre 300–800 TL, enjektör temizliği 800–2.000 TL; aciliyet: BuHafta. | Sık: regülatör (beyin/buharlaştırıcı) diyaframı/ısınmaması (termostat açık kalmışsa geçmez), tüp seviye sensörü/multivalf, ayar (kalibrasyon). | Nadir: LPG beyni, kablo/röle, bujiler (LPG bujiyi daha çabuk bitirir). | Kırmızı: gaz kokusu varsa tüpü kapat, sürme. | Ustaya: 'LPG'de dalgalanma var, filtreler, enjektör temizliği ve regülatör basıncı kontrolü.'",
+  "kaynak": "genel servis pratiği (LPG dönüşüm bakımı)",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-049",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "dpf lambası",
+   "partikül filtresi",
+   "dpf doldu",
+   "dpf uyarısı",
+   "rejenerasyon",
+   "dizel filtre lambası"
+  ],
+  "metin": "Belirti: DPF (partikül filtresi) lambası yandı. | En sık: filtre dolu, şehir içi kısa mesafede rejenerasyon tamamlanamıyor — kontrol: 20–30 dk 2.500+ devirde sabit sürüş (şehir dışı) rejenerasyonu tetikler, lamba sönerse tamam; maliyet: 0; aciliyet: BuHafta. | Sık: zorlanmış rejenerasyon serviste (1.000–2.500 TL), DPF temizliği (3.000–8.000 TL), fark basınç sensörü/hortumu arızası (yanlış doluluk okuması). | Nadir: DPF kül dolumu (300k km+), yeni DPF (15.000–40.000 TL), EGR/enjektör sorunu is üretimini artırıyor. | Kırmızı: lamba + güç kaybı + hararet → dur. DPF söktürmek mevzuata aykırı ve muayeneden kalma nedeni. | Ustaya: 'DPF lambası yandı, doluluk yüzdesi ve fark basınç sensörünü okuyup gerekirse zorlanmış rejenerasyon.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-050",
+  "kategori": "klima",
+  "anahtarlar": [
+   "klima soğutmuyor",
+   "klima üflüyor soğutmuyor",
+   "klima gazı",
+   "klima kompresörü",
+   "klima çalışmıyor"
+  ],
+  "metin": "Belirti: klima soğuk üflemiyor. | En sık: düşük soğutucu gaz (küçük kaçak, kondanser/o-ring) — kontrol: serviste gaz dolum + UV kaçak boyası; maliyet: dolum 1.500–3.000 TL, kondanser 3.000–8.000 TL; aciliyet: Bakimda. | Sık: kompresör kavraması devreye girmiyor (röle, basınç anahtarı, sigorta), tıkalı polen filtresi/evaporatör (az üflüyor), kondanser önü kirli/tıkalı (trafikte soğutmaz). | Nadir: kompresör arızası (8.000–25.000 TL), genleşme valfi, kabin sıcaklık kapağı motoru. | Kırmızı: hayır. | Ustaya: 'Klima soğutmuyor, gaz basıncını ölçüp kaçak testi ve kompresör kavramasını kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-051",
+  "kategori": "klima",
+  "anahtarlar": [
+   "klima kötü kokuyor",
+   "klima küf kokusu",
+   "klima ayak kokusu",
+   "evaporatör temizliği",
+   "polen filtresi"
+  ],
+  "metin": "Belirti: klima açınca küf/ekşi koku. | En sık: evaporatörde bakteri/küf — kontrol: polen filtresi ne zaman değişti; maliyet: polen filtresi 300–1.000 TL, evaporatör köpük temizliği 500–1.500 TL; aciliyet: Bakimda. | Sık: tıkalı drenaj hortumu (paspas altı ıslak), sürekli iç sirkülasyon kullanımı. | Nadir: kalorifer radyatörü sızıntısı (tatlı koku), yaprak/hayvan kalıntısı. | Kırmızı: hayır. | Önlem: varışa 2–3 dk kala klimayı kapatıp fanı açık bırakmak evaporatörü kurutur. | Ustaya: 'Klimadan küf kokusu, polen filtresi + evaporatör temizliği ve drenaj kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-052",
+  "kategori": "klima",
+  "anahtarlar": [
+   "klima açınca devir düşüyor",
+   "klima açınca titreme",
+   "klima açınca stop",
+   "kompresör yükü",
+   "klima ses"
+  ],
+  "metin": "Belirti: klima açınca rölanti düşüyor/titriyor ya da stop ediyor. | En sık: kirli gaz kelebeği/rölanti kontrolü (kompresör yükünü telafi edemiyor) — maliyet: temizlik 500–1.500 TL; aciliyet: Bakimda. | Sık: aşırı dolu klima gazı (yüksek basınç, kompresör zorlanır), kompresör rulmanı/kavraması (klima açınca gıcırtı), gevşek kayış. | Nadir: kompresör tutukluk yapıyor (kayışı koparabilir), buji/bobin zayıf. | Kırmızı: kompresörden metalik ses + kayış dumanı → klimayı kapat, kayış koparsa hararet/şarj gider. | Ustaya: 'Klima açınca devir düşüyor, gaz kelebeği temizliği ve klima basınçları.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-053",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik basınç uyarısı",
+   "tpms",
+   "lastik lambası yandı",
+   "lastik basıncı düşük uyarısı",
+   "lastik ikaz"
+  ],
+  "metin": "Belirti: lastik basınç (TPMS) uyarısı yandı. | En sık: bir lastikte gerçek basınç düşüşü (çivi, sübap) ya da soğuk hava (her 10°C düşüşte ~0,1 bar) — kontrol: dördünü ölç, üretici değerine (kapı direği etiketi) getir, sistemi sıfırla; maliyet: 0 – tamir 200–500 TL; aciliyet: Bugun (düşükse). | Sık: sistem sıfırlanmamış (lastik değişimi sonrası), sensör pili bitmiş (5–8 yıl; 800–2.500 TL/sensör). | Nadir: ABS sensör tabanlı dolaylı sistemde tekerlek hızı farkı (rulman/lastik ebadı). | Kırmızı: hızla sönüyorsa yanak hasarı olabilir, hızı düşür, kontrol. | Ustaya: 'TPMS uyarısı, basınçları ölçtüm, sensör ve sızdırmazlık kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-054",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik yanak şişkinliği",
+   "lastikte şişlik",
+   "lastik balonlaşma",
+   "lastik yanak yumru",
+   "lastik patlar mı"
+  ],
+  "metin": "Belirti: lastik yanağında şişkinlik/yumru. | KIRMIZI: yanak şişliği iç kord kopmasıdır, tamir edilmez, her an patlayabilir — o lastiği kullanma, yedeğe geç, yeni lastik (aynı akstaki çiftle değiştirmek tavsiye). | En sık: çukur/kaldırım darbesi; maliyet: lastik 2.000–6.000 TL/adet; aciliyet: Bugun. | Sık: düşük basınçla darbe. | Nadir: üretim hatası (garanti). | Ustaya: 'Yanakta şişlik var, bu lastiği ve jantı kontrol edip değiştirir misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-055",
+  "kategori": "ses",
+  "anahtarlar": [
+   "hızla artan uğultu",
+   "uçak sesi",
+   "poyra rulmanı",
+   "tekerlek sesi",
+   "virajda uğultu artıyor"
+  ],
+  "metin": "Belirti: hızla artan uğultu (uçak sesi), virajda tarafa göre değişiyor. | En sık: poyra (tekerlek) rulmanı — sağa dönünce artıyorsa genelde sol tekerlek; maliyet: 1.500–5.000 TL/tekerlek; aciliyet: BuHafta. | Sık: pullu/düzensiz aşınmış lastik (elle diş kenarlarını yokla), agresif desenli lastik (normal). | Nadir: diferansiyel, aks mafsalı iç bilezik. | Kırmızı: rulman ileri aşınmada tekerlek kilitlenebilir/ısınabilir — geciktirme. | Ustaya: 'Uğultu virajda değişiyor, poyra rulmanlarını kaldırıp kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-056",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "silecek çalışmıyor",
+   "cam suyu gelmiyor",
+   "silecek yavaş",
+   "silecek motoru",
+   "cam suyu motoru",
+   "silecek kolu"
+  ],
+  "metin": "Belirti: silecek çalışmıyor/yavaş ya da cam suyu gelmiyor. | En sık: cam suyu — depo boş/donmuş, tıkalı fıskiye, su pompası arızası; silecek — sigorta, silecek motoru, mekanizma mafsalı çıkmış — maliyet: pompa 300–1.000 TL, silecek motoru 1.500–4.000 TL, mafsal 500–1.500 TL; aciliyet: Bakimda (muayenede kusur). | Sık: silecek kol anahtarı (kolçak), buz/kara yapışmış silecek zorlanınca sigorta. | Nadir: kablo demeti, yağmur sensörü. | Kırmızı: yağmurda sileceksiz sürüş tehlikeli — hemen düzelt. | Ustaya: 'Silecek çalışmıyor, sigorta-motor-mafsal sırayla kontrol.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-057",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "cam inmiyor",
+   "cam çıkmıyor",
+   "cam motoru",
+   "cam kriko",
+   "cam yavaş iniyor",
+   "cam düştü"
+  ],
+  "metin": "Belirti: kapı camı inmiyor/çıkmıyor ya da içeri düştü. | En sık: cam krikosu (mekanizma) teli kopmuş/plastik kızak kırılmış (cam düşer, motor sesi var) — maliyet: kriko 1.500–4.000 TL; aciliyet: Bakimda. | Sık: cam motoru (ses yok), cam düğmesi/ana düğme (sürücü tarafından çalışıyor yolcudan çalışmıyorsa düğme), sigorta. | Nadir: kapı içi kablo demeti kopuğu (menteşe geçişi), kızak fitili sertleşmiş (yavaş iniyor — silikon sprey). | Kırmızı: hayır. | Ustaya: 'Sağ ön cam inmiyor, kriko/motor ve düğme kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-058",
+  "kategori": "motor",
+  "anahtarlar": [
+   "turbo ıslık",
+   "turbo sesi",
+   "turbo basınç",
+   "turbo kaçırıyor",
+   "turbodan ses",
+   "turbo yağ",
+   "güç kaybı turbo"
+  ],
+  "metin": "Belirti: turbodan ıslık/uğultu, güç kaybı, mavi duman. | En sık: turbo basınç hattında kaçak — intercooler hortumu patlak/kelepçe gevşek (ıslık + güç kaybı + siyah duman) — maliyet: hortum 1.000–4.000 TL; aciliyet: BuHafta. | Sık: turbo geometri (VNT) mekanizması takılı (aralıklı güç kaybı, acil mod), aşınmış turbo yatağı (metalik hışırtı, yağ kaçağı, mavi duman), kirli hava filtresi. | Nadir: wastegate/aktüatör, tıkalı turbo yağ hattı, EGR. | Kırmızı: turbodan metalik sürtünme sesi + mavi duman → sürme, turbo dağılırsa motora parça gider. | Ustaya: 'Turbo ıslık çalıyor ve güç düşük, basınç hattı duman testi ve turbo mili boşluğu kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-059",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "hava yastığı lambası",
+   "airbag lambası",
+   "srs lambası",
+   "airbag yanıyor",
+   "emniyet kemeri lambası"
+  ],
+  "metin": "Belirti: hava yastığı (SRS/airbag) lambası sabit yanıyor. | En sık: koltuk altı kemer tokası/koltuk kablo soketi teması (koltuk oynatılınca) ya da direksiyon spiral (saat yayı) kablosu — kontrol: SRS kod okutma; maliyet: soket temizliği 300–800 TL, saat yayı 2.000–6.000 TL; aciliyet: BuHafta. | Sık: yolcu koltuğu ağırlık/oturma sensörü, düşük akü sonrası kayıtlı hata (silinir). | Nadir: SRS beyni (kaza sonrası kilitlenir), hava yastığı modülü. | Kırmızı: lamba yanarken hava yastıkları KAZADA AÇILMAYABİLİR — muayenede kusur; geciktirme. | Ustaya: 'Airbag lambası yanıyor, SRS kodunu okuyup kemer tokası ve saat yayına bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-060",
+  "kategori": "calismama",
+  "anahtarlar": [
+   "kontak dönmüyor",
+   "direksiyon kilitlendi",
+   "anahtar dönmüyor",
+   "kontak sıkıştı",
+   "anahtar simgesi yanıp sönüyor",
+   "immobilizer"
+  ],
+  "metin": "Belirti: kontak anahtarı dönmüyor / anahtar simgesi yanıp sönüyor, marş yok. | En sık: direksiyon kilidi yük altında — direksiyonu hafifçe sağa-sola zorlarken anahtarı çevir; maliyet: 0; aciliyet: Bugun. | Sık: aşınmış anahtar/kontak silindiri, immobilizer çipi tanımıyor (yedek anahtarla dene, anahtar pili), otomatikte vites P'de değil. | Nadir: kontak anahtarı elektrik kontağı, start-stop düğmeli araçlarda akıllı anahtar pili/anten. | Kırmızı: hayır. | Ustaya: 'Anahtar dönmüyor/immobilizer lambası, kontak silindiri ve anahtar tanımlama kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-061",
+  "kategori": "calismama",
+  "anahtarlar": [
+   "marş dönüyor çalışmıyor",
+   "marş basıyor ama çalışmıyor",
+   "ateş almıyor",
+   "motor tutmuyor",
+   "çalışmıyor marş var"
+  ],
+  "metin": "Belirti: marş normal dönüyor ama motor tutmuyor. | En sık: yakıt gelmiyor (yakıt pompası rölesi/pompa, boş depo göstergesi yanlış, tıkalı filtre) ya da kıvılcım yok (krank devir sensörü, bobin, immobilizer) — kontrol: kontak açınca pompa vızıltısı duyuluyor mu (2 sn), anahtar simgesi yanıp sönüyor mu; maliyet: röle 300–800 TL, pompa 3.000–8.000 TL, krank sensörü 800–3.000 TL; aciliyet: Bugun. | Sık: dizelde hava yapmış yakıt sistemi (filtre değişimi sonrası), kızdırma (soğukta), LPG'de benzin deposu boş. | Nadir: triger kayışı kopmuş/atlamış (marş 'boş' döner — sürme, motor hasarı), ECU. | Kırmızı: kayış koptuysa marşa basmaya devam etme. | Ustaya: 'Marş dönüyor tutmuyor, yakıt basıncı ve kıvılcım testi yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-062",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "esp lambası",
+   "sarı ünlem",
+   "kayma lambası",
+   "esp yanıyor",
+   "traction lambası",
+   "abs esp birlikte"
+  ],
+  "metin": "Belirti: ESP/kayma lambası sabit yanıyor. | En sık: tekerlek hız sensörü ya da direksiyon açı sensörü kalibrasyonu (akü söküldükten/rot ayarından sonra — direksiyonu tam sağ-sol çevir, düzelir) — maliyet: 0–3.000 TL; aciliyet: BuHafta. | Sık: ESP düğmesine yanlışlıkla basılmış (kapalı simgesi), fren lambası anahtarı, düşük akü voltajı kayıtları. | Nadir: yaw sensörü, ABS modülü. | Kırmızı: hayır; kaygan zeminde denge desteği yok, dikkatli sür. | Ustaya: 'ESP lambası yanıyor, ABS/ESP kodlarını okuyup açı sensörü kalibrasyonu yapar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-063",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "yağ lambası",
+   "kırmızı yağ lambası",
+   "yağ basıncı lambası",
+   "yağdanlık lambası",
+   "yağ ikazı seyirde"
+  ],
+  "metin": "Belirti: kırmızı yağdanlık (yağ basıncı) lambası seyirde yanıyor. | KIRMIZI: hemen güvenli yere çek, motoru durdur, yeniden çalıştırma; yağ seviyesine bak — düşükse tamamla, lamba yine yanıyorsa çekici. Yağsız birkaç dakika motor yatağı bitirir. | En sık: yağ seviyesi kritik düşük (kaçak/tüketim); maliyet: yağ 500–1.500 TL; aciliyet: Bugun. | Sık: yağ basınç müşiri arızası (seviye tam, ses yok), tıkalı yağ süzgeci/filtre, çok ince/eski yağ (sıcakta rölantide yanıp sönme). | Nadir: yağ pompası, aşınmış yataklar (tok vuruntu), PureTech ıslak kayış parçacıkları süzgeci tıkamış. | Ustaya: 'Kırmızı yağ lambası yandı, gerçek yağ basıncını manometreyle ölçer misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-064",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "gösterge paneli ölü",
+   "kontak açılmıyor",
+   "hiçbir ışık yanmıyor",
+   "araç tamamen ölü",
+   "elektrik yok"
+  ],
+  "metin": "Belirti: kontakta hiçbir ışık yanmıyor, tamamen ölü. | En sık: akü tamamen bitik ya da kutup başı çıkmış/oksitli — kontrol: iç lamba yanıyor mu, kutup başlarını salla; maliyet: 0–7.000 TL; aciliyet: Bugun. | Sık: ana sigorta/ana kablo (akü artı kablosu erimiş), kontak anahtarı elektrik kontağı. | Nadir: BCM/karoser modülü, şase kablosu kopuk. | Kırmızı: yanık kokusu varsa aküyü sök. | Ustaya: 'Araç tamamen ölü, akü ve ana besleme hattını kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-065",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "egzozdan su damlıyor",
+   "egzoz su akıtıyor",
+   "egzozdan su geliyor",
+   "egzoz damlama"
+  ],
+  "metin": "Belirti: egzozdan su damlıyor. | En sık: NORMAL — yanma ürünü su buharı soğuk egzozda yoğuşur, özellikle sabah ve kısa mesafede; tatlı koku ve beyaz yoğun duman yoksa sorun yok; maliyet: 0; aciliyet: Bakimda. | Sık: kısa mesafe kullanım egzozu paslandırır (susturucu delinir) — ara sıra uzun yol. | Nadir: antifriz yanması (beyaz duman + tatlı koku + eksilme → bkz. beyaz duman). | Kırmızı: hayır. | Ustaya: gerek yok; antifriz eksiltiyorsa 'basınç testi'.",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-066",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "aracın altından su damlıyor",
+   "yazın altından su",
+   "klima suyu",
+   "altına su birikiyor",
+   "renksiz su damlıyor"
+  ],
+  "metin": "Belirti: park ederken altında renksiz su birikintisi. | En sık: klima çalışırken evaporatör yoğuşma suyu (yazın NORMAL, yolcu tarafı ön altında) — maliyet: 0; aciliyet: Bakimda. | Sık: yağmur sonrası gövde boşluklarından su, cam suyu deposu sızıntısı (mavi/kokulu). | Nadir: antifriz (renkli, yapışkan, tatlı koku — bkz. antifriz eksiltme), yakıt (koku — kırmızı). | Kırmızı: yakıt kokusu varsa sürme. | Ustaya: renk/koku söyle: 'Altında X renkli sıvı birikiyor.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-067",
+  "kategori": "koku",
+  "anahtarlar": [
+   "yanık plastik kokusu",
+   "elektrik kokusu",
+   "kablo yanık kokusu",
+   "kabinde yanık kokusu",
+   "duman kokusu"
+  ],
+  "metin": "Belirti: kabinde yanık plastik/elektrik kokusu. | KIRMIZI: kabinde duman görüyorsan dur, kontağı kapat, aküyü sökebiliyorsan sök, yangın söndürücü. | En sık: kalorifer fan rezistansı/kablosu ısınması, kısa devre yapan aksesuar kablosu (sonradan takılan müzik/kamera), sigorta kutusu teması — maliyet: 300–3.000 TL; aciliyet: Bugun. | Sık: egzoz üstüne düşen plastik poşet/yağ (dış koku), yeni araçta ısı kalkanı koruma yağı (ilk günler normal), yanık debriyaj (kalkışta). | Nadir: alternatör sargı, marş motoru yanığı. | Ustaya: 'Kabinde elektrik yanık kokusu var, fan rezistansı ve kablo demetini kontrol eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-068",
+  "kategori": "koku",
+  "anahtarlar": [
+   "kabinde tatlı koku",
+   "antifriz kokusu içeride",
+   "kalorifer radyatörü",
+   "cam yağlı buğu",
+   "paspas ıslak antifriz"
+  ],
+  "metin": "Belirti: kabinde tatlı koku, camlar yağlı film gibi buğulanıyor, yolcu paspası ıslak. | En sık: kalorifer radyatörü (peteği) sızdırıyor — maliyet: 3.000–12.000 TL (torpido sökümü işçilik ağır); aciliyet: BuHafta. | Sık: kalorifer hortumu/musluğu bağlantısı torpido içinde, kalorifer radyatörü boru o-ringleri. | Nadir: klima drenajı tıkalı (kokusuz su — bkz. sunroof/drenaj). | Kırmızı: antifriz seviyesi hızla düşüyorsa hararet riski; seviyeyi sık kontrol. Buhar solumak zararlıdır, camı aç. | Ustaya: 'Kabinde antifriz kokusu, kalorifer radyatörü sızıntı kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-069",
+  "kategori": "koku",
+  "anahtarlar": [
+   "çürük yumurta kokusu",
+   "kükürt kokusu",
+   "egzoz kötü kokuyor",
+   "katalizör kokusu",
+   "lağım kokusu egzoz"
+  ],
+  "metin": "Belirti: egzozdan çürük yumurta/kükürt kokusu. | En sık: katalitik konvertör zorlanıyor — zengin karışım (lambda, tekleme, tıkalı hava filtresi) ya da katalizör yaşlanmış; ağır yükte/uzun yokuşta geçici olması normal — maliyet: lambda 1.500–5.000 TL, katalizör 8.000–30.000 TL; aciliyet: BuHafta. | Sık: kalitesiz yakıt (yüksek kükürt), yeni katalizörün ilk günleri. | Nadir: şanzıman yağı yanığı (otomatikte), akü aşırı şarj (alternatör regülatörü — kükürt kokusu kaputtan gelir). | Kırmızı: hayır; kaput altından kükürt + akü şişmişse akü patlama riski, yaklaşma. | Ustaya: 'Egzoz kükürt kokuyor, karışım ve katalizör verimi (P0420) kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-070",
+  "kategori": "klima",
+  "anahtarlar": [
+   "klima açınca ses",
+   "kompresör sesi",
+   "klima gıcırtı",
+   "klima vızıltı",
+   "klima çalışınca gürültü"
+  ],
+  "metin": "Belirti: klima açınca kaputtan gıcırtı/vızıltı/hışırtı. | En sık: kompresör kavrama rulmanı (klima kapalıyken de dönen kasnak — kapalıyken ses varsa rulman, açınca artıyorsa kompresör içi) — maliyet: rulman 800–2.000 TL, kompresör 8.000–25.000 TL; aciliyet: BuHafta. | Sık: gevşek/aşınmış V kayışı (klima yükünde cıyaklama), aşırı gaz dolumu (yüksek basınç uğultusu). | Nadir: genleşme valfi tıslaması (normal olabilir), fan motoru. | Kırmızı: kompresörden metalik öğütme + kayıştan duman → klimayı kapat; kompresör kilitlenirse kayış kopar (direksiyon/şarj gider). | Ustaya: 'Klima açınca kompresörden ses, kavrama rulmanı ve basınçları kontrol.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-071",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "kalorifer fanı çalışmıyor",
+   "fan üflemiyor",
+   "kalorifer motoru",
+   "fan sadece 4'te çalışıyor",
+   "fan rezistansı",
+   "kabin fanı"
+  ],
+  "metin": "Belirti: kalorifer/klima fanı üflemiyor ya da yalnız en yüksek kademede çalışıyor. | En sık: fan hız rezistansı (kademe modülü) yanmış — yalnız son kademede çalışıyorsa neredeyse kesin — maliyet: 500–2.000 TL; aciliyet: Bakimda. | Sık: fan motoru (hiç çalışmıyor, fırça bitmiş — bazen vurunca çalışır), sigorta, fan rölesi. | Nadir: kumanda paneli/kademe anahtarı, kablo soketi erimiş (rezistans soketi). | Kırmızı: yanık kokusu varsa hemen kontrol (soket erimesi). | Ustaya: 'Fan yalnız 4. kademede çalışıyor, rezistans ve soketine bakar mısın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-072",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "far buğulanıyor",
+   "farın içi buğu",
+   "far içinde su",
+   "far nemlenmesi",
+   "far terlemesi"
+  ],
+  "metin": "Belirti: far camının içi buğulanıyor. | En sık: ısı farkından hafif buğu NORMAL (havalandırma deliklerinden nefes alır, birkaç dakikada geçer) — maliyet: 0; aciliyet: Bakimda. | Sık: havalandırma tapası/hortumu çıkmış, far arka kapağı gevşek, conta yaşlanmış (buğu kalıcı, su birikiyor); maliyet: 0–1.000 TL. | Nadir: far gövdesinde çatlak (taş), yapıştırma dikişi açılmış (far 2.000–15.000 TL). | Kırmızı: hayır; su birikirse ampul/LED modülü bozulur. | Ustaya: 'Farın içinde su var, kapak-conta ve havalandırma kontrolü, gerekirse yapıştırma.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-073",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "far sararması",
+   "far az aydınlatıyor",
+   "far matlaşması",
+   "gece görüş kötü",
+   "far parlatma",
+   "far ayarı düşük"
+  ],
+  "metin": "Belirti: farlar az aydınlatıyor, cam sararmış. | En sık: polikarbonat far camı UV ile sararmış/matlaşmış (muayenede kusur olabilir) — çözüm: far parlatma + UV koruyucu 500–1.500 TL; aciliyet: Bakimda. | Sık: far ayarı düşük (bagaj yükü, arka yay çökmesi, ayar vidası), eski halojen ampul (2–3 yılda ışık gücü düşer, çift değiştir), reflektör kararmış. | Nadir: alternatör düşük voltaj (sönük ışık), far kablo soketi oksitli. | Kırmızı: hayır. | Ustaya: 'Farlar sönük, far parlatma + ayar + ampul değişimi.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-074",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "korna çalışmıyor",
+   "korna sesi kısık",
+   "korna çalışmıyor direksiyon",
+   "korna sigortası"
+  ],
+  "metin": "Belirti: korna çalışmıyor/kısık. | En sık: korna sigortası ya da rölesi, korna kontak plakası direksiyonda (saat yayı) — maliyet: 100–1.000 TL, saat yayı 2.000–6.000 TL; aciliyet: Bakimda (muayenede kusur). | Sık: korna ünitesi su almış/paslı (tampon arkasında), soket oksitli. | Nadir: BCM/karoser modülü, direksiyon kolon kablosu. | Kırmızı: hayır; korna + airbag lambası birlikte → saat yayı. | Ustaya: 'Korna çalışmıyor, sigorta-röle-korna-saat yayı sırasıyla.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-075",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "merkezi kilit çalışmıyor",
+   "uzaktan kumanda çalışmıyor",
+   "anahtar kumandası",
+   "kapı kilitlenmiyor",
+   "kumanda pili",
+   "kapı açılmıyor kumandayla"
+  ],
+  "metin": "Belirti: uzaktan kumanda/merkezi kilit çalışmıyor. | En sık: kumanda pili bitmiş (menzil kısaldıysa kesin) — maliyet: 50–200 TL; aciliyet: Bakimda. | Sık: tek kapı kilit motoru (aktüatörü) arızası (o kapı kilitlenmiyor/ses geliyor ama hareket yok), kumanda tanıtımı düşmüş (pil değişimi sonrası). | Nadir: BCM, kapı kablo demeti kopuğu (menteşe geçişi), anten. | Kırmızı: hayır. | Ustaya: 'Sol arka kapı merkezi kilitle kilitlenmiyor, kilit motoru kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-076",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "kapı açık uyarısı",
+   "kapı açık lambası yanıyor",
+   "iç lamba sönmüyor",
+   "kapı kapalı ama açık gösteriyor",
+   "kapı kontak anahtarı"
+  ],
+  "metin": "Belirti: kapı kapalı olduğu halde 'kapı açık' uyarısı, iç lamba sönmüyor. | En sık: kapı kilit mekanizmasındaki kontak anahtarı (mikro şalter) arızalı — hangi kapı göstergede/deneme ile — maliyet: kilit mekanizması 1.000–4.000 TL; aciliyet: Bakimda (aküyü boşaltır). | Sık: bagaj kilidi şalteri, kaput şalteri (alarm). | Nadir: BCM, kablo. | Kırmızı: hayır; iç lamba sürekli yanıyorsa aküyü bitirir — lambayı elle kapat. | Ustaya: 'Kapı açık uyarısı sönmüyor, kilit şalterine bak.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-077",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "anahtar simgesi",
+   "immobilizer lambası",
+   "anahtar tanımıyor",
+   "anahtar lambası yanıp sönüyor",
+   "çip anahtar"
+  ],
+  "metin": "Belirti: göstergede anahtar/kilit simgesi yanıp sönüyor, marş yok ya da hemen stop. | En sık: anahtarın çipini okuyamıyor — anahtar pili (akıllı anahtar), anahtar çipi hasarı, başka anahtar/telefon kılıfı girişimi — kontrol: yedek anahtarla dene — maliyet: pil 50–200 TL, yeni anahtar tanıtma 2.000–8.000 TL; aciliyet: Bugun. | Sık: kontak anten halkası (kontak çevresindeki bobin), soket. | Nadir: immobilizer modülü/ECU eşleşmesi (akü değişimi sonrası nadiren), motor beyni. | Kırmızı: hayır. | Ustaya: 'Anahtar simgesi yanıp sönüyor, yedek anahtarla da aynı, anten halkası ve tanımlama kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-078",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "start stop çalışmıyor",
+   "start stop devreye girmiyor",
+   "otomatik stop çalışmıyor",
+   "start stop lambası",
+   "start stop akü"
+  ],
+  "metin": "Belirti: start-stop sistemi motoru durdurmuyor. | En sık: akü şarj/sağlık durumu yetersiz (sistem korumaya alır; AGM/EFB akü 3+ yaş) — maliyet: AGM akü 5.000–10.000 TL; aciliyet: Bakimda. | Sık: NORMAL koşullar — motor soğuk, klima yüksek, dış sıcaklık aşırı, direksiyon kilitte, kemer takılı değil, batarya ısınmış; akü değişiminde sistemin aküyü tanıtmaması (BMS kayıt — yetkili/uzman servis). | Nadir: akü sensörü (IBS), fren vakum sensörü, marş motoru (start-stop tipi). | Kırmızı: hayır. | Ustaya: 'Start-stop devreye girmiyor, akü sağlık testi ve akü kaydı (BMS) kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-079",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "hız sabitleyici çalışmıyor",
+   "cruise control çalışmıyor",
+   "tempomat devreye girmiyor",
+   "hız sabitleme arızası"
+  ],
+  "metin": "Belirti: hız sabitleyici devreye girmiyor. | En sık: fren lambası anahtarı (fren pedalı üstündeki şalter — stop lambası sürekli yanıyor ya da hiç yanmıyorsa kesin) — maliyet: 300–1.000 TL; aciliyet: Bakimda. | Sık: debriyaj pedal anahtarı (manuel), direksiyon düğme/saat yayı, hız sensörü/ABS kodu, ESP lambası yanıyorsa sistem kapanır. | Nadir: gaz pedalı sensörü, ECU. | Kırmızı: hayır. | Ustaya: 'Cruise çalışmıyor, fren lambası ve debriyaj şalterini kontrol et.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-080",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "park sensörü sürekli ötüyor",
+   "park sensörü çalışmıyor",
+   "park sensörü arızası",
+   "geri vitese alınca sürekli bip",
+   "park sensörü kirli"
+  ],
+  "metin": "Belirti: park sensörü sürekli ötüyor ya da hiç çalışmıyor. | En sık: bir sensör kirli/ıslak/buzlu ya da arızalı — kontrol: her sensöre elini yaklaştırınca hafif tık sesi vermeli, ses vermeyen arızalı — maliyet: sensör 500–2.000 TL; aciliyet: Bakimda. | Sık: tampon darbesi sonrası sensör yerinden oynamış, boyalı sensör (kalın boya), plaka çerçevesi/çeki demiri görüş alanında. | Nadir: park modülü, kablo demeti. | Kırmızı: hayır. | Ustaya: 'Park sensörü sürekli bip, hangi sensörün arızalı olduğunu test eder misin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-081",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "geri görüş kamerası çalışmıyor",
+   "kamera görüntü yok",
+   "kamera bulanık",
+   "kamera siyah ekran",
+   "kamera bağlantı"
+  ],
+  "metin": "Belirti: geri görüş kamerası görüntü vermiyor/bulanık. | En sık: kamera lensi kirli/buğulu (temizle) ya da kamera içine su girmiş (bulanık/çizgili) — maliyet: kamera 800–5.000 TL; aciliyet: Bakimda. | Sık: bagaj kapağı kablo demeti kırılması (menteşe geçişi, sürekli açma-kapama), sonradan takılan kamera bağlantısı gevşek, geri vites lambası devresi (tetik sinyali). | Nadir: multimedya ünitesi girişi, sigorta. | Kırmızı: hayır. | Ustaya: 'Geri kamera siyah ekran, bagaj kablo demeti ve kamera besleme kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-082",
+  "kategori": "motor",
+  "anahtarlar": [
+   "yağ seviyesi yükseliyor",
+   "yağ artıyor",
+   "dizel yağ seyrelmesi",
+   "yağ çubuğu max üstünde",
+   "yağ mazot kokuyor",
+   "yağ seyrelme"
+  ],
+  "metin": "Belirti: dizel araçta yağ seviyesi MAX'ın üstüne çıkıyor, yağ mazot kokuyor. | En sık: DPF rejenerasyonu sırasında geç enjeksiyonla yakıtın yağa karışması — kısa mesafe/şehir içi kullanımda rejenerasyon tamamlanamıyor — çözüm: yağı hemen değiştir, DPF doluluğu kontrol, ara sıra 30 dk uzun yol; maliyet: yağ 2.500–6.000 TL; aciliyet: Bugun (seyrelen yağ motoru korumaz; seviye çok yükselirse motor kendi yağıyla kontrolsüz çalışabilir). | Sık: sızdıran enjektör (dönüş fazla), yakıt pompası keçesi (Delphi/Bosch CP4 — yağa yakıt). | Nadir: antifriz karışması (mayonez, seviye artar — conta). | Kırmızı: seviye MAX'ın 1 cm üstündeyse sürme. | Ustaya: 'Yağ seviyesi yükseliyor ve mazot kokuyor, DPF rejenerasyon sayacı ve enjektör dönüşü kontrolü.'",
+  "kaynak": "genel servis pratiği (Euro 5/6 dizel)",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-083",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "antifriz rengi kahverengi",
+   "antifriz yağlı",
+   "genleşme deposunda yağ",
+   "soğutma suyu kirli",
+   "antifriz çamur"
+  ],
+  "metin": "Belirti: antifriz kahverengi/yağlı/çamurlu. | En sık: farklı tip antifrizlerin karıştırılması ya da çok eski antifriz (pas/tortu) — çözüm: sistem yıkama + üretici spesifikasyonuna uygun antifriz; maliyet: 1.500–4.000 TL; aciliyet: BuHafta. | Sık: motor yağının soğutma sistemine karışması — yağ soğutucu (eşanjör) sızıntısı ya da silindir kapak contası (hararet, beyaz duman, yağ kapağında mayonez). | Nadir: otomatik şanzıman yağ soğutucusu (radyatör içi) delinmesi — antifriz pembe/köpüklü, şanzıman da zarar görür. | Kırmızı: hararet varsa dur. | Ustaya: 'Antifriz yağlı, yağ soğutucu ve kapak contası testi.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-084",
+  "kategori": "motor",
+  "anahtarlar": [
+   "yağ kapağında mayonez",
+   "yağ kapağı beyaz krema",
+   "yağ süt gibi",
+   "yağ çubuğunda köpük",
+   "mayonez"
+  ],
+  "metin": "Belirti: yağ kapağının altında beyaz kremsi tortu (mayonez). | En sık: kısa mesafe kullanımda yoğuşan nemin yağla karışması — motor tam ısınmadan kapatılıyor; özellikle kışın NORMAL sayılır, uzun yolda kaybolur; maliyet: 0 (yağı zamanında değiştir); aciliyet: Bakimda. | Sık: PCV/karter havalandırma tıkalı (nem atılamıyor). | Nadir: silindir kapak contası — yağ çubuğunda da süt rengi, antifriz eksiltme, hararet, beyaz duman varsa ciddi. | Kırmızı: antifriz eksiliyor + hararet → dur. | Ustaya: 'Yağ kapağında mayonez, çubuk temiz ve antifriz eksilmiyor — PCV kontrolü yeter mi?'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-085",
+  "kategori": "titreme",
+  "anahtarlar": [
+   "direksiyon rölantide titriyor",
+   "dururken direksiyon titremesi",
+   "viteste dururken titreme",
+   "motor takozu",
+   "kulak"
+  ],
+  "metin": "Belirti: dururken (özellikle viteste/D'de) direksiyon ve gövde titriyor. | En sık: yırtık/çökmüş motor takozu (kulak) — kontrol: kaput açık, biri gaz verip bırakırken motorun aşırı sallanması; maliyet: 1.500–6.000 TL/takoz; aciliyet: BuHafta. | Sık: rölanti düzensizliği (buji/bobin/hava kaçağı — bkz. rölantide titreme), klima yükü. | Nadir: şanzıman takozu, egzoz askısı gövdeye temas, volan. | Kırmızı: hayır. | Ustaya: 'D'de dururken titriyor, motor takozları ve rölanti kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-086",
+  "kategori": "titreme",
+  "anahtarlar": [
+   "kalkışta titreme",
+   "debriyaj bırakırken titriyor",
+   "kalkışta sarsıntı",
+   "debriyaj titremesi",
+   "volan sesi"
+  ],
+  "metin": "Belirti: kalkışta debriyaj bırakırken titreme/sarsıntı. | En sık: debriyaj balatası yağlanmış/yanmış ya da baskı plakası yüzeyi bozuk — maliyet: set 6.000–20.000 TL; aciliyet: BuHafta. | Sık: çift kütleli volan aşınması (rölantide tıkırtı + kalkışta titreme, dizellerde yaygın; volanla set 15.000–40.000 TL), motor takozu, DSG/DCT'de kavrama adaptasyonu (yazılım/kavrama). | Nadir: krank keçesi kaçağı balataya, aks mafsalı. | Kırmızı: hayır. | Ustaya: 'Kalkışta titreme, debriyaj ve çift kütleli volan kontrolü, sökmeden önce takoz da bakılsın.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-087",
+  "kategori": "motor",
+  "anahtarlar": [
+   "gaz kesince sarsıntı",
+   "sabit hızda dalgalanma",
+   "gaz verince tekleme",
+   "çekiş dalgalanıyor",
+   "hız sabitken sarsıyor"
+  ],
+  "metin": "Belirti: sabit hızda/gaz kesince çekiş dalgalanıyor, hafif sarsıntı. | En sık: yıpranmış buji/bobin (yük altında kıvılcım düşmesi), kirli enjektör — maliyet: buji 800–3.000 TL; aciliyet: BuHafta. | Sık: tork konvertör kilitleme (otomatikte 60–80 km/s sabitte titreme — TCC, şanzıman yağı), hava kaçağı, LPG ayarı, tıkalı yakıt filtresi. | Nadir: EGR takılı (dizel), gaz kelebeği sensörü, aks iç mafsalı (titreme gaz verince). | Kırmızı: motor lambası yanıp sönüyorsa dur. | Ustaya: 'Sabit hızda dalgalanma, tekleme sayacı ve TCC kilitleme kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-088",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "n'den d'ye alınca vuruş",
+   "vitese alınca vuruyor",
+   "otomatik vites vuruşu",
+   "d'ye alınca sarsıntı",
+   "r'ye alınca vuruş"
+  ],
+  "metin": "Belirti: otomatikte N/P'den D veya R'ye alınca sert vuruş. | En sık: motor/şanzıman takozu yırtık (vuruşta gövde hareketi) ya da yüksek rölanti (kirli kelebek) — maliyet: takoz 1.500–6.000 TL; aciliyet: BuHafta. | Sık: şanzıman yağı eski/düşük, valf gövdesi solenoidi, adaptasyon değerleri (akü değişimi sonrası yeniden öğrenme). | Nadir: aks iç mafsalı, diferansiyel boşluğu, tork konvertör. | Kırmızı: hayır. | Ustaya: 'D'ye alınca vuruyor, takozlar + ATF + adaptasyon.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-089",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "vites p'den çıkmıyor",
+   "park'tan çıkmıyor",
+   "shift lock",
+   "vites kolu kilitli",
+   "fren basınca vites açılmıyor"
+  ],
+  "metin": "Belirti: otomatikte frene basıyorum ama vites P'den çıkmıyor. | En sık: fren lambası anahtarı arızalı (shift-lock frenden sinyal almıyor; stop lambaları yanıyor mu bak) — maliyet: 300–1.000 TL; aciliyet: Bugun. | Sık: shift-lock solenoidi, sigorta, düşük akü (12 V yetersiz). | Nadir: vites kolu mekanizması, TCM. | Geçici çözüm: vites kolundaki 'shift lock release' deliğine anahtar/tornavida ile bas. | Kırmızı: hayır. | Ustaya: 'P'den çıkmıyor, fren lambası şalteri ve shift-lock solenoidi.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-090",
+  "kategori": "fren",
+  "anahtarlar": [
+   "el freni tutmuyor",
+   "el freni boşta",
+   "el freni ayarı",
+   "el freni çok geliyor",
+   "elektronik el freni arızası"
+  ],
+  "metin": "Belirti: el freni yokuşta tutmuyor ya da kol çok yukarı geliyor. | En sık: el freni teli uzamış/ayarsız ya da arka balata/pabuç bitmiş — maliyet: ayar 300–800 TL, tel 800–2.500 TL, arka pabuç 1.500–4.000 TL; aciliyet: BuHafta (muayenede kusur). | Sık: paslanıp yapışan tel (bırakınca tutmaya devam eder — jant ısınır), kampana içi kirli. | Nadir: elektronik el freninde aktüatör/modül (uyarı lambası), kaliper el freni kolu yapışması. | Kırmızı: hayır; yokuşta park ederken tekerleği kaldırıma çevir. | Ustaya: 'El freni tutmuyor, tel ayarı ve arka fren pabuçları.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-091",
+  "kategori": "ses",
+  "anahtarlar": [
+   "frene basınca tık sesi",
+   "fren pedalı tıkırtı",
+   "frende tek tık",
+   "fren basınca ses",
+   "balata tık sesi"
+  ],
+  "metin": "Belirti: frene basınca tek 'tık' sesi (ileri-geri geçişte de). | En sık: balatanın kaliper yuvasında boşluğu (aşınmış balata yayı/klipsleri) — maliyet: klips seti 200–800 TL; aciliyet: Bakimda. | Sık: kaliper kızak pimi boşluğu, gevşek kaliper civatası (tehlikeli — kontrol), süspansiyon burcu/z rot (frende gövde hareketiyle ses). | Nadir: fren pedal mili burcu (kabinde tık), servo iç tıkı (normal olabilir). | Kırmızı: hayır — ama gevşek kaliper civatası varsa hemen. | Ustaya: 'Frende tık sesi, balata klipsleri ve kaliper civataları.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-092",
+  "kategori": "fren",
+  "anahtarlar": [
+   "arka frenden gıcırtı",
+   "kampana sesi",
+   "arka fren sesi",
+   "geri giderken fren sesi",
+   "kampana fren gıcırtı"
+  ],
+  "metin": "Belirti: arka frenden gıcırtı, özellikle geri giderken ya da el freni çekince. | En sık: kampana içinde balata tozu/pas, pabuç yayı zayıflamış — çözüm: kampana temizliği + pabuç kontrolü; maliyet: 500–1.500 TL temizlik, pabuç 1.500–4.000 TL; aciliyet: Bakimda. | Sık: yağmur sonrası ilk frenler (normal), el freni teli yapışması, disk frenli arkada aşınma sacı. | Nadir: kampana ovalleşmesi (pedalda titreme), tekerlek silindiri sızıntısı (pabuç yağlı — tutmaz). | Kırmızı: hayır. | Ustaya: 'Arka kampanadan gıcırtı, temizlik ve pabuç kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-093",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik hava kaçırıyor",
+   "lastik iniyor",
+   "yavaş hava kaybı",
+   "lastik her hafta hava alıyor",
+   "sübap kaçırıyor",
+   "jant kenarından hava"
+  ],
+  "metin": "Belirti: bir lastik her hafta/gün hava kaybediyor. | En sık: çivi/vida (dişte gömülü, sabunlu suyla köpük testi) — tamir 200–500 TL; aciliyet: Bugun. | Sık: sübap gövdesi/iğnesi (TPMS sensörlü sübap contası), jant kenarı korozyonu/eğrilik (topuk sızdırması — jant temizliği ve sızdırmazlık macunu). | Nadir: jant çatlağı (alaşım, çukur darbesi — değiştir), lastik iç yapı hasarı. | Kırmızı: yanak bölgesindeki delik tamir edilmez, lastik değişir. | Ustaya: 'Lastik yavaş iniyor, köpük testiyle kaçağı bul; sübap ve jant topuğu dahil.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-094",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik gürültüsü arttı",
+   "lastik uğultusu",
+   "pullu aşınma",
+   "lastik desen gürültüsü",
+   "tekerlekten uğultu düz yolda"
+  ],
+  "metin": "Belirti: düz yolda tekerleklerden uğultu, hızla artıyor, virajda değişmiyor. | En sık: düzensiz/pullu lastik aşınması (bitmiş amortisör, basınç, rot ayarı) — elle diş bloklarının kenarlarını yokla, testere dişi hissi; çözüm: rotasyon + nedenin giderilmesi; maliyet: rot ayarı 800–2.000 TL, lastik çifti 4.000–12.000 TL; aciliyet: Bakimda. | Sık: agresif/kış lastiği deseni (normal), lastik yaşlanması (sertleşme). | Nadir: poyra rulmanı (virajda değişir — bkz. rulman), diferansiyel. | Kırmızı: hayır. | Ustaya: 'Lastik uğultusu var, pullu aşınma nedeni: amortisör ve ön düzen kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-095",
+  "kategori": "fren",
+  "anahtarlar": [
+   "frende pedal titriyor karda",
+   "abs devreye girince ses",
+   "fren pedalı geri itiyor",
+   "abs sesi normal mi",
+   "abs takırtı"
+  ],
+  "metin": "Belirti: sert frenlemede pedal titriyor, takırtı sesi geliyor (özellikle kaygan zeminde). | En sık: ABS'nin normal çalışması — pedaldaki titreşim ve ses tasarım gereği; pedalı bırakma, basmaya devam et; maliyet: 0; aciliyet: yok. | Sık: kuru asfaltta normal frende de oluyorsa ABS hız sensörü/dişlisi hatalı sinyal (kirli sensör, çatlak tone ring) — ABS lambası yanmadan da olur; maliyet: sensör 800–3.000 TL. | Nadir: disk çarpılması (bkz. frende titreme), ABS modülü. | Kırmızı: hayır. | Ustaya: 'Kuru yolda düşük hızda ABS devreye giriyor, tekerlek hız sensörlerini kontrol et.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-096",
+  "kategori": "direksiyon",
+  "anahtarlar": [
+   "düşük hızda direksiyon sallanıyor",
+   "jant eğik",
+   "jant yamuk",
+   "çukura girdim titreme",
+   "30 km titreme"
+  ],
+  "metin": "Belirti: düşük hızda (20–50 km/s) direksiyon/gövde sallanıyor, yüksek hızda değişiyor. | En sık: eğik/yamuk jant ya da lastik yanak deformasyonu (çukur darbesi) — kontrol: balans makinesinde salgı; maliyet: jant düzeltme 500–1.500 TL, jant 2.000–8.000 TL, lastik 2.000–6.000 TL; aciliyet: BuHafta. | Sık: balans ağırlığı düşmüş, lastik topuğu jant üzerine düzgün oturmamış. | Nadir: aks eğilmesi, poyra flanşı salgısı, gevşek bijon. | Kırmızı: bijon gevşekse hemen sık. | Ustaya: 'Düşük hızda sallanma, jant ve lastik salgısı ölçümü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-097",
+  "kategori": "ses",
+  "anahtarlar": [
+   "kaporta gıcırtısı",
+   "tavandan gıcırtı",
+   "kapıdan gıcırtı",
+   "torpido ses",
+   "iç gıcırtı",
+   "plastik gıcırtı"
+  ],
+  "metin": "Belirti: tümsekte kabinden/torpidodan/kapıdan gıcırtı-cızırtı. | En sık: plastik kaplama klipsleri gevşemiş, kapı fitili kuru (silikon sprey), kapı kilit karşılığı ayarı (kapı çarparken) — maliyet: 0–800 TL; aciliyet: Bakimda. | Sık: koltuk rayı/ kılçık, bagaj eşyaları, cam kanal fitilleri, sunroof kızağı. | Nadir: kaporta yapısal (kaza sonrası gerginlik), amortisör takozu (dış ses içeriye). | Kırmızı: hayır. | Ustaya: 'Torpidodan gıcırtı, klips ve fitil bakımı.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-098",
+  "kategori": "kaporta",
+  "anahtarlar": [
+   "bagaj su alıyor",
+   "bagaja su giriyor",
+   "stepne bölmesi su",
+   "arka lamba su alıyor",
+   "bagaj ıslak",
+   "kapı su alıyor"
+  ],
+  "metin": "Belirti: bagaj/stepne bölmesi ıslak. | En sık: arka lamba (stop) contası ya da bagaj kapağı fitili (yaşlanmış) — testte hortumla su + içeriden gözle; maliyet: lamba contası 200–800 TL, fitil 800–2.500 TL; aciliyet: Bakimda. | Sık: bagaj kapağı tepe fren lambası/anten contası, tıkalı gövde drenaj tapaları, kaporta kaynağı/sızdırmazlık macunu çatlağı (kaza onarımı sonrası). | Nadir: arka cam yapıştırması, sunroof drenaj hortumu arkaya boşalıyor. | Kırmızı: hayır; ıslak bölme paslanma ve elektrik (kamera/modül) arızası doğurur. | Ustaya: 'Bagaj su alıyor, su testiyle giriş noktası.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-099",
+  "kategori": "kaporta",
+  "anahtarlar": [
+   "paspas ıslak",
+   "sunroof drenaj",
+   "tavan su damlıyor",
+   "sürücü paspası ıslak",
+   "klima drenaj tıkalı",
+   "yağmurda içeri su"
+  ],
+  "metin": "Belirti: ön paspas ıslak, tavandan damlama. | En sık: sunroof drenaj hortumları tıkalı (yaprak/tortu — A direği içinden aşağı iner; basınçlı hava/tel ile açılır) ya da klima drenaj hortumu tıkalı (yolcu tarafı ıslak, kokusuz su) — maliyet: 300–1.500 TL; aciliyet: Bakimda. | Sık: ön cam yapıştırma dikişi, kaput altı su tavası (polen filtresi yuvası) drenajı tıkalı → polen filtresi ıslanır, fan yuvasına su. | Nadir: kalorifer radyatörü (tatlı koku), kapı iç naylon (membran) yırtık. | Kırmızı: hayır; ıslak halı altı kablo demeti/airbag modülü için risk — kurut. | Ustaya: 'Paspas ıslak, sunroof ve klima drenaj temizliği + polen kutusu drenajı.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-100",
+  "kategori": "klima",
+  "anahtarlar": [
+   "camlar buğulanıyor",
+   "iç buğu geçmiyor",
+   "cam buğusu yağlı",
+   "yağmurda buğulanma",
+   "buğu klima çalışmıyor"
+  ],
+  "metin": "Belirti: camlar sürekli buğulanıyor. | En sık: kabin nemi yüksek — ıslak paspas/halı (drenaj sızıntısı), tıkalı polen filtresi, iç sirkülasyonda sürüş; çözüm: klima (AC) açık + dış hava + ön cam modu; maliyet: polen filtresi 300–1.000 TL; aciliyet: Bakimda. | Sık: klima gazı bitik (nem alamıyor), kalorifer radyatörü sızıntısı (yağlı film + tatlı koku). | Nadir: kabin sıcaklık kapağı motoru (hava yönü). | Kırmızı: görüşü kapatıyorsa dur. | Ustaya: 'Camlar buğulanıyor, halı nemi ve klima gaz kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-101",
+  "kategori": "sogutma",
+  "anahtarlar": [
+   "motor geç ısınıyor",
+   "sıcaklık göstergesi ortaya gelmiyor",
+   "motor ısınmıyor",
+   "kışın ısınmıyor",
+   "gösterge düşük kalıyor"
+  ],
+  "metin": "Belirti: motor sıcaklığı uzun sürede ortaya gelmiyor, kalorifer geç. | En sık: termostat açık kalmış (P0128) — motor sürekli soğuk çalışır, tüketim artar, aşınma artar; maliyet: 800–3.000 TL; aciliyet: Bakimda. | Sık: soğutma sıcaklık sensörü, fan sürekli çalışıyor (röle yapışık). | Nadir: elektrikli termostat modülü (VW), gösterge. | Kırmızı: hayır. | Ustaya: 'Motor geç ısınıyor, termostatı değiştir (P0128 var).'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-102",
+  "kategori": "sanziman",
+  "anahtarlar": [
+   "yokuşta geri kayıyor",
+   "otomatik yokuşta kayma",
+   "hill assist çalışmıyor",
+   "yokuş kalkış desteği",
+   "yokuşta zorlanıyor kalkış"
+  ],
+  "metin": "Belirti: yokuşta kalkışta araç geriye kayıyor. | En sık: manuelde NORMAL (el freniyle kalkış), otomatikte tork konvertörlü şanzımanda hafif kayma normal; yokuş kalkış desteği (HSA) varsa ESP/fren sensörü arızasında devre dışı — ESP lambası kontrol; maliyet: 0–3.000 TL; aciliyet: Bakimda. | Sık: debriyaj kaçırması (devir yükselir hız yok), düşük şanzıman yağı (otomatik). | Nadir: fren lambası anahtarı (HSA frenden sinyal alamıyor), eğim sensörü. | Kırmızı: hayır. | Ustaya: 'Yokuş desteği çalışmıyor, ESP kodları ve fren şalteri.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-103",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "yakıt göstergesi yanlış",
+   "depo dolu gösteriyor boş",
+   "yakıt ibresi oynuyor",
+   "depo şamandıra",
+   "yakıt göstergesi takılı"
+  ],
+  "metin": "Belirti: yakıt göstergesi yanlış/oynak gösteriyor. | En sık: depo içi şamandıra (seviye sensörü) reosta aşınması — belirli seviyede takılır; maliyet: 800–3.000 TL (pompa modülüyle birlikteyse daha çok); aciliyet: Bakimda. | Sık: şamandıra kolu takılıyor (depo deformasyonu), soket oksitli, çift depolu (eyer tip) araçta transfer pompası. | Nadir: gösterge paneli, kalitesiz yakıtın reostayı kirletmesi. | Kırmızı: hayır; km ile dolum takibi yap, yolda kalma riski. | Ustaya: 'Yakıt göstergesi yanlış, şamandıra direnç ölçümü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-104",
+  "kategori": "elektrik",
+  "anahtarlar": [
+   "gösterge ışıkları yanmıyor",
+   "km sayacı çalışmıyor",
+   "gösterge paneli sönük",
+   "panel arka aydınlatma",
+   "ibreler çalışmıyor"
+  ],
+  "metin": "Belirti: gösterge paneli sönük/ibreler çalışmıyor, araç gidiyor. | En sık: panel sigortası ya da aydınlatma ayarı/reosta (gece modunda kısılmış) — maliyet: 0–200 TL; aciliyet: Bakimda. | Sık: gösterge paneli lehim çatlağı (dokununca düzeliyor), kablo soketi. | Nadir: CAN iletişim kaybı (U0155), BCM. | Kırmızı: hız/yakıt göstergesi olmadan sürüş riskli, kısa sürede. | Ustaya: 'Panel sönük, sigorta ve panel soketi; gerekirse panel onarımı.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-105",
+  "kategori": "motor",
+  "anahtarlar": [
+   "acil mod",
+   "limp mode",
+   "güç düştü lamba yandı",
+   "araç 3000 devirden yukarı çıkmıyor",
+   "emniyet modu",
+   "koruma modu"
+  ],
+  "metin": "Belirti: motor lambası yandı, araç güç kaybetti, devir/hız sınırlı (acil mod). | En sık: turbo basınç hatası (P0299/P0234 — hortum kaçağı, VNT yapışması, aktüatör), EGR/DPF arızası (dizel) — kontrol: kontağı kapatıp 1 dk sonra açınca geçici düzelir; kod okut; maliyet: 1.000–15.000 TL nedenine göre; aciliyet: Bugun. | Sık: gaz pedalı/kelebek sensörü (P2135), MAF, yakıt basıncı düşük (P0087). | Nadir: şanzıman acil modu (3. viteste kilitli), ECU. | Kırmızı: hararet ya da kırmızı lamba eşlik ediyorsa dur; yalnız acil moddaysa yavaş servise. | Ustaya: 'Acil moda düştü, kodu ve turbo basınç gerçek değerini okur musun.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-106",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "adblue uyarısı",
+   "adblue bitti",
+   "adblue doldurma",
+   "adblue arızası",
+   "scr sistemi",
+   "nox sensörü",
+   "adblue kaç km"
+  ],
+  "metin": "Belirti: AdBlue uyarısı / 'X km sonra çalışmayacak'. | En sık: AdBlue seviyesi düşük — doldur (uyarı 2.400 km önce başlar; sıfırlanınca motor yeniden çalışmaz); maliyet: 10 L AdBlue 300–800 TL; aciliyet: Bugun. | Sık: NOx sensörü arızası (pahalı, 8.000–20.000 TL), AdBlue enjektörü kristalleşmiş, pompa/ısıtıcı (kışta donma), kalite sensörü (yanlış/sulu AdBlue). | Nadir: SCR katalizörü, dozaj modülü. | Kırmızı: 'motor çalışmayacak' sayacı 0'a inince araç yeniden çalıştırılamaz — sayaç bitmeden servise. | Ustaya: 'AdBlue uyarısı doldurduktan sonra da sönmedi, NOx sensörü ve dozaj testi.'",
+  "kaynak": "genel servis pratiği (Euro 6 dizel)",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-107",
+  "kategori": "egzoz",
+  "anahtarlar": [
+   "dizel soğukta beyaz duman",
+   "sabah beyaz duman dizel",
+   "kızdırma bujisi",
+   "soğukta duman sonra geçiyor",
+   "dizel sabah sarsıntı"
+  ],
+  "metin": "Belirti: dizel soğukta ilk çalıştırmada beyaz-gri duman ve sarsıntı, ısınınca geçiyor. | En sık: bir veya birkaç kızdırma bujisi arızalı (P067x) — soğukta tam yanma olmuyor, yanmamış mazot dumanı; maliyet: buji 300–800 TL/adet + işçilik; aciliyet: BuHafta. | Sık: kızdırma rölesi/modülü, enjektör püskürtme bozukluğu (soğukta belirgin), düşük kompresyon (yaşlı motor). | Nadir: zamanlama, yakıt kalitesi (kışın jelleşme — kış dizeli). | Kırmızı: hayır. Sürekli beyaz duman + antifriz eksiltme farklı — bkz. beyaz duman. | Ustaya: 'Soğukta beyaz duman, kızdırma bujileri ve enjektör dönüş testi.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-108",
+  "kategori": "yakit",
+  "anahtarlar": [
+   "lpg benzine geçiyor",
+   "seyirde benzine dönüyor",
+   "lpg kesiliyor yolda",
+   "lpg tüp bitmedi benzine geçti",
+   "lpg sinyal"
+  ],
+  "metin": "Belirti: seyirde LPG'den benzine kendi kendine geçiyor, tüp bitmemiş. | En sık: LPG basıncı düşüyor — tıkalı filtre (gaz/sıvı fazı), regülatör diyaframı, multivalf/tank çıkışı kısmi tıkanma; maliyet: filtre 300–800 TL, regülatör bakımı 1.000–3.000 TL; aciliyet: BuHafta. | Sık: regülatör ısınamıyor (soğutma hattı hava/tıkalı — kışın), seviye sensörü yanlış (tüp gerçekten bitmiş), yüksek devirde/yük altında LPG sisteminin kapasitesi (ayar). | Nadir: LPG beyni, enjektör rayı arızası, bobin/buji (LPG'de zorlanır). | Kırmızı: gaz kokusu varsa tüpü kapat, sürme. | Ustaya: 'LPG seyirde benzine düşüyor, filtreler, regülatör basıncı ve ısınma hattı.'",
+  "kaynak": "genel LPG servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-109",
+  "kategori": "yakit",
+  "anahtarlar": [
+   "lpg tüketimi arttı",
+   "lpg çok yakıyor",
+   "lpg'de tüketim",
+   "lpg ayar",
+   "lpg kalibrasyon"
+  ],
+  "metin": "Belirti: LPG tüketimi belirgin arttı (benzin eşdeğerine göre normal artış %15–25). | En sık: LPG ayarı (kalibrasyon) bozulmuş — lambda sinyaline göre haritalama yenilenmeli; kirli LPG enjektörleri/filtreler; maliyet: ayar 500–1.500 TL, enjektör temizliği 800–2.000 TL; aciliyet: Bakimda. | Sık: eski bujiler (LPG'de kıvılcım isteği yüksek), lambda sensörü yaşlanmış, hava kaçağı, düşük lastik basıncı. | Nadir: regülatör aşırı basınç, kalitesiz LPG (istasyon değiştir), enjektör sızdırması. | Kırmızı: hayır. | Ustaya: 'LPG tüketimi arttı, kalibrasyon + buji + enjektör temizliği.'",
+  "kaynak": "genel LPG servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-110",
+  "kategori": "ev",
+  "anahtarlar": [
+   "menzil düştü",
+   "elektrikli araç menzil",
+   "kışın menzil azaldı",
+   "batarya menzil",
+   "şarj çabuk bitiyor",
+   "ev tüketim yükseldi"
+  ],
+  "metin": "Belirti: elektrikli araçta menzil belirgin düştü. | En sık: soğuk hava (batarya kimyası + kalorifer; %20–40 düşüş NORMAL), ısıtma/klima ve koltuk ısıtıcısı, yüksek hız (120+ km/s'de tüketim hızla artar), düşük lastik basıncı/kış lastiği, portbagaj — maliyet: 0; aciliyet: Bakimda. | Sık: tek pedal/rejenerasyon ayarı, yeni lastik (yuvarlanma direnci), ön ısıtma kullanılmaması (şarjdayken ısıt). | Nadir: batarya sağlığı (SoH) düşüşü — yetkili serviste ölçüm, garanti (çoğunlukla 8 yıl/160 bin, %70 eşiği), 12 V akü zayıflığı (rastgele uyarılar). | Kırmızı: 'batarya sıcaklığı yüksek/şarj sınırlı' uyarısı → yüksek yükten kaçın, servise. | Ustaya: 'Menzil düştü, batarya SoH raporu ve hücre dengesi.'",
+  "kaynak": "genel EV pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-111",
+  "kategori": "ev",
+  "anahtarlar": [
+   "şarj olmuyor",
+   "ac şarj başlamıyor",
+   "wallbox hata",
+   "şarj kablosu tanımıyor",
+   "şarj kesiliyor",
+   "dc şarj başlamıyor"
+  ],
+  "metin": "Belirti: elektrikli/plug-in araç şarj olmuyor ya da şarj kesiliyor. | En sık: kablo/priz tarafı — wallbox toprak hatası (RCD atması), evde nötr-toprak sorunu, taşınabilir şarj kablosunun aşırı ısınması (uzatma kablosu KULLANMA), şarj kapağı/soket kilidi kirli — maliyet: elektrikçi 500–2.000 TL; aciliyet: Bugun. | Sık: programlı şarj (zamanlayıcı) açık, batarya çok soğuk/sıcak (ön koşullandırma bekler), DC istasyonda uygulama/ödeme oturumu, istasyon uyumsuzluğu (başka istasyon dene). | Nadir: araç içi şarj ünitesi (OBC) arızası, şarj portu kilit aktüatörü, yazılım. | Kırmızı: kablo/priz erime, yanık kokusu → şarjı kes, elektrikçi. | Ustaya: 'AC şarj başlamıyor, farklı istasyonda deneme yaptım, OBC ve port kilidi kontrolü.'",
+  "kaynak": "genel EV pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-112",
+  "kategori": "ev",
+  "anahtarlar": [
+   "hibrit motor sürekli çalışıyor",
+   "hibrit batarya şarj olmuyor",
+   "hibrit ev moduna geçmiyor",
+   "hibrit uyarı",
+   "hibrit sistem kontrol lambası"
+  ],
+  "metin": "Belirti: hibrit araçta benzinli motor sürekli çalışıyor, EV modu girmiyor. | En sık: NORMAL koşullar — soğuk motor/kalorifer isteği, batarya düşük (kısa mesafe), yüksek hız, klima yükü; maliyet: 0; aciliyet: Bakimda. | Sık: hibrit batarya fanı filtresi tıkalı (arka koltuk yanı — batarya ısınıyor, sistem kısıtlıyor), 12 V yardımcı akü zayıf. | Nadir: hibrit batarya hücre zayıflığı (P0A80 — 'hibrit sistem kontrol' uyarısı, menzil/güç düşer; yeniden hücre dengeleme ya da paket 20.000–80.000 TL), inverter soğutma pompası. | Kırmızı: 'hibrit sistem kontrol' + kırmızı üçgen + güç kaybı → servise, uzun yola çıkma. | Ustaya: 'Hibrit sürekli motorla gidiyor, batarya blok voltajları ve fan filtresi.'",
+  "kaynak": "genel hibrit pratiği (Toyota/Hyundai/Honda)",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-113",
+  "kategori": "uyari-lambasi",
+  "anahtarlar": [
+   "akü lambası direksiyon ağırlaştı hararet",
+   "kayış koptu",
+   "v kayışı koptu",
+   "birden birçok lamba",
+   "alternatör kayışı kopması"
+  ],
+  "metin": "Belirti: seyirde aniden akü lambası + direksiyon ağırlaşması (+ hararet yükselişi). | KIRMIZI: V (aksesuar) kayışı koptu ya da gerdirici dağıldı — alternatör, hidrolik direksiyon pompası ve çoğu araçta su pompası durur; hemen güvenli yere çek, motoru kapat (hararet), çekici. | En sık: yaşlanmış kayış/gerdirici rulmanı, gevşek kayış; maliyet: kayış+gerdirici 1.500–5.000 TL; aciliyet: Bugun. | Sık: kilitlenen klima kompresörü/alternatör kayışı koparır (kopmadan önce cıyaklama + duman). | Nadir: krank kasnağı (harmonik balans) dağılması. | Ustaya: 'Kayış koptu, gerdirici ve kasnaklı parçaların dönüşünü kontrol edip kayış tak.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-114",
+  "kategori": "ses",
+  "anahtarlar": [
+   "depodan ses",
+   "yakıt deposundan tıkırtı",
+   "arkadan çalkalanma sesi",
+   "depoda tak tak",
+   "şamandıra sesi"
+  ],
+  "metin": "Belirti: arkadan/depo bölgesinden çalkalanma ya da tıkırtı. | En sık: yarım depoda yakıt çalkalanması (normal, özellikle plastik depolarda) — maliyet: 0. | Sık: depo içi şamandıra kolu/yakıt pompası kabı gevşemiş (tıkırtı), depo bağlantı kayışı gevşek. | Nadir: egzoz askısı/ısı kalkanı arkada, yedek lastik/kriko bagajda. | Kırmızı: hayır. | Ustaya: 'Depo bölgesinden tıkırtı, pompa modülü ve depo kayışı kontrolü.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-115",
+  "kategori": "ses",
+  "anahtarlar": [
+   "kaput altından ıslık",
+   "motor ıslık sesi",
+   "seyirde ıslık",
+   "hava kaçağı sesi",
+   "turbo ıslığı normal mi"
+  ],
+  "metin": "Belirti: kaput altından ıslık/tıslama. | En sık: vakum/emme hava kaçağı (çatlak hortum, PCV, manifold contası — rölantide tıslama + rölanti bozukluğu) — maliyet: 300–2.000 TL; aciliyet: BuHafta. | Sık: turbo ıslığı hafifse NORMAL, aniden artmışsa basınç hortumu kaçağı (bkz. turbo), servo vakum hortumu (frende değişir), aşınmış V kayışı (yüksek perdeli ıslık, gaz verince). | Nadir: alternatör/gerdirici rulmanı (devirle artan ince ıslık), egzoz manifold contası (soğukta tıs). | Kırmızı: hayır. | Ustaya: 'Kaput altından ıslık, duman testiyle hava kaçağı, rulmanları stetoskopla dinle.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-116",
+  "kategori": "ses",
+  "anahtarlar": [
+   "kayış cıyaklıyor",
+   "sabah kayış sesi",
+   "cıyaklama sesi",
+   "kayış gıcırtı",
+   "direksiyon çevirince cıyaklama",
+   "yağmurda kayış sesi"
+  ],
+  "metin": "Belirti: soğukta/yağmurda/direksiyon çevirince cıyaklama. | En sık: aşınmış ya da gevşek V (aksesuar) kayışı, kayış gerdiricisi zayıf — maliyet: kayış 500–2.000 TL, gerdirici 1.500–4.000 TL; aciliyet: BuHafta (koparsa bkz. kayış koptu). | Sık: kasnak hizasızlığı, sızan yağ/antifrizin kayışa bulaşması, hidrolik direksiyon pompası zorlanması (tam kilitte cıyaklama normal, sürekli değil). | Nadir: alternatör/klima kavrama rulmanı, krank kasnağı kauçuğu ayrılmış. | Kırmızı: hayır. | Ustaya: 'Kayış cıyaklıyor, kayış ve gerdiriciyi değiştir, kasnak hizasını kontrol et.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-117",
+  "kategori": "ses",
+  "anahtarlar": [
+   "motoru kapatınca tik tik ses",
+   "kaputtan tıkırtı motor kapalıyken",
+   "egzoz soğuma sesi",
+   "motor durunca ses",
+   "kapatınca çıtırtı"
+  ],
+  "metin": "Belirti: motoru kapattıktan sonra kaput altından/altından tik-tik/çıtırtı. | En sık: egzoz ve metal parçaların soğurken büzülmesi — NORMAL, 5–15 dk sürer; maliyet: 0. | Sık: fan motorun kapatılmasından sonra çalışması (normal), yakıt basıncı boşalma sesi (rölanti sonrası, normal), turbo soğutma pompası (bazı araçlarda normal). | Nadir: kaynayan soğutma sıvısı sesi (hararet sonrası — kontrol), yağ kaçağının sıcak egzoza damlaması (koku eşlik eder). | Kırmızı: hayır. | Ustaya: gerek yok; koku/duman eşlik ediyorsa 'egzoz üstü kaçak kontrolü'.",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-118",
+  "kategori": "motor",
+  "anahtarlar": [
+   "yağ değişimi sonrası yağ lambası",
+   "bakımdan sonra yağ lambası",
+   "yeni yağ lamba yanıyor",
+   "yağ değişti lamba sönmüyor",
+   "servis hatırlatma lambası"
+  ],
+  "metin": "Belirti: yağ değişiminden hemen sonra yağ/servis lambası yanıyor. | En sık: SARI 'servis/bakım' hatırlatma sıfırlanmamış (menüden ya da düğme kombinasyonuyla sıfırlanır) — maliyet: 0; aciliyet: Bakimda. | Sık: KIRMIZI yağ basıncı lambası: yağ eksik konmuş/yanlış filtre (contası çift kalmış, bypass), yağ filtresi conta sızıntısı, yanlış viskozite — hemen seviyeyi kontrol et, damlama var mı bak. | Nadir: filtreye yağ doldurulmadan ilk çalıştırmada birkaç saniye (normal), yağ basınç müşiri soketi çıkmış (bakımda dokunulmuş). | Kırmızı: kırmızı lamba sönmüyorsa motoru çalıştırma, servisi ara. | Ustaya: 'Yağ değişimi sonrası kırmızı yağ lambası, seviye ve filtre contasını kontrol edin.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-119",
+  "kategori": "motor",
+  "anahtarlar": [
+   "buji değişti tekleme başladı",
+   "buji değişiminden sonra",
+   "yeni buji tekliyor",
+   "yanlış buji",
+   "bobin buji değişimi"
+  ],
+  "metin": "Belirti: buji değişiminden sonra tekleme/rölanti bozukluğu başladı. | En sık: bobin soketi tam oturmamış, bobin/kablo yerinden çıkmış (bobin kırılgan — sökülürken çatlar), bujide yanlış tırnak aralığı/yanlış ısı derecesi/yanlış tip (iridyum yerine bakır, LPG uygunsuz) — maliyet: 0–2.500 TL; aciliyet: BuHafta. | Sık: buji dişine yanlış tork (gevşek → sızdırma, aşırı → kırılma), buji yuvasına yağ dolmuş (külbütör kapak contası — bujiyi kısa devre eder), sahte buji. | Nadir: bujiyi takarken porselen çatlaması, ateşleme sırası karışmış (kablolu sistem). | Kırmızı: lamba yanıp sönüyorsa katalizör riski — hemen kontrol. | Ustaya: 'Buji değişiminden beri tekliyor, bobin soketleri ve buji tipini kontrol et.'",
+  "kaynak": "genel servis pratiği",
+  "guncelleme": "2026-09-02"
+ },
+ {
+  "id": "blr-120",
+  "kategori": "lastik",
+  "anahtarlar": [
+   "lastik ne zaman değişir",
+   "lastik yaşı",
+   "dot kodu",
+   "lastik kaç yıl",
+   "lastik çatlamış",
+   "lastik ömrü"
+  ],
+  "metin": "Belirti/soru: lastik ne zaman değişmeli. | Kural: diş derinliği yasal sınır 1,6 mm (yazlık için 3 mm, kışlık için 4 mm altı pratikte yetersiz), yanakta çatlak/kesik/şişlik varsa yaşından bağımsız değişir; DOT kodundaki 4 haneli üretim tarihi (hafta-yıl) 6 yılı geçmişse kontrol, 10 yılı geçmişse diş olsa da değiştirilmesi önerilir (kauçuk sertleşir, yol tutuş düşer). Aynı aksta çift değiştir, yeni çift arkaya (savrulma güvenliği). Rotasyon 10 bin km, balans her lastik değişiminde, rot ayarı yılda bir/darbe sonrası. Maliyet: 195/65 R15 çift 4.000–8.000 TL, 225/45 R17 çift 8.000–16.000 TL (2026 tahmini). | Ustaya: 'Lastik DOT 2018, diş 4 mm — değiştirmeli miyim, yanakları kontrol et.'",
+  "kaynak": "genel lastik pratiği; TÜVTÜRK diş sınırı 1,6 mm",
+  "guncelleme": "2026-09-02"
+ }
 ]

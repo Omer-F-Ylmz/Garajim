@@ -21,7 +21,7 @@ namespace Garajim.Tests.Unit
             _cikti = cikti;
         }
 
-        private static BilgiSecici Secici()
+        private static IReadOnlyList<BilgiKaydi> Kayitlar()
         {
             var kok = new DirectoryInfo(AppContext.BaseDirectory);
             while (kok != null && !File.Exists(Path.Combine(kok.FullName, "Garajim.sln")))
@@ -30,16 +30,21 @@ namespace Garajim.Tests.Unit
             }
 
             Assert.NotNull(kok);
-            var kayitlar = new BilgiYukleyici().Yukle(Path.Combine(kok.FullName, "Garajim.Business", "Usta", "Bilgi"));
-            return new BilgiSecici(kayitlar);
+            return new BilgiYukleyici().Yukle(Path.Combine(kok.FullName, "Garajim.Business", "Usta", "Bilgi"));
+        }
+
+        private static BilgiSecici Secici()
+        {
+            return new BilgiSecici(Kayitlar());
         }
 
         [Fact]
         public void ButceOlcumuRaporlanir()
         {
-            var secici = Secici();
+            var tumu = Kayitlar();
+            var secici = new BilgiSecici(tumu);
 
-            _cikti.WriteLine($"Bütçe: {BilgiSecici.MaxToken} token / en fazla {BilgiSecici.MaxKayit} kayıt");
+            _cikti.WriteLine($"Bilgi tabanı {tumu.Count} kayıt · bütçe {BilgiSecici.MaxToken} token / en fazla {BilgiSecici.MaxKayit} kayıt");
 
             foreach (var soru in OrnekSorular)
             {
