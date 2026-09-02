@@ -46,30 +46,41 @@ namespace Garajim.Business.Jobs
 
             _tenantContext.Clear();
 
-            await _ozetDal.TemizleAsync();
-
             foreach (var kayit in sayaclar)
             {
-                await _ozetDal.AddAsync(new UstaCozumOzeti
+                var mevcut = await _ozetDal.BulAsync(kayit.Key.Marka, kayit.Key.Model, kayit.Key.Motor, kayit.Key.Kategori, kayit.Key.Parca);
+
+                if (mevcut == null)
                 {
-                    Marka = kayit.Key.Marka,
-                    Model = kayit.Key.Model,
-                    Motor = kayit.Key.Motor,
-                    BelirtiKategori = kayit.Key.Kategori,
-                    ParcaTuru = kayit.Key.Parca,
-                    Sayi = kayit.Value,
-                    GuncellemeTarihi = DateTime.UtcNow
-                });
+                    await _ozetDal.AddAsync(new UstaCozumOzeti
+                    {
+                        Marka = kayit.Key.Marka,
+                        Model = kayit.Key.Model,
+                        Motor = kayit.Key.Motor,
+                        BelirtiKategori = kayit.Key.Kategori,
+                        ParcaTuru = kayit.Key.Parca,
+                        Sayi = kayit.Value,
+                        GuncellemeTarihi = DateTime.UtcNow
+                    });
+                    continue;
+                }
+
+                mevcut.Sayi += kayit.Value;
+                mevcut.GuncellemeTarihi = DateTime.UtcNow;
+                await _ozetDal.UpdateAsync(mevcut);
             }
         }
 
+
         private async Task SirketIcinTopla(Dictionary<(string, string, string, string, string), int> sayaclar)
         {
-            var mesajlar = await _mesajDal.GetCozumluMesajlarAsync();
+            var mesajlar = await _mesajDal.GetOzetlenmemisCozumluMesajlarAsync();
             if (mesajlar.Count == 0)
             {
                 return;
             }
+
+            var islenenler = new List<int>();
 
             foreach (var mesaj in mesajlar)
             {
@@ -109,7 +120,11 @@ namespace Garajim.Business.Jobs
                     sayaclar.TryGetValue(anahtar, out var mevcut);
                     sayaclar[anahtar] = mevcut + 1;
                 }
+
+                islenenler.Add(mesaj.Id);
             }
+
+            await _mesajDal.OzetlendiIsaretleAsync(islenenler);
         }
 
         private static string Kirp(string metin, int uzunluk)

@@ -183,6 +183,7 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.Property(m => m.Metin).HasMaxLength(4000).IsRequired();
                 entity.Property(m => m.BilgiKategorisi).HasMaxLength(60);
+                entity.HasIndex(m => m.Ozetlendi);
                 entity.HasIndex(m => m.CompanyId);
                 entity.HasIndex(m => new { m.SohbetId, m.Id });
                 entity.HasOne<Company>().WithMany().HasForeignKey(m => m.CompanyId).OnDelete(DeleteBehavior.Restrict);

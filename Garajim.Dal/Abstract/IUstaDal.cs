@@ -6,6 +6,8 @@ namespace Garajim.Dal.Abstract
     public interface IUstaSohbetDal : IEntityRepository<UstaSohbet>
     {
         Task<List<UstaSohbet>> GetListeAsync(int? vehicleId, int? userId);
+        Task<List<int>> EskiSohbetIdleriAsync(DateTime sinir);
+        Task SohbetleriSilAsync(List<int> sohbetIds);
     }
 
     public interface IUstaMesajDal : IEntityRepository<UstaMesaj>
@@ -13,8 +15,10 @@ namespace Garajim.Dal.Abstract
         Task<List<UstaMesaj>> GetSohbetMesajlariAsync(int sohbetId);
         Task<int> SohbetMesajSayisiAsync(int sohbetId);
         Task<int> KullaniciGunlukSayisiAsync(int sohbetSahibiUserId, DateTime gunBasi);
-        Task<List<UstaMesaj>> GetCozumluMesajlarAsync();
+        Task<List<UstaMesaj>> GetOzetlenmemisCozumluMesajlarAsync();
+        Task OzetlendiIsaretleAsync(List<int> mesajIds);
         Task DeleteBySohbetAsync(int sohbetId);
+        Task DeleteBySohbetlerAsync(List<int> sohbetIds);
     }
 
     public interface IUstaOnayDal : IEntityRepository<UstaOnay>
@@ -24,6 +28,6 @@ namespace Garajim.Dal.Abstract
     public interface IUstaCozumOzetiDal : IEntityRepository<UstaCozumOzeti>
     {
         Task<List<UstaCozumOzeti>> GetTumuAsync();
-        Task TemizleAsync();
+        Task<UstaCozumOzeti> BulAsync(string marka, string model, string motor, string kategori, string parca);
     }
 }

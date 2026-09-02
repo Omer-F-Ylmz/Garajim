@@ -258,7 +258,8 @@ Aracin kendi kayitlarini okuyup belirtiler icin olasilik siralayan yardimci. Tes
 - **Bilgi tabani:** `Garajim.Business/Usta/Bilgi/*.json` — `{id, kategori, anahtarlar[], metin, kaynak, guncelleme}` semasi. Acilista yuklenir, sema hatasinda uygulama acik mesajla durur. Secici DTC kodlarini (`[PCBU][0-3][0-9A-F]{3}`) dogrudan eslestirir, kalanini anahtar puaniyla siralar; en fazla 25 kayit ve 3.000 token.
 - **Prompt sirasi:** `[sistem promptu + bilgi tabani]`, `[arac baglami]`, `[son 6 mesaj]`, `[soru]`. Sabit blok basta durur; kullanici metni veri olarak islenir, icindeki talimatlar yok sayilir.
 - **Cikti:** `{ozet, kirmiziCizgi, kademeler[{kademe, neden, belirtiUyumu, evdeKontrol, maliyetTl[min,max], aciliyet}], aracVerisindenNotlar, ustayaBoyleAnlat, takipSorulari, uyari}`. Sema disi yanit `502` doner ve kaydedilmez. Son filtre yuzde ifadelerini kademe soyleyisine cevirir ve uyari satirini garanti eder.
-- **Anonim ogrenme:** gunluk `usta-cozum-ozeti` job'i, olumlu isaretlenmis ve bir bakimla eslestirilmis yanitlardan `UstaCozumOzetleri` tablosunu uretir. Tablo `CompanyId` tasimaz; yalnizca marka, model, motor, belirti kategorisi, parca turu ve sayidan olusur. `Usta:GarajimVerisi` acikken yalnizca `n >= 30` satirlar prompta girer.
+- **Anonim ogrenme:** gunluk `usta-cozum-ozeti` job'i, olumlu isaretlenmis ve bir bakimla eslestirilmis **henuz ozetlenmemis** yanitlari sayar ve `UstaCozumOzetleri` satirlarini artirir; sayilan mesaj `Ozetlendi` isaretlenir, boylece tekrar calistirma sayiyi katlamaz. Tablo `CompanyId` tasimaz; yalnizca marka, model, motor, belirti kategorisi, parca turu ve sayidan olusur. `Usta:GarajimVerisi` acikken yalnizca `n >= 30` satirlar prompta girer.
+- **Saklama:** gunluk `usta-saklama` job'i once ozet job'ini calistirir, sonra **24 aydan eski** `UstaSohbet` ve `UstaMesaj` kayitlarini siler. `UstaCozumOzetleri` bu silmeden etkilenmez; sartlar.html'deki 24 ay taahhudunu bu job gercek kilar.
 
 ## Kalibrasyon aracı
 

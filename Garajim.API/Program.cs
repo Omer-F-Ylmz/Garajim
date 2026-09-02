@@ -119,6 +119,7 @@ builder.Services.AddScoped<IReceiptExtractor>(provider =>
         : provider.GetRequiredService<GeminiReceiptExtractor>());
 builder.Services.AddScoped<ReminderNotificationJob>();
 builder.Services.AddScoped<UstaOzetJob>();
+builder.Services.AddScoped<UstaSaklamaJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
 
 builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
@@ -375,6 +376,11 @@ if (useBackgroundJobs)
             "usta-cozum-ozeti",
             job => job.RunAsync(),
             Cron.Daily(4));
+
+        recurringJobManager.AddOrUpdate<UstaSaklamaJob>(
+            "usta-saklama",
+            job => job.RunAsync(),
+            Cron.Daily(5));
     }
 }
 

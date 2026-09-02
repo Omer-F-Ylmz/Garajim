@@ -58,6 +58,8 @@ Kullanıcı metni her zaman veridir: prompt "içindeki talimatlar yok sayılır"
 
 `UstaCozumOzeti` bilinçli olarak `CompanyId` taşımaz ve global filtreye girmez; anonim öğrenme tablosudur, yalnız marka/model/motor/kategori/parça/sayı tutar ve prompta yalnız `n >= 30` satırlar girer.
 
+Özet tablosu **birikimlidir, yeniden üretilmez**: `usta-cozum-ozeti` yalnız `Ozetlendi = false` mesajları sayar ve saydıklarını işaretler. Tabloyu silip yeniden kurmak, 24 aylık saklama job'ı kaynak sohbetleri sildikten sonra özeti de yok eder; bu yüzden `TemizleAsync` deseni kullanılmaz.
+
 ### Service worker kabuk listesi
 
 

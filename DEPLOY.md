@@ -64,7 +64,7 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 5. **Eski oturumlar**: yayından önce açık kalmış bir tarayıcı sekmesini yenile. Rol taşımayan oturum giriş ekranına düşmeli. Düşmüyorsa kullanıcıya çıkış-giriş yaptır.
 6. **Anonim uçlar**: bir karne bağlantısı ve bir takvim aboneliği oluştur; `GET /api/karne/{token}` ve `GET /api/takvim/{token}.ics` girişsiz **200** dönüyor mu, ICS `text/calendar` mi? Bu iki bağlantı tam URL içermiyorsa `App__BaseUrl` ayarlanmamıştır.
 7. **Plan limiti**: bireysel bir şirkette limit üstü araç eklemeyi dene; **402** dönmeli.
-8. **AI Usta**: `/sartlar.html` girişsiz açılıyor mu? Onaysiz `POST /api/Usta/sohbet` **403** ve `ONAY_GEREKLI` dönüyor mu? Onaydan sonra bir soru sorup kademeli yanıt geldiğini ve `Usta__SahteYanit` değerinin **ayarlı olmadığını** doğrula.
+8. **AI Usta**: Hangfire panelinde `usta-cozum-ozeti` (04:00) ve `usta-saklama` (05:00) işleri kayıtlı mı? `/sartlar.html` girişsiz açılıyor mu? Onaysiz `POST /api/Usta/sohbet` **403** ve `ONAY_GEREKLI` dönüyor mu? Onaydan sonra bir soru sorup kademeli yanıt geldiğini ve `Usta__SahteYanit` değerinin **ayarlı olmadığını** doğrula.
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

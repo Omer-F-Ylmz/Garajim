@@ -18,6 +18,7 @@ namespace Garajim.Entity.Concrete
         public UstaGeriBildirim GeriBildirim { get; set; }
         public int? CozumBakimId { get; set; }
         public string BilgiKategorisi { get; set; }
+        public bool Ozetlendi { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
     }
 }
