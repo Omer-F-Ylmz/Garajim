@@ -425,7 +425,47 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task GecmisSonAltiMesajaKirpilir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var sohbetId = await SohbetAcAsync(sahip, aracId);
+
+            for (var i = 1; i <= 5; i++)
+            {
+                await SorAsync(sahip, sohbetId, $"soru {i} rolanti");
+            }
+
+            var cagri = _factory.Istemci.Cagrilar.Last();
+
+            Assert.Equal(6, cagri.Gecmis.Count);
+            Assert.Equal("Kullanici", cagri.Gecmis[0].Rol);
+            Assert.Contains("soru 2", cagri.Gecmis[0].Metin);
+            Assert.Equal("soru 5 rolanti", cagri.Soru);
+        }
+
+        [Fact]
+        public async Task BosAracVerisindeBaglamBoslukBildirir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var sohbetId = await SohbetAcAsync(sahip, aracId);
+
+            await SorAsync(sahip, sohbetId, "Rolanti dalgalaniyor");
+
+            var baglam = _factory.Istemci.Cagrilar.Last().AracBaglami;
+
+            Assert.Contains("SON BAKIMLAR", baglam);
+            Assert.Contains("AKTIF EVRAK", baglam);
+            Assert.Contains("ACIK HATIRLATMALAR", baglam);
+            Assert.Contains("Kayıt yok.", baglam);
+            Assert.Contains("tüketim hesaplayacak kadar yakıt kaydı yok", baglam);
+            Assert.Contains("belirtilmemiş", baglam);
+        }
+
+        [Fact]
         public async Task DriverBaskasininSohbetiniSilemez()
+
         {
             var sahip = await SahipOlusturAsync();
             var aracId = await AracEkleAsync(sahip);
