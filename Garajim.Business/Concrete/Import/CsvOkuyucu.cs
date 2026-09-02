@@ -10,6 +10,7 @@ namespace Garajim.Business.Concrete.Import
         public List<string[]> Satirlar { get; set; } = new List<string[]>();
         public List<int> SatirNolari { get; set; } = new List<int>();
         public List<string> HamSatirlar { get; set; } = new List<string>();
+        public bool SinirAsildi { get; set; }
     }
 
     public static class CsvOkuyucu
@@ -25,21 +26,37 @@ namespace Garajim.Business.Concrete.Import
             ["Masraf"] = new[] { "cost", "expense", "masraf", "gider" }
         };
 
+        public const int MaxSatir = 5000;
+
         public static CsvTablo Oku(byte[] icerik, string kayitTuru = null)
         {
             var metin = MetneCevir(icerik);
             var tumSatirlar = metin.Replace("\r\n", "\n").Split('\n');
 
             var dolular = new List<(int No, string Metin)>();
+            var sinirAsildi = false;
+
             for (var i = 0; i < tumSatirlar.Length; i++)
             {
-                if (!string.IsNullOrWhiteSpace(tumSatirlar[i]))
+                if (string.IsNullOrWhiteSpace(tumSatirlar[i]))
                 {
-                    dolular.Add((i + 1, tumSatirlar[i]));
+                    continue;
                 }
+
+                if (dolular.Count > MaxSatir)
+                {
+                    sinirAsildi = true;
+                    break;
+                }
+
+                dolular.Add((i + 1, tumSatirlar[i]));
             }
 
-            var tablo = new CsvTablo { HamSatirlar = dolular.Select(s => s.Metin).ToList() };
+            var tablo = new CsvTablo
+            {
+                HamSatirlar = dolular.Select(s => s.Metin).ToList(),
+                SinirAsildi = sinirAsildi
+            };
             if (dolular.Count == 0)
             {
                 tablo.Ayrac = ';';

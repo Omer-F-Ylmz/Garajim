@@ -12,7 +12,7 @@ namespace Garajim.Business.Concrete
     public class ImportManager : IImportService
     {
         public const long MaxBoyut = 5 * 1024 * 1024;
-        public const int MaxSatir = 5000;
+        public const int MaxSatir = CsvOkuyucu.MaxSatir;
 
         private static readonly string[] KayitTurleri = { "Yakit", "Bakim", "Masraf" };
 
@@ -61,7 +61,7 @@ namespace Garajim.Business.Concrete
             if (tablo.Basliklar.Count < 2)
                 return new ErrorDataResult<ImportOnizlemeDto>(Messages.ImportBozukDosya);
 
-            if (tablo.Satirlar.Count > MaxSatir)
+            if (tablo.SinirAsildi || tablo.Satirlar.Count > MaxSatir)
                 return new ErrorDataResult<ImportOnizlemeDto>(Messages.ImportCokFazlaSatir);
 
             var sablon = ImportSablonlari.Sez(tablo);

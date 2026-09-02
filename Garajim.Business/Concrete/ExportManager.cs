@@ -76,7 +76,8 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Plaka;Tarih;Kilometre;Litre;BirimFiyat;Tutar;Kwh;SarjTuru");
                 var kayitlar = idler.Count == 0
                     ? new List<FuelRecord>()
-                    : await _fuelDal.GetListAsync(f => idler.Contains(f.VehicleId) && f.Date >= bas && f.Date <= son);
+                    : (await _fuelDal.GetListAsync(f => idler.Contains(f.VehicleId) && f.Date >= bas && f.Date <= son))
+                        .OrderByDescending(f => f.Date).ThenByDescending(f => f.Id).Take(QueryLimits.MaxListSize).ToList();
 
                 foreach (var kayit in kayitlar.OrderBy(k => k.Date).ThenBy(k => k.Id))
                 {
@@ -93,7 +94,8 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Plaka;Tarih;Kilometre;Tur;Servis;Tutar;Not");
                 var kayitlar = idler.Count == 0
                     ? new List<MaintenanceRecord>()
-                    : await _maintenanceDal.GetListAsync(m => idler.Contains(m.VehicleId) && m.Date >= bas && m.Date <= son);
+                    : (await _maintenanceDal.GetListAsync(m => idler.Contains(m.VehicleId) && m.Date >= bas && m.Date <= son))
+                        .OrderByDescending(m => m.Date).ThenByDescending(m => m.Id).Take(QueryLimits.MaxListSize).ToList();
 
                 foreach (var kayit in kayitlar.OrderBy(k => k.Date).ThenBy(k => k.Id))
                 {
@@ -107,7 +109,8 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Plaka;Tarih;Kategori;Tutar;Not");
                 var kayitlar = idler.Count == 0
                     ? new List<ExpenseRecord>()
-                    : await _expenseDal.GetListAsync(e => idler.Contains(e.VehicleId) && e.Date >= bas && e.Date <= son);
+                    : (await _expenseDal.GetListAsync(e => idler.Contains(e.VehicleId) && e.Date >= bas && e.Date <= son))
+                        .OrderByDescending(e => e.Date).ThenByDescending(e => e.Id).Take(QueryLimits.MaxListSize).ToList();
 
                 foreach (var kayit in kayitlar.OrderBy(k => k.Date).ThenBy(k => k.Id))
                 {
@@ -138,7 +141,7 @@ namespace Garajim.Business.Concrete
                 var kayitlar = await _evrakDal.GetListAsync(e => e.Aktif &&
                     ((e.VehicleId != null && idler.Contains(e.VehicleId.Value)) || e.UserId == userId));
 
-                foreach (var kayit in kayitlar.Where(k => k.BitisTarihi >= bas && k.BitisTarihi <= son).OrderBy(k => k.BitisTarihi).ThenBy(k => k.Id))
+                foreach (var kayit in kayitlar.Where(k => k.BitisTarihi >= bas && k.BitisTarihi <= son).OrderBy(k => k.BitisTarihi).ThenBy(k => k.Id).Take(QueryLimits.MaxListSize))
                 {
                     var plaka = kayit.VehicleId != null ? Plaka(plakalar, kayit.VehicleId.Value) : string.Empty;
                     sb.AppendLine(Satir(plaka, kayit.EvrakTuru.ToString(),
