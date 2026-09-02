@@ -27,7 +27,9 @@ Mevcut iki istisna korunur, üçüncüsü eklenmez:
 - `EfUserDal.GetForAuthenticationAsync` — giriş öncesi kullanıcı arama
 - `EfUserDal.ExistsForRegistrationAsync` — kayıt sırasında e-posta tekilliği
 
-`EfKarnePaylasimiDal` token aramasında filtreyi atlar; bu bilinçlidir çünkü anonim istekte tenant bağlamı yoktur ve arama tek satırı token özetinden bulur, sonrası `SystemScope` içinde okunur.
+`EfKarnePaylasimiDal` (2 kullanım: token araması ve görüntülenme sayacı) ve `EfTakvimAbonelikDal` (1 kullanım: ICS token araması) filtreyi atlar; bu bilinçlidir çünkü anonim istekte tenant bağlamı yoktur ve arama tek satırı token özetinden bulur, sonrası `SystemScope` içinde okunur.
+
+Bu dört dosyadaki dokuz kullanımın tamamı `Denetim2FiltreIstisnaTests` ile sabitlenmiştir; listeye eklenmemiş bir dosyada `IgnoreQueryFilters()` görünürse test kırılır.
 
 `EfCompanyDal`'ın dört davet sorgusu da filtreyi atlar; davet zinciri doğası gereği şirketler arasıdır. Kod araması (`GetByDavetKoduAsync`, `DavetKoduVarMiAsync`) kayıt sırasında çalışır ve henüz tenant bağlamı yoktur; `GetDavetlilerAsync` ve `DavetSayisiAsync` yalnız `DavetEdenCompanyId == çağıran şirket` satırlarını okur ve dışarı yalnız ad + katılma tarihi verir. Beşincisi eklenmez.
 
