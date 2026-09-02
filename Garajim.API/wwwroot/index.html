@@ -98,6 +98,7 @@
                 <select id="vehicle-select" aria-label="Araç seç"></select>
                 <button id="receipt-btn" class="primary compact" type="button">Fiş Yükle <span id="receipt-badge" class="badge-count hidden"></span></button>
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
+                <button id="edit-vehicle-btn" class="ghost hidden" type="button">Düzenle</button>
                 <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
                 <button id="karne-btn" class="ghost hidden" type="button">Karne paylaş</button>
                 <button id="ayarlar-btn" class="ghost" type="button">Ayarlar</button>
@@ -366,7 +367,7 @@
         </section>
 
         <section id="vehicle-form-box" class="panel hidden">
-            <h2>Yeni araç</h2>
+            <h2 id="vehicle-form-baslik">Yeni araç</h2>
             <form id="vehicle-form" class="grid-form">
                 <div>
                     <label for="vehicle-plate">Plaka</label>
@@ -393,8 +394,36 @@
                     <select id="vehicle-fuel"></select>
                 </div>
                 <div>
+                    <label for="vehicle-vites">Vites</label>
+                    <select id="vehicle-vites" required></select>
+                </div>
+                <div>
                     <label for="vehicle-kasa">Kasa tipi</label>
-                    <select id="vehicle-kasa"></select>
+                    <select id="vehicle-kasa" required></select>
+                </div>
+                <div>
+                    <label for="vehicle-motor">Motor</label>
+                    <input id="vehicle-motor" type="text" maxlength="50" placeholder="1.5 dCi">
+                </div>
+                <div>
+                    <label for="vehicle-kullanim">Kullanım türü</label>
+                    <select id="vehicle-kullanim"></select>
+                </div>
+                <div>
+                    <label for="vehicle-tescil">İlk tescil tarihi</label>
+                    <input id="vehicle-tescil" type="date">
+                </div>
+                <div>
+                    <label for="vehicle-acil-ad">Acil durumda aranacak</label>
+                    <input id="vehicle-acil-ad" type="text" maxlength="100">
+                </div>
+                <div>
+                    <label for="vehicle-acil-tel">Acil telefon</label>
+                    <input id="vehicle-acil-tel" type="tel" maxlength="30">
+                </div>
+                <div>
+                    <label for="vehicle-acil-not">Acil not</label>
+                    <input id="vehicle-acil-not" type="text" maxlength="200" placeholder="Kan grubu, alerji…">
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="primary">Kaydet</button>

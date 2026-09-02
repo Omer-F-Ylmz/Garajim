@@ -65,6 +65,7 @@ namespace Garajim.Tests.Integration
                 year = 2019,
                 currentKm = 90000,
                 fuelType = "Benzin",
+                vites = "Otomatik",
                 kasaTipi
             });
         }

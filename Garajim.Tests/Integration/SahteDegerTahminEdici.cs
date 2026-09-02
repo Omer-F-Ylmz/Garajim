@@ -12,10 +12,13 @@ namespace Garajim.Tests.Integration
 
         public string SonKasaTipi { get; private set; }
 
+        public string SonVitesTipi { get; private set; }
+
         public DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi, string kasaTipi)
         {
             CagriSayisi++;
             SonKasaTipi = kasaTipi;
+            SonVitesTipi = vitesTipi;
 
             if (string.IsNullOrWhiteSpace(kasaTipi))
             {

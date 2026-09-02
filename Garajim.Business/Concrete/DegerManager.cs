@@ -85,6 +85,11 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerKasaTipiGerekli);
             }
 
+            if (string.IsNullOrWhiteSpace(vehicle.Vites))
+            {
+                return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerVitesGerekli);
+            }
+
             var sonuc = _tahminEdici.Tahmin(
                 vehicle.Brand,
                 vehicle.Model,

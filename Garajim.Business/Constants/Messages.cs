@@ -99,6 +99,7 @@ namespace Garajim.Business.Constants
         public const string DegerTarihiGecersiz = "Değer tarihi gelecekte olamaz.";
         public const string DegerModelKapsamDisi = "Bu araç modeli tahmin modelinin kapsamı dışında; değeri elle beyan edebilirsiniz.";
         public const string DegerKasaTipiGerekli = "Tahmin için önce aracın kasa tipini seçin.";
+        public const string DegerVitesGerekli = "Tahmin için önce aracın vites tipini seçin.";
         public const string DegerTahminSiniri = "Bir araç için günde en fazla 3 tahmin alınabilir.";
         public const string DegerTahminUyarisi = "Ağustos 2025 piyasa verisiyle eğitilmiş model, enflasyon düzeltmesi yok, bilgilendirme amaçlıdır.";
         public const string DegerTahminAlindi = "Tahmini değer kaydedildi.";

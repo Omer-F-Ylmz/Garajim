@@ -13,6 +13,8 @@ namespace Garajim.Entity.Dtos
         public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
         public DateTime? IlkTescilTarihi { get; set; }
         public KasaTipi? KasaTipi { get; set; }
+        public string Vites { get; set; }
+        public string Motor { get; set; }
         public string AcilKisiAd { get; set; }
         public string AcilKisiTelefon { get; set; }
         public string AcilNot { get; set; }
@@ -25,9 +27,11 @@ namespace Garajim.Entity.Dtos
         public int Year { get; set; }
         public int CurrentKm { get; set; }
         public FuelType FuelType { get; set; }
-        public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
+        public KullanimTuru? KullanimTuru { get; set; }
         public DateTime? IlkTescilTarihi { get; set; }
         public KasaTipi? KasaTipi { get; set; }
+        public string Vites { get; set; }
+        public string Motor { get; set; }
         public string AcilKisiAd { get; set; }
         public string AcilKisiTelefon { get; set; }
         public string AcilNot { get; set; }
@@ -45,6 +49,8 @@ namespace Garajim.Entity.Dtos
         public KullanimTuru KullanimTuru { get; set; } = KullanimTuru.Hususi;
         public DateTime? IlkTescilTarihi { get; set; }
         public KasaTipi? KasaTipi { get; set; }
+        public string Vites { get; set; }
+        public string Motor { get; set; }
         public string AcilKisiAd { get; set; }
         public string AcilKisiTelefon { get; set; }
         public string AcilNot { get; set; }

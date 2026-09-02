@@ -73,6 +73,8 @@ namespace Garajim.Business.Concrete
                 KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
                 IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
                 KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : null,
+                Vites = Kirp(dto.Vites, 50),
+                Motor = Kirp(dto.Motor, 50),
                 AcilKisiAd = dto.AcilKisiAd,
                 AcilKisiTelefon = dto.AcilKisiTelefon,
                 AcilNot = dto.AcilNot,
@@ -95,9 +97,11 @@ namespace Garajim.Business.Concrete
             vehicle.Year = dto.Year;
             vehicle.CurrentKm = dto.CurrentKm;
             vehicle.FuelType = dto.FuelType;
-            vehicle.KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : vehicle.KullanimTuru;
+            vehicle.KullanimTuru = dto.KullanimTuru != null && Enum.IsDefined(dto.KullanimTuru.Value) ? dto.KullanimTuru.Value : vehicle.KullanimTuru;
             vehicle.IlkTescilTarihi = dto.IlkTescilTarihi?.Date ?? vehicle.IlkTescilTarihi;
             vehicle.KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : vehicle.KasaTipi;
+            vehicle.Vites = Kirp(dto.Vites, 50) ?? vehicle.Vites;
+            vehicle.Motor = Kirp(dto.Motor, 50) ?? vehicle.Motor;
             vehicle.AcilKisiAd = dto.AcilKisiAd;
             vehicle.AcilKisiTelefon = dto.AcilKisiTelefon;
             vehicle.AcilNot = dto.AcilNot;
@@ -126,6 +130,17 @@ namespace Garajim.Business.Concrete
             return new SuccessResult(Messages.VehicleDeleted);
         }
 
+        private static string Kirp(string metin, int uzunluk)
+        {
+            if (string.IsNullOrWhiteSpace(metin))
+            {
+                return null;
+            }
+
+            var kirpik = metin.Trim();
+            return kirpik.Length > uzunluk ? kirpik.Substring(0, uzunluk) : kirpik;
+        }
+
         private static VehicleDto MapToDto(Vehicle vehicle)
         {
             return new VehicleDto
@@ -140,6 +155,8 @@ namespace Garajim.Business.Concrete
                 KullanimTuru = vehicle.KullanimTuru,
                 IlkTescilTarihi = vehicle.IlkTescilTarihi,
                 KasaTipi = vehicle.KasaTipi,
+                Vites = vehicle.Vites,
+                Motor = vehicle.Motor,
                 AcilKisiAd = vehicle.AcilKisiAd,
                 AcilKisiTelefon = vehicle.AcilKisiTelefon,
                 AcilNot = vehicle.AcilNot,

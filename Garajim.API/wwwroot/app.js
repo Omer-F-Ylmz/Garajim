@@ -11,6 +11,7 @@
         selectedVehicleId: null,
         kazaRehberi: null,
         kazaDosyaId: null,
+        duzenlenenAracId: null,
         hasarAdim: 1,
         hasarDosyaId: null,
         degerChart: null,
@@ -72,8 +73,20 @@
     var PRICE_GEAR = ["Düz", "Otomatik", "Yarı Otomatik"];
     var PRICE_BODY = ["Sedan", "Hatchback/5", "Hatchback/3", "Station wagon", "MPV", "Coupe", "SUV", "Cabrio", "Roadster", "Pick-up"];
 
+    var VITES_TIPLERI = [
+        ["", "Seçiniz"],
+        ["Otomatik", "Otomatik"],
+        ["Düz", "Düz"],
+        ["Yarı Otomatik", "Yarı otomatik"]
+    ];
+
+    var KULLANIM_TURLERI = [
+        ["Hususi", "Hususi"],
+        ["Ticari", "Ticari"]
+    ];
+
     var KASA_TIPLERI = [
-        ["", "Seçilmedi"],
+        ["", "Seçiniz"],
         ["Sedan", "Sedan"],
         ["Hatchback5", "Hatchback (5 kapı)"],
         ["Hatchback3", "Hatchback (3 kapı)"],
@@ -325,6 +338,7 @@
 
     function applyRole() {
         el("add-vehicle-btn").classList.toggle("hidden", !canManage());
+        el("edit-vehicle-btn").classList.toggle("hidden", !canManage());
         el("team-btn").classList.toggle("hidden", !canManage());
         el("team-form").classList.toggle("hidden", !isOwner());
         el("plan-form").classList.toggle("hidden", !isOwner());
@@ -3991,38 +4005,108 @@
         });
 
         el("add-vehicle-btn").addEventListener("click", function () {
-            el("vehicle-form-box").classList.remove("hidden");
-            el("vehicle-year").value = new Date().getFullYear();
+            aracFormunuAc(null);
+        });
+
+        el("edit-vehicle-btn").addEventListener("click", function () {
+            var arac = seciliArac();
+            if (!arac) {
+                showMessage(el("app-message"), "Önce bir araç seçin.", false);
+                return;
+            }
+            aracFormunuAc(arac);
         });
 
         el("vehicle-cancel").addEventListener("click", function () {
             el("vehicle-form-box").classList.add("hidden");
+            state.duzenlenenAracId = null;
         });
 
         el("vehicle-form").addEventListener("submit", function (event) {
             event.preventDefault();
             clearMessages();
-            api("/api/Vehicles", {
-                method: "POST",
-                body: {
-                    plate: el("vehicle-plate").value,
-                    brand: el("vehicle-brand").value,
-                    model: el("vehicle-model").value,
-                    year: Number(el("vehicle-year").value),
-                    currentKm: Number(el("vehicle-km").value),
-                    fuelType: el("vehicle-fuel").value,
-                    kasaTipi: el("vehicle-kasa").value || null
-                }
-            }).then(function (result) {
-                showMessage(el("app-message"), (result && result.message) || "Araç eklendi.", true);
+
+            var govde = aracFormGovdesi();
+            var duzenleme = state.duzenlenenAracId !== null;
+
+            if (!duzenleme && (!govde.vites || !govde.kasaTipi)) {
+                showMessage(el("app-message"), "Vites ve kasa tipi seçilmeli.", false);
+                return;
+            }
+
+            var istek = duzenleme
+                ? api("/api/Vehicles/" + state.duzenlenenAracId, { method: "PUT", body: govde })
+                : api("/api/Vehicles", { method: "POST", body: govde });
+
+            istek.then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || (duzenleme ? "Araç güncellendi." : "Araç eklendi."), true);
                 el("vehicle-form").reset();
                 el("vehicle-form-box").classList.add("hidden");
-                state.selectedVehicleId = result.data.id;
+
+                if (!duzenleme && result && result.data) {
+                    state.selectedVehicleId = result.data.id;
+                }
+
+                state.duzenlenenAracId = null;
                 loadVehicles();
             }).catch(function (error) {
                 handleError(el("app-message"), error);
             });
         });
+    }
+
+    function seciliArac() {
+        return state.vehicles.filter(function (v) { return v.id === state.selectedVehicleId; })[0] || null;
+    }
+
+    function aracFormGovdesi() {
+        var govde = {
+            brand: el("vehicle-brand").value,
+            model: el("vehicle-model").value,
+            year: Number(el("vehicle-year").value),
+            currentKm: Number(el("vehicle-km").value),
+            fuelType: el("vehicle-fuel").value,
+            kullanimTuru: el("vehicle-kullanim").value,
+            vites: el("vehicle-vites").value || null,
+            kasaTipi: el("vehicle-kasa").value || null,
+            motor: el("vehicle-motor").value || null,
+            ilkTescilTarihi: el("vehicle-tescil").value || null,
+            acilKisiAd: el("vehicle-acil-ad").value,
+            acilKisiTelefon: el("vehicle-acil-tel").value,
+            acilNot: el("vehicle-acil-not").value
+        };
+
+        if (state.duzenlenenAracId === null) {
+            govde.plate = el("vehicle-plate").value;
+        }
+
+        return govde;
+    }
+
+    function aracFormunuAc(arac) {
+        state.duzenlenenAracId = arac ? arac.id : null;
+
+        el("vehicle-form-box").classList.remove("hidden");
+        el("vehicle-form-baslik").textContent = arac ? "Aracı düzenle" : "Yeni araç";
+
+        var plakaKutusu = el("vehicle-plate").parentNode;
+        plakaKutusu.classList.toggle("hidden", !!arac);
+        el("vehicle-plate").required = !arac;
+
+        el("vehicle-plate").value = arac ? arac.plate : "";
+        el("vehicle-brand").value = arac ? arac.brand : "";
+        el("vehicle-model").value = arac ? arac.model : "";
+        el("vehicle-year").value = arac ? arac.year : new Date().getFullYear();
+        el("vehicle-km").value = arac ? arac.currentKm : 0;
+        el("vehicle-fuel").value = arac ? arac.fuelType : "Benzin";
+        el("vehicle-vites").value = (arac && arac.vites) || "";
+        el("vehicle-kasa").value = (arac && arac.kasaTipi) || "";
+        el("vehicle-motor").value = (arac && arac.motor) || "";
+        el("vehicle-kullanim").value = (arac && arac.kullanimTuru) || "Hususi";
+        el("vehicle-tescil").value = arac && arac.ilkTescilTarihi ? String(arac.ilkTescilTarihi).slice(0, 10) : "";
+        el("vehicle-acil-ad").value = (arac && arac.acilKisiAd) || "";
+        el("vehicle-acil-tel").value = (arac && arac.acilKisiTelefon) || "";
+        el("vehicle-acil-not").value = (arac && arac.acilNot) || "";
     }
 
     function selectTab(tab) {
@@ -4201,6 +4285,8 @@
         fillSelect(el("plan-istenen"), PLAN_TURLERI);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
         fillSelect(el("vehicle-kasa"), KASA_TIPLERI);
+        fillSelect(el("vehicle-vites"), VITES_TIPLERI);
+        fillSelect(el("vehicle-kullanim"), KULLANIM_TURLERI);
         fillSelect(el("deger-kasa"), KASA_TIPLERI.slice(1));
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
