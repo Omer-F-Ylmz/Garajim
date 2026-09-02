@@ -2,7 +2,7 @@
 
 MonsterASP.NET üzerine Web Deploy (MSDeploy) ile yayın içindir. Adımları sırayla uygula; bir adım beklenenden farklı sonuç verirse **dur**, sonraki adıma geçme.
 
-Yayın öncesi durum: 871 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
+Yayın öncesi durum: 929 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
 
 ## 1. Veritabanı yedeği (atlanamaz)
 
@@ -20,6 +20,7 @@ Sprint 7 iki migration ekler, ikisi de **yalnız eklemeli**:
 | `HasarDosyasi` | `HasarDosyalari` ve `HasarFotograflari` tablolarını açar; `KarnePaylasimlari`'na `HasarGecmisi bit NOT NULL DEFAULT 0` kolonu ekler |
 | `AracDeger` | `AracDegerleri` tablosunu açar; `KarnePaylasimlari`'na `BeyanDegeri bit NOT NULL DEFAULT 0` kolonu ekler |
 | `AracKasaTipi` | `Vehicles`'a `KasaTipi int NULL` kolonu ekler |
+| `EmailDogrulama` | `Users`'a beş doğrulama kolonu ekler ve **mevcut satırları doğrulanmış yapar** (`UPDATE Users SET EmailDogrulandi = 1`), böylece eski kullanıcılar giriş yapmaya devam eder |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
@@ -57,6 +58,11 @@ Yayından **önce** ayarla:
 | `DemoSeed__Enabled` | `true` veya `false` | Canlıda demo verisi isteniyor mu, karar ver |
 | `App__BaseUrl` | `https://<site>` | Karne, ICS takvim ve davet bağlantıları bu değerle kurulur; boşsa paylaşılamaz |
 | `App__DestekEposta` | Destek kutusu adresi | Plan yükseltme talepleri buraya düşer; boşsa form 400 döner |
+| `Smtp__Host` | SMTP sunucusu (ör. Brevo: `smtp-relay.brevo.com`) | **Zorunlu.** Kayıt doğrulama kodu buradan gider; eksikse uygulama açılışta durur |
+| `Smtp__User` | SMTP kullanıcısı | **Zorunlu** |
+| `Smtp__Pass` | SMTP parolası / API anahtarı | **Zorunlu.** Panelde saklanır, repoya yazılmaz |
+| `Smtp__From` | Gönderen adresi (doğrulanmış alan adı) | **Zorunlu.** Alan adı doğrulanmamışsa sağlayıcı reddeder, kimse kayıt olamaz |
+| `Smtp__Port` | Varsayılan `587` | Sağlayıcı farklı port istiyorsa |
 | `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
 | `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |
 
@@ -102,6 +108,7 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 10. **Değer tahmini**: kasa tipi seçili, kapsam içi bir araçta `POST /api/Vehicles/{id}/deger/tahmin` **200** ve uyarı metni dönüyor mu? Kasa tipi boş araçta **422** ve "kasa tipini seçin" dönüyor mu? Kapsam dışı bir model adı taşıyan araçta **422** dönüyor mu? Aynı araçta dördüncü tahmin **400** ile reddediliyor mu?
 11. **Tanıtım ve demo**: çıkış yapıp `https://<site>` açıldığında tanıtım bölümü ve altı özellik kartı görünüyor mu? `DemoSeed__Enabled` açıksa **Demo ile dene** düğmesi giriş yapıyor mu? Kapalıysa hata yerine "kendi hesabınızı açın" yönlendirmesi mi veriyor?
 12. **Çevrimdışı**: mobil tarayıcıda siteyi açıp uçak moduna al; **Kaza anı** düğmesi rehberi gösteriyor mu, "Hasar dosyası aç" kuyruğa alındığını söylüyor mu? Bağlantı geri gelince dosya listede beliriyor mu?
+13. **E-posta doğrulama** (SMTP açıldıktan sonra, gerçek bir adresle): kayıt ol, kod e-postası **gerçekten geldi mi** ve spam'e mi düştü? Kodu gir, uygulamaya giriliyor mu? Doğrulamadan giriş denemesi 403 verip doğrulama ekranına mı düşüyor? Eski bir kullanıcıyla giriş **kod istemeden** çalışıyor mu (migration doğru çalıştıysa çalışmalı)?
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

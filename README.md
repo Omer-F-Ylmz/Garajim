@@ -36,7 +36,7 @@ Görseller `docs/ekran/` altında tutulur; henüz eklenmedi.
 
 - **İlk açılışta gecikme.** Uygulama havuzu bir süre istek almazsa durduruluyor; sonraki ilk istek uygulamayı yeniden başlattığı için birkaç saniye sürebilir. Ayrıca fiyat tahmini modeli ilk tahmin isteğinde yükleniyor: o istek ölçümlerde ~385 ms, sonrakiler 1-2 ms.
 - **Hatırlatma e-postaları uykuya bağlı.** Günlük Hangfire job'ı 06:00 için kayıtlı, ama uygulama havuzu o saatte uykudaysa job tetiklenmeyebilir. Bu, ücretsiz katmanın doğal sonucu; kodda buna karşı bir zorlama yapılmadı. Hatırlatmaların kendisi arayüzde her zaman görünür, yalnızca e-posta gönderimi garanti değildir.
-- **SMTP kapalı.** `Smtp` ayarları boş bırakıldığı için e-posta gönderilmiyor; job çalışır ama gönderim adımını atlar. Demo hesabıyla e-posta beklemeyin.
+- **SMTP kapalı.** `Smtp` ayarları boş bırakıldığı için e-posta gönderilmiyor; job çalışır ama gönderim adımını atlar. Demo hesabıyla e-posta beklemeyin. Bu yüzden demo ortamında yeni kayıt doğrulama kodunu alamaz; demo hesabıyla girin.
 - **Veri kalıcı ama demo.** Demo hesabına eklediğiniz kayıtlar veritabanında kalır; başkaları da aynı hesabı kullanabilir.
 
 ## Teknolojiler
@@ -173,7 +173,8 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Receipts__OtoOnayGuven` | Opsiyonel | `0.85` | Otomatik onay güven eşiği (0-1) |
 | `Documents__MaxFileSizeBytes` | Opsiyonel | `5242880` | Dosya başına sınır |
 | `Documents__CompanyQuotaBytes` | Opsiyonel | `262144000` | Şirket başına toplam belge alanı |
-| `Smtp__Host` `Smtp__Port` `Smtp__User` `Smtp__Pass` `Smtp__From` | Opsiyonel | boş | Eksikse gönderim loglanıp atlanır, uygulama çökmez |
+| `Smtp__Host` `Smtp__User` `Smtp__Pass` `Smtp__From` | **Üretimde zorunlu** | boş | Kayıt doğrulama kodu buradan gider; üretimde eksikse uygulama başlamaz. Geliştirmede eksik olabilir, kod loga yazılır |
+| `Smtp__Port` | Opsiyonel | `587` | Sağlayıcı farklı port istiyorsa |
 | `Evrak__KisLastigi` | Opsiyonel | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA); valilik ±1 ay uzatırsa örn. `15-10..15-05` |
 | `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |
 | `Plan__BireyselAracLimiti` | Opsiyonel | `3` | Bireysel pakette araç üst sınırı; aşılırsa 402 döner |
@@ -244,6 +245,22 @@ Aracın değeri zaman serisi olarak tutulur; beyan elle, tahmin modelden gelir.
 - Kasa tipi araç kartında tutulmadığı için modele boş geçilir; uydurma bir kasa tipi göndermek yerine modelin bilinmeyen-kategori davranışına bırakıldı.
 - Maliyet ekranı dönem giderlerine dönem değer kaybını ekleyerek **sahiplik maliyetini** verir; dönemde tek değer kaydı varsa alan boş kalır. Panelde Owner'a filo toplam son değeri gösterilir.
 - AI Usta araç bağlamına değer verisi girmez.
+
+## E-posta doğrulama
+
+Yeni kayıtlar e-posta doğrulamasından geçmeden uygulamaya giremez.
+
+- `POST /api/auth/register` kullanıcıyı ve şirketi açar, **201** ve `{dogrulamaGerekli: true}` döner — **JWT dönmez**. Aynı anda 6 haneli bir kod üretilir; kod kriptografik olarak rastgeledir, veritabanında yalnız SHA-256 özeti (`DogrulamaKodHash`) durur ve 10 dakika geçerlidir.
+- `POST /api/auth/dogrula` `{email, kod}` alır. Doğru ve süresi dolmamışsa `EmailDogrulandi` açılır, kod silinir ve JWT döner. Yanlışta deneme sayacı artar; **beşinci yanlışta kod iptal edilir** ve yeni kod istenmesi gerekir. Kod tek kullanımlıktır.
+- `POST /api/auth/kod-gonder` `{email}` alır ve e-posta kayıtlı olsun olmasın, doğrulanmış olsun olmasın **hep aynı 200'ü** döner; adresin sistemde olup olmadığı sızmaz. Aynı adrese 60 saniye içinde ikinci kod gitmez, saatlik sınır 5'tir.
+- `POST /api/auth/login` doğrulanmamış hesapta **403** ve `{"kod": "EMAIL_DOGRULANMADI"}` döner, token vermez.
+- Üç uç da `AuthController`'ın sınıf düzeyindeki `auth` rate-limit politikasını devralır (IP başına dakikada `RateLimiting:AuthPermitPerMinute`, varsayılan 10).
+
+Migration mevcut satırları doğrulanmış yapar (`UPDATE Users SET EmailDogrulandi = 1`), yani yayın öncesi kayıtlı kullanıcılar ve demo hesabı akıştan etkilenmez. Owner'ın ekibe eklediği sürücü hesapları da doğrulanmış açılır; onları zaten Owner davet etmiştir.
+
+SMTP yapılandırılmamışsa gönderim atlanır ve kod **uyarı seviyesinde loga** yazılır — geliştirmede kod böyle okunur. Üretimde `ProductionConfigurationGuard` `Smtp__Host`, `Smtp__User`, `Smtp__Pass` ve `Smtp__From` eksikse uygulamayı başlatmaz; aksi hâlde hiç kimse kayıt olamazdı.
+
+Saatlik gönderim sayacı bellekte tutulur (tek örnekli barındırma varsayımı); 60 saniyelik aralık `SonKodGonderim` ile veritabanında kalıcıdır.
 
 ## Evrak takvimi
 
@@ -321,7 +338,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 
 ## Uç Noktalar
 
-- `POST /api/auth/register`, `POST /api/auth/login`
+- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/dogrula`, `POST /api/auth/kod-gonder`
 - `GET|POST /api/vehicles`, `GET|PUT|DELETE /api/vehicles/{id}`
 - `GET /api/maintenance?vehicleId=`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
 - `GET /api/fuel?vehicleId=`, `POST /api/fuel`, `DELETE /api/fuel/{id}`
