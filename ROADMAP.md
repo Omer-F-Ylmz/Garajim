@@ -259,6 +259,46 @@ Garajım'dan taşınacak ortak çekirdek: belge deposu, fotoğraflı tutanak, ta
 
 Sprint 7'de gelen hasar dosyası ve fotoğraf altyapısı bilinçli olarak **genel** yazıldı: `HasarDosyasi` bir araca bağlı, tarihli, durumlu, etiketli fotoğraf taşıyan bir olay kaydıdır; kiralama sözleşmesine ya da müşteriye bağlı değildir. Teslim-iade tutanağı bu parçaların üstüne oturur — aynı `HasarFoto` etiket kümesi (genel görünüm, yakın çekim, plakalar, belge), aynı 20 fotoğraf sınırı, aynı belge kotası, aynı `TutanakSayfasi` yazdırma çıktısı ve aynı "kişisel veriyi kayda değil çıktıya bırak" kuralı kullanılacak. Teslim-iade için eklenecek olan yalnızca kiralama bağlamı (sözleşme no, teslim/iade yönü, km ve yakıt seviyesi) olacak; hasar kaydının kendisi yeniden yazılmayacak.
 
+## Kırmızı Takım Denetimi — açık kalan bulgular
+
+Yayın öncesi dört bağımsız ajan (güvenlik, veri bütünlüğü, mobil/UX, performans) repoyu sıfırdan okudu; 58 bulgu döküldü, yinelenenler ayıklanınca 37 ayrı madde kaldı. Kapatılanlar `e67d174`…`0486f9f` arasındaki on dört commit'te. Aşağıdakiler bilinçli olarak ertelendi; her biri kaynağıyla birlikte duruyor ki yeniden keşfedilmesin.
+
+### Sıradaki turda alınacaklar
+
+- [ ] **Fiş taslağı dosyaları şirket kotasına sayılmıyor** (`ReceiptManager.cs:104-123`) — `Document` satırı ancak onayda açılıyor, `Bekliyor` taslakların dosyası kotanın dışında diskte duruyor. Aylık 100 fiş × 5 MB kotaya yansımadan yazılabilir. Reddedilen taslaklar siliniyor ama bekleyenleri temizleyen job yok.
+- [ ] **`/api/Evrak` listesinde N+1 ve üst sınır yok** (`EvrakManager.cs:43,221-227,250-251`) — `vehicleId` verilmezse şirketin tüm evrakı çekiliyor, `MapAsync` kayıt başına iki sorgu atıyor, Driver rolünde üç sorgu daha ekleniyor. 200 evraklı şirkette tek istekte ~1000 sorgu.
+- [ ] **`/api/Hasar` listesinde fotoğraf sayısı dosya başına ayrı sorgu** (`HasarManager.cs`) — liste kendisi sınırlı ama sayım N+1.
+- [ ] **AI Usta kota kapısı ile yazma arasında model çağrısı var** (`UstaManager.cs:181-187` → `:222`) — sayacı artıran kullanıcı mesajı model yanıtından sonra yazılıyor; paralel istekler aynı sayaçla geçip hepsi Gemini'ye gidiyor. Pencere saniyeler sürüyor.
+- [ ] **Gemini çağrısında toplam süre sınırı yok** (`UstaIstemci.cs:28,111-114`) — 40 sn timeout iki denemeyle 80 sn'ye çıkıyor, yanıt boyutu sınırsız tamponlanıyor. Aynı sınırsız tamponlama fiş çıkarımının yanıt okumasında da var (`ReceiptExtractorBase.cs:56`).
+- [ ] **Usta araç bağlamı "hepsini yükle sonra Take"** — kayıtlar belleğe alındıktan sonra kırpılıyor, SQL'e inmiyor.
+- [ ] **Fiş istatistikleri tüm taslakları belleğe alıyor** (`ReceiptManager.GetStatsAsync`) — sayım ve ortalama SQL'de yapılabilir.
+- [ ] **20 fotoğraf sınırı ve `Sira` üretimi yarışa açık** (`HasarManager.cs:190-215`) — sayım ile insert arasında tam bir dosya yükleme var; `(HasarDosyasiId, Sira)` indeksi tekil değil.
+- [ ] **Belge kotası kontrol-sonra-yaz** (`DocumentManager.cs:57-82`) — eşzamanlı yüklemeler aynı toplamı okuyup kotayı aşabilir; veritabanı tarafında kısıt yok.
+- [ ] **`UstaCozumOzeti` doğal anahtarında tekil indeks yok** (`GarajimDbContext.cs:213`) — `BulAsync` beş alanla arıyor, indeks dört alanlı ve tekil değil; job iki kez koşarsa çift satır oluşup sayım bölünür.
+- [ ] **Okuma sorguları izlemeli** (`EfEntityRepositoryBase.GetAsync`, `EfVehicleAssignmentDal.GetActiveByVehicleAsync`) — `AsNoTracking` yok; yalnız okunan kayıtlar da değişiklik izleyicisinde birikiyor.
+- [ ] **`capture="environment"` galeriden seçimi engelliyor** (`index.html:143,1003,1152`) — kullanıcı e-postayla gelen PDF fişi ya da daha önce çektiği fotoğrafları yükleyemiyor, `multiple` etkisiz kalıyor.
+- [ ] **Ağ hatası mesajları Türkçeleştirilmemiş** — iOS Safari'nin "Load failed" metni kullanıcıya olduğu gibi çıkıyor, doğrulama hatalarında alan adları PascalCase geliyor.
+- [ ] **Acil durum kartının kullanıcıya ulaşan bağlantısı yok** (`KarneManager.cs:98`) — karne kapsamında kutu var ama üretilen URL yalnız `karne.html`; `acil.html`'e hiçbir yerden gidilemiyor.
+- [ ] **Anonim karne ucunda bakım/yakıt/belge listeleri sınırsız** (`KarneManager.cs:141,163,175`) — hasar dalı sınırlı, diğer üçü değil.
+- [ ] **ICS takviminde araç kısıtı SQL'e inmiyor** (`TakvimManager.cs:96-97`) — tek araçlı Driver için bile şirketin tüm evrak ve hatırlatması belleğe alınıyor.
+- [ ] **Modal odak yönetimi ve tab rolleri eksik** (`index.html:1138`, `app.js:1729`) — Kaza modalı açıkken arka plana sekme yapılabiliyor, Escape kapatmıyor, `role="tablist"` altındaki düğmelerde `role="tab"`/`aria-selected` yok, doğrulama kutularının 2-6'sının erişilebilir adı yok.
+- [ ] **`sw.js` kabuk listesi eksik** — `/garajim-icon-32.png` ve `/vendor/qr.js` önbelleğe alınmıyor, çevrimdışı ilk açılışta QR üretilemiyor.
+- [ ] **Kayıt ucu kullanıcı numaralandırmasına izin veriyor** (`AuthManager.cs:47-48`) — kayıtlı e-posta 400, kayıtsız 201 dönüyor; `kod-gonder` deseni doğru uygulanmış, register'a uygulanmamış.
+- [ ] **Parola politikası 6 karakter, hesap kilitleme yok** (`AuthManager.cs:43-44`) — başarısız deneme sayacı yalnız e-posta kodunda var, parolada yok.
+- [ ] **Güvenlik yanıt başlıkları yok** (`Program.cs:337-365`) — CSP, X-Frame-Options, nosniff, Referrer-Policy hiçbiri ayarlı değil; JWT `localStorage`'da.
+- [ ] **CSV dışa aktarımında formül enjeksiyonu** (`ExportManager.cs:183-197`) — baştaki `= + - @` nötrleştirilmiyor.
+- [ ] **Usta geri bildirimi sohbet sahipliğini denetlemiyor** (`UstaManager.cs:323-364`) — okuma ucunda olan `sohbet.UserId` kontrolü geri bildirim ve çözüm uçlarında yok.
+- [ ] **Paylaşım token'ları URL yolunda** (`KarneController.cs:24,33,42`) — erişim loglarında düz metin duruyor; takvim aboneliğinin son kullanma tarihi hiç yok.
+- [ ] **Hatırlatma job'ında iki boş `catch {}`** (`ReminderNotificationJob.cs:112-114`, `:199-201`) — e-posta gönderimi sessizce yutuluyor, hangi bildirimin düştüğü hiçbir yere yazılmıyor.
+- [ ] **`SwaggerHttpTests` sınıf temizliğinde ara sıra NullReferenceException** — bir koşuda görüldü, tekrarında yok; test altyapısı kaynaklı, ürünü etkilemiyor.
+- [ ] **Türkçe metin tutarsızlıkları** — `Messages.cs:138` "lastigi" (ğ eksik), "Owner" ile "Sahip" karışık, "kütüphane"/"kitaplık", "jpg, png" ile "jpg, jpeg, png" farkı.
+- [ ] **Üç eski migration `Up()` içinde `AlterColumn`/`DropIndex` taşıyor** (`AddCompanyTenancy`, `AddPerformanceIndexes`, `PlakaSirketBazindaTekil`) — üçü de canlıya uygulanmış, risk yok; kuralı doğrulayan test yok.
+- [ ] **`Companies.DavetEdenCompanyId` üzerinde indeks ve FK yok** (`DavetProgrami.cs:13-17`) — her araç ekleme isteğinde tam tablo taraması.
+
+### İncelenip bulgu sayılmayanlar
+
+- **Demo hesabın parolası repoda** — bulgu olarak açılmıştı, kusur değil. Parola zaten `app.js` içinde tarayıcıya gönderiliyor; "Demo ile dene" düğmesinin çalışması için gönderilmek zorunda ve `DEPLOY.md` demo verisini bilinçli bir dağıtım kararı olarak tanımlıyor. Guard'a eklemek belgelenmiş bir özelliği kırardı. Gerçek artık risk parola değil, canlıda herkese açık bir demo kiracısının kota ve AI Usta maliyetini tüketebilmesi; bu ayrı bir madde olarak ele alınmalı.
+
 ## Birikim (planlanmamış)
 
 Hiçbir sprinte bağlanmamış işler. Sprint 3-6'ya taşınanlar buradan çıkarıldı; her madde tek yerde durur.
