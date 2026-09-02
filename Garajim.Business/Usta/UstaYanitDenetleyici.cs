@@ -13,6 +13,12 @@ namespace Garajim.Business.Usta
 
         private static readonly Regex YuzdeDeseni = new Regex(@"%\s*\d+(?:[.,]\d+)?|\b\d+(?:[.,]\d+)?\s*%", RegexOptions.Compiled);
 
+        private static readonly Regex OlasilikSozcugu = new Regex(
+            @"ihtimal|olasılık|olasilik|olasi|olası|şans|sans",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static readonly Regex CumleDeseni = new Regex(@"[^.!?;\n]+[.!?;\n]*", RegexOptions.Compiled);
+
         private static readonly Dictionary<string, string> KademeSozu = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["EnSik"] = "en sık görülen",
@@ -75,19 +81,14 @@ namespace Garajim.Business.Usta
 
         public static UstaYanitDto SonFiltre(UstaYanitDto yanit)
         {
-            yanit.Ozet = YuzdeSil(yanit.Ozet, null);
-            yanit.UstayaBoyleAnlat = YuzdeSil(yanit.UstayaBoyleAnlat, null);
-
             foreach (var kademe in yanit.Kademeler)
             {
                 var soz = KademeSozu.TryGetValue(kademe.Kademe ?? string.Empty, out var deger) ? deger : "olası";
-                kademe.Neden = YuzdeSil(kademe.Neden, soz);
-                kademe.BelirtiUyumu = YuzdeSil(kademe.BelirtiUyumu, soz);
-                kademe.EvdeKontrol = YuzdeSil(kademe.EvdeKontrol, soz);
+                kademe.Neden = OlasilikYuzdesiniSil(kademe.Neden, soz);
+                kademe.BelirtiUyumu = OlasilikYuzdesiniSil(kademe.BelirtiUyumu, soz);
             }
 
             yanit.AracVerisindenNotlar = (yanit.AracVerisindenNotlar ?? new List<string>())
-                .Select(n => YuzdeSil(n, null))
                 .Where(n => !string.IsNullOrWhiteSpace(n))
                 .ToList();
 
@@ -100,23 +101,31 @@ namespace Garajim.Business.Usta
             {
                 yanit.Uyari = VarsayilanUyari;
             }
-            else
-            {
-                yanit.Uyari = YuzdeSil(yanit.Uyari, null);
-            }
 
             return yanit;
         }
 
-        private static string YuzdeSil(string metin, string kademeSozu)
+        private static string OlasilikYuzdesiniSil(string metin, string kademeSozu)
         {
-            if (string.IsNullOrWhiteSpace(metin))
+            if (string.IsNullOrWhiteSpace(metin) || !YuzdeDeseni.IsMatch(metin))
             {
                 return metin;
             }
 
-            var temiz = YuzdeDeseni.Replace(metin, kademeSozu ?? "olası");
-            return Regex.Replace(temiz, @"\s{2,}", " ").Trim();
+            var temiz = CumleDeseni.Replace(metin, eslesme =>
+            {
+                var cumle = eslesme.Value;
+
+                if (!OlasilikSozcugu.IsMatch(cumle))
+                {
+                    return cumle;
+                }
+
+                var degismis = YuzdeDeseni.Replace(cumle, kademeSozu ?? "olası");
+                return Regex.Replace(degismis, @"[ \t]{2,}", " ");
+            });
+
+            return temiz.Trim();
         }
 
         public static UstaYanitDto KirmiziCizgiYaniti(KirmiziCizgiBulgusu bulgu)

@@ -195,19 +195,76 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public void SonFiltreYuzdeyiKademeSozuneCevirir()
+        public void SonFiltreOlasilikYuzdesiniKademeSozuneCevirir()
         {
             var yanit = GecerliYanitNesnesi();
-            yanit.Ozet = "Bu arıza %90 ihtimalle balatadır.";
-            yanit.Kademeler[0].Neden = "Balata, %85 olasılıkla";
-            yanit.Kademeler[0].BelirtiUyumu = "Uyum 70 % civarında";
+            yanit.Kademeler[0].Neden = "%70 ihtimalle buji";
+            yanit.Kademeler[0].BelirtiUyumu = "Belirtiye uyum %85 olasılıkla yüksek";
 
             var sonuc = UstaYanitDenetleyici.SonFiltre(yanit);
 
-            Assert.DoesNotContain("%", sonuc.Ozet);
             Assert.DoesNotContain("%", sonuc.Kademeler[0].Neden);
             Assert.DoesNotContain("%", sonuc.Kademeler[0].BelirtiUyumu);
             Assert.Contains("en sık görülen", sonuc.Kademeler[0].Neden);
+            Assert.Contains("buji", sonuc.Kademeler[0].Neden);
+        }
+
+        [Fact]
+        public void SonFiltreTeknikYuzdeyiKorur()
+        {
+            var yanit = GecerliYanitNesnesi();
+            yanit.Ozet = "Soğukta menzil %30 düşer.";
+            yanit.Kademeler[0].EvdeKontrol = "Akü şarjı %50 altındaysa çalıştırma zorlaşır.";
+            yanit.AracVerisindenNotlar = new List<string> { "Son 3 ayda yakıt tüketimi %12 arttı." };
+            yanit.Uyari = "Batarya sağlığı %80 üzerindeyse normaldir.";
+
+            var sonuc = UstaYanitDenetleyici.SonFiltre(yanit);
+
+            Assert.Equal("Soğukta menzil %30 düşer.", sonuc.Ozet);
+            Assert.Equal("Akü şarjı %50 altındaysa çalıştırma zorlaşır.", sonuc.Kademeler[0].EvdeKontrol);
+            Assert.Equal("Son 3 ayda yakıt tüketimi %12 arttı.", sonuc.AracVerisindenNotlar[0]);
+            Assert.Equal("Batarya sağlığı %80 üzerindeyse normaldir.", sonuc.Uyari);
+        }
+
+        [Fact]
+        public void SonFiltreNedendekiTeknikYuzdeyiSilmez()
+        {
+            var yanit = GecerliYanitNesnesi();
+            yanit.Kademeler[0].Neden = "Balata kalınlığı %20 seviyesine inmiş.";
+            yanit.Kademeler[0].BelirtiUyumu = "Fren mesafesi %15 uzamış.";
+
+            var sonuc = UstaYanitDenetleyici.SonFiltre(yanit);
+
+            Assert.Equal("Balata kalınlığı %20 seviyesine inmiş.", sonuc.Kademeler[0].Neden);
+            Assert.Equal("Fren mesafesi %15 uzamış.", sonuc.Kademeler[0].BelirtiUyumu);
+        }
+
+        [Fact]
+        public void SonFiltreYalnizOlasilikCumlesiniTemizler()
+        {
+            var yanit = GecerliYanitNesnesi();
+            yanit.Kademeler[0].Neden = "Balata kalınlığı %20 kalmış. %70 ihtimalle sorun burada. Disk aşınması %5 civarında.";
+
+            var sonuc = UstaYanitDenetleyici.SonFiltre(yanit);
+
+            Assert.Contains("%20", sonuc.Kademeler[0].Neden);
+            Assert.Contains("%5", sonuc.Kademeler[0].Neden);
+            Assert.DoesNotContain("%70", sonuc.Kademeler[0].Neden);
+            Assert.Contains("en sık görülen", sonuc.Kademeler[0].Neden);
+        }
+
+        [Theory]
+        [InlineData("Buji %60 ihtimalle bozuk.")]
+        [InlineData("Buji %60 olasılıkla bozuk.")]
+        [InlineData("Bujinin bozuk olma şansı %60.")]
+        public void SonFiltreUcOlasilikSozcugunuDeYakalar(string metin)
+        {
+            var yanit = GecerliYanitNesnesi();
+            yanit.Kademeler[0].Neden = metin;
+
+            var sonuc = UstaYanitDenetleyici.SonFiltre(yanit);
+
+            Assert.DoesNotContain("%", sonuc.Kademeler[0].Neden);
         }
 
         [Fact]

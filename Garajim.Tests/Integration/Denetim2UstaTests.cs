@@ -89,8 +89,8 @@ namespace Garajim.Tests.Integration
             var veri = await VeriAsync(await sahip.PostAsJsonAsync($"/api/Usta/sohbet/{sohbetId}/mesaj", new { metin = soru }));
             var yanit = veri.GetProperty("mesaj").GetProperty("yanit");
 
-            Assert.DoesNotContain("%", yanit.GetProperty("ozet").GetString());
             Assert.DoesNotContain("%", yanit.GetProperty("kademeler")[0].GetProperty("neden").GetString());
+            Assert.Contains("en sık görülen", yanit.GetProperty("kademeler")[0].GetProperty("neden").GetString());
             Assert.Equal("EnSik", yanit.GetProperty("kademeler")[0].GetProperty("kademe").GetString());
             Assert.True(yanit.GetProperty("kademeler").GetArrayLength() >= 1);
             Assert.False(string.IsNullOrWhiteSpace(yanit.GetProperty("uyari").GetString()));
