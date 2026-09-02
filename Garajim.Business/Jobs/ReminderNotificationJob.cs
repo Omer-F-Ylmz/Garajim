@@ -77,6 +77,12 @@ namespace Garajim.Business.Jobs
             var notifyBefore = now.AddDays(-RenotifyAfterDays);
 
             var dueList = await _evrakDal.GetDueListAsync(dueLimit, notifyBefore);
+            if (dueList.Count == 0)
+            {
+                return;
+            }
+
+            var kullanicilar = await _userDal.GetListAsync(u => u.IsActive);
 
             foreach (var item in dueList)
             {
@@ -86,7 +92,7 @@ namespace Garajim.Business.Jobs
                     continue;
                 }
 
-                var alicilar = await EvrakAlicilariAsync(item);
+                var alicilar = await EvrakAlicilariAsync(item, kullanicilar);
                 if (alicilar.Count == 0)
                 {
                     continue;
@@ -135,9 +141,8 @@ namespace Garajim.Business.Jobs
             return govde;
         }
 
-        private async Task<List<AppUser>> EvrakAlicilariAsync(EvrakDueDto item)
+        private async Task<List<AppUser>> EvrakAlicilariAsync(EvrakDueDto item, List<AppUser> kullanicilar)
         {
-            var kullanicilar = await _userDal.GetListAsync(u => u.IsActive);
             var alicilar = new List<AppUser>();
 
             if (item.UserId != null)
