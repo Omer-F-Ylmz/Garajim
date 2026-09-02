@@ -118,6 +118,7 @@ builder.Services.AddScoped<IReceiptExtractor>(provider =>
         ? provider.GetRequiredService<OpenAiReceiptExtractor>()
         : provider.GetRequiredService<GeminiReceiptExtractor>());
 builder.Services.AddScoped<ReminderNotificationJob>();
+builder.Services.AddScoped<UstaOzetJob>();
 builder.Services.AddScoped<DemoDataSeeder>();
 
 builder.Services.AddPredictionEnginePool<CarPriceInput, CarPricePrediction>()
@@ -369,6 +370,11 @@ if (useBackgroundJobs)
             "reminder-notifications",
             job => job.RunAsync(),
             Cron.Daily(6));
+
+        recurringJobManager.AddOrUpdate<UstaOzetJob>(
+            "usta-cozum-ozeti",
+            job => job.RunAsync(),
+            Cron.Daily(4));
     }
 }
 

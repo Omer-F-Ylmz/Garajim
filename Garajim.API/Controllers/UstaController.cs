@@ -72,6 +72,12 @@ namespace Garajim.API.Controllers
             return Sonuc(await _ustaService.GeriBildirimAsync(CurrentUserId, id, dto));
         }
 
+        [HttpGet("stats")]
+        public async Task<IActionResult> Stats()
+        {
+            return Sonuc(await _ustaService.StatsAsync(CurrentUserId));
+        }
+
         private IActionResult Sonuc(Core.Utilities.Results.IResult result)
         {
             if (result.Success)

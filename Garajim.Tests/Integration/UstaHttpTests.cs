@@ -464,7 +464,77 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task StatsOranlariVeMaliyetiVerir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var sohbetId = await SohbetAcAsync(sahip, aracId);
+
+            var mesajId = (await VeriAsync(await SorAsync(sahip, sohbetId, "Frende ses var")))
+                .GetProperty("mesaj").GetProperty("id").GetInt32();
+            await SorAsync(sahip, sohbetId, "Fren pedali yere kadar gidiyor, hic tutmuyor");
+            await sahip.PostAsJsonAsync($"/api/Usta/mesaj/{mesajId}/geri-bildirim", new { geriBildirim = "Olumlu" });
+
+            var veri = await VeriAsync(await sahip.GetAsync("/api/Usta/stats"));
+
+            Assert.Equal(2, veri.GetProperty("soruSayisi").GetInt32());
+            Assert.Equal(50m, veri.GetProperty("puanlananOrani").GetDecimal());
+            Assert.Equal(100m, veri.GetProperty("olumluOrani").GetDecimal());
+            Assert.Equal(50m, veri.GetProperty("kirmiziCizgiOrani").GetDecimal());
+            Assert.True(veri.GetProperty("ortTokenGiris").GetInt32() > 0);
+            Assert.True(veri.GetProperty("tahminiMaliyetTl").GetDecimal() >= 0m);
+        }
+
+        [Fact]
+        public async Task StatsSirketleriKaristirmaz()
+        {
+            var birinci = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(birinci);
+            var sohbetId = await SohbetAcAsync(birinci, aracId);
+            await SorAsync(birinci, sohbetId, "Frende ses var");
+
+            var ikinci = await SahipOlusturAsync();
+            var veri = await VeriAsync(await ikinci.GetAsync("/api/Usta/stats"));
+
+            Assert.Equal(0, veri.GetProperty("soruSayisi").GetInt32());
+        }
+
+        [Fact]
+        public async Task DriverStatsGoremez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var (surucu, _) = await SurucuOlusturAsync(sahip);
+
+            Assert.Equal(HttpStatusCode.Forbidden, (await surucu.GetAsync("/api/Usta/stats")).StatusCode);
+        }
+
+        [Fact]
+        public async Task GarajimVerisiVarsayilanOlarakPrompttaYok()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var sohbetId = await SohbetAcAsync(sahip, aracId);
+
+            await SorAsync(sahip, sohbetId, "Frende ses var");
+
+            Assert.DoesNotContain("GARAJIM VERISI", _factory.Istemci.Cagrilar.Last().SabitBlok);
+        }
+
+        [Fact]
+        public async Task BilgiKategorisiYanitaIslenir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var sohbetId = await SohbetAcAsync(sahip, aracId);
+
+            await SorAsync(sahip, sohbetId, "Triger kayisi kac kilometrede degisir");
+
+            Assert.Contains("bakim-triger", _factory.Istemci.Cagrilar.Last().SabitBlok);
+        }
+
+        [Fact]
         public async Task DriverBaskasininSohbetiniSilemez()
+
 
         {
             var sahip = await SahipOlusturAsync();

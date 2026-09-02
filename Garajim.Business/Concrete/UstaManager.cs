@@ -32,6 +32,7 @@ namespace Garajim.Business.Concrete
         private readonly IUstaSohbetDal _sohbetDal;
         private readonly IUstaMesajDal _mesajDal;
         private readonly IUstaOnayDal _onayDal;
+        private readonly IUstaCozumOzetiDal _cozumOzetiDal;
         private readonly IUserDal _userDal;
         private readonly ICompanyDal _companyDal;
         private readonly IVehicleAccessService _vehicleAccess;
@@ -50,6 +51,7 @@ namespace Garajim.Business.Concrete
             IUstaSohbetDal sohbetDal,
             IUstaMesajDal mesajDal,
             IUstaOnayDal onayDal,
+            IUstaCozumOzetiDal cozumOzetiDal,
             IUserDal userDal,
             ICompanyDal companyDal,
             IVehicleAccessService vehicleAccess,
@@ -67,6 +69,7 @@ namespace Garajim.Business.Concrete
             _sohbetDal = sohbetDal;
             _mesajDal = mesajDal;
             _onayDal = onayDal;
+            _cozumOzetiDal = cozumOzetiDal;
             _userDal = userDal;
             _companyDal = companyDal;
             _vehicleAccess = vehicleAccess;
@@ -195,6 +198,7 @@ namespace Garajim.Business.Concrete
 
             var kirmizi = KirmiziCizgiler.Bul(metin);
             UstaYanitDto yanit;
+            string bilgiKategorisi = null;
             var tokenGiris = 0;
             var tokenCikis = 0;
             var sureMs = 0;
@@ -207,7 +211,8 @@ namespace Garajim.Business.Concrete
             {
                 var baglam = await AracBaglamiAsync(userId, vehicle);
                 var secilen = _bilgi.Secici.Sec(metin);
-                var sabitBlok = _bilgi.SabitBlok(secilen);
+                bilgiKategorisi = secilen.Count > 0 ? secilen[0].Kategori : null;
+                var sabitBlok = _bilgi.SabitBlok(secilen, await GarajimVerisiAsync(vehicle));
                 var gecmis = await GecmisAsync(sohbetId);
 
                 var sonuc = await _istemci.SorAsync(sabitBlok, baglam, gecmis, metin, ct);
@@ -232,6 +237,7 @@ namespace Garajim.Business.Concrete
                 Metin = Kirp(yanit.Ozet, 4000),
                 YapiliYanit = JsonSerializer.Serialize(yanit, JsonSecenekleri),
                 KirmiziCizgi = yanit.KirmiziCizgi,
+                BilgiKategorisi = bilgiKategorisi,
                 TokenGiris = tokenGiris,
                 TokenCikis = tokenCikis,
                 SureMs = sureMs,
@@ -375,7 +381,79 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<UstaBakimSecenegiDto>>(liste);
         }
 
+        public const int GarajimVerisiEsigi = 30;
+
+        private async Task<string> GarajimVerisiAsync(Vehicle vehicle)
+        {
+            if (!_configuration.GetValue("Usta:GarajimVerisi", false))
+            {
+                return null;
+            }
+
+            var satirlar = (await _cozumOzetiDal.GetTumuAsync())
+                .Where(o => o.Sayi >= GarajimVerisiEsigi)
+                .Where(o => string.Equals(o.Marka, vehicle.Brand, StringComparison.OrdinalIgnoreCase)
+                            && string.Equals(o.Model, vehicle.Model, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(o => o.Sayi)
+                .Take(10)
+                .ToList();
+
+            if (satirlar.Count == 0)
+            {
+                return null;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("GARAJIM VERISI");
+            sb.AppendLine("Ayni marka/modelde kullanicilarin olumlu isaretledigi cozumler (anonim, kisi ve sirket bilgisi yok):");
+            foreach (var satir in satirlar)
+            {
+                sb.AppendLine("- " + satir.BelirtiKategori + " -> " + satir.ParcaTuru + " (n=" + satir.Sayi + ")");
+            }
+
+            return sb.ToString();
+        }
+
+        public async Task<IDataResult<UstaStatsDto>> StatsAsync(int userId)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<UstaStatsDto>(Messages.UserNotFound);
+
+            if (user.Role != CompanyRole.Owner)
+                return new ErrorDataResult<UstaStatsDto>(Messages.AuthorizationDenied);
+
+            var mesajlar = await _mesajDal.GetListAsync(m => m.Rol == UstaRol.Usta);
+            var stats = new UstaStatsDto { SoruSayisi = mesajlar.Count };
+
+            if (mesajlar.Count == 0)
+            {
+                return new SuccessDataResult<UstaStatsDto>(stats);
+            }
+
+            var puanlanan = mesajlar.Count(m => m.GeriBildirim != UstaGeriBildirim.Yok);
+            stats.PuanlananOrani = Oran(puanlanan, mesajlar.Count);
+            stats.OlumluOrani = puanlanan == 0 ? 0m : Oran(mesajlar.Count(m => m.GeriBildirim == UstaGeriBildirim.Olumlu), puanlanan);
+            stats.KirmiziCizgiOrani = Oran(mesajlar.Count(m => m.KirmiziCizgi), mesajlar.Count);
+            stats.CozumBagiOrani = Oran(mesajlar.Count(m => m.CozumBakimId != null), mesajlar.Count);
+            stats.OrtTokenGiris = (int)Math.Round(mesajlar.Average(m => (double)m.TokenGiris));
+            stats.OrtTokenCikis = (int)Math.Round(mesajlar.Average(m => (double)m.TokenCikis));
+            stats.OrtSureMs = (int)Math.Round(mesajlar.Average(m => (double)m.SureMs));
+
+            var milyonFiyat = _configuration.GetValue("Usta:TokenFiyat", 0m);
+            var toplamToken = mesajlar.Sum(m => (long)m.TokenGiris + m.TokenCikis);
+            stats.TahminiMaliyetTl = Math.Round(milyonFiyat * toplamToken / 1000000m, 2);
+
+            return new SuccessDataResult<UstaStatsDto>(stats);
+        }
+
+        private static decimal Oran(int pay, int payda)
+        {
+            return payda == 0 ? 0m : Math.Round((decimal)pay / payda * 100, 1);
+        }
+
         private async Task<(Company Sirket, string Hata)> KapiAsync(int userId)
+
         {
             var user = await _userDal.GetAsync(u => u.Id == userId);
             if (user == null)

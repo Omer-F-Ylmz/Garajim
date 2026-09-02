@@ -182,6 +182,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<UstaMesaj>(entity =>
             {
                 entity.Property(m => m.Metin).HasMaxLength(4000).IsRequired();
+                entity.Property(m => m.BilgiKategorisi).HasMaxLength(60);
                 entity.HasIndex(m => m.CompanyId);
                 entity.HasIndex(m => new { m.SohbetId, m.Id });
                 entity.HasOne<Company>().WithMany().HasForeignKey(m => m.CompanyId).OnDelete(DeleteBehavior.Restrict);

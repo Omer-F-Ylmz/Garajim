@@ -17,9 +17,7 @@ namespace Garajim.Business.Usta
 
         public string SistemPromptu { get; }
 
-        public string GarajimVerisiBlogu { get; set; }
-
-        public string SabitBlok(IReadOnlyList<BilgiKaydi> secilen)
+        public string SabitBlok(IReadOnlyList<BilgiKaydi> secilen, string garajimVerisi = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine(SistemPromptu);
@@ -40,9 +38,9 @@ namespace Garajim.Business.Usta
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(GarajimVerisiBlogu))
+            if (!string.IsNullOrWhiteSpace(garajimVerisi))
             {
-                sb.AppendLine(GarajimVerisiBlogu);
+                sb.AppendLine(garajimVerisi);
             }
 
             return sb.ToString();

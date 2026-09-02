@@ -46,6 +46,10 @@ namespace Garajim.Tests.Integration
             EvrakDal = new EfEvrakDal(Context);
             ReceiptDraftDal = new EfReceiptDraftDal(Context);
             LastikDal = new EfLastikDal(Context);
+            UstaSohbetDal = new EfUstaSohbetDal(Context);
+            UstaMesajDal = new EfUstaMesajDal(Context);
+            UstaOnayDal = new EfUstaOnayDal(Context);
+            UstaCozumOzetiDal = new EfUstaCozumOzetiDal(Context);
             EvrakKurallari = new EvrakKurallari(new ConfigurationBuilder().Build());
             UnitOfWork = new EfUnitOfWork(Context);
             VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
@@ -84,6 +88,14 @@ namespace Garajim.Tests.Integration
         public EfReceiptDraftDal ReceiptDraftDal { get; }
 
         public EfLastikDal LastikDal { get; }
+
+        public EfUstaSohbetDal UstaSohbetDal { get; }
+
+        public EfUstaMesajDal UstaMesajDal { get; }
+
+        public EfUstaOnayDal UstaOnayDal { get; }
+
+        public EfUstaCozumOzetiDal UstaCozumOzetiDal { get; }
 
         public EvrakKurallari EvrakKurallari { get; }
 

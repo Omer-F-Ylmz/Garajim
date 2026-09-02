@@ -15,5 +15,6 @@ namespace Garajim.Business.Abstract
         Task<IResult> SohbetSilAsync(int userId, int sohbetId);
         Task<IResult> GeriBildirimAsync(int userId, int mesajId, UstaGeriBildirimDto dto);
         Task<IDataResult<List<UstaBakimSecenegiDto>>> CozumBakimSecenekleriAsync(int userId, int sohbetId);
+        Task<IDataResult<UstaStatsDto>> StatsAsync(int userId);
     }
 }
