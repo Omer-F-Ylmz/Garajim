@@ -13,7 +13,7 @@ namespace Garajim.Tests.Integration
 
         private DemoDataSeeder CreateSeeder()
         {
-            return new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal, _db.AssignmentDal, _db.Tenant);
+            return _db.DemoSeeder();
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace Garajim.Tests.Integration
             Assert.True(eklendi);
             Assert.Equal("Demo Kullanıcı", kullanici.FullName);
             Assert.Equal(DemoDataSeeder.DemoPlate, arac.Plate);
-            Assert.Equal(2, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync(m => m.VehicleId == arac.Id));
+            Assert.Equal(3, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync(m => m.VehicleId == arac.Id));
             Assert.Equal(3, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync(f => f.VehicleId == arac.Id));
             Assert.Equal(2, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync(e => e.VehicleId == arac.Id));
             Assert.Equal(1, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync(r => r.VehicleId == arac.Id));
@@ -45,7 +45,7 @@ namespace Garajim.Tests.Integration
             Assert.Equal(2, await _db.Context.Users.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.VehicleAssignments.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.Vehicles.IgnoreQueryFilters().CountAsync());
-            Assert.Equal(2, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(3, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(3, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(2, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync());

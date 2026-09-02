@@ -131,7 +131,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task DemoSeed_GarajimDemoSirketiniAcar()
         {
-            var seeder = new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal, _db.AssignmentDal, _db.Tenant);
+            var seeder = _db.DemoSeeder();
 
             var eklendi = await seeder.RunAsync();
 
@@ -147,7 +147,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task DemoSeed_IkinciKosudaYeniSirketAcmaz()
         {
-            var seeder = new DemoDataSeeder(_db.CompanyDal, _db.UserDal, _db.VehicleDal, _db.MaintenanceDal, _db.FuelDal, _db.ExpenseDal, _db.ReminderDal, _db.AssignmentDal, _db.Tenant);
+            var seeder = _db.DemoSeeder();
 
             await seeder.RunAsync();
             var sirketSayisi = await _db.Context.Companies.CountAsync();

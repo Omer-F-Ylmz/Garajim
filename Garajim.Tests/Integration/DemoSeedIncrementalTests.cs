@@ -12,16 +12,7 @@ namespace Garajim.Tests.Integration
 
         private DemoDataSeeder Seeder()
         {
-            return new DemoDataSeeder(
-                _db.CompanyDal,
-                _db.UserDal,
-                _db.VehicleDal,
-                _db.MaintenanceDal,
-                _db.FuelDal,
-                _db.ExpenseDal,
-                _db.ReminderDal,
-                _db.AssignmentDal,
-                _db.Tenant);
+            return _db.DemoSeeder();
         }
 
         private (Company Sirket, AppUser Sahip, Vehicle Arac) YayindakiDurumuKur()
@@ -176,17 +167,38 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task MevcutAracaAltKayitEklenmez()
+        public async Task MevcutAracinIlkSeedKayitlariYenidenUretilmez()
         {
             var yayin = YayindakiDurumuKur();
 
             await Seeder().RunAsync();
 
-            Assert.Equal(0, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(0, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(0, await _db.Context.ExpenseRecords.IgnoreQueryFilters().CountAsync());
             Assert.Equal(0, await _db.Context.Reminders.IgnoreQueryFilters().CountAsync());
             Assert.Equal(1, await _db.Context.Vehicles.IgnoreQueryFilters().CountAsync(v => v.Id == yayin.Arac.Id));
+        }
+
+        [Fact]
+        public async Task MevcutAracaYalnizYeniKayitTurleriBirKezEklenir()
+        {
+            var yayin = YayindakiDurumuKur();
+
+            await Seeder().RunAsync();
+            var ilkBakim = await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync();
+
+            await Seeder().RunAsync();
+            await Seeder().RunAsync();
+
+            Assert.Equal(1, ilkBakim);
+            Assert.Equal(ilkBakim, await _db.Context.MaintenanceRecords.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(3, await _db.Context.MaintenanceParts.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.EvrakKayitlari.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.LastikSetleri.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(1, await _db.Context.HasarDosyalari.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(2, await _db.Context.AracDegerleri.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(1, await _db.Context.YolculukKayitlari.IgnoreQueryFilters().CountAsync());
+            Assert.Equal(0, await _db.Context.FuelRecords.IgnoreQueryFilters().CountAsync());
         }
 
         [Fact]

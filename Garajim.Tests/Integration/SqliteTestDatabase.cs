@@ -1,5 +1,6 @@
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
+using Garajim.Business.Seed;
 using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Concrete.Planlar;
 using Microsoft.Extensions.Configuration;
@@ -113,6 +114,12 @@ namespace Garajim.Tests.Integration
         public EfUnitOfWork UnitOfWork { get; }
 
         public VehicleAccessManager VehicleAccess { get; }
+
+        public DemoDataSeeder DemoSeeder()
+        {
+            return new DemoDataSeeder(CompanyDal, UserDal, VehicleDal, MaintenanceDal, FuelDal, ExpenseDal, ReminderDal,
+                AssignmentDal, EvrakDal, LastikDal, PartDal, HasarDosyasiDal, AracDegerDal, YolculukDal, Tenant);
+        }
 
         public Company SirketEkle(string ad)
         {

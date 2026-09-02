@@ -23,6 +23,12 @@ namespace Garajim.Business.Seed
         private readonly IExpenseDal _expenseDal;
         private readonly IReminderDal _reminderDal;
         private readonly IVehicleAssignmentDal _assignmentDal;
+        private readonly IEvrakDal _evrakDal;
+        private readonly ILastikDal _lastikDal;
+        private readonly IMaintenancePartDal _partDal;
+        private readonly IHasarDosyasiDal _hasarDal;
+        private readonly IAracDegerDal _degerDal;
+        private readonly IYolculukDal _yolculukDal;
         private readonly TenantContext _tenantContext;
 
         public DemoDataSeeder(
@@ -34,6 +40,12 @@ namespace Garajim.Business.Seed
             IExpenseDal expenseDal,
             IReminderDal reminderDal,
             IVehicleAssignmentDal assignmentDal,
+            IEvrakDal evrakDal,
+            ILastikDal lastikDal,
+            IMaintenancePartDal partDal,
+            IHasarDosyasiDal hasarDal,
+            IAracDegerDal degerDal,
+            IYolculukDal yolculukDal,
             TenantContext tenantContext)
         {
             _companyDal = companyDal;
@@ -44,6 +56,12 @@ namespace Garajim.Business.Seed
             _expenseDal = expenseDal;
             _reminderDal = reminderDal;
             _assignmentDal = assignmentDal;
+            _evrakDal = evrakDal;
+            _lastikDal = lastikDal;
+            _partDal = partDal;
+            _hasarDal = hasarDal;
+            _degerDal = degerDal;
+            _yolculukDal = yolculukDal;
             _tenantContext = tenantContext;
         }
 
@@ -94,6 +112,8 @@ namespace Garajim.Business.Seed
                     eklendi = true;
                 }
 
+                eklendi |= await ZenginlestirAsync(company.Id, owner.Id, vehicle);
+
                 if (driver != null)
                 {
                     var aktif = await _assignmentDal.GetActiveByVehicleAsync(vehicle.Id);
@@ -119,6 +139,197 @@ namespace Garajim.Business.Seed
             }
 
             return eklendi;
+        }
+
+        private async Task<bool> ZenginlestirAsync(int companyId, int ownerId, Vehicle vehicle)
+        {
+            var bugun = DateTime.UtcNow.Date;
+            var eklendi = false;
+
+            if (vehicle.KasaTipi == null)
+            {
+                vehicle.KasaTipi = KasaTipi.Hatchback5;
+                await _vehicleDal.UpdateAsync(vehicle);
+                eklendi = true;
+            }
+
+            if (!await _evrakDal.AnyAsync(e => e.VehicleId == vehicle.Id && e.EvrakTuru == EvrakTuru.Muayene))
+            {
+                await _evrakDal.AddAsync(new EvrakKaydi
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    EvrakTuru = EvrakTuru.Muayene,
+                    BaslangicTarihi = bugun.AddYears(-2).AddDays(18),
+                    BitisTarihi = bugun.AddDays(18),
+                    Saglayici = "TÜVTÜRK",
+                    Not = "Demo kaydı",
+                    Aktif = true,
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            if (!await _evrakDal.AnyAsync(e => e.VehicleId == vehicle.Id && e.EvrakTuru == EvrakTuru.TrafikSigortasi))
+            {
+                await _evrakDal.AddAsync(new EvrakKaydi
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    EvrakTuru = EvrakTuru.TrafikSigortasi,
+                    BaslangicTarihi = bugun.AddDays(-160),
+                    BitisTarihi = bugun.AddDays(205),
+                    Saglayici = "Demo Sigorta",
+                    PoliceNo = "DMO-2026-0041",
+                    Aktif = true,
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            if (!await _lastikDal.AnyAsync(l => l.VehicleId == vehicle.Id))
+            {
+                await _lastikDal.AddAsync(new LastikSeti
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    Ad = "Kış seti 2025",
+                    Mevsim = LastikMevsimi.Kis,
+                    Marka = "Michelin",
+                    Ebat = "195/65 R15",
+                    DisDerinligiMm = 6.5m,
+                    TakilmaTarihi = bugun.AddDays(-300),
+                    TakilmaKm = 114000,
+                    SokulmeTarihi = bugun.AddDays(-160),
+                    SokulmeKm = 118600,
+                    ToplamKm = 4600,
+                    Takili = false,
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+
+                await _lastikDal.AddAsync(new LastikSeti
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    Ad = "Yaz seti 2026",
+                    Mevsim = LastikMevsimi.Yaz,
+                    Marka = "Goodyear",
+                    Ebat = "195/65 R15",
+                    DisDerinligiMm = 7.2m,
+                    TakilmaTarihi = bugun.AddDays(-160),
+                    TakilmaKm = 118600,
+                    ToplamKm = 0,
+                    Takili = true,
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            if (!await _partDal.AnyAsync(p => p.VehicleId == vehicle.Id))
+            {
+                var bakim = new MaintenanceRecord
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    Type = MaintenanceType.YagDegisimi,
+                    Date = bugun.AddDays(-60),
+                    Km = 119800,
+                    Cost = 3750m,
+                    ServiceName = "Demo Oto Servis",
+                    Note = "Yağ ve filtre bakımı"
+                };
+                await _maintenanceDal.AddAsync(bakim);
+
+                await _partDal.AddAsync(ParcaOlustur(companyId, vehicle.Id, bakim.Id, ParcaTuru.MotorYagi, "5W-30 tam sentetik", 1, 1450m, "Castrol"));
+                await _partDal.AddAsync(ParcaOlustur(companyId, vehicle.Id, bakim.Id, ParcaTuru.YagFiltresi, "Yağ filtresi", 1, 320m, "Mann"));
+                await _partDal.AddAsync(ParcaOlustur(companyId, vehicle.Id, bakim.Id, ParcaTuru.PolenFiltresi, "Polen filtresi", 1, 280m, "Bosch"));
+                eklendi = true;
+            }
+
+            if (!await _hasarDal.AnyAsync(h => h.VehicleId == vehicle.Id))
+            {
+                await _hasarDal.AddAsync(new HasarDosyasi
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    OlayTarihi = bugun.AddDays(-210),
+                    Tur = HasarTuru.Cam,
+                    Konum = "Ankara, Eskişehir Yolu",
+                    Aciklama = "Ön cama taş çarptı, cam sigorta kapsamında değiştirildi.",
+                    OlayKm = 116400,
+                    TutanakTuru = TutanakTuru.Yok,
+                    SigortaDosyaNo = "DMO-CAM-118",
+                    HasarBedeli = 6800m,
+                    Durum = HasarDurumu.Kapandi,
+                    OlusturanUserId = ownerId,
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            if (!await _degerDal.AnyAsync(d => d.VehicleId == vehicle.Id))
+            {
+                await _degerDal.AddAsync(new AracDeger
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    Tarih = bugun.AddDays(-330),
+                    Deger = 780000m,
+                    Kaynak = DegerKaynagi.Beyan,
+                    Not = "Alım sırasındaki değer",
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+
+                await _degerDal.AddAsync(new AracDeger
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    Tarih = bugun.AddDays(-25),
+                    Deger = 715000m,
+                    Kaynak = DegerKaynagi.Ekspertiz,
+                    Not = "Ekspertiz raporu",
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            if (!await _yolculukDal.AnyAsync(y => y.VehicleId == vehicle.Id))
+            {
+                await _yolculukDal.AddAsync(new YolculukKaydi
+                {
+                    CompanyId = companyId,
+                    VehicleId = vehicle.Id,
+                    UserId = ownerId,
+                    Tarih = bugun.AddDays(-9),
+                    BaslangicKm = 121620,
+                    BitisKm = 121905,
+                    MesafeKm = 285,
+                    Amac = YolculukAmaci.Is,
+                    Nereden = "Ankara",
+                    Nereye = "Eskişehir",
+                    Not = "Müşteri ziyareti",
+                    OlusturmaTarihi = DateTime.UtcNow
+                });
+                eklendi = true;
+            }
+
+            return eklendi;
+        }
+
+        private static MaintenancePart ParcaOlustur(
+            int companyId, int vehicleId, int bakimId, ParcaTuru tur, string aciklama, int adet, decimal tutar, string marka)
+        {
+            return new MaintenancePart
+            {
+                CompanyId = companyId,
+                MaintenanceRecordId = bakimId,
+                VehicleId = vehicleId,
+                ParcaTuru = tur,
+                Aciklama = aciklama,
+                Adet = adet,
+                Tutar = tutar,
+                Marka = marka
+            };
         }
 
         private static AppUser KullaniciOlustur(
