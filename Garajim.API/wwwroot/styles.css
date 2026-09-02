@@ -54,6 +54,7 @@ h3 {
 
 #auth-screen {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 24px;
@@ -1040,4 +1041,128 @@ button.compact {
 
 .kaza-acil dd {
     margin: 0;
+}
+
+.tanitim {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto 28px;
+    padding: 24px 4px 0;
+}
+
+.tanitim-ust {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.tanitim-ad {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.tanitim-baslik {
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+.tanitim-alt {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0 0 20px;
+    max-width: 46ch;
+}
+
+.tanitim-eylem {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tanitim-eylem button {
+    flex: 1 1 180px;
+    padding: 14px 18px;
+    font-size: 16px;
+}
+
+.tanitim-davet {
+    margin-top: 18px;
+}
+
+.tanitim-davet label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.tanitim-davet-satir {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tanitim-davet-satir input {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.tanitim-kartlar {
+    list-style: none;
+    margin: 26px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.tanitim-kart {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    padding: 16px;
+}
+
+.tanitim-kart h2 {
+    font-size: 15px;
+    margin: 0 0 6px;
+    color: var(--accent);
+}
+
+.tanitim-kart p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.tanitim-sartlar {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 22px;
+}
+
+@media (max-width: 640px) {
+    .tanitim {
+        padding: 16px 0 0;
+    }
+
+    .tanitim-baslik {
+        font-size: 25px;
+    }
+
+    .tanitim-alt {
+        font-size: 15px;
+    }
+
+    .tanitim-eylem button {
+        flex: 1 1 100%;
+    }
+
+    .tanitim-kartlar {
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+    }
 }

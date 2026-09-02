@@ -2170,6 +2170,75 @@
         });
     }
 
+    var DEMO_EPOSTA = "demo@garajim.app";
+    var DEMO_SIFRE = "Demo1234!";
+
+    var TANITIM_KARTLARI = [
+        ["Fişi fotoğrafla", "Servis fişini çek, tarih, tutar ve işlem türü otomatik çıkarılsın; sen yalnız onayla."],
+        ["Araç karnesi ve QR", "Bakım geçmişini tek bağlantıyla paylaş. Alıcı QR'ı okutur, kayıtları görür; neyi paylaştığına sen karar verirsin."],
+        ["Parça hafızası", "Hangi parça ne zaman, kaç kilometrede değişti? Sıradaki değişim yaklaşınca haber verir."],
+        ["Evrak takvimi", "Muayene, sigorta, kasko ve egzoz bitişleri takvimine düşer; süresi dolmadan e-posta gelir."],
+        ["AI Usta", "Aracının kendi kayıtlarını okuyup olasılık sıralar. Teşhis koymaz, ustaya gitmeden önce ne soracağını bilirsin."],
+        ["Filo paketi", "Birden çok araç, sürücü zimmeti, ekip belgeleri ve km başına maliyet karşılaştırması."]
+    ];
+
+    function tanitimKartlariniCiz() {
+        var liste = el("tanitim-kartlar");
+        if (!liste) {
+            return;
+        }
+
+        clear(liste);
+
+        TANITIM_KARTLARI.forEach(function (kart) {
+            var li = document.createElement("li");
+            li.className = "tanitim-kart";
+            li.appendChild(make("h2", kart[0]));
+            li.appendChild(make("p", kart[1]));
+            liste.appendChild(li);
+        });
+    }
+
+    function kayitSekmesineGec() {
+        switchAuthTab(false);
+        el("auth-screen").scrollTo({ top: document.querySelector(".auth-card").offsetTop, behavior: "smooth" });
+        el("register-name").focus();
+    }
+
+    function demoIleGir() {
+        showMessage(el("tanitim-mesaj"), "Demo hesabı açılıyor…", true);
+
+        api("/api/Auth/login", {
+            method: "POST",
+            body: { email: DEMO_EPOSTA, password: DEMO_SIFRE }
+        }).then(function (result) {
+            saveSession(result.data.token, result.data);
+            showMessage(el("tanitim-mesaj"), "");
+            enterApp();
+        }).catch(function () {
+            showMessage(el("tanitim-mesaj"), "Demo hesabı bu sunucuda kapalı. Ücretsiz başla ile kendi hesabınızı açabilirsiniz.", false);
+        });
+    }
+
+    function bindTanitim() {
+        tanitimKartlariniCiz();
+
+        el("tanitim-demo").addEventListener("click", demoIleGir);
+        el("tanitim-basla").addEventListener("click", kayitSekmesineGec);
+
+        el("tanitim-davet-btn").addEventListener("click", function () {
+            var kod = el("tanitim-davet-kod").value.trim();
+            if (!kod) {
+                showMessage(el("tanitim-mesaj"), "Önce davet kodunu yazın.", false);
+                return;
+            }
+
+            el("register-davet").value = kod;
+            showMessage(el("tanitim-mesaj"), "");
+            kayitSekmesineGec();
+        });
+    }
+
     function bindLastik() {
         el("lastik-form").addEventListener("submit", function (event) {
             event.preventDefault();
@@ -4177,6 +4246,7 @@
         bindExport();
         bindLastik();
         bindKaza();
+        bindTanitim();
         bindHasar();
         bindDeger();
         bindDavet();
