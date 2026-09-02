@@ -86,6 +86,32 @@
 
             <p id="auth-message" class="message" role="alert"></p>
         </div>
+
+        <div id="dogrula-kart" class="auth-card hidden">
+            <div class="brand">
+                <span class="brand-mark"></span>
+                <h1>E-postanı doğrula</h1>
+            </div>
+            <p id="dogrula-aciklama" class="brand-sub"></p>
+
+            <form id="dogrula-form" class="form">
+                <label for="dogrula-1">6 haneli kod</label>
+                <div id="dogrula-kutular" class="kod-kutular">
+                    <input id="dogrula-1" class="kod-kutu" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" required>
+                    <input id="dogrula-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="dogrula-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="dogrula-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="dogrula-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="dogrula-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                </div>
+                <small class="hint">Kod 10 dakika geçerlidir. E-posta gelmediyse <strong>spam / gereksiz</strong> klasörünü kontrol edin.</small>
+                <button type="submit" class="primary">Doğrula</button>
+                <button id="dogrula-yeniden" type="button" class="ghost">Kodu yeniden gönder</button>
+                <button id="dogrula-vazgec" type="button" class="ghost">Başka hesapla devam et</button>
+            </form>
+
+            <p id="dogrula-mesaj" class="message" role="alert"></p>
+        </div>
     </div>
 
     <div id="app-screen" class="screen hidden">

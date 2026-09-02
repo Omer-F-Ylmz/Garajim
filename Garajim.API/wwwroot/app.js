@@ -11,6 +11,8 @@
         selectedVehicleId: null,
         kazaRehberi: null,
         kazaDosyaId: null,
+        dogrulanacakEposta: null,
+        dogrulaSayac: null,
         duzenlenenAracId: null,
         hasarAdim: 1,
         hasarDosyaId: null,
@@ -2234,6 +2236,170 @@
         });
     }
 
+    var DOGRULA_GERI_SAYIM = 60;
+
+    function kodKutulari() {
+        return [1, 2, 3, 4, 5, 6].map(function (no) { return el("dogrula-" + no); });
+    }
+
+    function kodOku() {
+        return kodKutulari().map(function (kutu) { return kutu.value.trim(); }).join("");
+    }
+
+    function kodTemizle() {
+        kodKutulari().forEach(function (kutu) { kutu.value = ""; });
+    }
+
+    function kodYaz(metin) {
+        var rakamlar = String(metin || "").replace(/\D/g, "").slice(0, 6);
+        var kutular = kodKutulari();
+
+        kutular.forEach(function (kutu, sira) {
+            kutu.value = rakamlar[sira] || "";
+        });
+
+        var sonraki = Math.min(rakamlar.length, 5);
+        kutular[sonraki].focus();
+    }
+
+    function dogrulamaEkraniniAc(eposta, mesaj) {
+        state.dogrulanacakEposta = eposta;
+
+        el("auth-screen").classList.remove("hidden");
+        el("app-screen").classList.add("hidden");
+        document.querySelector(".auth-card").classList.add("hidden");
+        el("tanitim").classList.add("hidden");
+        el("dogrula-kart").classList.remove("hidden");
+
+        el("dogrula-aciklama").textContent = eposta + " adresine 6 haneli bir kod gönderdik.";
+        showMessage(el("dogrula-mesaj"), mesaj || "", true);
+
+        kodTemizle();
+        kodKutulari()[0].focus();
+        geriSayimBaslat();
+    }
+
+    function dogrulamaEkraniniKapat() {
+        state.dogrulanacakEposta = null;
+        geriSayimDurdur();
+        el("dogrula-kart").classList.add("hidden");
+        document.querySelector(".auth-card").classList.remove("hidden");
+        el("tanitim").classList.remove("hidden");
+    }
+
+    function geriSayimDurdur() {
+        if (state.dogrulaSayac) {
+            clearInterval(state.dogrulaSayac);
+            state.dogrulaSayac = null;
+        }
+    }
+
+    function geriSayimBaslat() {
+        geriSayimDurdur();
+
+        var kalan = DOGRULA_GERI_SAYIM;
+        var dugme = el("dogrula-yeniden");
+
+        function yaz() {
+            if (kalan <= 0) {
+                dugme.disabled = false;
+                dugme.textContent = "Kodu yeniden gönder";
+                geriSayimDurdur();
+                return;
+            }
+
+            dugme.disabled = true;
+            dugme.textContent = "Kodu yeniden gönder (" + kalan + " sn)";
+            kalan--;
+        }
+
+        yaz();
+        state.dogrulaSayac = setInterval(yaz, 1000);
+    }
+
+    function kodDogrula() {
+        var kod = kodOku();
+
+        if (kod.length !== 6) {
+            showMessage(el("dogrula-mesaj"), "6 haneyi de girin.", false);
+            return;
+        }
+
+        api("/api/Auth/dogrula", {
+            method: "POST",
+            body: { email: state.dogrulanacakEposta, kod: kod }
+        }).then(function (result) {
+            geriSayimDurdur();
+            el("dogrula-kart").classList.add("hidden");
+            document.querySelector(".auth-card").classList.remove("hidden");
+            el("tanitim").classList.remove("hidden");
+            state.dogrulanacakEposta = null;
+            saveSession(result.data.token, result.data);
+            enterApp();
+        }).catch(function (error) {
+            kodTemizle();
+            kodKutulari()[0].focus();
+            handleError(el("dogrula-mesaj"), error);
+        });
+    }
+
+    function bindDogrulama() {
+        var kutular = kodKutulari();
+
+        kutular.forEach(function (kutu, sira) {
+            kutu.addEventListener("input", function () {
+                kutu.value = kutu.value.replace(/\D/g, "").slice(0, 1);
+
+                if (kutu.value && sira < 5) {
+                    kutular[sira + 1].focus();
+                }
+
+                if (kodOku().length === 6) {
+                    kodDogrula();
+                }
+            });
+
+            kutu.addEventListener("keydown", function (event) {
+                if (event.key === "Backspace" && !kutu.value && sira > 0) {
+                    kutular[sira - 1].focus();
+                }
+            });
+
+            kutu.addEventListener("paste", function (event) {
+                event.preventDefault();
+                kodYaz((event.clipboardData || window.clipboardData).getData("text"));
+
+                if (kodOku().length === 6) {
+                    kodDogrula();
+                }
+            });
+        });
+
+        el("dogrula-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            kodDogrula();
+        });
+
+        el("dogrula-yeniden").addEventListener("click", function () {
+            api("/api/Auth/kod-gonder", {
+                method: "POST",
+                body: { email: state.dogrulanacakEposta }
+            }).then(function (result) {
+                showMessage(el("dogrula-mesaj"), (result && result.message) || "Kod gönderildi.", true);
+                kodTemizle();
+                kodKutulari()[0].focus();
+                geriSayimBaslat();
+            }).catch(function (error) {
+                handleError(el("dogrula-mesaj"), error);
+            });
+        });
+
+        el("dogrula-vazgec").addEventListener("click", function () {
+            dogrulamaEkraniniKapat();
+            switchAuthTab(true);
+        });
+    }
+
     function bindTanitim() {
         tanitimKartlariniCiz();
 
@@ -2820,6 +2986,12 @@
                 el("login-password").value = "";
                 enterApp();
             }).catch(function (error) {
+                if (error && error.kod === "EMAIL_DOGRULANMADI") {
+                    el("login-password").value = "";
+                    dogrulamaEkraniniAc(el("login-email").value.trim(), error.message);
+                    return;
+                }
+
                 handleError(el("auth-message"), error);
             });
         });
@@ -2837,9 +3009,8 @@
                     davetKodu: el("register-davet").value
                 }
             }).then(function (result) {
-                saveSession(result.data.token, result.data);
                 el("register-password").value = "";
-                enterApp();
+                dogrulamaEkraniniAc(result.data.email, result.message);
             }).catch(function (error) {
                 handleError(el("auth-message"), error);
             });
@@ -4333,6 +4504,7 @@
         bindLastik();
         bindKaza();
         bindTanitim();
+        bindDogrulama();
         bindHasar();
         bindDeger();
         bindDavet();
