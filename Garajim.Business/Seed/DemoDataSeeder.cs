@@ -146,9 +146,11 @@ namespace Garajim.Business.Seed
             var bugun = DateTime.UtcNow.Date;
             var eklendi = false;
 
-            if (vehicle.KasaTipi == null)
+            if (vehicle.KasaTipi == null || string.IsNullOrWhiteSpace(vehicle.Vites) || string.IsNullOrWhiteSpace(vehicle.Motor))
             {
-                vehicle.KasaTipi = KasaTipi.Hatchback5;
+                vehicle.KasaTipi = vehicle.KasaTipi ?? KasaTipi.Hatchback5;
+                vehicle.Vites = string.IsNullOrWhiteSpace(vehicle.Vites) ? "Düz" : vehicle.Vites;
+                vehicle.Motor = string.IsNullOrWhiteSpace(vehicle.Motor) ? "1.5 dCi" : vehicle.Motor;
                 await _vehicleDal.UpdateAsync(vehicle);
                 eklendi = true;
             }

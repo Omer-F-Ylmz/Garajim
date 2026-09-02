@@ -133,7 +133,7 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task DemoAracKasaTipiAlirVeTahmineHazirdir()
+        public async Task DemoAracKasaVitesMotorAlirVeTahmineHazirdir()
         {
             await _db.DemoSeeder().RunAsync();
 
@@ -141,6 +141,29 @@ namespace Garajim.Tests.Integration
 
             Assert.NotNull(arac.KasaTipi);
             Assert.Equal(KasaTipi.Hatchback5, arac.KasaTipi);
+            Assert.False(string.IsNullOrWhiteSpace(arac.Vites));
+            Assert.False(string.IsNullOrWhiteSpace(arac.Motor));
+        }
+
+        [Fact]
+        public async Task EksikOlanAlanDoldurulurDoluOlanaDokunulmaz()
+        {
+            await _db.DemoSeeder().RunAsync();
+
+            var arac = await _db.Context.Vehicles.IgnoreQueryFilters().SingleAsync();
+            arac.Vites = null;
+            arac.Motor = "Elle girilmiş motor";
+            arac.KasaTipi = KasaTipi.Suv;
+            await _db.Context.SaveChangesAsync();
+
+            var eklendi = await _db.DemoSeeder().RunAsync();
+
+            var sonra = await _db.Context.Vehicles.IgnoreQueryFilters().SingleAsync();
+
+            Assert.True(eklendi);
+            Assert.False(string.IsNullOrWhiteSpace(sonra.Vites));
+            Assert.Equal("Elle girilmiş motor", sonra.Motor);
+            Assert.Equal(KasaTipi.Suv, sonra.KasaTipi);
         }
 
         [Fact]
