@@ -15,6 +15,7 @@ namespace Garajim.Business.Jobs
         private readonly IVehicleDal _vehicleDal;
         private readonly IMaintenancePartDal _partDal;
         private readonly IUstaCozumOzetiDal _ozetDal;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly TenantContext _tenantContext;
         private readonly ILogger<UstaOzetJob> _logger;
 
@@ -25,6 +26,7 @@ namespace Garajim.Business.Jobs
             IVehicleDal vehicleDal,
             IMaintenancePartDal partDal,
             IUstaCozumOzetiDal ozetDal,
+            IUnitOfWork unitOfWork,
             TenantContext tenantContext,
             ILogger<UstaOzetJob> logger = null)
         {
@@ -35,12 +37,12 @@ namespace Garajim.Business.Jobs
             _vehicleDal = vehicleDal;
             _partDal = partDal;
             _ozetDal = ozetDal;
+            _unitOfWork = unitOfWork;
             _tenantContext = tenantContext;
         }
 
         public async Task RunAsync()
         {
-            var sayaclar = new Dictionary<(string Marka, string Model, string Motor, string Kategori, string Parca), int>();
             var companies = await _companyDal.GetListAsync();
 
             try
@@ -50,7 +52,7 @@ namespace Garajim.Business.Jobs
                     try
                     {
                         _tenantContext.SetCompany(company.Id);
-                        await SirketIcinTopla(sayaclar);
+                        await SirketIcinIsleAsync();
                     }
                     catch (Exception hata)
                     {
@@ -62,8 +64,20 @@ namespace Garajim.Business.Jobs
             {
                 _tenantContext.Clear();
             }
+        }
 
-            foreach (var kayit in sayaclar)
+        private async Task SirketIcinIsleAsync()
+        {
+            var toplam = await SirketIcinTopla();
+
+            if (toplam.Islenenler.Count == 0)
+            {
+                return;
+            }
+
+            await using var islem = await _unitOfWork.BeginTransactionAsync();
+
+            foreach (var kayit in toplam.Sayaclar)
             {
                 var mevcut = await _ozetDal.BulAsync(kayit.Key.Marka, kayit.Key.Model, kayit.Key.Motor, kayit.Key.Kategori, kayit.Key.Parca);
 
@@ -86,18 +100,23 @@ namespace Garajim.Business.Jobs
                 mevcut.GuncellemeTarihi = DateTime.UtcNow;
                 await _ozetDal.UpdateAsync(mevcut);
             }
+
+            await _mesajDal.OzetlendiIsaretleAsync(toplam.Islenenler);
+
+            await _unitOfWork.CommitAsync();
         }
 
 
-        private async Task SirketIcinTopla(Dictionary<(string, string, string, string, string), int> sayaclar)
+        private async Task<(Dictionary<(string Marka, string Model, string Motor, string Kategori, string Parca), int> Sayaclar, List<int> Islenenler)> SirketIcinTopla()
         {
+            var sayaclar = new Dictionary<(string Marka, string Model, string Motor, string Kategori, string Parca), int>();
+            var islenenler = new List<int>();
+
             var mesajlar = await _mesajDal.GetOzetlenmemisCozumluMesajlarAsync();
             if (mesajlar.Count == 0)
             {
-                return;
+                return (sayaclar, islenenler);
             }
-
-            var islenenler = new List<int>();
 
             foreach (var mesaj in mesajlar)
             {
@@ -141,7 +160,7 @@ namespace Garajim.Business.Jobs
                 islenenler.Add(mesaj.Id);
             }
 
-            await _mesajDal.OzetlendiIsaretleAsync(islenenler);
+            return (sayaclar, islenenler);
         }
 
         private static string Kirp(string metin, int uzunluk)
