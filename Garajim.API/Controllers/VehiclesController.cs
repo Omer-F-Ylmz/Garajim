@@ -90,6 +90,15 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpPut("{id}/kasa-tipi")]
+        public async Task<IActionResult> KasaTipiSec(int id, [FromBody] KasaTipi kasaTipi)
+        {
+            var result = await _vehicleService.KasaTipiSecAsync(CurrentUserId, id, kasaTipi);
+            if (!result.Success)
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
+        }
+
         [HttpGet("{id}/deger")]
         public async Task<IActionResult> DegerSerisi(int id)
         {
@@ -116,7 +125,7 @@ namespace Garajim.API.Controllers
             {
                 if (result.Message == Messages.VehicleNotFound)
                     return NotFound(result);
-                if (result.Message == Messages.DegerModelKapsamDisi)
+                if (result.Message == Messages.DegerModelKapsamDisi || result.Message == Messages.DegerKasaTipiGerekli)
                     return StatusCode(StatusCodes.Status422UnprocessableEntity, result);
                 return BadRequest(result);
             }

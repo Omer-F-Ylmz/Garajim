@@ -70,7 +70,21 @@
 
     var PRICE_FUEL = ["Benzin", "Dizel", "LPG & Benzin", "Hibrit", "Elektrik"];
     var PRICE_GEAR = ["Düz", "Otomatik", "Yarı Otomatik"];
-    var PRICE_BODY = ["Sedan", "Hatchback/5", "Hatchback/3", "Station wagon", "MPV", "Coupe", "SUV", "Cabrio", "Roadster"];
+    var PRICE_BODY = ["Sedan", "Hatchback/5", "Hatchback/3", "Station wagon", "MPV", "Coupe", "SUV", "Cabrio", "Roadster", "Pick-up"];
+
+    var KASA_TIPLERI = [
+        ["", "Seçilmedi"],
+        ["Sedan", "Sedan"],
+        ["Hatchback5", "Hatchback (5 kapı)"],
+        ["Hatchback3", "Hatchback (3 kapı)"],
+        ["StationWagon", "Station wagon"],
+        ["Mpv", "MPV"],
+        ["Coupe", "Coupe"],
+        ["Suv", "SUV"],
+        ["Cabrio", "Cabrio"],
+        ["Roadster", "Roadster"],
+        ["PickUp", "Pick-up"]
+    ];
 
     var moneyFormat = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     var wholeFormat = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
@@ -1923,6 +1937,31 @@
         });
     }
 
+    function degerTahminiIste() {
+        clearMessages();
+        el("deger-kasa-kutu").classList.add("hidden");
+
+        return api("/api/Vehicles/" + state.selectedVehicleId + "/deger/tahmin", { method: "POST" })
+            .then(function (result) {
+                var uyari = el("deger-uyari");
+                uyari.textContent = result.data.uyari + " Bugün kalan tahmin hakkı: " + result.data.kalanHak + ".";
+                uyari.classList.remove("hidden");
+                showMessage(el("app-message"), (result && result.message) || "Tahmin alındı.", true);
+                loadDeger();
+            })
+            .catch(function (error) {
+                if (error && error.durum === 422 && error.message && error.message.indexOf("kasa tipi") >= 0) {
+                    el("deger-uyari").classList.add("hidden");
+                    el("deger-kasa-kutu").classList.remove("hidden");
+                    return;
+                }
+
+                var uyari = el("deger-uyari");
+                uyari.textContent = error && error.message ? error.message : "Tahmin alınamadı.";
+                uyari.classList.remove("hidden");
+            });
+    }
+
     function bindDeger() {
         el("deger-form").addEventListener("submit", function (event) {
             event.preventDefault();
@@ -1945,22 +1984,18 @@
             }).catch(function (error) { handleError(el("app-message"), error); });
         });
 
-        el("deger-tahmin").addEventListener("click", function () {
+        el("deger-tahmin").addEventListener("click", degerTahminiIste);
+
+        el("deger-kasa-kaydet").addEventListener("click", function () {
             clearMessages();
 
-            api("/api/Vehicles/" + state.selectedVehicleId + "/deger/tahmin", { method: "POST" })
-                .then(function (result) {
-                    var uyari = el("deger-uyari");
-                    uyari.textContent = result.data.uyari + " Bugün kalan tahmin hakkı: " + result.data.kalanHak + ".";
-                    uyari.classList.remove("hidden");
-                    showMessage(el("app-message"), (result && result.message) || "Tahmin alındı.", true);
-                    loadDeger();
-                })
-                .catch(function (error) {
-                    var uyari = el("deger-uyari");
-                    uyari.textContent = error && error.message ? error.message : "Tahmin alınamadı.";
-                    uyari.classList.remove("hidden");
-                });
+            api("/api/Vehicles/" + state.selectedVehicleId + "/kasa-tipi", {
+                method: "PUT",
+                body: el("deger-kasa").value
+            }).then(function () {
+                el("deger-kasa-kutu").classList.add("hidden");
+                return loadVehicles().then(degerTahminiIste);
+            }).catch(function (error) { handleError(el("app-message"), error); });
         });
     }
 
@@ -3734,7 +3769,8 @@
                     model: el("vehicle-model").value,
                     year: Number(el("vehicle-year").value),
                     currentKm: Number(el("vehicle-km").value),
-                    fuelType: el("vehicle-fuel").value
+                    fuelType: el("vehicle-fuel").value,
+                    kasaTipi: el("vehicle-kasa").value || null
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Araç eklendi.", true);
@@ -3923,6 +3959,8 @@
         fillSelect(el("fuel-sarj"), SARJ_TURU);
         fillSelect(el("plan-istenen"), PLAN_TURLERI);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
+        fillSelect(el("vehicle-kasa"), KASA_TIPLERI);
+        fillSelect(el("deger-kasa"), KASA_TIPLERI.slice(1));
         fillSelect(el("maintenance-type"), MAINTENANCE_TYPES);
         fillSelect(el("expense-category"), EXPENSE_CATEGORIES);
         fillSelect(el("reminder-type"), REMINDER_TYPES);

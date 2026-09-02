@@ -8,6 +8,6 @@ namespace Garajim.Business.Abstract
 
     public interface IDegerTahminEdici
     {
-        DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi);
+        DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi, string kasaTipi);
     }
 }

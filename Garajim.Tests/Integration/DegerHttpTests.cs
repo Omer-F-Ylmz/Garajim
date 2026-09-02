@@ -67,7 +67,8 @@ namespace Garajim.Tests.Integration
                 year = 2019,
                 currentKm = 90000,
                 fuelType = "Benzin",
-                vites = "Manuel"
+                vites = "Manuel",
+                kasaTipi = "Hatchback5"
             });
             return JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("id").GetInt32();
         }

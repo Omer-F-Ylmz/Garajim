@@ -10,9 +10,17 @@ namespace Garajim.Tests.Integration
 
         public int CagriSayisi { get; private set; }
 
-        public DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi)
+        public string SonKasaTipi { get; private set; }
+
+        public DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi, string kasaTipi)
         {
             CagriSayisi++;
+            SonKasaTipi = kasaTipi;
+
+            if (string.IsNullOrWhiteSpace(kasaTipi))
+            {
+                return new DegerTahminiSonucu { KapsamDisi = true };
+            }
 
             if (string.IsNullOrWhiteSpace(seri) || !KapsamdakiSeriler.Contains(seri.Trim()))
             {

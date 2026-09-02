@@ -18,6 +18,7 @@ namespace Garajim.Entity.Concrete
         public DateTime? IlkTescilTarihi { get; set; }
         public string Motor { get; set; }
         public string Vites { get; set; }
+        public KasaTipi? KasaTipi { get; set; }
         public string AcilKisiAd { get; set; }
         public string AcilKisiTelefon { get; set; }
         public string AcilNot { get; set; }

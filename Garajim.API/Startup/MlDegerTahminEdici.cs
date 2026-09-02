@@ -17,9 +17,9 @@ namespace Garajim.API.Startup
             _sozluk = sozluk;
         }
 
-        public DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi)
+        public DegerTahminiSonucu Tahmin(string marka, string seri, int yil, int kilometre, string yakitTipi, string vitesTipi, string kasaTipi)
         {
-            if (string.IsNullOrWhiteSpace(marka) || string.IsNullOrWhiteSpace(seri))
+            if (string.IsNullOrWhiteSpace(marka) || string.IsNullOrWhiteSpace(seri) || string.IsNullOrWhiteSpace(kasaTipi))
             {
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
@@ -30,7 +30,7 @@ namespace Garajim.API.Startup
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
 
-            if (!_sozluk.MarkaTaniniyor(marka) || !_sozluk.SeriTaniniyor(seri))
+            if (!_sozluk.MarkaTaniniyor(marka) || !_sozluk.SeriTaniniyor(seri) || !_sozluk.KasaTaniniyor(kasaTipi))
             {
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
@@ -43,7 +43,7 @@ namespace Garajim.API.Startup
                 Kilometre = kilometre,
                 YakitTipi = (yakitTipi ?? string.Empty).Trim(),
                 VitesTipi = (vitesTipi ?? string.Empty).Trim(),
-                KasaTipi = string.Empty
+                KasaTipi = kasaTipi.Trim()
             };
 
             var tahmin = _havuz.Predict(PricePredictionController.ModelName, girdi);

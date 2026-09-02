@@ -72,6 +72,7 @@ namespace Garajim.Business.Concrete
                 FuelType = dto.FuelType,
                 KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
                 IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
+                KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : null,
                 AcilKisiAd = dto.AcilKisiAd,
                 AcilKisiTelefon = dto.AcilKisiTelefon,
                 AcilNot = dto.AcilNot,
@@ -96,9 +97,22 @@ namespace Garajim.Business.Concrete
             vehicle.FuelType = dto.FuelType;
             vehicle.KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : vehicle.KullanimTuru;
             vehicle.IlkTescilTarihi = dto.IlkTescilTarihi?.Date ?? vehicle.IlkTescilTarihi;
+            vehicle.KasaTipi = dto.KasaTipi != null && Enum.IsDefined(dto.KasaTipi.Value) ? dto.KasaTipi : vehicle.KasaTipi;
             vehicle.AcilKisiAd = dto.AcilKisiAd;
             vehicle.AcilKisiTelefon = dto.AcilKisiTelefon;
             vehicle.AcilNot = dto.AcilNot;
+            await _vehicleDal.UpdateAsync(vehicle);
+            return new SuccessResult(Messages.VehicleUpdated);
+        }
+
+        public async Task<IResult> KasaTipiSecAsync(int userId, int id, KasaTipi kasaTipi)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
+            if (vehicle == null)
+                return new ErrorResult(Messages.VehicleNotFound);
+            if (!Enum.IsDefined(kasaTipi))
+                return new ErrorResult(Messages.InvalidValue);
+            vehicle.KasaTipi = kasaTipi;
             await _vehicleDal.UpdateAsync(vehicle);
             return new SuccessResult(Messages.VehicleUpdated);
         }
@@ -123,6 +137,9 @@ namespace Garajim.Business.Concrete
                 Year = vehicle.Year,
                 CurrentKm = vehicle.CurrentKm,
                 FuelType = vehicle.FuelType,
+                KullanimTuru = vehicle.KullanimTuru,
+                IlkTescilTarihi = vehicle.IlkTescilTarihi,
+                KasaTipi = vehicle.KasaTipi,
                 CreatedAt = vehicle.CreatedAt
             };
         }

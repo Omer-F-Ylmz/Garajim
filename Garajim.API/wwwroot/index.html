@@ -361,6 +361,10 @@
                     <label for="vehicle-fuel">Yakıt</label>
                     <select id="vehicle-fuel"></select>
                 </div>
+                <div>
+                    <label for="vehicle-kasa">Kasa tipi</label>
+                    <select id="vehicle-kasa"></select>
+                </div>
                 <div class="form-actions">
                     <button type="submit" class="primary">Kaydet</button>
                     <button id="vehicle-cancel" type="button" class="ghost">Vazgeç</button>
@@ -994,6 +998,18 @@
                     </div>
                 </form>
                 <p id="deger-uyari" class="deger-uyari hidden"></p>
+                <div id="deger-kasa-kutu" class="deger-uyari hidden">
+                    <p>Tahmin için aracın kasa tipi gerekli.</p>
+                    <div class="grid-form">
+                        <div>
+                            <label for="deger-kasa">Kasa tipi</label>
+                            <select id="deger-kasa"></select>
+                        </div>
+                        <div class="form-actions">
+                            <button id="deger-kasa-kaydet" type="button" class="primary">Kaydet ve tahmin al</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="chart-box">
                     <canvas id="deger-chart" height="220"></canvas>
                 </div>

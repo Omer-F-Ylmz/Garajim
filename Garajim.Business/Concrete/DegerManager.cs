@@ -80,13 +80,19 @@ namespace Garajim.Business.Concrete
             if (alinan >= GunlukTahminHakki)
                 return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerTahminSiniri);
 
+            if (vehicle.KasaTipi == null)
+            {
+                return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerKasaTipiGerekli);
+            }
+
             var sonuc = _tahminEdici.Tahmin(
                 vehicle.Brand,
                 vehicle.Model,
                 vehicle.Year,
                 vehicle.CurrentKm,
                 vehicle.FuelType.ToString(),
-                vehicle.Vites);
+                vehicle.Vites,
+                KasaTipiAdlari.ModelDegeri(vehicle.KasaTipi.Value));
 
             if (sonuc == null || sonuc.KapsamDisi || sonuc.Fiyat == null || sonuc.Fiyat <= 0)
             {
