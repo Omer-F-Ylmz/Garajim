@@ -268,6 +268,8 @@
                     <label class="switch-label"><input id="karne-plaka" type="checkbox"> Plakayı göster</label>
                     <label class="switch-label"><input id="karne-tutar" type="checkbox"> Tutarları göster</label>
                     <label class="switch-label"><input id="karne-acil" type="checkbox"> Acil durum kartı</label>
+                    <label class="switch-label"><input id="karne-hasar" type="checkbox"> Hasar geçmişi (tarih, tür, onarıldı/açık)</label>
+                    <label class="switch-label"><input id="karne-deger" type="checkbox"> Beyan edilen değer</label>
                 </div>
                 <div>
                     <label for="karne-sure">Süre (gün)</label>
@@ -384,6 +386,8 @@
                 <button class="tab-btn" data-tab="evrak" type="button">Evrak</button>
                 <button class="tab-btn" data-tab="parca" type="button">Parça Hafızası</button>
                 <button class="tab-btn" data-tab="lastik" type="button">Lastik</button>
+                <button class="tab-btn" data-tab="hasar" type="button">Hasar</button>
+                <button class="tab-btn" data-tab="deger" type="button">Değer</button>
                 <button class="tab-btn" data-tab="yolculuk" type="button">Yolculuk</button>
                 <button class="tab-btn" data-tab="usta" type="button">AI Usta</button>
                 <button class="tab-btn hidden" data-tab="zimmet" data-manager-only="true" type="button">Zimmet</button>
@@ -860,6 +864,146 @@
                             <tr><th>Set</th><th>Mevsim</th><th>Marka / Ebat</th><th>Takılma</th><th>Sökülme</th><th>Toplam</th><th>Diş</th><th></th></tr>
                         </thead>
                         <tbody id="lastik-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="panel-hasar" class="panel tab-panel hidden">
+                <h2>Hasar dosyaları</h2>
+                <p class="hint">Karşı tarafın adı ve telefonu uygulamada saklanmaz; bu bilgiler yalnız yazdırılan tutanak özetinde elle doldurulur.</p>
+                <button id="hasar-yeni" class="primary" type="button">Yeni hasar dosyası</button>
+
+                <form id="hasar-form" class="panel-inline hidden">
+                    <p id="hasar-adim-basligi" class="hasar-adim-basligi"></p>
+
+                    <div id="hasar-adim-1" class="hasar-adim">
+                        <div class="grid-form">
+                            <div>
+                                <label for="hasar-tarih">Olay tarihi</label>
+                                <input id="hasar-tarih" type="date" required>
+                            </div>
+                            <div>
+                                <label for="hasar-tur">Tür</label>
+                                <select id="hasar-tur"></select>
+                            </div>
+                            <div>
+                                <label for="hasar-konum">Konum</label>
+                                <input id="hasar-konum" type="text" maxlength="200">
+                            </div>
+                            <div>
+                                <label for="hasar-km">Kilometre</label>
+                                <input id="hasar-km" type="number" min="0">
+                            </div>
+                            <div>
+                                <label for="hasar-aciklama">Açıklama</label>
+                                <textarea id="hasar-aciklama" maxlength="1000" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="hasar-adim-2" class="hasar-adim hidden">
+                        <p class="hint">Genel görünüm, hasar yakın çekimi, plakalar ve yol işaretleri. Dosya başına en fazla 20 fotoğraf.</p>
+                        <div class="grid-form">
+                            <div>
+                                <label for="hasar-foto-etiket">Etiket</label>
+                                <select id="hasar-foto-etiket"></select>
+                            </div>
+                            <div>
+                                <label for="hasar-foto">Fotoğraf</label>
+                                <input id="hasar-foto" type="file" accept="image/*" capture="environment" multiple>
+                            </div>
+                        </div>
+                        <p id="hasar-foto-durum" class="hint"></p>
+                        <ul id="hasar-foto-listesi" class="foto-listesi"></ul>
+                    </div>
+
+                    <div id="hasar-adim-3" class="hasar-adim hidden">
+                        <div class="grid-form">
+                            <div>
+                                <label for="hasar-tutanak">Tutanak türü</label>
+                                <select id="hasar-tutanak"></select>
+                            </div>
+                            <div>
+                                <label for="hasar-durum">Durum</label>
+                                <select id="hasar-durum"></select>
+                            </div>
+                            <div>
+                                <label for="hasar-karsi-plaka">Karşı araç plakası</label>
+                                <input id="hasar-karsi-plaka" type="text" maxlength="15">
+                            </div>
+                            <div>
+                                <label for="hasar-karsi-sigorta">Karşı taraf sigortası</label>
+                                <input id="hasar-karsi-sigorta" type="text" maxlength="100">
+                            </div>
+                            <div>
+                                <label for="hasar-karsi-police">Karşı taraf poliçe no</label>
+                                <input id="hasar-karsi-police" type="text" maxlength="50">
+                            </div>
+                            <div>
+                                <label for="hasar-sigorta-dosya">Kendi sigorta dosya no</label>
+                                <input id="hasar-sigorta-dosya" type="text" maxlength="50">
+                            </div>
+                            <div>
+                                <label for="hasar-bedel">Hasar bedeli (TL)</label>
+                                <input id="hasar-bedel" type="number" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="hasar-geri" type="button" class="ghost hidden">Geri</button>
+                        <button id="hasar-ileri" type="button" class="primary">İleri</button>
+                        <button id="hasar-bitir" type="submit" class="primary hidden">Kaydet</button>
+                        <button id="hasar-vazgec" type="button" class="ghost">Vazgeç</button>
+                    </div>
+                </form>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Tarih</th><th>Tür</th><th>Durum</th><th>Konum</th><th>Foto</th><th>Bedel</th><th></th></tr>
+                        </thead>
+                        <tbody id="hasar-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="panel-deger" class="panel tab-panel hidden">
+                <h2>Araç değeri</h2>
+                <div class="cards" id="deger-cards"></div>
+                <form id="deger-form" class="grid-form">
+                    <div>
+                        <label for="deger-tarih">Tarih</label>
+                        <input id="deger-tarih" type="date" required>
+                    </div>
+                    <div>
+                        <label for="deger-tutar">Değer (TL)</label>
+                        <input id="deger-tutar" type="number" min="1" step="0.01" required>
+                    </div>
+                    <div>
+                        <label for="deger-kaynak">Kaynak</label>
+                        <select id="deger-kaynak"></select>
+                    </div>
+                    <div>
+                        <label for="deger-not">Not</label>
+                        <input id="deger-not" type="text" maxlength="200">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary">Beyan gir</button>
+                        <button id="deger-tahmin" type="button" class="ghost">Tahmin al</button>
+                    </div>
+                </form>
+                <p id="deger-uyari" class="deger-uyari hidden"></p>
+                <div class="chart-box">
+                    <canvas id="deger-chart" height="220"></canvas>
+                </div>
+                <p id="deger-fallback" class="hint"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Tarih</th><th>Değer</th><th>Kaynak</th><th>Not</th></tr>
+                        </thead>
+                        <tbody id="deger-rows"></tbody>
                     </table>
                 </div>
             </section>

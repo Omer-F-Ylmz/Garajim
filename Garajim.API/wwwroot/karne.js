@@ -117,6 +117,14 @@
             bilgiEkle(yakit, "Son dolum", tarih(karne.yakitOzeti.sonDolumTarihi));
         }
 
+        if (karne.beyanDegeri) {
+            el("deger-bolumu").classList.remove("hidden");
+            var degerBilgi = el("deger-bilgi");
+            bilgiEkle(degerBilgi, "Değer", money(karne.beyanDegeri.deger));
+            bilgiEkle(degerBilgi, "Kaynak", karne.beyanDegeri.kaynakAdi);
+            bilgiEkle(degerBilgi, "Tarih", tarih(karne.beyanDegeri.tarih));
+        }
+
         if (karne.hasarlar && karne.hasarlar.length > 0) {
             el("hasar-bolumu").classList.remove("hidden");
             var hasarGovde = el("hasar-satirlari");

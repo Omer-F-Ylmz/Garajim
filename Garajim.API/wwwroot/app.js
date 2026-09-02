@@ -11,6 +11,9 @@
         selectedVehicleId: null,
         kazaRehberi: null,
         kazaDosyaId: null,
+        hasarAdim: 1,
+        hasarDosyaId: null,
+        degerChart: null,
         documentRecordId: null,
         receiptDraft: null,
         chart: null,
@@ -196,7 +199,7 @@
     }
 
     function grafikleriTemizle() {
-        ["chart", "maliyetChart", "tuketimChart"].forEach(function (ad) {
+        ["chart", "maliyetChart", "tuketimChart", "degerChart"].forEach(function (ad) {
             if (state[ad]) {
                 state[ad].destroy();
                 state[ad] = null;
@@ -423,6 +426,10 @@
             loadYolculuk();
         } else if (tab === "lastik") {
             loadLastik();
+        } else if (tab === "hasar") {
+            loadHasar();
+        } else if (tab === "deger") {
+            loadDeger();
         } else if (tab === "usta") {
             loadUsta();
         } else if (tab === "parca") {
@@ -955,6 +962,10 @@
             cards.appendChild(card("Yakıt", money(data.toplamYakit)));
             cards.appendChild(card("Bakım", money(data.toplamBakim)));
             cards.appendChild(card("Masraf", money(data.toplamMasraf)));
+            if (data.sahiplikMaliyeti !== null && data.sahiplikMaliyeti !== undefined) {
+                cards.appendChild(card("Değer kaybı", money(data.donemDegerKaybi)));
+                cards.appendChild(card("Sahiplik maliyeti", money(data.sahiplikMaliyeti), true));
+            }
 
             drawMaliyetChart(data.aylikSeri || []);
             drawTuketimChart(data.tuketimSeri || []);
@@ -1529,6 +1540,427 @@
         el("kaza-foto").addEventListener("change", function (event) {
             kazaFotoYukle(event.target.files);
             event.target.value = "";
+        });
+    }
+
+    var HASAR_TUR = [
+        ["Kaza", "Kaza"],
+        ["Hasar", "Hasar"],
+        ["Cam", "Cam"],
+        ["Dolu", "Dolu"],
+        ["Hirsizlik", "Hırsızlık"],
+        ["Diger", "Diğer"]
+    ];
+
+    var HASAR_TUTANAK = [
+        ["Anlasmali", "Anlaşmalı tutanak"],
+        ["Polis", "Polis/jandarma tutanağı"],
+        ["Yok", "Tutanak yok"]
+    ];
+
+    var HASAR_DURUM = [
+        ["Acik", "Açık"],
+        ["SigortaIslemde", "Sigorta işlemde"],
+        ["Kapandi", "Kapandı"]
+    ];
+
+    var HASAR_ETIKET = [
+        ["Genel", "Genel görünüm"],
+        ["HasarYakin", "Hasar yakın çekim"],
+        ["KarsiArac", "Karşı araç"],
+        ["Plakalar", "Plakalar"],
+        ["Yol", "Yol ve işaretler"],
+        ["Belge", "Belge"],
+        ["Tutanak", "Tutanak"]
+    ];
+
+    var DEGER_KAYNAK = [
+        ["Beyan", "Beyan"],
+        ["Ekspertiz", "Ekspertiz"],
+        ["Ilan", "İlan"]
+    ];
+
+    var HASAR_ADIM_BASLIKLARI = [
+        "1/3 · Olay",
+        "2/3 · Fotoğraflar",
+        "3/3 · Karşı taraf ve tutanak"
+    ];
+
+    function hasarAdimGoster(adim) {
+        state.hasarAdim = adim;
+
+        [1, 2, 3].forEach(function (no) {
+            el("hasar-adim-" + no).classList.toggle("hidden", no !== adim);
+        });
+
+        el("hasar-adim-basligi").textContent = HASAR_ADIM_BASLIKLARI[adim - 1];
+        el("hasar-geri").classList.toggle("hidden", adim === 1);
+        el("hasar-ileri").classList.toggle("hidden", adim === 3);
+        el("hasar-bitir").classList.toggle("hidden", adim !== 3);
+    }
+
+    function hasarSihirbaziniAc(dosya) {
+        el("hasar-form").classList.remove("hidden");
+        el("hasar-yeni").classList.add("hidden");
+        showMessage(el("hasar-foto-durum"), "");
+        clear(el("hasar-foto-listesi"));
+
+        state.hasarDosyaId = dosya ? dosya.id : null;
+
+        el("hasar-tarih").value = dosya ? String(dosya.olayTarihi).slice(0, 10) : todayInput();
+        el("hasar-tur").value = dosya ? dosya.tur : "Kaza";
+        el("hasar-konum").value = (dosya && dosya.konum) || "";
+        el("hasar-km").value = dosya && dosya.olayKm !== null && dosya.olayKm !== undefined ? dosya.olayKm : "";
+        el("hasar-aciklama").value = (dosya && dosya.aciklama) || "";
+        el("hasar-tutanak").value = dosya ? dosya.tutanakTuru : "Anlasmali";
+        el("hasar-durum").value = dosya ? dosya.durum : "Acik";
+        el("hasar-karsi-plaka").value = (dosya && dosya.karsiTarafPlaka) || "";
+        el("hasar-karsi-sigorta").value = (dosya && dosya.karsiTarafSigorta) || "";
+        el("hasar-karsi-police").value = (dosya && dosya.karsiTarafPoliceNo) || "";
+        el("hasar-sigorta-dosya").value = (dosya && dosya.sigortaDosyaNo) || "";
+        el("hasar-bedel").value = dosya && dosya.hasarBedeli !== null && dosya.hasarBedeli !== undefined ? dosya.hasarBedeli : "";
+
+        if (dosya) {
+            hasarFotolariniCiz(dosya.fotograflar || []);
+        }
+
+        hasarAdimGoster(1);
+    }
+
+    function hasarSihirbaziniKapat() {
+        el("hasar-form").classList.add("hidden");
+        el("hasar-yeni").classList.remove("hidden");
+        state.hasarDosyaId = null;
+    }
+
+    function hasarGovdesi() {
+        var km = el("hasar-km").value;
+        var bedel = el("hasar-bedel").value;
+
+        return {
+            vehicleId: state.selectedVehicleId,
+            olayTarihi: el("hasar-tarih").value,
+            tur: el("hasar-tur").value,
+            konum: el("hasar-konum").value,
+            aciklama: el("hasar-aciklama").value,
+            olayKm: km === "" ? null : Number(km),
+            tutanakTuru: el("hasar-tutanak").value,
+            karsiTarafPlaka: el("hasar-karsi-plaka").value,
+            karsiTarafSigorta: el("hasar-karsi-sigorta").value,
+            karsiTarafPoliceNo: el("hasar-karsi-police").value,
+            sigortaDosyaNo: el("hasar-sigorta-dosya").value,
+            hasarBedeli: bedel === "" ? null : Number(bedel),
+            durum: el("hasar-durum").value
+        };
+    }
+
+    function hasarDosyasiniKaydet() {
+        var govde = hasarGovdesi();
+
+        if (state.hasarDosyaId) {
+            return api("/api/Hasar/" + state.hasarDosyaId, { method: "PUT", body: govde });
+        }
+
+        return api("/api/Hasar", { method: "POST", body: govde }).then(function (result) {
+            state.hasarDosyaId = result.data.id;
+            return result;
+        });
+    }
+
+    function hasarFotolariniCiz(fotolar) {
+        var liste = el("hasar-foto-listesi");
+        clear(liste);
+
+        fotolar.forEach(function (foto) {
+            var li = document.createElement("li");
+            li.appendChild(make("span", foto.etiketAdi + " · " + (foto.dosyaAdi || "-")));
+
+            var sil = make("button", "Sil", "ghost");
+            sil.type = "button";
+            sil.addEventListener("click", function () { hasarFotoSil(foto.id); });
+            li.appendChild(sil);
+
+            liste.appendChild(li);
+        });
+
+        showMessage(el("hasar-foto-durum"), fotolar.length + " / 20 fotoğraf", true);
+    }
+
+    function hasarDosyasiniTazele() {
+        if (!state.hasarDosyaId) {
+            return Promise.resolve();
+        }
+
+        return api("/api/Hasar/" + state.hasarDosyaId).then(function (result) {
+            hasarFotolariniCiz(result.data.fotograflar || []);
+        });
+    }
+
+    function hasarFotoSil(fotoId) {
+        api("/api/Hasar/" + state.hasarDosyaId + "/foto/" + fotoId, { method: "DELETE" })
+            .then(hasarDosyasiniTazele)
+            .catch(function (error) { handleError(el("hasar-foto-durum"), error); });
+    }
+
+    function hasarFotoYukle(dosyalar) {
+        if (dosyalar.length === 0) {
+            return;
+        }
+
+        var etiket = el("hasar-foto-etiket").value;
+        var sira = Promise.resolve();
+
+        Array.prototype.forEach.call(dosyalar, function (dosya) {
+            sira = sira.then(function () {
+                var form = new FormData();
+                form.append("file", dosya);
+                form.append("etiket", etiket);
+                return api("/api/Hasar/" + state.hasarDosyaId + "/foto", { method: "POST", body: form });
+            });
+        });
+
+        sira.then(hasarDosyasiniTazele).catch(function (error) {
+            handleError(el("hasar-foto-durum"), error);
+            hasarDosyasiniTazele();
+        });
+    }
+
+    function loadHasar() {
+        var tbody = el("hasar-rows");
+
+        return api("/api/Vehicles/" + state.selectedVehicleId + "/hasar").then(function (result) {
+            var liste = (result && result.data) || [];
+            clear(tbody);
+
+            if (liste.length === 0) {
+                emptyRow(tbody, 7, "Bu araçta hasar dosyası yok.");
+                return;
+            }
+
+            liste.forEach(function (dosya) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", formatDate(dosya.olayTarihi)));
+                tr.appendChild(make("td", dosya.turAdi));
+
+                var durum = document.createElement("td");
+                durum.appendChild(make("span", dosya.durumAdi, "rozet rozet-" + dosya.durum.toLowerCase()));
+                tr.appendChild(durum);
+
+                tr.appendChild(make("td", dosya.konum || "-"));
+                tr.appendChild(make("td", String(dosya.fotoSayisi)));
+                tr.appendChild(make("td", dosya.hasarBedeli === null || dosya.hasarBedeli === undefined ? "-" : money(dosya.hasarBedeli)));
+
+                var islem = document.createElement("td");
+
+                var duzenle = make("button", "Düzenle", "ghost");
+                duzenle.type = "button";
+                duzenle.addEventListener("click", function () {
+                    api("/api/Hasar/" + dosya.id).then(function (tam) {
+                        hasarSihirbaziniAc(tam.data);
+                    }).catch(function (error) { handleError(el("app-message"), error); });
+                });
+                islem.appendChild(duzenle);
+
+                var tutanak = make("button", "Tutanak", "ghost");
+                tutanak.type = "button";
+                tutanak.addEventListener("click", function () { hasarTutanagiAc(dosya.id); });
+                islem.appendChild(tutanak);
+
+                var sil = make("button", "Sil", "ghost");
+                sil.type = "button";
+                sil.addEventListener("click", function () {
+                    removeRecord("/api/Hasar/" + dosya.id, loadHasar);
+                });
+                islem.appendChild(sil);
+
+                tr.appendChild(islem);
+                tbody.appendChild(tr);
+            });
+        }).catch(function (error) {
+            clear(tbody);
+            emptyRow(tbody, 7, error && error.message ? error.message : "Hasar dosyaları alınamadı.");
+        });
+    }
+
+    function hasarTutanagiAc(dosyaId) {
+        fetch("/api/Hasar/" + dosyaId + "/tutanak.html", {
+            headers: { Authorization: "Bearer " + state.token }
+        }).then(function (response) {
+            return response.text();
+        }).then(function (html) {
+            var pencere = window.open("", "_blank");
+            if (!pencere) {
+                showMessage(el("app-message"), "Tarayıcı yeni sekmeyi engelledi.", false);
+                return;
+            }
+            pencere.document.write(html);
+            pencere.document.close();
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        });
+    }
+
+    function bindHasar() {
+        el("hasar-yeni").addEventListener("click", function () { hasarSihirbaziniAc(null); });
+        el("hasar-vazgec").addEventListener("click", hasarSihirbaziniKapat);
+
+        el("hasar-geri").addEventListener("click", function () {
+            hasarAdimGoster(Math.max(1, state.hasarAdim - 1));
+        });
+
+        el("hasar-ileri").addEventListener("click", function () {
+            clearMessages();
+
+            if (state.hasarAdim === 1) {
+                if (!el("hasar-tarih").value || !el("hasar-aciklama").value.trim()) {
+                    showMessage(el("app-message"), "Olay tarihi ve açıklama zorunlu.", false);
+                    return;
+                }
+
+                hasarDosyasiniKaydet().then(function () {
+                    hasarAdimGoster(2);
+                    return hasarDosyasiniTazele();
+                }).catch(function (error) { handleError(el("app-message"), error); });
+                return;
+            }
+
+            hasarAdimGoster(3);
+        });
+
+        el("hasar-foto").addEventListener("change", function (event) {
+            hasarFotoYukle(event.target.files);
+            event.target.value = "";
+        });
+
+        el("hasar-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+
+            hasarDosyasiniKaydet().then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Hasar dosyası kaydedildi.", true);
+                hasarSihirbaziniKapat();
+                loadHasar();
+            }).catch(function (error) { handleError(el("app-message"), error); });
+        });
+    }
+
+    function degerRozeti(kaynak) {
+        return "rozet rozet-kaynak-" + String(kaynak).toLowerCase();
+    }
+
+    function loadDeger() {
+        var cards = el("deger-cards");
+        var tbody = el("deger-rows");
+
+        return api("/api/Vehicles/" + state.selectedVehicleId + "/deger").then(function (result) {
+            var seri = (result && result.data) || {};
+            var kayitlar = seri.kayitlar || [];
+
+            clear(cards);
+            cards.appendChild(card("Son değer", seri.sonDeger ? money(seri.sonDeger.deger) : "—", true));
+            cards.appendChild(card("Kaynak", seri.sonDeger ? seri.sonDeger.kaynakAdi : "—"));
+            cards.appendChild(card("Değer kaybı", seri.degerKaybi === null || seri.degerKaybi === undefined ? "—" : money(seri.degerKaybi)));
+
+            clear(tbody);
+            if (kayitlar.length === 0) {
+                emptyRow(tbody, 4, "Bu araçta değer kaydı yok.");
+            } else {
+                kayitlar.forEach(function (kayit) {
+                    var tr = document.createElement("tr");
+                    tr.appendChild(make("td", formatDate(kayit.tarih)));
+                    tr.appendChild(make("td", money(kayit.deger)));
+
+                    var kaynak = document.createElement("td");
+                    kaynak.appendChild(make("span", kayit.kaynakAdi, degerRozeti(kayit.kaynak)));
+                    tr.appendChild(kaynak);
+
+                    tr.appendChild(make("td", kayit.not || "-"));
+                    tbody.appendChild(tr);
+                });
+            }
+
+            drawDegerChart(kayitlar);
+        }).catch(function (error) {
+            clear(cards);
+            cards.appendChild(card("Değer", error && error.message ? error.message : "Alınamadı."));
+        });
+    }
+
+    function drawDegerChart(kayitlar) {
+        var canvas = el("deger-chart");
+        var fallback = el("deger-fallback");
+
+        if (state.degerChart) {
+            state.degerChart.destroy();
+            state.degerChart = null;
+        }
+
+        if (typeof Chart === "undefined" || kayitlar.length === 0) {
+            canvas.classList.add("hidden");
+            fallback.textContent = kayitlar.length === 0 ? "Grafik için en az bir değer kaydı gerekir." : "Grafik kitaplığı yüklenemedi.";
+            return;
+        }
+
+        canvas.classList.remove("hidden");
+        fallback.textContent = "";
+
+        var sirali = kayitlar.slice().reverse();
+
+        state.degerChart = new Chart(canvas.getContext("2d"), {
+            type: "line",
+            data: {
+                labels: sirali.map(function (k) { return formatDate(k.tarih); }),
+                datasets: [{
+                    label: "Araç değeri (TL)",
+                    data: sirali.map(function (k) { return Number(k.deger); }),
+                    borderColor: "#ff7a1a",
+                    backgroundColor: "rgba(255, 122, 26, 0.18)",
+                    tension: 0.25,
+                    fill: true
+                }]
+            },
+            options: grafikSecenekleri(false)
+        });
+    }
+
+    function bindDeger() {
+        el("deger-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            clearMessages();
+            el("deger-uyari").classList.add("hidden");
+
+            api("/api/Vehicles/" + state.selectedVehicleId + "/deger", {
+                method: "POST",
+                body: {
+                    tarih: el("deger-tarih").value,
+                    deger: Number(el("deger-tutar").value),
+                    kaynak: el("deger-kaynak").value,
+                    not: el("deger-not").value
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Değer kaydedildi.", true);
+                el("deger-form").reset();
+                el("deger-tarih").value = todayInput();
+                loadDeger();
+            }).catch(function (error) { handleError(el("app-message"), error); });
+        });
+
+        el("deger-tahmin").addEventListener("click", function () {
+            clearMessages();
+
+            api("/api/Vehicles/" + state.selectedVehicleId + "/deger/tahmin", { method: "POST" })
+                .then(function (result) {
+                    var uyari = el("deger-uyari");
+                    uyari.textContent = result.data.uyari + " Bugün kalan tahmin hakkı: " + result.data.kalanHak + ".";
+                    uyari.classList.remove("hidden");
+                    showMessage(el("app-message"), (result && result.message) || "Tahmin alındı.", true);
+                    loadDeger();
+                })
+                .catch(function (error) {
+                    var uyari = el("deger-uyari");
+                    uyari.textContent = error && error.message ? error.message : "Tahmin alınamadı.";
+                    uyari.classList.remove("hidden");
+                });
         });
     }
 
@@ -2955,7 +3387,9 @@
             belgeler: el("karne-belge").checked,
             plakaGoster: el("karne-plaka").checked,
             tutarGoster: el("karne-tutar").checked,
-            acilKart: el("karne-acil").checked
+            acilKart: el("karne-acil").checked,
+            hasarGecmisi: el("karne-hasar").checked,
+            beyanDegeri: el("karne-deger").checked
         };
     }
 
@@ -3481,6 +3915,11 @@
         fillSelect(el("evrak-tur"), EVRAK_TYPES);
         fillSelect(el("yolculuk-amac"), YOLCULUK_AMAC);
         fillSelect(el("lastik-mevsim"), LASTIK_MEVSIM);
+        fillSelect(el("hasar-tur"), HASAR_TUR);
+        fillSelect(el("hasar-tutanak"), HASAR_TUTANAK);
+        fillSelect(el("hasar-durum"), HASAR_DURUM);
+        fillSelect(el("hasar-foto-etiket"), HASAR_ETIKET);
+        fillSelect(el("deger-kaynak"), DEGER_KAYNAK);
         fillSelect(el("fuel-sarj"), SARJ_TURU);
         fillSelect(el("plan-istenen"), PLAN_TURLERI);
         fillSelect(el("vehicle-fuel"), FUEL_TYPES);
@@ -3499,6 +3938,8 @@
         el("expense-date").value = today;
         el("yolculuk-tarih").value = today;
         el("lastik-tarih").value = today;
+        el("hasar-tarih").value = today;
+        el("deger-tarih").value = today;
         el("report-end").value = today;
         var start = new Date();
         start.setMonth(start.getMonth() - 6);
@@ -3526,6 +3967,8 @@
         bindExport();
         bindLastik();
         bindKaza();
+        bindHasar();
+        bindDeger();
         bindDavet();
         bindPlan();
         bindUsta();
