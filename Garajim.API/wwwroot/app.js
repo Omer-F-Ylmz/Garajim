@@ -14,6 +14,7 @@
         dogrulanacakEposta: null,
         dogrulaSayac: null,
         duzenlenenAracId: null,
+        ustaGonderiyor: false,
         hasarAdim: 1,
         hasarDosyaId: null,
         degerChart: null,
@@ -183,9 +184,35 @@
         return now.getFullYear() + "-" + month + "-" + day;
     }
 
+    function gonderimKilitle(dugmeId, kilitli, bekleyenMetin) {
+        var dugme = el(dugmeId);
+        if (!dugme) {
+            return;
+        }
+
+        if (kilitli) {
+            if (!dugme.dataset.eskiMetin) {
+                dugme.dataset.eskiMetin = dugme.textContent;
+            }
+            dugme.disabled = true;
+            dugme.textContent = bekleyenMetin || "Gönderiliyor…";
+            return;
+        }
+
+        dugme.disabled = false;
+        if (dugme.dataset.eskiMetin) {
+            dugme.textContent = dugme.dataset.eskiMetin;
+            delete dugme.dataset.eskiMetin;
+        }
+    }
+
     function showMessage(node, text, isOk) {
         node.textContent = text || "";
         node.className = isOk ? "message ok" : "message";
+
+        if (text && node.id === "app-message" && typeof node.scrollIntoView === "function") {
+            node.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
     }
 
     function clearMessages() {
@@ -207,6 +234,9 @@
         state.selectedVehicleId = null;
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(ACIL_KART_ANAHTARI);
+        localStorage.removeItem(KAZA_KUYRUK_ANAHTARI);
+        localStorage.removeItem(KAZA_REHBER_ANAHTARI);
     }
 
     function readSession() {
@@ -857,6 +887,10 @@
     }
 
     function removeRecord(path, reload) {
+        if (!window.confirm("Bu kayıt kalıcı olarak silinecek. Devam edilsin mi?")) {
+            return;
+        }
+
         api(path, { method: "DELETE" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Kayıt silindi.", true);
             reload();
@@ -1504,8 +1538,21 @@
         return Array.isArray(kuyruk) ? kuyruk : [];
     }
 
+    var KAZA_KUYRUK_SINIRI = 20;
+
     function kuyrugaEkle(govde) {
         var kuyruk = kuyrugoOku();
+        var imza = JSON.stringify(govde);
+
+        var ayni = kuyruk.some(function (kayit) {
+            return JSON.stringify(kayit.govde) === imza;
+        });
+
+        if (ayni || kuyruk.length >= KAZA_KUYRUK_SINIRI) {
+            kuyrukRozetiniTazele();
+            return;
+        }
+
         kuyruk.push({ govde: govde, eklenme: new Date().toISOString() });
         yerelYaz(KAZA_KUYRUK_ANAHTARI, kuyruk);
         kuyrukRozetiniTazele();
@@ -2835,11 +2882,13 @@
 
     function ustaSor(metin) {
         var soru = (metin || el("usta-soru").value || "").trim();
-        if (soru.length === 0) {
+        if (soru.length === 0 || state.ustaGonderiyor) {
             return;
         }
 
         clearMessages();
+        gonderimKilitle("usta-sor", true, "Usta düşünüyor…");
+        state.ustaGonderiyor = true;
 
         var gonder = function () {
             return api("/api/Usta/sohbet/" + ustaDurum.sohbetId + "/mesaj", {
@@ -2861,6 +2910,9 @@
                 return;
             }
             handleError(el("app-message"), error);
+        }).then(function () {
+            state.ustaGonderiyor = false;
+            gonderimKilitle("usta-sor", false);
         });
     }
 
