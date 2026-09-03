@@ -31,6 +31,9 @@ namespace Garajim.Business.Constants
         public const string AracArsivlendi = "Araç arşive alındı.";
         public const string AracArsivdenAlindi = "Araç arşivden çıkarıldı.";
         public const string AracArsivli = "Bu araç arşivde; yeni kayıt eklemek için önce arşivden çıkarın.";
+        public const string MarkaKatalogdaYok = "Bu marka katalogda yok; listeden seçin.";
+        public const string SeriKatalogdaYok = "Bu seri seçilen markada yok; listeden seçin ya da Listede yok kutusunu işaretleyin.";
+        public const string ModelMetniGecersiz = "Model adı 2-40 karakter olmalı, harf içermeli ve yalnız harf, rakam, boşluk, nokta ve tire taşımalı.";
         public const string PlakaGecersiz = "Plaka Türkiye plaka kuralına uymuyor. Örnek: 34 ABC 123. Yurt dışı plakası ise yabancı plaka kutusunu işaretleyin.";
         public const string YabanciPlakaGecersiz = "Yabancı plaka 5-12 harf ve rakamdan oluşmalı, Türkçe karakter içermemeli.";
         public const string PlateAlreadyExists = "Bu plaka zaten kayıtlı.";

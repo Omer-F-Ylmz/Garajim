@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Content Include="Usta\Bilgi\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Katalog\*.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Usta\*.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

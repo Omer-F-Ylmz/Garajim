@@ -26,6 +26,10 @@ namespace Garajim.ML.Models
 
         public int KasaSayisi => _kasalar.Count;
 
+        public IReadOnlyCollection<string> Markalar => _markalar;
+
+        public IReadOnlyCollection<string> Seriler => _seriler;
+
         public IReadOnlyCollection<string> Kasalar => _kasalar;
 
         public static FiyatModeliSozlugu Yukle(string modelYolu)
