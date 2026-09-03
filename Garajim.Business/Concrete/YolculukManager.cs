@@ -198,9 +198,9 @@ namespace Garajim.Business.Concrete
         {
             if (!Enum.IsDefined(amac))
                 return Messages.InvalidValue;
-            if (tarih == default || tarih.Date > DateTime.UtcNow.Date.AddDays(1))
+            if (!DegerSinirlari.GecmisTarih(tarih))
                 return Messages.InvalidValue;
-            if (baslangicKm < 0 || bitisKm <= baslangicKm)
+            if (!DegerSinirlari.KmGecerli(baslangicKm) || !DegerSinirlari.KmGecerli(bitisKm) || bitisKm <= baslangicKm)
                 return Messages.YolculukKmHatali;
 
             return null;

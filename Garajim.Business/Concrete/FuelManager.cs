@@ -73,7 +73,9 @@ namespace Garajim.Business.Concrete
 
         private static string Dogrula(FuelType yakitTuru, FuelCreateDto dto)
         {
-            if (dto.TotalCost < 0 || dto.Km < 0 || dto.Liters < 0 || dto.Kwh < 0)
+            if (!DegerSinirlari.TutarGecerli(dto.TotalCost) || !DegerSinirlari.KmGecerli(dto.Km)
+                || !DegerSinirlari.LitreGecerli(dto.Liters) || !DegerSinirlari.KwhGecerli(dto.Kwh)
+                || !DegerSinirlari.GecmisTarih(dto.Date))
                 return Messages.InvalidValue;
             if (dto.SarjTuru != null && !Enum.IsDefined(dto.SarjTuru.Value))
                 return Messages.InvalidValue;

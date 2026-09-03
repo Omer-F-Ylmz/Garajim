@@ -151,6 +151,36 @@
         fillSelect(select, values.map(function (value) { return [value, value]; }));
     }
 
+    function sayiOku(deger) {
+        var metin = String(deger === null || deger === undefined ? "" : deger).trim().replace(/\s/g, "");
+
+        if (metin === "") {
+            return NaN;
+        }
+
+        var noktali = metin.lastIndexOf(".");
+        var virgullu = metin.lastIndexOf(",");
+
+        if (noktali >= 0 && virgullu >= 0) {
+            metin = virgullu > noktali
+                ? metin.replace(/\./g, "").replace(",", ".")
+                : metin.replace(/,/g, "");
+        } else if (virgullu >= 0) {
+            metin = metin.replace(/\./g, "").replace(",", ".");
+        } else if (noktali >= 0) {
+            var kuyruk = metin.length - noktali - 1;
+            if (metin.indexOf(".") !== noktali || kuyruk === 3) {
+                metin = metin.replace(/\./g, "");
+            }
+        }
+
+        return /^-?\d*(\.\d+)?$/.test(metin) ? Number(metin) : NaN;
+    }
+
+    function sayiAlan(id) {
+        return sayiOku(el(id).value);
+    }
+
     function money(value) {
         var number = Number(value);
         if (!isFinite(number)) {
@@ -2208,7 +2238,7 @@
                 method: "POST",
                 body: {
                     tarih: el("deger-tarih").value,
-                    deger: Number(el("deger-tutar").value),
+                    deger: sayiAlan("deger-tutar"),
                     kaynak: el("deger-kaynak").value,
                     not: el("deger-not").value
                 }
@@ -4322,7 +4352,7 @@
                     vehicleId: Number(el("receipt-vehicle").value),
                     tur: tur,
                     tarih: el("receipt-date").value,
-                    tutar: Number(el("receipt-amount").value),
+                    tutar: sayiAlan("receipt-amount"),
                     km: kilometre ? Number(kilometre) : null,
                     litre: tur === "Yakit" && litre ? Number(litre) : null,
                     bakimTuru: tur === "Bakim" ? el("receipt-maintenance-type").value : null,
@@ -4534,7 +4564,7 @@
                     type: el("maintenance-type").value,
                     date: el("maintenance-date").value,
                     km: Number(el("maintenance-km").value),
-                    cost: Number(el("maintenance-cost").value),
+                    cost: sayiAlan("maintenance-cost"),
                     serviceName: el("maintenance-service").value,
                     note: el("maintenance-note").value
                 }
@@ -4559,10 +4589,10 @@
                     vehicleId: state.selectedVehicleId,
                     date: el("fuel-date").value,
                     km: Number(el("fuel-km").value),
-                    liters: el("fuel-liters").value === "" ? 0 : Number(el("fuel-liters").value),
-                    kwh: el("fuel-kwh").value === "" ? null : Number(el("fuel-kwh").value),
+                    liters: el("fuel-liters").value === "" ? 0 : sayiAlan("fuel-liters"),
+                    kwh: el("fuel-kwh").value === "" ? null : sayiAlan("fuel-kwh"),
                     sarjTuru: el("fuel-sarj").value === "" ? null : el("fuel-sarj").value,
-                    totalCost: Number(el("fuel-cost").value)
+                    totalCost: sayiAlan("fuel-cost")
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);
@@ -4584,7 +4614,7 @@
                     vehicleId: state.selectedVehicleId,
                     category: el("expense-category").value,
                     date: el("expense-date").value,
-                    amount: Number(el("expense-amount").value),
+                    amount: sayiAlan("expense-amount"),
                     note: el("expense-note").value
                 }
             }).then(function (result) {

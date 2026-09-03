@@ -45,7 +45,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<MaintenanceDto>(Messages.VehicleNotFound);
-            if (dto.Cost < 0 || dto.Km < 0 || !Enum.IsDefined(dto.Type))
+            if (!DegerSinirlari.TutarGecerli(dto.Cost) || !DegerSinirlari.KmGecerli(dto.Km)
+                || !DegerSinirlari.GecmisTarih(dto.Date) || !Enum.IsDefined(dto.Type))
                 return new ErrorDataResult<MaintenanceDto>(Messages.InvalidValue);
 
             var parcaHatasi = ParcalariDogrula(dto.Parcalar);
@@ -93,7 +94,8 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<MaintenanceDto>(Messages.RecordNotFound);
 
-            if (dto.Cost < 0 || dto.Km < 0 || !Enum.IsDefined(dto.Type))
+            if (!DegerSinirlari.TutarGecerli(dto.Cost) || !DegerSinirlari.KmGecerli(dto.Km)
+                || !DegerSinirlari.GecmisTarih(dto.Date) || !Enum.IsDefined(dto.Type))
                 return new ErrorDataResult<MaintenanceDto>(Messages.InvalidValue);
 
             var parcaHatasi = ParcalariDogrula(dto.Parcalar);

@@ -44,8 +44,8 @@ namespace Garajim.Business.Concrete
         public async Task<IDataResult<VehicleDto>> AddAsync(int userId, VehicleCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Plate) || string.IsNullOrWhiteSpace(dto.Brand) ||
-                string.IsNullOrWhiteSpace(dto.Model) || dto.Year < 1950 ||
-                dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
+                string.IsNullOrWhiteSpace(dto.Model) || !DegerSinirlari.YilGecerli(dto.Year) ||
+                !DegerSinirlari.KmGecerli(dto.CurrentKm) || !Enum.IsDefined(dto.FuelType))
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var plate = PlakaDogrulayici.Normalize(dto.Plate);
             if (plate.Length > AracAlanUzunluklari.Plaka)
@@ -95,7 +95,7 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorResult(Messages.VehicleNotFound);
             if (string.IsNullOrWhiteSpace(dto.Brand) || string.IsNullOrWhiteSpace(dto.Model) ||
-                dto.Year < 1950 || dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
+                !DegerSinirlari.YilGecerli(dto.Year) || !DegerSinirlari.KmGecerli(dto.CurrentKm) || !Enum.IsDefined(dto.FuelType))
                 return new ErrorResult(Messages.InvalidValue);
             vehicle.Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka);
             vehicle.Model = Kirp(dto.Model, AracAlanUzunluklari.Model);
