@@ -4803,10 +4803,52 @@
         }
     }
 
+    function yeniSurumSeridiniGoster() {
+        var serit = el("surum-serit");
+        if (!serit || !serit.classList.contains("hidden")) {
+            return;
+        }
+
+        serit.classList.remove("hidden");
+    }
+
+    function surumDenetimi() {
+        var acilis = document.documentElement.dataset.surum || null;
+
+        return fetch("/index.html", { method: "HEAD", cache: "no-store" }).then(function (cevap) {
+            var guncel = cevap.headers.get("X-App-Version");
+
+            if (!guncel) {
+                return;
+            }
+
+            if (!acilis) {
+                document.documentElement.dataset.surum = guncel;
+                return;
+            }
+
+            if (guncel !== acilis) {
+                yeniSurumSeridiniGoster();
+            }
+        }).catch(function () {
+        });
+    }
+
     function registerServiceWorker() {
+        var serit = el("surum-yenile");
+        if (serit) {
+            serit.addEventListener("click", function () { location.reload(); });
+        }
+
+        surumDenetimi();
+        setInterval(surumDenetimi, 15 * 60 * 1000);
+
         if (!("serviceWorker" in navigator)) {
             return;
         }
+
+        navigator.serviceWorker.addEventListener("controllerchange", yeniSurumSeridiniGoster);
+
         window.addEventListener("load", function () {
             navigator.serviceWorker.register("/sw.js").catch(function () {
             });

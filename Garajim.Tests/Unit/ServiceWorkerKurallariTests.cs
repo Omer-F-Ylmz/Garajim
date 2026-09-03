@@ -67,11 +67,13 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public void SurumArtirildiginaGoreEskiOnbellekTemizlenir()
+        public void OnbellekAdiSurumdenUretilir()
         {
             var sw = Oku("sw.js");
 
-            Assert.Contains("garajim-kabuk-v2", sw);
+            Assert.Contains("garajim-kabuk-", sw);
+            Assert.Contains("__SURUM__", sw);
+            Assert.DoesNotContain("garajim-kabuk-v", sw);
             Assert.Contains("caches.delete(ad)", sw);
         }
 

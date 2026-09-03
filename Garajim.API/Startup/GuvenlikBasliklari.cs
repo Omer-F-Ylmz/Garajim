@@ -36,6 +36,7 @@ namespace Garajim.API.Startup
                 basliklar["Referrer-Policy"] = "no-referrer";
                 basliklar["Cross-Origin-Opener-Policy"] = "same-origin";
                 basliklar["Content-Security-Policy"] = politika;
+                basliklar[SurumBilgisi.BaslikAdi] = SurumBilgisi.Surum;
 
                 await next();
             });

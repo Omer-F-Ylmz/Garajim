@@ -1,4 +1,4 @@
-var KABUK_SURUMU = "garajim-kabuk-v2";
+var KABUK_SURUMU = "garajim-kabuk-" + "__SURUM__";
 var KABUK_DOSYALARI = [
     "/",
     "/index.html",

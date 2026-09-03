@@ -314,6 +314,7 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 app.UseGuvenlikBasliklari(app.Configuration);
+app.UseSurumluServiceWorker(app.Environment);
 
 if (app.Environment.IsProduction())
 {

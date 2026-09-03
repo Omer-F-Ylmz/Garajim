@@ -1224,3 +1224,14 @@ button.compact {
     width: auto;
     margin: 0;
 }
+
+.surum-serit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+}
