@@ -1,3 +1,4 @@
+using Garajim.Business.Katalog;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete.Planlar;
 using Garajim.Business.Constants;
@@ -17,12 +18,13 @@ namespace Garajim.Business.Concrete
         private readonly ICompanyDal _companyDal;
         private readonly PlanKurallari _planKurallari;
         private readonly IKmDuzeltmeLogDal _kmLogDal;
+        private readonly AracKatalogu _katalog;
         private readonly IDocumentDal _documentDal;
         private readonly IMaintenanceDal _maintenanceDal;
         private readonly IDocumentService _documentService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari, IKmDuzeltmeLogDal kmLogDal,
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari, IKmDuzeltmeLogDal kmLogDal, AracKatalogu katalog,
             IDocumentDal documentDal, IMaintenanceDal maintenanceDal, IDocumentService documentService, IUnitOfWork unitOfWork)
         {
             _vehicleDal = vehicleDal;
@@ -31,6 +33,7 @@ namespace Garajim.Business.Concrete
             _companyDal = companyDal;
             _planKurallari = planKurallari;
             _kmLogDal = kmLogDal;
+            _katalog = katalog;
             _documentDal = documentDal;
             _maintenanceDal = maintenanceDal;
             _documentService = documentService;
@@ -75,14 +78,22 @@ namespace Garajim.Business.Concrete
             var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
             if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId && !v.Arsivli) >= limit)
                 return new ErrorDataResult<VehicleDto>(Messages.AracLimitiAsildi);
+            var model = MarkaModelCoz(dto.Brand, dto.Model, dto.ListedeYok);
+            if (model.Hata != null)
+                return new ErrorDataResult<VehicleDto>(model.Hata);
+
+            if (!SerbestModelKurali.MotorGecerli(dto.Motor))
+                return new ErrorDataResult<VehicleDto>(Messages.ModelMetniGecersiz);
+
             var vehicle = new Vehicle
             {
                 CompanyId = owner.CompanyId,
                 UserId = userId,
                 Plate = plate,
                 YabanciPlaka = dto.YabanciPlaka,
-                Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka),
-                Model = Kirp(dto.Model, AracAlanUzunluklari.Model),
+                Brand = model.Marka,
+                Model = model.Seri,
+                ModelEslesmedi = model.Eslesmedi,
                 Year = dto.Year,
                 CurrentKm = dto.CurrentKm,
                 SonKmGuncelleme = DateTime.UtcNow,
@@ -109,8 +120,16 @@ namespace Garajim.Business.Concrete
             if (string.IsNullOrWhiteSpace(dto.Brand) || string.IsNullOrWhiteSpace(dto.Model) ||
                 !DegerSinirlari.YilGecerli(dto.Year) || !DegerSinirlari.KmGecerli(dto.CurrentKm) || !Enum.IsDefined(dto.FuelType))
                 return new ErrorResult(Messages.InvalidValue);
-            vehicle.Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka);
-            vehicle.Model = Kirp(dto.Model, AracAlanUzunluklari.Model);
+            var model = MarkaModelCoz(dto.Brand, dto.Model, dto.ListedeYok);
+            if (model.Hata != null)
+                return new ErrorResult(model.Hata);
+
+            if (!SerbestModelKurali.MotorGecerli(dto.Motor))
+                return new ErrorResult(Messages.ModelMetniGecersiz);
+
+            vehicle.Brand = model.Marka;
+            vehicle.Model = model.Seri;
+            vehicle.ModelEslesmedi = model.Eslesmedi;
             vehicle.Year = dto.Year;
             if (dto.CurrentKm < vehicle.CurrentKm)
             {
@@ -258,6 +277,35 @@ namespace Garajim.Business.Concrete
             return new SuccessResult(Messages.VehicleDeleted);
         }
 
+        private sealed class ModelSonucu
+        {
+            public string Marka { get; set; }
+            public string Seri { get; set; }
+            public bool Eslesmedi { get; set; }
+            public string Hata { get; set; }
+        }
+
+        private ModelSonucu MarkaModelCoz(string marka, string model, bool listedeYok)
+        {
+            var markaYazimi = _katalog.MarkaYazimi(marka);
+
+            if (markaYazimi == null)
+                return new ModelSonucu { Hata = Messages.MarkaKatalogdaYok };
+
+            var seriYazimi = _katalog.SeriYazimi(markaYazimi, model);
+
+            if (seriYazimi != null)
+                return new ModelSonucu { Marka = markaYazimi, Seri = seriYazimi, Eslesmedi = false };
+
+            if (!listedeYok)
+                return new ModelSonucu { Hata = Messages.SeriKatalogdaYok };
+
+            if (!SerbestModelKurali.Gecerli(model))
+                return new ModelSonucu { Hata = Messages.ModelMetniGecersiz };
+
+            return new ModelSonucu { Marka = markaYazimi, Seri = model.Trim(), Eslesmedi = true };
+        }
+
         private static string Kirp(string metin, int uzunluk)
         {
             if (string.IsNullOrWhiteSpace(metin))
@@ -277,6 +325,7 @@ namespace Garajim.Business.Concrete
                 Plate = vehicle.Plate,
                 YabanciPlaka = vehicle.YabanciPlaka,
                 Arsivli = vehicle.Arsivli,
+                ModelEslesmedi = vehicle.ModelEslesmedi,
                 SonKmGuncelleme = vehicle.SonKmGuncelleme,
                 ArsivNedeni = vehicle.ArsivNedeni?.ToString(),
                 ArsivTarihi = vehicle.ArsivTarihi,

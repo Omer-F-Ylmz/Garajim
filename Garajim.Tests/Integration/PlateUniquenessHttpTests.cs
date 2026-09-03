@@ -44,7 +44,7 @@ namespace Garajim.Tests.Integration
             {
                 plate = plaka,
                 brand = "Ford",
-                model = "Transit",
+                model = "Focus",
                 year = 2020,
                 currentKm = 50000,
                 fuelType = "Dizel"

@@ -63,7 +63,7 @@ namespace Garajim.Tests.Integration
         public async Task AracEklerken_KullanicininSirketiDevralinir()
         {
             var kullanici = _db.KullaniciEkle("surucu@garajim.local");
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari, _db.KmLogDal, _db.DocumentDal, _db.MaintenanceDal, new SahteBelgeServisi(), _db.UnitOfWork);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari, _db.KmLogDal, TestKatalog.Yukle(), _db.DocumentDal, _db.MaintenanceDal, new SahteBelgeServisi(), _db.UnitOfWork);
 
             var sonuc = await manager.AddAsync(kullanici.Id, new VehicleCreateDto
             {

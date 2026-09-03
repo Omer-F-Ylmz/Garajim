@@ -1,3 +1,4 @@
+using Garajim.Tests.Integration;
 using System.Linq.Expressions;
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete;
@@ -26,7 +27,7 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
             _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
                 .ReturnsAsync(new Company { Id = 42, Name = "Test", PlanType = PlanType.Bireysel });
-            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object, new Mock<IDocumentDal>().Object, new Mock<IMaintenanceDal>().Object, new Mock<IDocumentService>().Object, new Mock<IUnitOfWork>().Object);
+            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object, TestKatalog.Yukle(), new Mock<IDocumentDal>().Object, new Mock<IMaintenanceDal>().Object, new Mock<IDocumentService>().Object, new Mock<IUnitOfWork>().Object);
         }
 
         private static VehicleCreateDto ValidDto()

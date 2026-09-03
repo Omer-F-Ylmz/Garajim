@@ -10,6 +10,7 @@ namespace Garajim.Entity.Concrete
         public int UserId { get; set; }
         public string Plate { get; set; }
         public bool YabanciPlaka { get; set; }
+        public bool ModelEslesmedi { get; set; }
         public bool Arsivli { get; set; }
         public DateTime? SonKmGuncelleme { get; set; }
         public DateTime? ArsivTarihi { get; set; }

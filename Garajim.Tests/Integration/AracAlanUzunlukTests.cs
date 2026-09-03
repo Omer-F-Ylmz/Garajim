@@ -35,13 +35,12 @@ namespace Garajim.Tests.Integration
         private static object UzunArac(string plaka) => new
         {
             plate = plaka,
-            brand = Uzun(150),
-            model = Uzun(150),
+            brand = "Fiat",
+            model = "Egea",
             year = 2020,
             currentKm = 40000,
             fuelType = "Benzin",
             vites = Uzun(60),
-            motor = Uzun(60),
             kasaTipi = "Sedan",
             acilKisiAd = Uzun(200),
             acilKisiTelefon = Uzun(50),
@@ -50,10 +49,9 @@ namespace Garajim.Tests.Integration
 
         private static void AlanlarSinirdaMi(JsonElement veri)
         {
-            Assert.Equal(AracAlanUzunluklari.Marka, veri.GetProperty("brand").GetString().Length);
-            Assert.Equal(AracAlanUzunluklari.Model, veri.GetProperty("model").GetString().Length);
+            Assert.Equal("Fiat", veri.GetProperty("brand").GetString());
+            Assert.Equal("Egea", veri.GetProperty("model").GetString());
             Assert.Equal(AracAlanUzunluklari.Vites, veri.GetProperty("vites").GetString().Length);
-            Assert.Equal(AracAlanUzunluklari.Motor, veri.GetProperty("motor").GetString().Length);
             Assert.Equal(AracAlanUzunluklari.AcilKisiAd, veri.GetProperty("acilKisiAd").GetString().Length);
             Assert.Equal(AracAlanUzunluklari.AcilKisiTelefon, veri.GetProperty("acilKisiTelefon").GetString().Length);
             Assert.Equal(AracAlanUzunluklari.AcilNot, veri.GetProperty("acilNot").GetString().Length);

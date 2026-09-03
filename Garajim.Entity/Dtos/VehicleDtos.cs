@@ -6,6 +6,7 @@ namespace Garajim.Entity.Dtos
     {
         public string Plate { get; set; }
         public bool YabanciPlaka { get; set; }
+        public bool ListedeYok { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
         public int Year { get; set; }
@@ -23,6 +24,7 @@ namespace Garajim.Entity.Dtos
 
     public class VehicleUpdateDto
     {
+        public bool ListedeYok { get; set; }
         public bool? KmDusurmeOnayi { get; set; }
         public string KmDuzeltmeNedeni { get; set; }
         public string Brand { get; set; }
@@ -64,6 +66,7 @@ namespace Garajim.Entity.Dtos
         public string Plate { get; set; }
         public bool YabanciPlaka { get; set; }
         public bool Arsivli { get; set; }
+        public bool ModelEslesmedi { get; set; }
         public DateTime? SonKmGuncelleme { get; set; }
         public string ArsivNedeni { get; set; }
         public DateTime? ArsivTarihi { get; set; }

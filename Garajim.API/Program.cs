@@ -56,6 +56,7 @@ builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();
 builder.Services.AddScoped<FisTemizlemeJob>();
+builder.Services.AddScoped<KatalogEslemeJob>();
 builder.Services.AddScoped<DemoSifirlamaJob>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
@@ -362,6 +363,27 @@ if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
                 migrationException,
                 "Migration uygulanamadı. ConnectionStrings__Default değerinin doğru sunucuyu gösterdiğini ve kullanıcının şema değiştirme yetkisi olduğunu doğrulayın. Uygulama başlatılmıyor.");
             throw;
+        }
+    }
+}
+
+if (builder.Configuration.GetValue("Katalog:BaslangictaEsle", true))
+{
+    using (var eslemeScope = app.Services.CreateScope())
+    {
+        var eslemeLogger = eslemeScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
+            var guncellenen = await eslemeScope.ServiceProvider.GetRequiredService<KatalogEslemeJob>().RunAsync();
+
+            eslemeLogger.LogInformation(
+                "Katalog eşlemesi tamamlandı, {Adet} aracın marka/model alanı güncellendi.",
+                guncellenen);
+        }
+        catch (Exception eslemeException)
+        {
+            eslemeLogger.LogError(eslemeException, "Katalog eşlemesi çalıştırılamadı. Uygulama eşleme yapılmadan devam ediyor.");
         }
     }
 }

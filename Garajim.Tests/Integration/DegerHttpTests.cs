@@ -57,12 +57,13 @@ namespace Garajim.Tests.Integration
             return client;
         }
 
-        private static async Task<int> AracEkleAsync(HttpClient client, string model = "Clio")
+        private static async Task<int> AracEkleAsync(HttpClient client, string model = "Clio", bool listedeYok = false)
         {
             var cevap = await client.PostAsJsonAsync("/api/Vehicles", new
             {
                 plate = Plaka(),
                 brand = "Renault",
+                listedeYok,
                 model,
                 year = 2019,
                 currentKm = 90000,
@@ -178,13 +179,13 @@ namespace Garajim.Tests.Integration
         public async Task KapsamDisiModelIcin422Doner()
         {
             var sahip = await SahipOlusturAsync();
-            var aracId = await AracEkleAsync(sahip, "Bilinmeyen Seri X");
+            var aracId = await AracEkleAsync(sahip, "Bilinmeyen Seri X", listedeYok: true);
 
             var cevap = await sahip.PostAsync($"/api/Vehicles/{aracId}/deger/tahmin", null);
             var govde = await cevap.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.UnprocessableEntity, cevap.StatusCode);
-            Assert.Contains("kapsam", govde, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("katalog", govde, StringComparison.OrdinalIgnoreCase);
 
             var seri = await VeriAsync(await sahip.GetAsync($"/api/Vehicles/{aracId}/deger"));
             Assert.Equal(0, seri.GetProperty("kayitlar").GetArrayLength());
@@ -235,7 +236,7 @@ namespace Garajim.Tests.Integration
             var seri = await VeriAsync(await sahip.GetAsync($"/api/Vehicles/{aracId}/deger"));
             Assert.Equal(3, seri.GetProperty("kayitlar").GetArrayLength());
 
-            var digerArac = await AracEkleAsync(sahip, "Egea");
+            var digerArac = await AracEkleAsync(sahip);
             var digerinTahmini = await sahip.PostAsync($"/api/Vehicles/{digerArac}/deger/tahmin", null);
             Assert.Equal(HttpStatusCode.OK, digerinTahmini.StatusCode);
         }
@@ -278,7 +279,7 @@ namespace Garajim.Tests.Integration
         {
             var sahip = await SahipOlusturAsync();
             var birinci = await AracEkleAsync(sahip);
-            var ikinci = await AracEkleAsync(sahip, "Egea");
+            var ikinci = await AracEkleAsync(sahip, "Megane");
 
             await BeyanAsync(sahip, birinci, "2026-01-15", 900000m);
             await BeyanAsync(sahip, birinci, "2026-08-15", 820000m);
