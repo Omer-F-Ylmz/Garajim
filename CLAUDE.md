@@ -48,6 +48,14 @@ Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar e
 
 Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
 
+### Araç kataloğu fiyat modelinin sözlüğüdür
+
+`Business/Katalog/arac-katalogu.json` (56 marka, 391 seri) elle yazılmış bir liste değil, `price-model.zip` içindeki `MarkaEncoded` / `SeriEncoded` slot adlarının aynısıdır. `AracKataloguTests` iki yönlü eşitliği, her serinin tek markada geçtiğini ve bozuk şemada `Yukle`'nin `InvalidOperationException` attığını sabitler; kataloğa elle marka ya da seri eklenmez, model yeniden eğitilince katalog sözlükten yeniden üretilir.
+
+Araç eklemede marka katalogda olmalıdır; model ya markanın serisidir ya da `ListedeYok` ile serbest metindir (`SerbestModelKurali`) ve o zaman `Vehicle.ModelEslesmedi` açılır. Bayrak açıkken değer tahmini 422 döner — model kapsamı katalogla aynı olduğu için katalog dışı tahmin anlamsızdır.
+
+Mevcut kayıtlar `KatalogEslemeJob` ile açılışta bir kez katalog yazımına çekilir (`AracEslestirici`: takma ad tablosu, Türkçe karakter katlama, sonek ayırma). İş birikimli değil **fikir sabitidir**: aynı satırı ikinci kez çalıştırmak hiçbir şeyi değiştirmez. Yeni takma ad gerektiğinde `MarkaTakmaAdlari` tablosuna eklenir ve testle sabitlenir.
+
 ### Uygunsuz ifade listesi veridir, kod değildir
 
 Karneye ve paylaşılan sayfalara çıkan serbest metinler `UygunsuzIfadeFiltresi`'nden geçer: servis adı, bakım notu, parça açıklaması ve markası, hasar açıklaması ve konumu, evrak notu ve sağlayıcısı, katalogda olmayan araç modeli, motor metni ve kayıttaki şirket adı. Eşleşme 400 ve `Messages.UygunsuzIfade` döner.

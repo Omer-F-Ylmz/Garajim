@@ -240,6 +240,17 @@ Kaza, cam, dolu, hırsızlık ve diğer hasarlar araç bazlı dosyalarda toplan�
 - Arayüzde araç çalışma alanının üstünde **Kaza anı** düğmesi vardır; mobilde yapışkandır, rehberi açar ve tek dokunuşla hasar dosyası açıp kamerayı başlatır.
 - Panelde açık hasar dosyası sayacı, `GET /api/export/hasar.csv` ile dışa aktarım vardır.
 
+## Araç kataloğu
+
+Araç markası ve serisi serbest metin değildir; `Garajim.Business/Katalog/arac-katalogu.json` dosyasındaki **56 marka ve 391 seri** arasından seçilir. Katalog, fiyat modelinin kendi sözlüğünden (`price-model.zip` içindeki `MarkaEncoded` / `SeriEncoded` slot adları) üretildi; marka→seri eşlemesi eğitim verisindeki ilanların çoğunluğuna göre çıkarıldı.
+
+- `GET /api/Katalog/markalar` marka adlarını, `GET /api/Katalog/seriler?marka=Fiat` o markanın serilerini verir. İkisi de girişli kullanıcıya açıktır ve bir saat önbelleklenir.
+- Araç eklerken marka katalogda olmalıdır (yoksa **400**). Model ya o markanın serisidir ya da `listedeYok=true` ile serbest metindir: 2-40 karakter, yalnız harf, rakam, boşluk, nokta ve tire, en az bir harf, aynı karakterin dört kez tekrarı yasak. Serbest metin girildiğinde `ModelEslesmedi` açılır.
+- `ModelEslesmedi` açık araçta değer tahmini **422** döner ve arayüz üst şeritte katalogdan seçmeye çağırır; model kapsamı katalogla birebir olduğu için katalog dışı bir modelin tahmini zaten anlamsızdır.
+- Yükseltmede `KatalogEslemeJob` bir kez çalışır ve mevcut araçları katalog yazımına çeker: `VW` → `Volkswagen`, `Mercedes` → `Mercedes - Benz`, `Clio 1.5 dCi` → `Clio` + motor `1.5 dCi`. Eşleşmeyene bayrak yazılır, hiçbir satır silinmez.
+
+Katalog yeni araç modelleriyle genişletilecekse tek doğru yol **modeli yeniden eğitip kataloğu sözlükten yeniden üretmektir**; `AracKataloguTests` katalog ile sözlüğün birebir aynı adları taşıdığını, her serinin tek markada geçtiğini ve şema hatasında yüklemenin durduğunu sabitler. Elle satır eklemek bu testi kırar.
+
 ## Araç değeri
 
 Aracın değeri zaman serisi olarak tutulur; beyan elle, tahmin modelden gelir.
@@ -346,6 +357,7 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 
 - `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/dogrula`, `POST /api/auth/kod-gonder`
 - `GET|POST /api/vehicles`, `GET|PUT|DELETE /api/vehicles/{id}`
+- `GET /api/katalog/markalar`, `GET /api/katalog/seriler?marka=`
 - `GET /api/maintenance?vehicleId=`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
 - `GET /api/fuel?vehicleId=`, `POST /api/fuel`, `DELETE /api/fuel/{id}`
 - `GET /api/expenses?vehicleId=`, `POST /api/expenses`, `DELETE /api/expenses/{id}`
@@ -390,6 +402,8 @@ Eğitim verisi repoda tutulmaz (`Garajim.ML/Data/*.csv` git dışıdır). Modeli
    ```
 
 Eğitim, modeli `Garajim.API/MLModels/price-model.zip` olarak yazar; API açılışta bu dosyayı okur.
+
+Model yeniden eğitildiğinde marka ve seri kümesi değişebilir: `Garajim.Business/Katalog/arac-katalogu.json` da yeni sözlükten üretilmelidir, yoksa `AracKataloguTests` kırılır.
 
 ### Veri temizliği
 

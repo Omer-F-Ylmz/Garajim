@@ -227,6 +227,39 @@ Kullanıcının şifresini kurtarmasının ve döndürmesinin hiçbir yolu yoktu
 
 Sıfırlama kodu doğrulama kodunun altyapısını paylaşıyor ama kendi kolonlarında duruyor, böylece iki akış birbirini ezmiyor. Şifre değişince `AppUser.SifreDegisimTarihi` yazılıyor ve JWT'nin `iat` iddiası bundan eskiyse token 401 alıyor. Bilinen sınır: `iat` saniye çözünürlüklü olduğu için değişimle aynı saniyede üretilmiş bir token bir saniyeliğine ayakta kalabiliyor; kapatmak gerekirse tarih yerine artan bir `TokenSurumu` sayacına geçilir.
 
+## Sprint İnce Ayar 1 — TAMAMLANDI
+
+Yayın öncesi on bir maddelik girdi kalitesi, doğruluk ve KVKK turu.
+
+| Madde | Commit |
+|---|---|
+| Plaka doğrulayıcı: TR kuralı, yabancı plaka bayrağı, normalizasyon | `1f974f1` |
+| Sayısal aralıklar, gelecek tarih reddi, TR ondalık girişi | `a80d7cc` |
+| Tüketim doğruluğu: tam dolum, şüpheli kayıt bayrağı | `cc47efa` |
+| Km düzeltme: açık onay, neden ve değişmez kayıtlar | `35b0dda` |
+| Saat: gün sınırları Türkiye saatine göre | `b630f8c` |
+| PWA sürümleme: önbellek adı yayına bağlandı | `37d6730` |
+| Araç arşivleme ve arşivden silme | `433c60d` `47089ec` |
+| Hesap ve şirket silme (KVKK): 7 gün bekleyen soft silme | `a5bd986` |
+| Kotalar ve AI bütçesi | `3159477` |
+| Demo sıfırlama: her gece temiz demo | `a8ed503` |
+| Küçük iyileştirmeler ve belgeler | `6eb9970` `1e4a33a` |
+
+Sprint sırasında bulunan gerçek hata: günlük tahmin kotası Türkiye tarihini UTC saklanan alanla karşılaştırdığı için her gece 00.00-03.00 arasında sıfırlanıyordu; `Saat.GunBasiUtc()` ile kapatıldı.
+
+## Sprint Marka/Model — TAMAMLANDI
+
+Marka ve model serbest metindi; aynı araç "VW", "Volkswagen", "wolkswagen" olarak üç kez yazılabiliyor, fiyat tahmini yazım tutmadığı için kapsam dışı düşüyordu.
+
+| Madde | Commit |
+|---|---|
+| Katalog: 56 marka, 391 seri, sözlükle birebir | `2211ac5` |
+| Araç modeli katalogdan seçilir, `ModelEslesmedi` ve eşleme işi | `e8176be` |
+| SPA: marka/seri seçicileri, yıl listesi, katalog şeridi | `daf1d84` |
+| Paylaşılan metinlerde uygunsuz ifade filtresi | `4b93a8c` |
+
+Belirsiz üç seri ilan çoğunluğuyla bağlandı: `Leon` → Seat (467'ye 13), `S` → Mercedes - Benz (73'e 1), `416` → Rover (6'ya 1). Kataloğa girmeyen ticari araçlar (`Transit` gibi) serbest metin olarak eklenir ve değer tahmini alamaz.
+
 ## Sıradaki
 
 Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklardan okunacak:

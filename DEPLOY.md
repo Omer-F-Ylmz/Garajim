@@ -29,8 +29,11 @@ Yayın penceresinde uygulanacak migration'ların tamamı **yalnız eklemelidir**
 | `HesapSilme` | `Users`'a hesap silme kodu kolonlarını, `Companies`'e `SilinmePlanlanan` kolonunu ekler |
 | `AiTokenVeFisTokenlari` | `AiTokenSayaclari` tablosunu açar, `ReceiptDrafts`'a token kolonlarını ekler |
 | `KmTazeligiVeKarneVarsayilani` | `Vehicles`'a `SonKmGuncelleme` kolonu ekler |
+| `AracModelEslesmedi` | `Vehicles`'a `ModelEslesmedi bit NOT NULL DEFAULT 0` kolonu ekler |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
+
+İlk açılışta `KatalogEslemeJob` bir kez çalışır: mevcut araçların marka ve modelini katalog yazımına çeker, eşleşmeyenlere `ModelEslesmedi = 1` yazar. İş şirket şirket ilerler, kendini tekrar ettiğinde hiçbir satırı değiştirmez ve `Katalog__BaslangictaEsle=false` ile kapatılabilir. Kapatırsan mevcut araçlar eski yazımıyla kalır ve değer tahmini isteyene kadar sorun çıkmaz.
 
 Ayrıca: **belgeler veritabanı yedeğinde yoktur.** Sunucuda daha önce yüklenmiş belge varsa, `App_Data/documents` klasörünü de ayrıca indir.
 
@@ -42,7 +45,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **38** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **26 migration** uygulanacak:
+Repoda bugün **39** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -53,8 +56,9 @@ Repoda bugün **38** migration var. Canlı Sprint 2 şemasındaysa (son uygulana
 | Kırmızı takım (`LastikTekTakiliSet`) | 1 |
 | Sprint Şifre (`SifreSifirlama`, `GeciciSifreBayragi`) | 2 |
 | İnce ayar 1 (plaka, tam dolum, km düzeltme, arşiv, hesap silme, AI token, km tazeliği) | 7 |
+| Marka/model (`AracModelEslesmedi`) | 1 |
 
-Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 38 migration **4,0 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
+Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 38 migration **4,0 sn**; 39'uncu migration tek kolon eklediği için bu süreyi ölçülebilir biçimde değiştirmez. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
 
 Sayım beklenenden farklıysa **dur**: canlı şema tahmin ettiğinden eski ya da yeni demektir. Hangi migration'ların uygulanacağını görmeden yayına çıkma; `dotnet ef migrations list` ile karşılaştır.
 
