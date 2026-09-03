@@ -50,7 +50,10 @@ builder.Services.AddScoped<IFuelDal, EfFuelDal>();
 builder.Services.AddScoped<IKmDuzeltmeLogDal, EfKmDuzeltmeLogDal>();
 builder.Services.AddSingleton<ISaat, Saat>();
 builder.Services.AddScoped<IHesapService, HesapManager>();
+builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
+builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();
+builder.Services.AddScoped<FisTemizlemeJob>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
@@ -443,6 +446,12 @@ if (useBackgroundJobs)
             "hesap-silme",
             job => job.RunAsync(),
             Cron.Daily(3),
+            trSaati);
+
+        recurringJobManager.AddOrUpdate<FisTemizlemeJob>(
+            "fis-temizleme",
+            job => job.RunAsync(),
+            Cron.Daily(4, 30),
             trSaati);
 
         recurringJobManager.AddOrUpdate<UstaSaklamaJob>(

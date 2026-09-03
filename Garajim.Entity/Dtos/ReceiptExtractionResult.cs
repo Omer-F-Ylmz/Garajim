@@ -15,6 +15,8 @@ namespace Garajim.Entity.Dtos
         public List<ReceiptItemResult> KalemListesi { get; set; } = new List<ReceiptItemResult>();
         public double GuvenSkoru { get; set; }
         public string HamYanit { get; set; }
+        public int TokenGiris { get; set; }
+        public int TokenCikis { get; set; }
     }
 
     public class ReceiptItemResult

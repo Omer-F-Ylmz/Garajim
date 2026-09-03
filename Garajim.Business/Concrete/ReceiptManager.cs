@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text.Json;
 using Garajim.Business.Concrete.Parts;
+using Garajim.Business.Concrete.Planlar;
 
 namespace Garajim.Business.Concrete
 {
@@ -31,6 +32,9 @@ namespace Garajim.Business.Concrete
         private readonly IReceiptExtractor _extractor;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly PlanKurallari _planKurallari;
+        private readonly ICompanyDal _companyDal;
+        private readonly IAiButcesi _aiButcesi;
         private readonly ILogger<ReceiptManager> _logger;
 
         public ReceiptManager(
@@ -46,6 +50,9 @@ namespace Garajim.Business.Concrete
             IReceiptExtractor extractor,
             IUnitOfWork unitOfWork,
             IConfiguration configuration,
+            PlanKurallari planKurallari,
+            ICompanyDal companyDal,
+            IAiButcesi aiButcesi,
             ILogger<ReceiptManager> logger)
         {
             _draftDal = draftDal;
@@ -60,6 +67,9 @@ namespace Garajim.Business.Concrete
             _extractor = extractor;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _planKurallari = planKurallari;
+            _companyDal = companyDal;
+            _aiButcesi = aiButcesi;
             _logger = logger;
         }
 
@@ -105,13 +115,17 @@ namespace Garajim.Business.Concrete
             if (mevcutToplam + icerik.LongLength > Kota())
                 return new ErrorDataResult<ReceiptUploadResultDto>(Messages.DocumentQuotaExceeded);
 
-            var ayBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-            if (await _draftDal.GetMonthlyCountAsync(ayBasi) >= AylikLimit())
-                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.ReceiptMonthlyLimitExceeded);
-
             var user = await _userDal.GetAsync(u => u.Id == userId);
             if (user == null)
                 return new ErrorDataResult<ReceiptUploadResultDto>(Messages.UserNotFound);
+
+            var sirket = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
+            var ayBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            if (await _draftDal.GetMonthlyCountAsync(ayBasi) >= _planKurallari.AylikFisLimiti(sirket?.PlanType ?? PlanType.Bireysel))
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.ReceiptMonthlyLimitExceeded);
+
+            if (await _aiButcesi.AsildiMiAsync())
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.AiButcesiAsildi);
 
             var uzanti = Path.GetExtension(orijinalAd).ToLowerInvariant();
             var icerikTipi = DocumentContentValidator.IcerikTipi(uzanti);
@@ -127,6 +141,8 @@ namespace Garajim.Business.Concrete
             var sonuc = await _extractor.ExtractAsync(icerik, icerikTipi, CancellationToken.None);
             kronometre.Stop();
             var sureMs = (int)kronometre.ElapsedMilliseconds;
+
+            await _aiButcesi.KaydetAsync(sonuc.TokenGiris, sonuc.TokenCikis);
 
             _logger.LogInformation(
                 "Fiş çıkarımı tamamlandı. Sağlayıcı={Saglayici} Süre={SureMs}ms Güven={Guven} " +
@@ -156,6 +172,8 @@ namespace Garajim.Business.Concrete
                 Km = sonuc.Km,
                 TahminiTur = sonuc.TahminiTur,
                 GuvenSkoru = sonuc.GuvenSkoru,
+                TokenGiris = sonuc.TokenGiris,
+                TokenCikis = sonuc.TokenCikis,
                 ParcalarJson = ParcalariSerilestir(ParcaEslestirici.Cevir(sonuc.KalemListesi)),
                 OlusturmaTarihi = DateTime.UtcNow
             };
@@ -528,8 +546,14 @@ namespace Garajim.Business.Concrete
         {
             var drafts = await _draftDal.GetListAsync();
 
+            var butce = await _aiButcesi.DurumAsync();
+
             var istatistik = new ReceiptStatsDto
             {
+                AiTokenTavani = butce.Tavan,
+                AiTokenKullanilan = butce.Kullanilan,
+                AiTokenKalan = butce.Kalan,
+                AiButcesiAsildi = butce.Asildi,
                 ToplamCagri = drafts.Count,
                 Onaylanan = drafts.Count(d => d.Durum == ReceiptDraftStatus.Onaylandi),
                 OtoOnaylanan = drafts.Count(d => d.OtoOnaylandi),

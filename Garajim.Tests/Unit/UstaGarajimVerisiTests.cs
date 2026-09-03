@@ -1,3 +1,4 @@
+using Garajim.Business.Abstract;
 using System.Linq.Expressions;
 using Garajim.Business.Concrete;
 using Garajim.Business.Usta;
@@ -66,7 +67,7 @@ namespace Garajim.Tests.Unit
 
             return new UstaManager(_sohbetDal.Object, _mesajDal.Object, _onayDal.Object, _ozetDal.Object,
                 _userDal.Object, _companyDal.Object, _vehicleAccess.Object, _maintenanceDal.Object, _partDal.Object,
-                _partMemory.Object, _evrakDal.Object, _fuelDal.Object, _reminderDal.Object, _istemci, depo,
+                _partMemory.Object, _evrakDal.Object, _fuelDal.Object, new Mock<IAiButcesi>().Object, _reminderDal.Object, _istemci, depo,
                 TestEvrakKurallari.Olustur(), yapilandirma);
         }
 

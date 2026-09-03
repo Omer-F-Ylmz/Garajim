@@ -29,6 +29,11 @@ namespace Garajim.Business.Concrete.Receipts
 
         protected abstract string MetniCikar(JsonElement kok);
 
+        protected virtual (int Giris, int Cikis) TokenSayilari(JsonElement kok)
+        {
+            return (0, 0);
+        }
+
         public async Task<ReceiptExtractionResult> ExtractAsync(byte[] imageBytes, string mimeType, CancellationToken ct)
         {
             var apiKey = Configuration["Receipts:ApiKey"];
@@ -64,10 +69,12 @@ namespace Garajim.Business.Concrete.Receipts
                     }
 
                     string metin;
+                    var tokenler = (Giris: 0, Cikis: 0);
                     try
                     {
                         using var belge = JsonDocument.Parse(govde);
                         metin = MetniCikar(belge.RootElement);
+                        tokenler = TokenSayilari(belge.RootElement);
                     }
                     catch (Exception zarfHatasi) when (zarfHatasi is JsonException or KeyNotFoundException or InvalidOperationException or IndexOutOfRangeException)
                     {
@@ -75,7 +82,10 @@ namespace Garajim.Business.Concrete.Receipts
                         return ReceiptResponseParser.Bos(govde);
                     }
 
-                    return ReceiptResponseParser.Parse(metin);
+                    var sonuc = ReceiptResponseParser.Parse(metin);
+                    sonuc.TokenGiris = tokenler.Giris;
+                    sonuc.TokenCikis = tokenler.Cikis;
+                    return sonuc;
                 }
                 catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
                 {

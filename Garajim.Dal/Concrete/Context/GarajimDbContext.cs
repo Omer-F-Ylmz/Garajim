@@ -37,6 +37,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<UstaMesaj> UstaMesajlari { get; set; }
         public DbSet<UstaOnay> UstaOnaylari { get; set; }
         public DbSet<UstaCozumOzeti> UstaCozumOzetleri { get; set; }
+        public DbSet<AiTokenSayaci> AiTokenSayaclari { get; set; }
         public DbSet<HasarDosyasi> HasarDosyalari { get; set; }
         public DbSet<HasarFoto> HasarFotograflari { get; set; }
         public DbSet<AracDeger> AracDegerleri { get; set; }
@@ -92,6 +93,11 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasIndex(l => l.CompanyId);
                 entity.HasIndex(l => new { l.VehicleId, l.Tarih });
                 entity.HasOne<Company>().WithMany().HasForeignKey(l => l.CompanyId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<AiTokenSayaci>(entity =>
+            {
+                entity.HasIndex(s => new { s.Yil, s.Ay }).IsUnique();
             });
 
             modelBuilder.Entity<FuelRecord>(entity =>

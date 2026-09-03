@@ -26,6 +26,8 @@ namespace Garajim.Entity.Concrete
         public string DuzeltilenAlanlar { get; set; }
         public bool OtoOnaylandi { get; set; }
         public string AtlamaNedeni { get; set; }
+        public int TokenGiris { get; set; }
+        public int TokenCikis { get; set; }
         public string ParcalarJson { get; set; }
         public string Saglayici { get; set; }
         public int SureMs { get; set; }

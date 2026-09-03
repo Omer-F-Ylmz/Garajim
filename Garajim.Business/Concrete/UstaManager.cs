@@ -41,6 +41,7 @@ namespace Garajim.Business.Concrete
         private readonly IPartMemoryService _partMemory;
         private readonly IEvrakDal _evrakDal;
         private readonly IFuelDal _fuelDal;
+        private readonly IAiButcesi _aiButcesi;
         private readonly IReminderDal _reminderDal;
         private readonly IUstaIstemci _istemci;
         private readonly UstaBilgiDeposu _bilgi;
@@ -60,6 +61,7 @@ namespace Garajim.Business.Concrete
             IPartMemoryService partMemory,
             IEvrakDal evrakDal,
             IFuelDal fuelDal,
+            IAiButcesi aiButcesi,
             IReminderDal reminderDal,
             IUstaIstemci istemci,
             UstaBilgiDeposu bilgi,
@@ -78,6 +80,7 @@ namespace Garajim.Business.Concrete
             _partMemory = partMemory;
             _evrakDal = evrakDal;
             _fuelDal = fuelDal;
+            _aiButcesi = aiButcesi;
             _reminderDal = reminderDal;
             _istemci = istemci;
             _bilgi = bilgi;
@@ -186,6 +189,9 @@ namespace Garajim.Business.Concrete
             if (sohbetSayisi >= SohbetMesajLimiti)
                 return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaSohbetLimiti);
 
+            if (await _aiButcesi.AsildiMiAsync())
+                return new ErrorDataResult<UstaMesajSonucDto>(Messages.AiButcesiAsildi);
+
             var kirmizi = KirmiziCizgiler.Bul(metin);
             UstaYanitDto yanit;
             string bilgiKategorisi = null;
@@ -208,6 +214,7 @@ namespace Garajim.Business.Concrete
                 var sonuc = await _istemci.SorAsync(sabitBlok, baglam, gecmis, metin, ct);
                 tokenGiris = sonuc.TokenGiris;
                 tokenCikis = sonuc.TokenCikis;
+                await _aiButcesi.KaydetAsync(tokenGiris, tokenCikis);
                 sureMs = sonuc.SureMs;
 
                 if (sonuc.Hata != null || !UstaYanitDenetleyici.Gecerli(sonuc.Yanit, out _))

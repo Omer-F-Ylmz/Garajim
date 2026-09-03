@@ -61,6 +61,19 @@ namespace Garajim.Business.Concrete.Receipts
             return istek;
         }
 
+        protected override (int Giris, int Cikis) TokenSayilari(JsonElement kok)
+        {
+            if (!kok.TryGetProperty("usage", out var kullanim))
+            {
+                return (0, 0);
+            }
+
+            var giris = kullanim.TryGetProperty("prompt_tokens", out var g) ? g.GetInt32() : 0;
+            var cikis = kullanim.TryGetProperty("completion_tokens", out var c) ? c.GetInt32() : 0;
+
+            return (giris, cikis);
+        }
+
         protected override string MetniCikar(JsonElement kok)
         {
             return kok.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
