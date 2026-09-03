@@ -1,6 +1,7 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete.Davetler;
 using Garajim.Business.Constants;
+using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Core.Utilities.Security;
 using Garajim.Dal.Abstract;
@@ -62,6 +63,9 @@ namespace Garajim.Business.Concrete
             HashingHelper.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
             var fullName = Kirp(dto.FullName, 100);
             var companyName = string.IsNullOrWhiteSpace(dto.CompanyName) ? fullName : dto.CompanyName.Trim();
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(companyName))
+                return new ErrorDataResult<KayitSonucuDto>(Messages.UygunsuzIfade);
+
             var company = new Company
             {
                 Name = Kirp(companyName, 150),

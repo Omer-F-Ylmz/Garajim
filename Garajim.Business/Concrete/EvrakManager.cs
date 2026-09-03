@@ -1,6 +1,7 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Constants;
+using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -81,6 +82,9 @@ namespace Garajim.Business.Concrete
             if (!Enum.IsDefined(dto.EvrakTuru))
                 return new ErrorDataResult<EvrakDto>(Messages.InvalidValue);
 
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Not) || !UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Saglayici))
+                return new ErrorDataResult<EvrakDto>(Messages.UygunsuzIfade);
+
             if ((dto.VehicleId == null) == (dto.UserId == null))
                 return new ErrorDataResult<EvrakDto>(Messages.EvrakSahibiTekOlmali);
 
@@ -138,6 +142,9 @@ namespace Garajim.Business.Concrete
 
             if (!Enum.IsDefined(dto.EvrakTuru))
                 return new ErrorDataResult<EvrakDto>(Messages.InvalidValue);
+
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Not) || !UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Saglayici))
+                return new ErrorDataResult<EvrakDto>(Messages.UygunsuzIfade);
 
             var kayit = await _evrakDal.GetAsync(e => e.Id == id);
             if (kayit == null || !await ErisebilirMiAsync(user, kayit))

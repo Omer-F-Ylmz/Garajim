@@ -1,5 +1,6 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
+using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -95,7 +96,7 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<HasarDto>(Messages.VehicleNotFound);
 
-            var hata = Dogrula(dto.OlayTarihi, dto.Tur, dto.TutanakTuru, dto.Aciklama, dto.OlayKm, dto.HasarBedeli);
+            var hata = Dogrula(dto.OlayTarihi, dto.Tur, dto.TutanakTuru, dto.Aciklama, dto.OlayKm, dto.HasarBedeli, dto.Konum);
             if (hata != null)
                 return new ErrorDataResult<HasarDto>(hata);
 
@@ -138,7 +139,7 @@ namespace Garajim.Business.Concrete
             if (!Enum.IsDefined(dto.Durum))
                 return new ErrorResult(Messages.InvalidValue);
 
-            var hata = Dogrula(dto.OlayTarihi, dto.Tur, dto.TutanakTuru, dto.Aciklama, dto.OlayKm, dto.HasarBedeli);
+            var hata = Dogrula(dto.OlayTarihi, dto.Tur, dto.TutanakTuru, dto.Aciklama, dto.OlayKm, dto.HasarBedeli, dto.Konum);
             if (hata != null)
                 return new ErrorResult(hata);
 
@@ -340,7 +341,7 @@ namespace Garajim.Business.Concrete
             return user.Role == CompanyRole.Driver ? Messages.AuthorizationDenied : null;
         }
 
-        private static string Dogrula(DateTime olayTarihi, HasarTuru tur, TutanakTuru tutanak, string aciklama, int? olayKm, decimal? bedel)
+        private static string Dogrula(DateTime olayTarihi, HasarTuru tur, TutanakTuru tutanak, string aciklama, int? olayKm, decimal? bedel, string konum)
         {
             if (!Enum.IsDefined(tur) || !Enum.IsDefined(tutanak))
                 return Messages.InvalidValue;
@@ -356,6 +357,9 @@ namespace Garajim.Business.Concrete
 
             if (bedel != null && bedel < 0)
                 return Messages.InvalidValue;
+
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(aciklama) || !UygunsuzIfadeFiltresi.Varsayilan.Temiz(konum))
+                return Messages.UygunsuzIfade;
 
             return null;
         }

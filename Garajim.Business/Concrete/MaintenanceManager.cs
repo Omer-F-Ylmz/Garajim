@@ -1,5 +1,6 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
+using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -51,6 +52,10 @@ namespace Garajim.Business.Concrete
                 || !DegerSinirlari.GecmisTarih(dto.Date) || !Enum.IsDefined(dto.Type))
                 return new ErrorDataResult<MaintenanceDto>(Messages.InvalidValue);
 
+            var metinHatasi = MetinleriDogrula(dto.ServiceName, dto.Note);
+            if (metinHatasi != null)
+                return new ErrorDataResult<MaintenanceDto>(metinHatasi);
+
             var parcaHatasi = ParcalariDogrula(dto.Parcalar);
             if (parcaHatasi != null)
                 return new ErrorDataResult<MaintenanceDto>(parcaHatasi);
@@ -101,6 +106,10 @@ namespace Garajim.Business.Concrete
                 || !DegerSinirlari.GecmisTarih(dto.Date) || !Enum.IsDefined(dto.Type))
                 return new ErrorDataResult<MaintenanceDto>(Messages.InvalidValue);
 
+            var metinHatasi = MetinleriDogrula(dto.ServiceName, dto.Note);
+            if (metinHatasi != null)
+                return new ErrorDataResult<MaintenanceDto>(metinHatasi);
+
             var parcaHatasi = ParcalariDogrula(dto.Parcalar);
             if (parcaHatasi != null)
                 return new ErrorDataResult<MaintenanceDto>(parcaHatasi);
@@ -140,15 +149,29 @@ namespace Garajim.Business.Concrete
 
         private static string ParcalariDogrula(List<MaintenancePartDto> parcalar)
         {
+            var filtre = UygunsuzIfadeFiltresi.Varsayilan;
+
             foreach (var parca in parcalar ?? new List<MaintenancePartDto>())
             {
                 if (!Enum.IsDefined(parca.ParcaTuru) || parca.Adet <= 0 || parca.Tutar < 0)
                 {
                     return Messages.InvalidValue;
                 }
+
+                if (!filtre.Temiz(parca.Aciklama) || !filtre.Temiz(parca.Marka))
+                {
+                    return Messages.UygunsuzIfade;
+                }
             }
 
             return null;
+        }
+
+        private static string MetinleriDogrula(string servisAdi, string not)
+        {
+            var filtre = UygunsuzIfadeFiltresi.Varsayilan;
+
+            return filtre.Temiz(servisAdi) && filtre.Temiz(not) ? null : Messages.UygunsuzIfade;
         }
 
         private async Task ParcalariYazAsync(MaintenanceRecord record, List<MaintenancePartDto> parcalar)

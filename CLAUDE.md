@@ -48,6 +48,12 @@ Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar e
 
 Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
 
+### Uygunsuz ifade listesi veridir, kod değildir
+
+Karneye ve paylaşılan sayfalara çıkan serbest metinler `UygunsuzIfadeFiltresi`'nden geçer: servis adı, bakım notu, parça açıklaması ve markası, hasar açıklaması ve konumu, evrak notu ve sağlayıcısı, katalogda olmayan araç modeli, motor metni ve kayıttaki şirket adı. Eşleşme 400 ve `Messages.UygunsuzIfade` döner.
+
+Liste `Business/Katalog/uygunsuz-ifadeler.json` dosyasındadır ve **genişletilebilir veridir**; sözcük eklemek için kod değişmez. Eşleşme **tam sözcüktür**, büyük harf ve Türkçe karakter ayırmaz (`Şişli`, `Kartal`, `Sikke`, `Gotik` geçer). Yeni sözcük eklenirken pozitif ve negatif cümle testi de eklenir.
+
 ### Hasar dosyası ve fotoğraf altyapısı geneldir
 
 `HasarDosyasi` ve `HasarFoto` bilerek **kiralamadan bağımsız** yazıldı: bir araca bağlı, tarihli, durumlu, etiketli fotoğraf taşıyan olay kaydı. İleride rent a car teslim-iade tutanağı aynı parçaların üstüne oturacak — aynı etiket kümesi, aynı 20 fotoğraf sınırı, aynı belge kotası, aynı `TutanakSayfasi` çıktısı.

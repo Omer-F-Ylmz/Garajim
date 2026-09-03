@@ -85,6 +85,9 @@ namespace Garajim.Business.Concrete
             if (!SerbestModelKurali.MotorGecerli(dto.Motor))
                 return new ErrorDataResult<VehicleDto>(Messages.ModelMetniGecersiz);
 
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Motor))
+                return new ErrorDataResult<VehicleDto>(Messages.UygunsuzIfade);
+
             var vehicle = new Vehicle
             {
                 CompanyId = owner.CompanyId,
@@ -126,6 +129,9 @@ namespace Garajim.Business.Concrete
 
             if (!SerbestModelKurali.MotorGecerli(dto.Motor))
                 return new ErrorResult(Messages.ModelMetniGecersiz);
+
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(dto.Motor))
+                return new ErrorResult(Messages.UygunsuzIfade);
 
             vehicle.Brand = model.Marka;
             vehicle.Model = model.Seri;
@@ -302,6 +308,9 @@ namespace Garajim.Business.Concrete
 
             if (!SerbestModelKurali.Gecerli(model))
                 return new ModelSonucu { Hata = Messages.ModelMetniGecersiz };
+
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(model))
+                return new ModelSonucu { Hata = Messages.UygunsuzIfade };
 
             return new ModelSonucu { Marka = markaYazimi, Seri = model.Trim(), Eslesmedi = true };
         }
