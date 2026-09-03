@@ -20,6 +20,7 @@ namespace Garajim.Business.Constants
         public const string VehicleDeleted = "Araç silindi.";
         public const string VehicleNotFound = "Araç bulunamadı.";
         public const string KmDusurmeOnayiGerekli = "Kilometreyi düşürmek için onay kutusunu işaretleyin ve kısa bir neden yazın (en az 3 karakter).";
+        public const string ParcaHatirlatmasiZatenVar = "Bu parça için açık bir hatırlatma zaten var.";
         public const string AiButcesiAsildi = "AI özellikleri bu ay geçici olarak kapalı. Fiş okuma ve AI Usta yeni ayda yeniden açılacak.";
         public const string HesapSilmeKoduYaniti = "Silme kodu e-posta adresinize gönderildi. Kod 10 dakika geçerlidir.";
         public const string HesapSilmeKoduGecersiz = "Silme kodu hatalı ya da süresi dolmuş. Yeni kod isteyin.";

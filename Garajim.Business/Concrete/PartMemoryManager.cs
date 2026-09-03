@@ -41,35 +41,45 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<ParcaHafizasiDto>>(liste);
         }
 
-        public async Task<IResult> CreateReminderAsync(int userId, int vehicleId, ParcaTuru parcaTuru)
+        public async Task<IDataResult<int>> CreateReminderAsync(int userId, int vehicleId, ParcaTuru parcaTuru)
         {
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
             if (vehicle == null)
-                return new ErrorResult(Messages.VehicleNotFound);
+                return new ErrorDataResult<int>(Messages.VehicleNotFound);
 
             if (!Enum.IsDefined(parcaTuru))
-                return new ErrorResult(Messages.InvalidValue);
+                return new ErrorDataResult<int>(Messages.InvalidValue);
 
             var hafiza = (await HesaplaAsync(vehicle)).FirstOrDefault(h => h.ParcaTuru == parcaTuru);
             if (hafiza == null)
-                return new ErrorResult(Messages.PartNeverReplaced);
+                return new ErrorDataResult<int>(Messages.PartNeverReplaced);
 
             if (hafiza.SonrakiTahminiKm == null && hafiza.SonrakiTahminiTarih == null)
-                return new ErrorResult(Messages.PartHasNoInterval);
+                return new ErrorDataResult<int>(Messages.PartHasNoInterval);
 
-            await _reminderDal.AddAsync(new Reminder
+            var not = hafiza.ParcaAdi + " değişimi yaklaşıyor";
+
+            var acikOlan = (await _reminderDal.GetListAsync(r =>
+                r.VehicleId == vehicle.Id && !r.IsCompleted && r.Note == not)).FirstOrDefault();
+
+            if (acikOlan != null)
+                return new ErrorDataResult<int>(acikOlan.Id, Messages.ParcaHatirlatmasiZatenVar);
+
+            var kayit = new Reminder
             {
                 CompanyId = vehicle.CompanyId,
                 VehicleId = vehicle.Id,
                 Type = ReminderType.PeriyodikBakim,
                 DueDate = hafiza.SonrakiTahminiTarih,
                 DueKm = hafiza.SonrakiTahminiKm,
-                Note = $"{hafiza.ParcaAdi} değişimi yaklaşıyor",
+                Note = not,
                 IsCompleted = false,
                 CreatedAt = DateTime.UtcNow
-            });
+            };
 
-            return new SuccessResult(Messages.ReminderAdded);
+            await _reminderDal.AddAsync(kayit);
+
+            return new SuccessDataResult<int>(kayit.Id, Messages.ReminderAdded);
         }
 
         private async Task<List<ParcaHafizasiDto>> HesaplaAsync(Vehicle vehicle)

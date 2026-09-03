@@ -10,7 +10,8 @@ namespace Garajim.API.Startup
         private static readonly Dictionary<string, int> Eslemeler = new Dictionary<string, int>(StringComparer.Ordinal)
         {
             [Messages.AracArsivli] = StatusCodes.Status409Conflict,
-            [Messages.AiButcesiAsildi] = StatusCodes.Status503ServiceUnavailable
+            [Messages.AiButcesiAsildi] = StatusCodes.Status503ServiceUnavailable,
+            [Messages.ParcaHatirlatmasiZatenVar] = StatusCodes.Status409Conflict
         };
 
         public void OnActionExecuting(ActionExecutingContext context)

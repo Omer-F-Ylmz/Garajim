@@ -7,6 +7,6 @@ namespace Garajim.Business.Abstract
     public interface IPartMemoryService
     {
         Task<IDataResult<List<ParcaHafizasiDto>>> GetAsync(int userId, int vehicleId);
-        Task<IResult> CreateReminderAsync(int userId, int vehicleId, ParcaTuru parcaTuru);
+        Task<IDataResult<int>> CreateReminderAsync(int userId, int vehicleId, ParcaTuru parcaTuru);
     }
 }

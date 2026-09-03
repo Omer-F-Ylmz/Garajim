@@ -158,6 +158,16 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpPut("{id}/km")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> KmGuncelle(int id, AracKmDto dto)
+        {
+            var result = await _vehicleService.KmGuncelleAsync(CurrentUserId, id, dto?.CurrentKm ?? 0);
+            if (!result.Success)
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
+        }
+
         [HttpPost("{id}/arsiv")]
         [Authorize(Roles = CompanyRoles.OwnerOrManager)]
         public async Task<IActionResult> Arsivle(int id, AracArsivDto dto)

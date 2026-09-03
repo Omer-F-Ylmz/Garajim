@@ -85,6 +85,7 @@ namespace Garajim.Business.Concrete
                 Model = Kirp(dto.Model, AracAlanUzunluklari.Model),
                 Year = dto.Year,
                 CurrentKm = dto.CurrentKm,
+                SonKmGuncelleme = DateTime.UtcNow,
                 FuelType = dto.FuelType,
                 KullanimTuru = Enum.IsDefined(dto.KullanimTuru) ? dto.KullanimTuru : KullanimTuru.Hususi,
                 IlkTescilTarihi = dto.IlkTescilTarihi?.Date,
@@ -130,6 +131,11 @@ namespace Garajim.Business.Concrete
                 });
             }
 
+            if (vehicle.CurrentKm != dto.CurrentKm)
+            {
+                vehicle.SonKmGuncelleme = DateTime.UtcNow;
+            }
+
             vehicle.CurrentKm = dto.CurrentKm;
             vehicle.FuelType = dto.FuelType;
             vehicle.KullanimTuru = dto.KullanimTuru != null && Enum.IsDefined(dto.KullanimTuru.Value) ? dto.KullanimTuru.Value : vehicle.KullanimTuru;
@@ -153,6 +159,22 @@ namespace Garajim.Business.Concrete
                 return new ErrorResult(Messages.InvalidValue);
             vehicle.KasaTipi = kasaTipi;
             await _vehicleDal.UpdateAsync(vehicle);
+            return new SuccessResult(Messages.VehicleUpdated);
+        }
+
+        public async Task<IResult> KmGuncelleAsync(int userId, int id, int currentKm)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
+            if (vehicle == null)
+                return new ErrorResult(Messages.VehicleNotFound);
+
+            if (!DegerSinirlari.KmGecerli(currentKm) || currentKm < vehicle.CurrentKm)
+                return new ErrorResult(Messages.InvalidValue);
+
+            vehicle.CurrentKm = currentKm;
+            vehicle.SonKmGuncelleme = DateTime.UtcNow;
+            await _vehicleDal.UpdateAsync(vehicle);
+
             return new SuccessResult(Messages.VehicleUpdated);
         }
 
@@ -255,6 +277,7 @@ namespace Garajim.Business.Concrete
                 Plate = vehicle.Plate,
                 YabanciPlaka = vehicle.YabanciPlaka,
                 Arsivli = vehicle.Arsivli,
+                SonKmGuncelleme = vehicle.SonKmGuncelleme,
                 ArsivNedeni = vehicle.ArsivNedeni?.ToString(),
                 ArsivTarihi = vehicle.ArsivTarihi,
                 Brand = vehicle.Brand,

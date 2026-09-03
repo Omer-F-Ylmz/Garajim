@@ -475,6 +475,7 @@
                 state.selectedVehicleId = state.vehicles[0].id;
             }
             select.value = String(state.selectedVehicleId);
+            kmSeridiniGuncelle();
             acilKartiSakla();
             kuyrugoBosalt();
             loadActiveTab();
@@ -1495,6 +1496,47 @@
         api("/api/Vehicles/" + arac.id + "/arsiv", { method: "POST", body: { neden: secilen } })
             .then(function () {
                 showMessage(el("app-message"), arac.plate + " arşive alındı.", true);
+                loadVehicles();
+            })
+            .catch(function (error) { handleError(el("app-message"), error); });
+    }
+
+    var KM_BAYATLIK_GUNU = 60;
+
+    function kmSeridiniGuncelle() {
+        var serit = el("km-serit");
+        var arac = seciliArac();
+
+        if (!arac || !canManage() || !arac.sonKmGuncelleme) {
+            serit.classList.add("hidden");
+            return;
+        }
+
+        var gun = Math.floor((Date.now() - new Date(arac.sonKmGuncelleme).getTime()) / 86400000);
+
+        if (gun < KM_BAYATLIK_GUNU) {
+            serit.classList.add("hidden");
+            return;
+        }
+
+        el("km-serit-metin").textContent =
+            arac.plate + " için kilometre " + gun + " gündür güncellenmedi.";
+        el("km-hizli").value = arac.currentKm;
+        serit.classList.remove("hidden");
+    }
+
+    function hizliKmKaydet() {
+        var arac = seciliArac();
+        var yeni = Number(el("km-hizli").value);
+
+        if (!arac || !isFinite(yeni) || yeni < arac.currentKm) {
+            showMessage(el("app-message"), "Kilometre mevcut değerden küçük olamaz; düşürmek için araç düzenlemeyi kullanın.", false);
+            return;
+        }
+
+        api("/api/Vehicles/" + arac.id + "/km", { method: "PUT", body: { currentKm: yeni } })
+            .then(function () {
+                el("km-serit").classList.add("hidden");
                 loadVehicles();
             })
             .catch(function (error) { handleError(el("app-message"), error); });
@@ -4594,6 +4636,7 @@
 
     function bindVehicle() {
         el("arsiv-btn").addEventListener("click", arsivPaneliniAc);
+        el("km-hizli-kaydet").addEventListener("click", hizliKmKaydet);
         el("vehicle-arsivle").addEventListener("click", arsivSecenegiIleArsivle);
         el("arsiv-yenile").addEventListener("click", arsiviYukle);
         el("arsiv-kapat").addEventListener("click", function () { el("arsiv-box").classList.add("hidden"); });

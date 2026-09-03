@@ -15,6 +15,8 @@ namespace Garajim.Business.Concrete
 {
     public class KarneManager : IKarneService
     {
+        public const int VarsayilanPaylasimGunu = 90;
+
         private readonly IKarnePaylasimiDal _karneDal;
         private readonly IVehicleDal _vehicleDal;
         private readonly IMaintenanceDal _maintenanceDal;
@@ -87,7 +89,7 @@ namespace Garajim.Business.Concrete
                 AcilKart = kapsam.AcilKart,
                 HasarGecmisi = kapsam.HasarGecmisi,
                 BeyanDegeri = kapsam.BeyanDegeri,
-                SonKullanma = dto?.SonKullanmaGun == null ? null : DateTime.UtcNow.AddDays(dto.SonKullanmaGun.Value),
+                SonKullanma = DateTime.UtcNow.AddDays(dto?.SonKullanmaGun ?? VarsayilanPaylasimGunu),
                 Aktif = true,
                 GoruntulenmeSayisi = 0,
                 OlusturmaTarihi = DateTime.UtcNow

@@ -75,6 +75,7 @@ namespace Garajim.Business.Concrete
             if (dto.Km > vehicle.CurrentKm)
             {
                 vehicle.CurrentKm = dto.Km;
+                vehicle.SonKmGuncelleme = DateTime.UtcNow;
                 await _vehicleDal.UpdateAsync(vehicle);
             }
 

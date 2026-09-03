@@ -12,6 +12,7 @@ namespace Garajim.Business.Abstract
         Task<IResult> UpdateAsync(int userId, int id, VehicleUpdateDto dto);
         Task<IResult> KasaTipiSecAsync(int userId, int id, KasaTipi kasaTipi);
         Task<IResult> DeleteAsync(int userId, int id);
+        Task<IResult> KmGuncelleAsync(int userId, int id, int currentKm);
         Task<IResult> ArsivleAsync(int userId, int id, ArsivNedeni neden);
         Task<IResult> ArsivdenAlAsync(int userId, int id);
     }
