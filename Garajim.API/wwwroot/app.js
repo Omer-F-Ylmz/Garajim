@@ -15,6 +15,7 @@
         dogrulaSayac: null,
         duzenlenenAracId: null,
         ustaGonderiyor: false,
+        sifirlanacakEposta: null,
         hasarAdim: 1,
         hasarDosyaId: null,
         degerChart: null,
@@ -400,6 +401,7 @@
             label = label ? label + " · " + user.companyName : user.companyName;
         }
         el("user-label").textContent = label;
+        geciciSifreUyarisi(user);
         applyRole();
         loadVehicles();
         loadPendingReceipts();
@@ -2444,6 +2446,171 @@
         el("dogrula-vazgec").addEventListener("click", function () {
             dogrulamaEkraniniKapat();
             switchAuthTab(true);
+        });
+    }
+
+    function sifirlamaKutulari() {
+        return [1, 2, 3, 4, 5, 6].map(function (no) { return el("sifirlama-" + no); });
+    }
+
+    function sifirlamaKoduOku() {
+        return sifirlamaKutulari().map(function (kutu) { return kutu.value.trim(); }).join("");
+    }
+
+    function sifirlamaEkraniniAc() {
+        el("auth-screen").classList.remove("hidden");
+        el("app-screen").classList.add("hidden");
+        document.querySelector(".auth-card").classList.add("hidden");
+        el("tanitim").classList.add("hidden");
+        el("dogrula-kart").classList.add("hidden");
+        el("sifirlama-kart").classList.remove("hidden");
+
+        el("sifirlama-eposta-form").classList.remove("hidden");
+        el("sifirlama-kod-form").classList.add("hidden");
+        el("sifirlama-aciklama").textContent = "Kayıtlı e-posta adresinizi girin.";
+        showMessage(el("sifirlama-mesaj"), "");
+
+        el("sifirlama-eposta").value = el("login-email").value.trim();
+        el("sifirlama-eposta").focus();
+    }
+
+    function sifirlamaEkraniniKapat() {
+        state.sifirlanacakEposta = null;
+        el("sifirlama-kart").classList.add("hidden");
+        document.querySelector(".auth-card").classList.remove("hidden");
+        el("tanitim").classList.remove("hidden");
+    }
+
+    function sifirlamaKoduIste() {
+        var eposta = el("sifirlama-eposta").value.trim();
+        if (!eposta) {
+            return;
+        }
+
+        gonderimKilitle("sifirlama-kod-gonder", true, "Gönderiliyor…");
+
+        api("/api/Auth/sifre-sifirla-kod", {
+            method: "POST",
+            body: { email: eposta }
+        }).then(function (result) {
+            state.sifirlanacakEposta = eposta;
+            el("sifirlama-eposta-form").classList.add("hidden");
+            el("sifirlama-kod-form").classList.remove("hidden");
+            el("sifirlama-aciklama").textContent = eposta + " adresine kod gönderildiyse birazdan ulaşır.";
+            showMessage(el("sifirlama-mesaj"), (result && result.message) || "", true);
+            sifirlamaKutulari().forEach(function (kutu) { kutu.value = ""; });
+            el("sifirlama-yeni").value = "";
+            sifirlamaKutulari()[0].focus();
+        }).catch(function (error) {
+            handleError(el("sifirlama-mesaj"), error);
+        }).then(function () {
+            gonderimKilitle("sifirlama-kod-gonder", false);
+        });
+    }
+
+    function sifreyiSifirla() {
+        var kod = sifirlamaKoduOku();
+        var yeni = el("sifirlama-yeni").value;
+
+        if (kod.length !== 6 || !yeni) {
+            showMessage(el("sifirlama-mesaj"), "6 haneli kodu ve yeni şifrenizi girin.", false);
+            return;
+        }
+
+        api("/api/Auth/sifre-sifirla", {
+            method: "POST",
+            body: { email: state.sifirlanacakEposta, kod: kod, yeniSifre: yeni }
+        }).then(function (result) {
+            sifirlamaEkraniniKapat();
+            switchAuthTab(true);
+            el("login-email").value = state.sifirlanacakEposta || "";
+            el("login-password").value = "";
+            el("login-password").focus();
+            showMessage(el("auth-message"), (result && result.message) || "Şifreniz değiştirildi.", true);
+        }).catch(function (error) {
+            handleError(el("sifirlama-mesaj"), error);
+            sifirlamaKutulari().forEach(function (kutu) { kutu.value = ""; });
+            sifirlamaKutulari()[0].focus();
+        });
+    }
+
+    function bindSifirlama() {
+        var kutular = sifirlamaKutulari();
+
+        kutular.forEach(function (kutu, sira) {
+            kutu.addEventListener("input", function () {
+                kutu.value = kutu.value.replace(/\D/g, "").slice(0, 1);
+
+                if (kutu.value && sira < 5) {
+                    kutular[sira + 1].focus();
+                }
+            });
+
+            kutu.addEventListener("keydown", function (event) {
+                if (event.key === "Backspace" && !kutu.value && sira > 0) {
+                    kutular[sira - 1].focus();
+                }
+            });
+        });
+
+        el("sifre-unuttum").addEventListener("click", sifirlamaEkraniniAc);
+        el("sifirlama-vazgec").addEventListener("click", sifirlamaEkraniniKapat);
+
+        el("sifirlama-geri").addEventListener("click", function () {
+            el("sifirlama-kod-form").classList.add("hidden");
+            el("sifirlama-eposta-form").classList.remove("hidden");
+            el("sifirlama-aciklama").textContent = "Kayıtlı e-posta adresinizi girin.";
+            showMessage(el("sifirlama-mesaj"), "");
+            el("sifirlama-eposta").focus();
+        });
+
+        el("sifirlama-eposta-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            sifirlamaKoduIste();
+        });
+
+        el("sifirlama-kod-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            sifreyiSifirla();
+        });
+    }
+
+    function geciciSifreUyarisi(kullanici) {
+        var uyari = el("gecici-sifre-uyari");
+
+        if (!kullanici || !kullanici.geciciSifre) {
+            uyari.classList.add("hidden");
+            uyari.textContent = "";
+            return;
+        }
+
+        uyari.textContent = "Hesabınız geçici bir şifreyle açıldı. Ayarlar bölümünden kendi şifrenizi belirlemeniz önerilir.";
+        uyari.classList.remove("hidden");
+    }
+
+    function bindSifreDegistir() {
+        el("sifre-degistir-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var mevcut = el("sifre-mevcut").value;
+            var yeni = el("sifre-yeni").value;
+
+            api("/api/Auth/sifre-degistir", {
+                method: "POST",
+                body: { mevcut: mevcut, yeni: yeni }
+            }).then(function (result) {
+                el("sifre-mevcut").value = "";
+                el("sifre-yeni").value = "";
+                showMessage(el("sifre-degistir-mesaj"), (result && result.message) || "Şifreniz değiştirildi.", true);
+                el("gecici-sifre-uyari").classList.add("hidden");
+
+                setTimeout(function () {
+                    clearSession();
+                    location.reload();
+                }, 1500);
+            }).catch(function (error) {
+                handleError(el("sifre-degistir-mesaj"), error);
+            });
         });
     }
 
@@ -4557,6 +4724,8 @@
         bindKaza();
         bindTanitim();
         bindDogrulama();
+        bindSifirlama();
+        bindSifreDegistir();
         bindHasar();
         bindDeger();
         bindDavet();

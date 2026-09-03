@@ -65,6 +65,7 @@
                 <label for="login-password">Şifre</label>
                 <input id="login-password" type="password" autocomplete="current-password" required>
                 <button type="submit" class="primary">Giriş yap</button>
+                <button id="sifre-unuttum" type="button" class="link-btn">Şifremi unuttum</button>
             </form>
 
             <form id="register-form" class="form hidden">
@@ -112,9 +113,45 @@
 
             <p id="dogrula-mesaj" class="message" role="alert"></p>
         </div>
+
+        <div id="sifirlama-kart" class="auth-card hidden">
+            <div class="brand">
+                <span class="brand-mark"></span>
+                <h1>Şifreni sıfırla</h1>
+            </div>
+            <p id="sifirlama-aciklama" class="brand-sub"></p>
+
+            <form id="sifirlama-eposta-form" class="form">
+                <label for="sifirlama-eposta">E-posta</label>
+                <input id="sifirlama-eposta" type="email" autocomplete="username" required>
+                <small class="hint">Hesabınız varsa 6 haneli bir sıfırlama kodu göndeririz.</small>
+                <button id="sifirlama-kod-gonder" type="submit" class="primary">Kod gönder</button>
+                <button id="sifirlama-vazgec" type="button" class="ghost">Girişe dön</button>
+            </form>
+
+            <form id="sifirlama-kod-form" class="form hidden">
+                <label for="sifirlama-1">6 haneli kod</label>
+                <div id="sifirlama-kutular" class="kod-kutular">
+                    <input id="sifirlama-1" class="kod-kutu" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" required>
+                    <input id="sifirlama-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="sifirlama-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="sifirlama-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="sifirlama-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="sifirlama-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                </div>
+                <label for="sifirlama-yeni">Yeni şifre</label>
+                <input id="sifirlama-yeni" type="password" autocomplete="new-password" required>
+                <small class="hint">En az 6 karakter. Kod 10 dakika geçerlidir.</small>
+                <button type="submit" class="primary">Şifreyi değiştir</button>
+                <button id="sifirlama-geri" type="button" class="ghost">Başka adres kullan</button>
+            </form>
+
+            <p id="sifirlama-mesaj" class="message" role="alert"></p>
+        </div>
     </div>
 
     <div id="app-screen" class="screen hidden">
+        <p id="gecici-sifre-uyari" class="message hidden" role="status"></p>
         <header class="topbar">
             <div class="brand small">
                 <span class="brand-mark"></span>
@@ -217,6 +254,23 @@
 
         <section id="ayarlar-box" class="panel hidden">
             <h2>Ayarlar</h2>
+            <h3>Şifre değiştir</h3>
+            <p class="hint">Şifrenizi değiştirdiğinizde diğer cihazlardaki oturumlarınız kapanır.</p>
+            <form id="sifre-degistir-form" class="grid-form">
+                <div>
+                    <label for="sifre-mevcut">Mevcut şifre</label>
+                    <input id="sifre-mevcut" type="password" autocomplete="current-password" required>
+                </div>
+                <div>
+                    <label for="sifre-yeni">Yeni şifre</label>
+                    <input id="sifre-yeni" type="password" autocomplete="new-password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Şifreyi değiştir</button>
+                </div>
+            </form>
+            <p id="sifre-degistir-mesaj" class="message" role="alert"></p>
+
             <h3>Takvime abone ol</h3>
             <p class="hint">Evrak bitişleri ve hatırlatmalar telefon takviminize düşer. Bağlantı kişiye özeldir, paylaşmayın.</p>
             <div class="inline-form">
