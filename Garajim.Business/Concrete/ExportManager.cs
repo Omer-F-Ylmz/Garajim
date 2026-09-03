@@ -183,11 +183,28 @@ namespace Garajim.Business.Concrete
             return string.Join(";", alanlar.Select(Kacir));
         }
 
+        private static readonly char[] FormulBaslangici = { '=', '+', '-', '@', '\t', '\r' };
+
+        private static bool FormulOlarakYorumlanir(string deger)
+        {
+            if (deger.Length == 0 || Array.IndexOf(FormulBaslangici, deger[0]) < 0)
+            {
+                return false;
+            }
+
+            return !decimal.TryParse(deger, NumberStyles.Any, Kultur, out _);
+        }
+
         private static string Kacir(string deger)
         {
             if (string.IsNullOrEmpty(deger))
             {
                 return string.Empty;
+            }
+
+            if (FormulOlarakYorumlanir(deger))
+            {
+                deger = "'" + deger;
             }
 
             if (deger.IndexOf(';') >= 0 || deger.IndexOf('"') >= 0 || deger.IndexOf('\n') >= 0 || deger.IndexOf('\r') >= 0)
