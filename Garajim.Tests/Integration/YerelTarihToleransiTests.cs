@@ -1,4 +1,5 @@
 using System.Net;
+using Garajim.Business.Concrete;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -38,10 +39,10 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task SaatFarkiKadarIleriTarihliHasarKabulEdilir()
+        public async Task TurkiyeGunundekiHasarKabulEdilir()
         {
             var (client, aracId) = await SahipVeAracAsync();
-            var yarin = DateTime.UtcNow.Date.AddDays(1).ToString("yyyy-MM-dd");
+            var yarin = Saat.BugunTr().ToString("yyyy-MM-dd");
 
             var cevap = await client.PostAsJsonAsync("/api/Hasar", new
             {
@@ -56,10 +57,10 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task IkiGunIleriTarihliHasarReddedilir()
+        public async Task YarinkiHasarReddedilir()
         {
             var (client, aracId) = await SahipVeAracAsync();
-            var ikiGunSonra = DateTime.UtcNow.Date.AddDays(2).ToString("yyyy-MM-dd");
+            var ikiGunSonra = Saat.BugunTr().AddDays(1).ToString("yyyy-MM-dd");
 
             var cevap = await client.PostAsJsonAsync("/api/Hasar", new
             {
@@ -74,10 +75,10 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task SaatFarkiKadarIleriTarihliDegerKabulEdilir()
+        public async Task TurkiyeGunundekiDegerKabulEdilir()
         {
             var (client, aracId) = await SahipVeAracAsync();
-            var yarin = DateTime.UtcNow.Date.AddDays(1).ToString("yyyy-MM-dd");
+            var yarin = Saat.BugunTr().ToString("yyyy-MM-dd");
 
             var cevap = await client.PostAsJsonAsync($"/api/Vehicles/{aracId}/deger",
                 new { tarih = yarin, deger = 500000.0, kaynak = "Beyan" });
@@ -86,10 +87,10 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task IkiGunIleriTarihliDegerReddedilir()
+        public async Task YarinkiDegerReddedilir()
         {
             var (client, aracId) = await SahipVeAracAsync();
-            var ikiGunSonra = DateTime.UtcNow.Date.AddDays(2).ToString("yyyy-MM-dd");
+            var ikiGunSonra = Saat.BugunTr().AddDays(1).ToString("yyyy-MM-dd");
 
             var cevap = await client.PostAsJsonAsync($"/api/Vehicles/{aracId}/deger",
                 new { tarih = ikiGunSonra, deger = 500000.0, kaynak = "Beyan" });

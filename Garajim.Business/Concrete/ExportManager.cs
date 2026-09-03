@@ -137,7 +137,7 @@ namespace Garajim.Business.Concrete
             else
             {
                 sb.AppendLine("Plaka;Tur;Baslangic;Bitis;Saglayici;PoliceNo;Durum");
-                var bugun = DateTime.UtcNow.Date;
+                var bugun = Saat.BugunTr();
                 var kayitlar = await _evrakDal.GetListAsync(e => e.Aktif &&
                     ((e.VehicleId != null && idler.Contains(e.VehicleId.Value)) || e.UserId == userId));
 

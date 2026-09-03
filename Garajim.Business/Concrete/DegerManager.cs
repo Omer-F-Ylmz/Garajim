@@ -75,7 +75,7 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<DegerTahminSonucuDto>(Messages.VehicleNotFound);
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             var alinan = await _degerDal.GunlukTahminSayisiAsync(vehicleId, bugun);
             if (alinan >= GunlukTahminHakki)
                 return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerTahminSiniri);

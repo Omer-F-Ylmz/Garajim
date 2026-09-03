@@ -32,7 +32,7 @@ namespace Garajim.Business.Concrete
 
             var setler = await _lastikDal.GetListeAsync(vehicleId, QueryLimits.MaxListSize);
             var takili = setler.FirstOrDefault(s => s.Takili);
-            var kisDonemi = _evrakKurallari.KisLastigiDonemindeMi(DateTime.UtcNow.Date);
+            var kisDonemi = _evrakKurallari.KisLastigiDonemindeMi(Saat.BugunTr());
 
             var durum = new LastikDurumDto
             {
@@ -57,7 +57,7 @@ namespace Garajim.Business.Concrete
 
             if (string.IsNullOrWhiteSpace(dto.Ad) || !Enum.IsDefined(dto.Mevsim) ||
                 dto.TakilmaKm < 0 || dto.TakilmaTarihi == default ||
-                dto.TakilmaTarihi.Date > DateTime.UtcNow.Date.AddDays(1) ||
+                dto.TakilmaTarihi.Date > Saat.BugunTr().AddDays(1) ||
                 (dto.DisDerinligiMm != null && (dto.DisDerinligiMm < 0 || dto.DisDerinligiMm > 30)))
                 return new ErrorDataResult<LastikDto>(Messages.InvalidValue);
 
@@ -108,7 +108,7 @@ namespace Garajim.Business.Concrete
 
             if (dto.SokulmeKm < set.TakilmaKm || dto.SokulmeTarihi == default ||
                 dto.SokulmeTarihi.Date < set.TakilmaTarihi.Date ||
-                dto.SokulmeTarihi.Date > DateTime.UtcNow.Date.AddDays(1))
+                dto.SokulmeTarihi.Date > Saat.BugunTr().AddDays(1))
                 return new ErrorResult(Messages.LastikKmHatali);
 
             if (dto.DisDerinligiMm != null && (dto.DisDerinligiMm < 0 || dto.DisDerinligiMm > 30))

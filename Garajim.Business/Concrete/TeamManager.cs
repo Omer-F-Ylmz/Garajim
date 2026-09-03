@@ -50,7 +50,7 @@ namespace Garajim.Business.Concrete
             var users = await _userDal.GetListAsync(u => u.IsActive);
             var idler = users.Select(u => u.Id).ToList();
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             var evraklar = idler.Count == 0
                 ? new List<EvrakKaydi>()
                 : await _evrakDal.GetListAsync(e => e.Aktif && e.UserId != null && idler.Contains(e.UserId.Value));

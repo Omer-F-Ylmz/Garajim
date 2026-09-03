@@ -48,6 +48,7 @@ builder.Services.AddScoped<IVehicleDal, EfVehicleDal>();
 builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();
 builder.Services.AddScoped<IFuelDal, EfFuelDal>();
 builder.Services.AddScoped<IKmDuzeltmeLogDal, EfKmDuzeltmeLogDal>();
+builder.Services.AddSingleton<ISaat, Saat>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
@@ -421,20 +422,25 @@ if (useBackgroundJobs)
     using (var scope = app.Services.CreateScope())
     {
         var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        var trSaati = new RecurringJobOptions { TimeZone = Saat.Dilim };
+
         recurringJobManager.AddOrUpdate<ReminderNotificationJob>(
             "reminder-notifications",
             job => job.RunAsync(),
-            Cron.Daily(6));
+            Cron.Daily(6),
+            trSaati);
 
         recurringJobManager.AddOrUpdate<UstaOzetJob>(
             "usta-cozum-ozeti",
             job => job.RunAsync(),
-            Cron.Daily(4));
+            Cron.Daily(4),
+            trSaati);
 
         recurringJobManager.AddOrUpdate<UstaSaklamaJob>(
             "usta-saklama",
             job => job.RunAsync(),
-            Cron.Daily(5));
+            Cron.Daily(5),
+            trSaati);
     }
 }
 

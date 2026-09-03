@@ -257,7 +257,7 @@ namespace Garajim.Business.Concrete
             var araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
             var idler = araclar.Select(a => a.Id).ToList();
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             var buAyBasi = new DateTime(bugun.Year, bugun.Month, 1);
             var gecenAyBasi = buAyBasi.AddMonths(-1);
 

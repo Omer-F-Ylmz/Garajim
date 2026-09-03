@@ -1,5 +1,6 @@
 using Garajim.API.Controllers;
 using Garajim.Business.Abstract;
+using Garajim.Business.Concrete;
 using Garajim.ML.DataPrep;
 using Garajim.ML.Models;
 using Microsoft.Extensions.ML;
@@ -24,7 +25,7 @@ namespace Garajim.API.Startup
                 return new DegerTahminiSonucu { KapsamDisi = true };
             }
 
-            if (yil < CarCsvLoader.MinYear || yil > DateTime.Now.Year + 1
+            if (yil < CarCsvLoader.MinYear || yil > DegerSinirlari.EnYeniYil()
                 || kilometre < 0 || kilometre > CarCsvLoader.MaxKilometre)
             {
                 return new DegerTahminiSonucu { KapsamDisi = true };

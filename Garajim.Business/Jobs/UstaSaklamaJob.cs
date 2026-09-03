@@ -1,3 +1,4 @@
+using Garajim.Business.Concrete;
 using Garajim.Core.Multitenancy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,7 +37,7 @@ namespace Garajim.Business.Jobs
         {
             await _ozetJob.RunAsync();
 
-            var sinir = DateTime.UtcNow.Date.AddMonths(-SaklamaAyi);
+            var sinir = Saat.GunBasiUtc().AddMonths(-SaklamaAyi);
             var companies = await _companyDal.GetListAsync();
 
             try

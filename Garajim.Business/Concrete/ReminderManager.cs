@@ -34,7 +34,7 @@ namespace Garajim.Business.Concrete
                 days = 1;
             if (days > 365)
                 days = 365;
-            var limit = DateTime.UtcNow.Date.AddDays(days);
+            var limit = Saat.BugunTr().AddDays(days);
             var list = await _reminderDal.GetUpcomingForUserAsync(userId, limit);
             return new SuccessDataResult<List<UpcomingReminderDto>>(list);
         }

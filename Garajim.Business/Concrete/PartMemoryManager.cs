@@ -82,7 +82,7 @@ namespace Garajim.Business.Concrete
 
             var kayitlar = await _maintenanceDal.GetListAsync(m => m.VehicleId == vehicle.Id);
             var kayitSozlugu = kayitlar.ToDictionary(k => k.Id);
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
 
             var liste = new List<ParcaHafizasiDto>();
 

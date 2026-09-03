@@ -1,6 +1,7 @@
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Entity.Dtos;
+using Garajim.Business.Concrete;
 using Garajim.ML.DataPrep;
 using Garajim.ML.Models;
 using Garajim.API.Startup;
@@ -35,7 +36,7 @@ namespace Garajim.API.Controllers
                 return BadRequest(new ErrorDataResult<PriceEstimateResultDto>(Messages.PriceInputRequired));
             }
 
-            if (dto.Yil < CarCsvLoader.MinYear || dto.Yil > DateTime.Now.Year + 1)
+            if (dto.Yil < CarCsvLoader.MinYear || dto.Yil > DegerSinirlari.EnYeniYil())
             {
                 return BadRequest(new ErrorDataResult<PriceEstimateResultDto>(Messages.PriceYearOutOfRange));
             }

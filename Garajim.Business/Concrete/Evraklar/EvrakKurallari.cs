@@ -31,7 +31,7 @@ namespace Garajim.Business.Concrete.Evraklar
         {
             if (tur == EvrakTuru.KisLastigi)
             {
-                return KisLastigiBitisi(oncekiBitis ?? ilkTescil ?? DateTime.UtcNow.Date);
+                return KisLastigiBitisi(oncekiBitis ?? ilkTescil ?? Saat.BugunTr());
             }
 
             if (tur == EvrakTuru.Muayene && oncekiBitis == null && ilkTescil != null)
@@ -39,7 +39,7 @@ namespace Garajim.Business.Concrete.Evraklar
                 return ilkTescil.Value.Date.AddYears(IlkMuayeneYili);
             }
 
-            var taban = (oncekiBitis ?? ilkTescil ?? DateTime.UtcNow.Date).Date;
+            var taban = (oncekiBitis ?? ilkTescil ?? Saat.BugunTr()).Date;
             return taban.AddYears(YilAraligi(tur, kullanim));
         }
 

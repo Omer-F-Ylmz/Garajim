@@ -178,7 +178,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaSohbetBulunamadi);
 
             var gunlukLimit = GunlukLimit(kapi.Sirket.PlanType);
-            var bugunkuSayi = await _mesajDal.KullaniciGunlukSayisiAsync(userId, DateTime.UtcNow.Date);
+            var bugunkuSayi = await _mesajDal.KullaniciGunlukSayisiAsync(userId, Saat.GunBasiUtc());
             if (bugunkuSayi >= gunlukLimit)
                 return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaGunlukLimit);
 
@@ -341,7 +341,7 @@ namespace Garajim.Business.Concrete
             {
                 var bakim = await _maintenanceDal.GetAsync(b => b.Id == dto.CozumBakimId.Value);
                 if (bakim == null || bakim.VehicleId != sohbet.VehicleId ||
-                    bakim.Date.Date < DateTime.UtcNow.Date.AddDays(-CozumBakimGunu))
+                    bakim.Date.Date < Saat.BugunTr().AddDays(-CozumBakimGunu))
                 {
                     return new ErrorResult(Messages.UstaCozumBakimiUygunDegil);
                 }
@@ -363,7 +363,7 @@ namespace Garajim.Business.Concrete
             if (await _vehicleAccess.GetAccessibleAsync(userId, sohbet.VehicleId) == null)
                 return new ErrorDataResult<List<UstaBakimSecenegiDto>>(Messages.UstaSohbetBulunamadi);
 
-            var sinir = DateTime.UtcNow.Date.AddDays(-CozumBakimGunu);
+            var sinir = Saat.BugunTr().AddDays(-CozumBakimGunu);
             var bakimlar = await _maintenanceDal.GetListAsync(b => b.VehicleId == sohbet.VehicleId && b.Date >= sinir);
 
             var liste = bakimlar
@@ -541,7 +541,7 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Kayıt yok.");
             }
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             var evraklar = await _evrakDal.GetListAsync(e => e.Aktif && e.VehicleId == vehicle.Id);
             sb.AppendLine();
             sb.AppendLine("AKTIF EVRAK");

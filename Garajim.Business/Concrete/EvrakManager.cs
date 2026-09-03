@@ -249,7 +249,7 @@ namespace Garajim.Business.Concrete
         {
             var vehicle = kayit.VehicleId == null ? null : await _vehicleDal.GetAsync(v => v.Id == kayit.VehicleId);
             var kullanici = kayit.UserId == null ? null : await _userDal.GetAsync(u => u.Id == kayit.UserId);
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
 
             return new EvrakDto
             {
