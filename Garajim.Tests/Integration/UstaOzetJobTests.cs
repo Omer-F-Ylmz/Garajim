@@ -17,6 +17,7 @@ namespace Garajim.Tests.Integration
                 _db.VehicleDal,
                 _db.PartDal,
                 _db.UstaCozumOzetiDal,
+                _db.UserDal,
                 _db.UnitOfWork,
                 _db.Tenant);
         }

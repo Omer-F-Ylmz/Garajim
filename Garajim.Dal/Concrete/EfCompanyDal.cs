@@ -21,6 +21,18 @@ namespace Garajim.Dal.Concrete
 
         public async Task SirketVerisiniSilAsync(int companyId)
         {
+            await KayitlariSilAsync(companyId);
+            await Context.Users.Where(x => x.CompanyId == companyId).ExecuteDeleteAsync();
+            await Context.Companies.Where(c => c.Id == companyId).ExecuteDeleteAsync();
+        }
+
+        public Task SirketKayitlariniSilAsync(int companyId)
+        {
+            return KayitlariSilAsync(companyId);
+        }
+
+        private async Task KayitlariSilAsync(int companyId)
+        {
             await Context.Companies
                 .Where(c => c.DavetEdenCompanyId == companyId)
                 .ExecuteUpdateAsync(k => k.SetProperty(c => c.DavetEdenCompanyId, (int?)null));
@@ -47,9 +59,6 @@ namespace Garajim.Dal.Concrete
             await Context.FuelRecords.Where(x => x.CompanyId == companyId).ExecuteDeleteAsync();
             await Context.MaintenanceRecords.Where(x => x.CompanyId == companyId).ExecuteDeleteAsync();
             await Context.Vehicles.Where(x => x.CompanyId == companyId).ExecuteDeleteAsync();
-            await Context.Users.Where(x => x.CompanyId == companyId).ExecuteDeleteAsync();
-
-            await Context.Companies.Where(c => c.Id == companyId).ExecuteDeleteAsync();
         }
 
         public async Task<bool> DavetKoduVarMiAsync(string kod)

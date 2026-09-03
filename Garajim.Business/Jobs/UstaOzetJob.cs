@@ -1,3 +1,4 @@
+using Garajim.Business.Seed;
 using Garajim.Core.Multitenancy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -15,6 +16,7 @@ namespace Garajim.Business.Jobs
         private readonly IVehicleDal _vehicleDal;
         private readonly IMaintenancePartDal _partDal;
         private readonly IUstaCozumOzetiDal _ozetDal;
+        private readonly IUserDal _userDal;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TenantContext _tenantContext;
         private readonly ILogger<UstaOzetJob> _logger;
@@ -26,6 +28,7 @@ namespace Garajim.Business.Jobs
             IVehicleDal vehicleDal,
             IMaintenancePartDal partDal,
             IUstaCozumOzetiDal ozetDal,
+            IUserDal userDal,
             IUnitOfWork unitOfWork,
             TenantContext tenantContext,
             ILogger<UstaOzetJob> logger = null)
@@ -37,6 +40,7 @@ namespace Garajim.Business.Jobs
             _vehicleDal = vehicleDal;
             _partDal = partDal;
             _ozetDal = ozetDal;
+            _userDal = userDal;
             _unitOfWork = unitOfWork;
             _tenantContext = tenantContext;
         }
@@ -47,8 +51,15 @@ namespace Garajim.Business.Jobs
 
             try
             {
+                var demoSirketId = (await _userDal.GetForAuthenticationAsync(DemoDataSeeder.DemoEmail))?.CompanyId;
+
                 foreach (var company in companies)
                 {
+                    if (demoSirketId != null && company.Id == demoSirketId.Value)
+                    {
+                        continue;
+                    }
+
                     try
                     {
                         _tenantContext.SetCompany(company.Id);

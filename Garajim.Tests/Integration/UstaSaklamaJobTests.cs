@@ -11,7 +11,7 @@ namespace Garajim.Tests.Integration
 
         private UstaOzetJob OzetJob()
         {
-            return new UstaOzetJob(_db.CompanyDal, _db.UstaMesajDal, _db.UstaSohbetDal, _db.VehicleDal, _db.PartDal, _db.UstaCozumOzetiDal, _db.UnitOfWork, _db.Tenant);
+            return new UstaOzetJob(_db.CompanyDal, _db.UstaMesajDal, _db.UstaSohbetDal, _db.VehicleDal, _db.PartDal, _db.UstaCozumOzetiDal, _db.UserDal, _db.UnitOfWork, _db.Tenant);
         }
 
         private UstaSaklamaJob SaklamaJob()

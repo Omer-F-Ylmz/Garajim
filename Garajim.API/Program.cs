@@ -54,6 +54,7 @@ builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();
 builder.Services.AddScoped<FisTemizlemeJob>();
+builder.Services.AddScoped<DemoSifirlamaJob>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
@@ -440,6 +441,12 @@ if (useBackgroundJobs)
             "usta-cozum-ozeti",
             job => job.RunAsync(),
             Cron.Daily(4),
+            trSaati);
+
+        recurringJobManager.AddOrUpdate<DemoSifirlamaJob>(
+            "demo-sifirlama",
+            job => job.RunAsync(),
+            Cron.Daily(3, 30),
             trSaati);
 
         recurringJobManager.AddOrUpdate<HesapSilmeJob>(

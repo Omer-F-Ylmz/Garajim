@@ -43,7 +43,7 @@ namespace Garajim.Tests.Integration
                 });
 
             var job = new UstaOzetJob(companyDal.Object, mesajDal.Object, _db.UstaSohbetDal, _db.VehicleDal,
-                _db.PartDal, _db.UstaCozumOzetiDal, _db.UnitOfWork, tenant);
+                _db.PartDal, _db.UstaCozumOzetiDal, _db.UserDal, _db.UnitOfWork, tenant);
 
             var hata = await Record.ExceptionAsync(() => job.RunAsync());
 
@@ -77,7 +77,7 @@ namespace Garajim.Tests.Integration
                 });
 
             var ozetJob = new UstaOzetJob(companyDal.Object, mesajDal.Object, sohbetDal.Object, _db.VehicleDal,
-                _db.PartDal, _db.UstaCozumOzetiDal, _db.UnitOfWork, tenant);
+                _db.PartDal, _db.UstaCozumOzetiDal, _db.UserDal, _db.UnitOfWork, tenant);
             var job = new UstaSaklamaJob(companyDal.Object, sohbetDal.Object, mesajDal.Object, ozetJob, tenant);
 
             var hata = await Record.ExceptionAsync(() => job.RunAsync());
@@ -100,7 +100,7 @@ namespace Garajim.Tests.Integration
                 .Returns(() => throw new InvalidOperationException("her sirkette patliyor"));
 
             var job = new UstaOzetJob(companyDal.Object, mesajDal.Object, _db.UstaSohbetDal, _db.VehicleDal,
-                _db.PartDal, _db.UstaCozumOzetiDal, _db.UnitOfWork, tenant);
+                _db.PartDal, _db.UstaCozumOzetiDal, _db.UserDal, _db.UnitOfWork, tenant);
 
             await job.RunAsync();
 
