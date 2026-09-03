@@ -11,6 +11,7 @@ namespace Garajim.Entity.Dtos
         public int Km { get; set; }
         public decimal? Kwh { get; set; }
         public SarjTuru? SarjTuru { get; set; }
+        public bool? TamDolum { get; set; }
     }
 
     public class FuelDto
@@ -23,5 +24,7 @@ namespace Garajim.Entity.Dtos
         public int Km { get; set; }
         public decimal? Kwh { get; set; }
         public string SarjTuru { get; set; }
+        public bool TamDolum { get; set; }
+        public bool SupheliKm { get; set; }
     }
 }

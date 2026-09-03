@@ -14,5 +14,7 @@ namespace Garajim.Entity.Concrete
         public int Km { get; set; }
         public decimal? Kwh { get; set; }
         public SarjTuru? SarjTuru { get; set; }
+        public bool TamDolum { get; set; } = true;
+        public bool SupheliKm { get; set; }
     }
 }

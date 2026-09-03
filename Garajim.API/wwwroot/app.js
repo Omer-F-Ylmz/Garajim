@@ -804,7 +804,16 @@
             }
             rows.forEach(function (item) {
                 var tr = document.createElement("tr");
-                tr.appendChild(make("td", formatDate(item.date)));
+                var tarihHucre = make("td", formatDate(item.date));
+                if (item.supheliKm) {
+                    var rozet = make("span", "şüpheli", "rozet-supheli");
+                    rozet.title = "Bu aralıkta hesaplanan tüketim beklenen sınırların dışında; ortalamaya katılmıyor.";
+                    tarihHucre.appendChild(rozet);
+                }
+                if (!item.tamDolum) {
+                    tarihHucre.appendChild(make("span", "kısmi", "rozet-kismi"));
+                }
+                tr.appendChild(tarihHucre);
                 tr.appendChild(make("td", km(item.km)));
                 tr.appendChild(make("td", Number(item.liters) > 0 ? literFormat.format(Number(item.liters)) + " L" : "-"));
                 tr.appendChild(make("td", item.kwh === null ? "-" : literFormat.format(Number(item.kwh)) + " kWh" + (item.sarjTuru ? " (" + labelOf(SARJ_TURU, item.sarjTuru) + ")" : "")));
@@ -4592,7 +4601,8 @@
                     liters: el("fuel-liters").value === "" ? 0 : sayiAlan("fuel-liters"),
                     kwh: el("fuel-kwh").value === "" ? null : sayiAlan("fuel-kwh"),
                     sarjTuru: el("fuel-sarj").value === "" ? null : el("fuel-sarj").value,
-                    totalCost: sayiAlan("fuel-cost")
+                    totalCost: sayiAlan("fuel-cost"),
+                    tamDolum: el("fuel-tam-dolum").checked
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);

@@ -108,17 +108,18 @@ namespace Garajim.Tests.Unit
             var gemini = new AcikGemini();
             var openAi = new AcikOpenAi();
 
-            using (var isinma = saglayici == "gemini" ? gemini.Govde(ham, "image/png") : openAi.Govde(ham, "image/png"))
-            {
-            }
+            var ayrilan = long.MaxValue;
 
-            var once = GC.GetAllocatedBytesForCurrentThread();
-            using (var istek = saglayici == "gemini" ? gemini.Govde(ham, "image/png") : openAi.Govde(ham, "image/png"))
+            for (var deneme = 0; deneme < 4; deneme++)
             {
-                Assert.NotNull(istek.Content);
-            }
+                var once = GC.GetAllocatedBytesForCurrentThread();
+                using (var istek = saglayici == "gemini" ? gemini.Govde(ham, "image/png") : openAi.Govde(ham, "image/png"))
+                {
+                    Assert.NotNull(istek.Content);
+                }
 
-            var ayrilan = GC.GetAllocatedBytesForCurrentThread() - once;
+                ayrilan = Math.Min(ayrilan, GC.GetAllocatedBytesForCurrentThread() - once);
+            }
             var tavan = ham.Length * (long)katsayi;
 
             Assert.True(

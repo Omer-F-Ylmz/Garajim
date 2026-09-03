@@ -48,9 +48,11 @@ namespace Garajim.Business.Concrete
                 TotalCost = dto.TotalCost,
                 Km = dto.Km,
                 Kwh = dto.Kwh,
-                SarjTuru = dto.SarjTuru
+                SarjTuru = dto.SarjTuru,
+                TamDolum = dto.TamDolum ?? true
             };
             await _fuelDal.AddAsync(record);
+            await SupheliBayraklariniGuncelleAsync(dto.VehicleId);
             if (dto.Km > vehicle.CurrentKm)
             {
                 vehicle.CurrentKm = dto.Km;
@@ -68,7 +70,16 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorResult(Messages.RecordNotFound);
             await _fuelDal.DeleteAsync(record);
+            await SupheliBayraklariniGuncelleAsync(record.VehicleId);
             return new SuccessResult(Messages.RecordDeleted);
+        }
+
+        private async Task SupheliBayraklariniGuncelleAsync(int vehicleId)
+        {
+            var kayitlar = await _fuelDal.GetListAsync(f => f.VehicleId == vehicleId);
+            var sonuc = TuketimHesabi.Hesapla(kayitlar);
+
+            await _fuelDal.SupheliGuncelleAsync(vehicleId, sonuc.SupheliKayitlar.ToList());
         }
 
         private static string Dogrula(FuelType yakitTuru, FuelCreateDto dto)
@@ -112,7 +123,9 @@ namespace Garajim.Business.Concrete
                 TotalCost = record.TotalCost,
                 Km = record.Km,
                 Kwh = record.Kwh,
-                SarjTuru = record.SarjTuru?.ToString()
+                SarjTuru = record.SarjTuru?.ToString(),
+                TamDolum = record.TamDolum,
+                SupheliKm = record.SupheliKm
             };
         }
     }

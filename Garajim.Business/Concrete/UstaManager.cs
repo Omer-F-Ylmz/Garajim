@@ -612,14 +612,7 @@ namespace Garajim.Business.Concrete
                 return null;
             }
 
-            var mesafe = olcumler[olcumler.Count - 1].Km - olcumler[0].Km;
-            if (mesafe <= 0)
-            {
-                return null;
-            }
-
-            var litre = olcumler.Skip(1).Sum(o => o.Litre);
-            return litre <= 0 ? null : Math.Round(litre / mesafe * 100, 2);
+            return TuketimHesabi.Olcumlerden(olcumler).Litre100Km;
         }
 
         private static string Deger(string metin)

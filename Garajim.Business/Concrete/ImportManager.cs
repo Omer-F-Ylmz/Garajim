@@ -125,7 +125,7 @@ namespace Garajim.Business.Concrete
 
             var mevcutHashler = await _importDal.GetHashesAsync(vehicle.Id);
             var sonuc = new ImportSonucDto { DryRun = dto.DryRun };
-            var eklenecekler = new List<(string Hash, DateTime Tarih, decimal Tutar, int? Km, decimal? Litre, string Metin)>();
+            var eklenecekler = new List<(string Hash, DateTime Tarih, decimal Tutar, int? Km, decimal? Litre, bool TamDolum, string Metin)>();
             var buPartideki = new HashSet<string>();
 
             for (var i = 0; i < tablo.Satirlar.Count; i++)
@@ -157,6 +157,7 @@ namespace Garajim.Business.Concrete
                     CsvDeger.Sayi(Al(satir, eslesme, "tutar")).Value,
                     CsvDeger.Tamsayi(Al(satir, eslesme, "km")),
                     CsvDeger.Sayi(Al(satir, eslesme, "litre")),
+                    TamDolumMu(Al(satir, eslesme, "tamdolum")),
                     Al(satir, eslesme, "aciklama") ?? Al(satir, eslesme, "kategori") ?? Al(satir, eslesme, "servis")));
             }
 
@@ -173,7 +174,7 @@ namespace Garajim.Business.Concrete
 
             foreach (var kayit in eklenecekler)
             {
-                await KayitYazAsync(vehicle, tur, kayit.Tarih, kayit.Tutar, kayit.Km, kayit.Litre, kayit.Metin);
+                await KayitYazAsync(vehicle, tur, kayit.Tarih, kayit.Tutar, kayit.Km, kayit.Litre, kayit.TamDolum, kayit.Metin);
 
                 await _importDal.AddAsync(new ImportKaydi
                 {
@@ -201,7 +202,20 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<ImportSonucDto>(sonuc, Messages.ImportTamamlandi);
         }
 
-        private async Task KayitYazAsync(Vehicle vehicle, string tur, DateTime tarih, decimal tutar, int? kilometre, decimal? litre, string metin)
+        private static bool TamDolumMu(string ham)
+        {
+            if (string.IsNullOrWhiteSpace(ham))
+            {
+                return true;
+            }
+
+            var deger = ham.Trim().ToLowerInvariant();
+
+            return deger != "0" && deger != "false" && deger != "hayir" && deger != "hayır"
+                && deger != "no" && deger != "kismi" && deger != "kısmi" && deger != "partial";
+        }
+
+        private async Task KayitYazAsync(Vehicle vehicle, string tur, DateTime tarih, decimal tutar, int? kilometre, decimal? litre, bool tamDolum, string metin)
         {
             if (tur == "Yakit")
             {
@@ -212,7 +226,8 @@ namespace Garajim.Business.Concrete
                     Date = tarih,
                     Liters = litre ?? 0m,
                     TotalCost = tutar,
-                    Km = kilometre ?? vehicle.CurrentKm
+                    Km = kilometre ?? vehicle.CurrentKm,
+                    TamDolum = tamDolum
                 });
             }
             else if (tur == "Bakim")

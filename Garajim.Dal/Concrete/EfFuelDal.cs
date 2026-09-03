@@ -13,6 +13,27 @@ namespace Garajim.Dal.Concrete
         {
         }
 
+        public async Task SupheliGuncelleAsync(int vehicleId, IReadOnlyCollection<int> supheliIdler)
+        {
+            var kayitlar = await Context.FuelRecords.Where(f => f.VehicleId == vehicleId).ToListAsync();
+            var degisti = false;
+
+            foreach (var kayit in kayitlar)
+            {
+                var supheli = supheliIdler.Contains(kayit.Id);
+                if (kayit.SupheliKm != supheli)
+                {
+                    kayit.SupheliKm = supheli;
+                    degisti = true;
+                }
+            }
+
+            if (degisti)
+            {
+                await Context.SaveChangesAsync();
+            }
+        }
+
         public async Task<decimal> GetTotalCostAsync(int vehicleId, DateTime start, DateTime end)
         {
             return await Context.FuelRecords
@@ -42,9 +63,9 @@ namespace Garajim.Dal.Concrete
         {
             return await Context.FuelRecords
                 .AsNoTracking()
-                .Where(f => f.VehicleId == vehicleId && f.Km > 0 && f.Date >= start && f.Date <= end)
+                .Where(f => f.VehicleId == vehicleId && f.Km > 0 && !f.SupheliKm && f.Date >= start && f.Date <= end)
                 .OrderBy(f => f.Km).ThenBy(f => f.Id)
-                .Select(f => new YakitOlcumDto { Tarih = f.Date, Km = f.Km, Litre = f.Liters, Kwh = f.Kwh ?? 0m })
+                .Select(f => new YakitOlcumDto { Tarih = f.Date, Km = f.Km, Litre = f.Liters, Kwh = f.Kwh ?? 0m, TamDolum = f.TamDolum })
                 .ToListAsync();
         }
 

@@ -11,7 +11,8 @@ namespace Garajim.Business.Concrete.Import
             ["birimfiyat"] = new[] { "birimfiyat", "price", "fiyat", "unitprice", "litrefiyati" },
             ["kategori"] = new[] { "kategori", "category", "tur", "type", "costtitle", "masrafturu", "gidertipi" },
             ["aciklama"] = new[] { "aciklama", "not", "note", "notes", "description", "detay", "comment" },
-            ["servis"] = new[] { "servis", "service", "workshop", "yer", "place", "istasyon", "station" }
+            ["servis"] = new[] { "servis", "service", "workshop", "yer", "place", "istasyon", "station" },
+            ["tamdolum"] = new[] { "tamdolum", "fulltank", "full", "depodoldu", "dolutank", "filledup", "tankfull", "komple" }
         };
 
         public static string Sez(CsvTablo tablo)
@@ -63,7 +64,7 @@ namespace Garajim.Business.Concrete.Import
         {
             return kayitTuru switch
             {
-                "Yakit" => new[] { "tarih", "km", "litre", "tutar", "birimfiyat" },
+                "Yakit" => new[] { "tarih", "km", "litre", "tutar", "birimfiyat", "tamdolum" },
                 "Bakim" => new[] { "tarih", "km", "tutar", "servis", "aciklama" },
                 _ => new[] { "tarih", "tutar", "kategori", "aciklama" }
             };

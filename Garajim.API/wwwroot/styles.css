@@ -1192,3 +1192,35 @@ button.compact {
     opacity: 0.55;
     cursor: default;
 }
+
+.rozet-supheli,
+.rozet-kismi {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+.rozet-supheli {
+    background: var(--warn-bg, #4a2a12);
+    color: var(--warn-text, #ffca88);
+}
+
+.rozet-kismi {
+    background: var(--panel-2);
+    color: var(--muted);
+}
+
+.onay-alan label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.onay-alan input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}

@@ -87,5 +87,6 @@ namespace Garajim.Entity.Dtos
         public int Km { get; set; }
         public decimal Litre { get; set; }
         public decimal Kwh { get; set; }
+        public bool TamDolum { get; set; }
     }
 }

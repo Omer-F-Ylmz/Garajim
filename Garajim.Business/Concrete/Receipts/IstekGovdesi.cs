@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace Garajim.Business.Concrete.Receipts
@@ -10,7 +11,9 @@ namespace Garajim.Business.Concrete.Receipts
         public static ArrayBufferWriter<byte> Tampon(int goruntuUzunlugu)
         {
             var base64 = Base64.GetMaxEncodedToUtf8Length(Math.Max(goruntuUzunlugu, 0));
-            return new ArrayBufferWriter<byte>(base64 + ReceiptResponseParser.Prompt.Length + 1024);
+            var prompt = Encoding.UTF8.GetByteCount(ReceiptResponseParser.Prompt);
+
+            return new ArrayBufferWriter<byte>(base64 + prompt + 2048);
         }
 
         public static byte[] VeriUrl(string mimeType, byte[] ham)

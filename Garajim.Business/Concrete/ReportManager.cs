@@ -103,18 +103,16 @@ namespace Garajim.Business.Concrete
                 .ToList();
             if (records.Count < 2)
                 return new ErrorDataResult<FuelStatsDto>(Messages.NotEnoughFuelData);
-            var totalKm = records[records.Count - 1].Km - records[0].Km;
-            if (totalKm <= 0)
+            var tuketim = TuketimHesabi.Hesapla(records);
+            if (tuketim.OlculenKm <= 0)
                 return new ErrorDataResult<FuelStatsDto>(Messages.NotEnoughFuelData);
-            var consumedLiters = records.Skip(1).Sum(f => f.Liters);
-            var consumedCost = records.Skip(1).Sum(f => f.TotalCost);
             var stats = new FuelStatsDto
             {
-                TotalKm = totalKm,
+                TotalKm = tuketim.OlculenKm,
                 TotalLiters = records.Sum(f => f.Liters),
                 TotalCost = records.Sum(f => f.TotalCost),
-                AverageConsumptionPer100Km = Math.Round(consumedLiters / totalKm * 100, 2),
-                CostPerKm = Math.Round(consumedCost / totalKm, 2)
+                AverageConsumptionPer100Km = tuketim.Litre100Km ?? 0m,
+                CostPerKm = Math.Round(tuketim.OlculenTutar / tuketim.OlculenKm, 2)
             };
             return new SuccessDataResult<FuelStatsDto>(stats);
         }
@@ -152,27 +150,14 @@ namespace Garajim.Business.Concrete
 
             maliyet.ToplamMaliyet = maliyet.ToplamYakit + maliyet.ToplamBakim + maliyet.ToplamMasraf;
 
-            if (olcumler.Count >= 2)
-            {
-                maliyet.MesafeKm = olcumler[olcumler.Count - 1].Km - olcumler[0].Km;
-            }
+            var tuketim = TuketimHesabi.Olcumlerden(olcumler);
+            maliyet.MesafeKm = tuketim.OlculenKm;
 
             if (maliyet.MesafeKm > 0)
             {
                 maliyet.MaliyetKmBasi = Math.Round(maliyet.ToplamMaliyet / maliyet.MesafeKm, 2);
-
-                var tuketilenLitre = olcumler.Skip(1).Sum(o => o.Litre);
-                if (tuketilenLitre > 0)
-                {
-                    maliyet.Litre100Km = Math.Round(tuketilenLitre / maliyet.MesafeKm * 100, 2);
-                }
-
-                var tuketilenKwh = olcumler.Skip(1).Sum(o => o.Kwh);
-                if (tuketilenKwh > 0)
-                {
-                    maliyet.Kwh100Km = Math.Round(tuketilenKwh / maliyet.MesafeKm * 100, 2);
-                }
-
+                maliyet.Litre100Km = tuketim.Litre100Km;
+                maliyet.Kwh100Km = tuketim.Kwh100Km;
                 maliyet.TuketimSeri = TuketimSeri(olcumler);
             }
 

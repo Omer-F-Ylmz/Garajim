@@ -88,6 +88,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<FuelRecord>(entity =>
             {
                 entity.Property(f => f.Liters).HasPrecision(9, 2);
+                entity.Property(f => f.TamDolum).HasDefaultValue(true);
                 entity.Property(f => f.Kwh).HasPrecision(9, 2);
                 entity.Property(f => f.TotalCost).HasPrecision(18, 2);
                 entity.HasIndex(f => new { f.VehicleId, f.Date });
