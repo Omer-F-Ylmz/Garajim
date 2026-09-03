@@ -397,9 +397,8 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
-app.UseRateLimiter();
-
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthorization();
 
