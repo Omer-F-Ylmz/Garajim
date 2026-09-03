@@ -20,6 +20,7 @@ namespace Garajim.Dal.Concrete
                               && (e.LastNotifiedAt == null || e.LastNotifiedAt <= notifyBefore)
                         join v in Context.Vehicles on e.VehicleId equals v.Id into araclar
                         from arac in araclar.DefaultIfEmpty()
+                        where arac == null || !arac.Arsivli
                         select new EvrakDueDto
                         {
                             EvrakId = e.Id,

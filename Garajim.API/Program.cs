@@ -281,7 +281,7 @@ builder.Services.AddRateLimiter(options =>
     };
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options => options.Filters.Add<DurumKoduFiltresi>()).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });

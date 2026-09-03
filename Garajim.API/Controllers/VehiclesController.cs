@@ -152,9 +152,35 @@ namespace Garajim.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] bool arsiv = false)
         {
-            var result = await _vehicleService.GetAllAsync(CurrentUserId);
+            var result = await _vehicleService.GetAllAsync(CurrentUserId, arsiv);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/arsiv")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> Arsivle(int id, AracArsivDto dto)
+        {
+            var result = await _vehicleService.ArsivleAsync(CurrentUserId, id, dto?.Neden ?? ArsivNedeni.Diger);
+            if (!result.Success)
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/arsivden-al")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> ArsivdenAl(int id)
+        {
+            var result = await _vehicleService.ArsivdenAlAsync(CurrentUserId, id);
+            if (!result.Success)
+            {
+                if (result.Message == Messages.VehicleNotFound)
+                    return NotFound(result);
+                if (result.Message == Messages.AracLimitiAsildi)
+                    return StatusCode(StatusCodes.Status402PaymentRequired, result);
+                return BadRequest(result);
+            }
             return Ok(result);
         }
 

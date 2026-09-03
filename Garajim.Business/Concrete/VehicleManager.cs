@@ -28,10 +28,10 @@ namespace Garajim.Business.Concrete
             _kmLogDal = kmLogDal;
         }
 
-        public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId)
+        public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId, bool arsiv = false)
         {
             var vehicles = await _vehicleAccess.GetAccessibleListAsync(userId);
-            var list = vehicles.OrderBy(v => v.Plate).Select(MapToDto).ToList();
+            var list = vehicles.Where(v => v.Arsivli == arsiv).OrderBy(v => v.Plate).Select(MapToDto).ToList();
             return new SuccessDataResult<List<VehicleDto>>(list);
         }
 
@@ -64,7 +64,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var davetSayisi = await _companyDal.DavetSayisiAsync(sirket.Id);
             var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
-            if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId) >= limit)
+            if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId && !v.Arsivli) >= limit)
                 return new ErrorDataResult<VehicleDto>(Messages.AracLimitiAsildi);
             var vehicle = new Vehicle
             {
@@ -147,6 +147,53 @@ namespace Garajim.Business.Concrete
             return new SuccessResult(Messages.VehicleUpdated);
         }
 
+        public async Task<IResult> ArsivleAsync(int userId, int id, ArsivNedeni neden)
+        {
+            if (!Enum.IsDefined(neden))
+                return new ErrorResult(Messages.InvalidValue);
+
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
+            if (vehicle == null)
+                return new ErrorResult(Messages.VehicleNotFound);
+
+            if (vehicle.Arsivli)
+                return new SuccessResult(Messages.AracArsivlendi);
+
+            vehicle.Arsivli = true;
+            vehicle.ArsivNedeni = neden;
+            vehicle.ArsivTarihi = DateTime.UtcNow;
+            await _vehicleDal.UpdateAsync(vehicle);
+
+            return new SuccessResult(Messages.AracArsivlendi);
+        }
+
+        public async Task<IResult> ArsivdenAlAsync(int userId, int id)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
+            if (vehicle == null)
+                return new ErrorResult(Messages.VehicleNotFound);
+
+            if (!vehicle.Arsivli)
+                return new SuccessResult(Messages.AracArsivdenAlindi);
+
+            var sirket = await _companyDal.GetAsync(c => c.Id == vehicle.CompanyId);
+            if (sirket == null)
+                return new ErrorResult(Messages.InvalidValue);
+
+            var davetSayisi = await _companyDal.DavetSayisiAsync(sirket.Id);
+            var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
+
+            if (await _vehicleDal.CountAsync(v => v.CompanyId == vehicle.CompanyId && !v.Arsivli) >= limit)
+                return new ErrorResult(Messages.AracLimitiAsildi);
+
+            vehicle.Arsivli = false;
+            vehicle.ArsivNedeni = null;
+            vehicle.ArsivTarihi = null;
+            await _vehicleDal.UpdateAsync(vehicle);
+
+            return new SuccessResult(Messages.AracArsivdenAlindi);
+        }
+
         public async Task<IResult> DeleteAsync(int userId, int id)
         {
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
@@ -174,6 +221,9 @@ namespace Garajim.Business.Concrete
                 Id = vehicle.Id,
                 Plate = vehicle.Plate,
                 YabanciPlaka = vehicle.YabanciPlaka,
+                Arsivli = vehicle.Arsivli,
+                ArsivNedeni = vehicle.ArsivNedeni?.ToString(),
+                ArsivTarihi = vehicle.ArsivTarihi,
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Year = vehicle.Year,

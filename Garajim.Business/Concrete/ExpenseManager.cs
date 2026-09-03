@@ -33,6 +33,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<ExpenseDto>(Messages.VehicleNotFound);
+            if (vehicle.Arsivli)
+                return new ErrorDataResult<ExpenseDto>(Messages.AracArsivli);
             if (!DegerSinirlari.TutarGecerli(dto.Amount) || !DegerSinirlari.GecmisTarih(dto.Date)
                 || !Enum.IsDefined(dto.Category))
                 return new ErrorDataResult<ExpenseDto>(Messages.InvalidValue);

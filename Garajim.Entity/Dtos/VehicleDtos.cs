@@ -40,6 +40,11 @@ namespace Garajim.Entity.Dtos
         public string AcilNot { get; set; }
     }
 
+    public class AracArsivDto
+    {
+        public ArsivNedeni Neden { get; set; }
+    }
+
     public class KmDuzeltmeDto
     {
         public int EskiKm { get; set; }
@@ -53,6 +58,9 @@ namespace Garajim.Entity.Dtos
         public int Id { get; set; }
         public string Plate { get; set; }
         public bool YabanciPlaka { get; set; }
+        public bool Arsivli { get; set; }
+        public string ArsivNedeni { get; set; }
+        public DateTime? ArsivTarihi { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
         public int Year { get; set; }

@@ -36,6 +36,8 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
                 return new ErrorDataResult<FuelDto>(Messages.VehicleNotFound);
+            if (vehicle.Arsivli)
+                return new ErrorDataResult<FuelDto>(Messages.AracArsivli);
             var hata = Dogrula(vehicle.FuelType, dto);
             if (hata != null)
                 return new ErrorDataResult<FuelDto>(hata);
