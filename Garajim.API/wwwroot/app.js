@@ -476,6 +476,7 @@
             }
             select.value = String(state.selectedVehicleId);
             kmSeridiniGuncelle();
+            tescilUyarisiniGuncelle();
             acilKartiSakla();
             kuyrugoBosalt();
             loadActiveTab();
@@ -1502,6 +1503,23 @@
     }
 
     var KM_BAYATLIK_GUNU = 60;
+
+    function tescilUyarisiniGuncelle() {
+        var uyari = el("evrak-tescil-uyari");
+        var arac = seciliArac();
+        var tur = el("evrak-tur").value;
+
+        var gerekli = arac && tur === "Muayene"
+            && (arac.kullanimTuru || "Hususi") === "Hususi"
+            && !arac.ilkTescilTarihi;
+
+        uyari.classList.toggle("hidden", !gerekli);
+
+        if (gerekli) {
+            uyari.textContent = "Muayene tarihi önerilebilmesi için aracın ilk tescil tarihi gerekiyor. "
+                + "Düzenle ekranından girin ya da bitiş tarihini kendiniz yazın.";
+        }
+    }
 
     function kmSeridiniGuncelle() {
         var serit = el("km-serit");
@@ -4637,6 +4655,7 @@
     function bindVehicle() {
         el("arsiv-btn").addEventListener("click", arsivPaneliniAc);
         el("km-hizli-kaydet").addEventListener("click", hizliKmKaydet);
+        el("evrak-tur").addEventListener("change", tescilUyarisiniGuncelle);
         el("vehicle-arsivle").addEventListener("click", arsivSecenegiIleArsivle);
         el("arsiv-yenile").addEventListener("click", arsiviYukle);
         el("arsiv-kapat").addEventListener("click", function () { el("arsiv-box").classList.add("hidden"); });

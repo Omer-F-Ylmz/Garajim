@@ -86,6 +86,46 @@ Kırmızı takım denetimi ve güvenlik taramasında kapatılan bulgular; hepsi 
 - **Hasar silme tek transaction'dadır**; fiziksel dosya ancak commit sonrası silinir, çünkü dosya silme geri alınamaz.
 - **Araç metin alanları kolon sınırına kırpılır** (`AracAlanUzunluklari`); uzunluklar hem `GarajimDbContext` hem `VehicleManager` tarafından oradan okunur ve test ikisinin eşitliğini sabitler. Plaka kırpılmaz, sığmazsa reddedilir.
 
+### Gün sınırı Türkiye saatidir
+
+Sunucu UTC çalışır; **saklama UTC kalır**. Gün sınırına bakan her hesap `Saat` üzerinden Türkiye gününü kullanır: gelecek tarih reddi, evrak Yaklaşıyor/Geçti eşiği, kış lastiği penceresi, kalan gün, AI Usta günlük kotası, hatırlatma ve parça hafızası eşikleri. Saklanan zaman damgasıyla karşılaştırma yapılacaksa `Saat.GunBasiUtc()` kullanılır. Hangfire recurring job'ları TR dilimine bağlıdır ve 03:00-06:00 arasında koşar.
+
+`DateTime.Now` ve `DateTime.Today` ürün kodunda **yasaktır**, guard testi kırılır. Yeni bir gün hesabı eklenirken `Saat` kullanılır, `DateTime.UtcNow.Date` değil.
+
+### Plaka tek kapıdan geçer
+
+Plaka `PlakaDogrulayici` ile normalize edilir ve doğrulanır: il 01-81, 1 harf 4-5 rakam, 2 harf 3-4 rakam, 3 harf 2-3 rakam. Türkçe karakter normalizasyondan **önce** reddedilir, çünkü büyük harfe çevirme `ı` harfini sessizce `I` yapar. `Vehicle.YabanciPlaka` işaretliyse kural 5-12 alfanümerik serbest metne düşer. Demo seed doğrulayıcıdan geçmez (kaydı doğrudan DAL'a yazar).
+
+### Sayısal sınırlar tek yerdedir
+
+`DegerSinirlari`: yıl 1950..(bu yıl+1), km 0..2.000.000, tutar 0..5.000.000, litre 0..1.500, kWh 0..500. Yeni bir sayısal alan eklenirken sınır buraya yazılır, manager içine gömülmez. Gelecek tarih yakıt, bakım, masraf, yolculuk, hasar ve beyan değerinde reddedilir; **evrak bitiş tarihi hariçtir**, doğası gereği ileri tarihlidir.
+
+### Tüketim yalnız tam dolumlar arasında ölçülür
+
+`TuketimHesabi` ardışık `TamDolum` kayıtları arasındaki segmenti ölçer; aradaki kısmi dolumların litresi segmente eklenir, kısmi dolumla biten kuyruk ölçüme girmez. Segment tüketimi 2'nin altında ya da 40'ın üstündeyse (kWh 8/60) kayıt `SupheliKm` işaretlenir ve fuel-stats, araç maliyeti ile AI Usta bağlamı o segmenti dışlar. Bayrak yakıt kaydı değiştikçe yeniden hesaplanır; elle set edilmez.
+
+### Arşiv silme değildir
+
+`Vehicle.Arsivli` araç plan limitine sayılmaz, hatırlatma/evrak e-postası almaz ve yeni kayıt kabul etmez (409). Buna karşılık **karne paylaşımı ve daha önce paylaşılmış bağlantılar çalışmaya devam eder**; aracı satın alan kişi geçmişi görebilsin diye bu bilinçlidir. Arşivden geri alma plan limitini denetler.
+
+Araç kalıcı silindiğinde çocuk kayıtlar veritabanı kaskadıyla gider ama `Document` satırlarının Vehicle'a yabancı anahtarı **yoktur**; bu yüzden silme, aracın ve bakımlarının belgelerini tek transaction'da kaldırır, dosyaları commit sonrasında siler.
+
+### Hesap silme yedi gün bekler
+
+Şirket sahibi e-posta koduyla silmeyi planlar; `Company.SilinmePlanlanan` yedi gün sonrasına yazılır ve bu süre içinde iptal edilebilir. Günlük job süresi dolanı kalıcı siler: `SystemScope` içinde tek transaction'da satırlar, commit sonrası dosyalar best-effort. Ekip üyesi kendi hesabını silince **satır silinmez, anonimleştirilir** (ad, e-posta, parola özeti); `Vehicle.UserId` kaskadı aracı da götüreceği için kayıt korunur. `UstaCozumOzeti` ve `AiTokenSayaci` `CompanyId` taşımaz, silmeden etkilenmez.
+
+### AI bütçesi ve kotalar
+
+Aylık fiş limiti plana bağlıdır (`PlanKurallari.AylikFisLimiti`). Fiş çıkarımı ve AI Usta çağrılarının token'ları `AiTokenSayaci`'na ay bazında toplanır; bu tablo bilerek kiracısızdır çünkü fatura tüm kiracıların toplamıdır. `Ai__AylikTokenTavani` aşılınca iki uç da **503** döner ve `App__DestekEposta`'ya ayda bir kez bilgi gider. Bekleyen fiş taslakları 30 gün sonra job ile reddedilir.
+
+### PWA sürümü yayına bağlıdır
+
+`sw.js` statik dosya olarak sunulmaz; ara katman `__SURUM__` yer tutucusunu çalışan derleme sürümüyle doldurur ve dosyayı `no-cache` gönderir. Önbellek adı bu sürümü taşır, sürüm değişince `activate` eski önbellekleri siler. Her yanıt `X-App-Version` taşır; arayüz farkı görünce "Yeni sürüm var" şeridini açar. Önbellek adını elle artırmak **gerekmez ve yapılmaz**.
+
+### Demo her gece sıfırlanır
+
+`DemoSeed__Enabled` açıkken günlük job demo şirketinin verisini silip seed'i yeniden koşar; demo kullanıcıları ve şifreleri sabit kalır. Demo şirketi anonim öğrenme tablosundan (`UstaCozumOzeti`) dışlanır.
+
 ### Anonim uçlar
 
 Anonim uçlar (`/api/karne/*`, `/api/takvim/*.ics`) aynı deseni izler: token yalnız oluşturma yanıtında ham döner, veritabanında SHA-256 özeti tutulur; uç `[AllowAnonymous]` ve `[EnableRateLimiting(KarneController.RateLimitPolicy)]` taşır (IP başına dakikada 30); okuma `SystemScope` içinde yapılır. Yeni anonim uç bu üçünü birden taşımadan eklenmez.

@@ -22,6 +22,13 @@ Yayın penceresinde uygulanacak migration'ların tamamı **yalnız eklemelidir**
 | `LastikTekTakiliSet` | `LastikSetleri` üzerinde araç başına tek takılı seti garantileyen filtreli tekil indeks açar |
 | `SifreSifirlama` | `Users`'a şifre sıfırlama kolonlarını ve `SifreDegisimTarihi` kolonunu ekler |
 | `GeciciSifreBayragi` | `Users`'a `GeciciSifre bit NOT NULL DEFAULT 0` kolonu ekler |
+| `YabanciPlakaVeNormalizasyon` | `Vehicles`'a `YabanciPlaka` kolonu ekler ve **mevcut plakaları normalize eder** (büyük harf, boşluk/tire silme); normalize hali şirkette zaten varsa satıra dokunulmaz |
+| `TamDolumVeSupheliKm` | `FuelRecords`'a `TamDolum` (mevcut satırlarda **true**) ve `SupheliKm` kolonlarını ekler |
+| `KmDuzeltmeLog` | `KmDuzeltmeLoglari` tablosunu açar |
+| `AracArsivleme` | `Vehicles`'a `Arsivli`, `ArsivTarihi`, `ArsivNedeni` kolonlarını ekler |
+| `HesapSilme` | `Users`'a hesap silme kodu kolonlarını, `Companies`'e `SilinmePlanlanan` kolonunu ekler |
+| `AiTokenVeFisTokenlari` | `AiTokenSayaclari` tablosunu açar, `ReceiptDrafts`'a token kolonlarını ekler |
+| `KmTazeligiVeKarneVarsayilani` | `Vehicles`'a `SonKmGuncelleme` kolonu ekler |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
@@ -35,7 +42,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **31** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **19 migration** uygulanacak:
+Repoda bugün **38** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **26 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -45,8 +52,9 @@ Repoda bugün **31** migration var. Canlı Sprint 2 şemasındaysa (son uygulana
 | E-posta doğrulama (`EmailDogrulama`) | 1 |
 | Kırmızı takım (`LastikTekTakiliSet`) | 1 |
 | Sprint Şifre (`SifreSifirlama`, `GeciciSifreBayragi`) | 2 |
+| İnce ayar 1 (plaka, tam dolum, km düzeltme, arşiv, hesap silme, AI token, km tazeliği) | 7 |
 
-Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 31 migration **5,2 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
+Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 38 migration **4,0 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
 
 Sayım beklenenden farklıysa **dur**: canlı şema tahmin ettiğinden eski ya da yeni demektir. Hangi migration'ların uygulanacağını görmeden yayına çıkma; `dotnet ef migrations list` ile karşılaştır.
 
@@ -72,6 +80,7 @@ Yayından **önce** ayarla:
 | `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |
 | `Swagger__Enabled` | **ayarlanmaz** | Üretimde varsayılan kapalı. Açılırsa tüm uç ve DTO yüzeyi yayında olur; şemayı görmek gerekirse geçici aç, iş bitince kapat |
 | `Hangfire__WorkerCount` | `1` | Job'lar tüm şirketleri tarar; 256 MB'lık sunucuda paralellik bellek riskidir |
+| `Ai__AylikTokenTavani` | Aylık token bütçesi ya da ayarlanmaz | Fiş + AI Usta toplamı; aşılınca iki uç 503 döner ve destek adresine tek e-posta gider. `0` ya da boş = sınırsız |
 | `ForwardedHeaders__KnownProxies` | Vekil sunucunun IP'si | Boşsa `X-Forwarded-For` hiç uygulanmaz ve **tüm istemciler tek IP** sayılır; giriş hız sınırı ile anonim uç sınırı ortaklaşır |
 | `Security__ScriptKaynaklari` | ayarlanmaz | CSP `script-src` listesi; varsayılan `https://cdn.jsdelivr.net` (Chart.js). CDN değişmedikçe dokunma |
 | `RateLimiting__PahaliUcPerMinute` | ayarlanmaz | Varsayılan 20; fiyat tahmini, içe/dışa aktarma, belge, fiş ve AI Usta uçlarında kullanıcı başına dakikalık sınır |
@@ -121,6 +130,10 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 13. **E-posta doğrulama** (SMTP açıldıktan sonra, gerçek bir adresle): kayıt ol, kod e-postası **gerçekten geldi mi** ve spam'e mi düştü? Kodu gir, uygulamaya giriliyor mu? Doğrulamadan giriş denemesi 403 verip doğrulama ekranına mı düşüyor? Eski bir kullanıcıyla giriş **kod istemeden** çalışıyor mu (migration doğru çalıştıysa çalışmalı)?
 14. **Şifremi unuttum**: giriş ekranından kod iste. Kayıtlı **ve** kayıtsız bir adres için **aynı metnin** döndüğünü gör; kayıtlı adrese gelen kodla şifreyi değiştir, eski şifreyle girişin **401** verdiğini doğrula. Yanıtta token dönmemeli, kullanıcı yeniden giriş yapmalı.
 15. **Şifre değiştir**: Ayarlar'dan şifreyi değiştir. Yanlış mevcut şifre **400** vermeli; doğrusundan sonra başka bir cihazda açık kalan oturum bir sonraki istekte **401** almalı.
+16. **Plaka kuralı**: `34ABCD12` gibi kural dışı bir plakayla araç eklemeyi dene; **400** dönmeli. Aynı plakayı "yabancı plaka" işaretiyle ekleyince kabul edilmeli.
+17. **Arşiv**: bir aracı arşivle; aktif listeden düşmeli, plan limiti bir azalmalı, arşivli araca masraf eklemek **409** dönmeli, paylaşılmış karne bağlantısı hâlâ **200** vermeli.
+18. **Hangfire panosu**: `demo-sifirlama` (03:30), `hesap-silme` (03:00), `usta-cozum-ozeti` (04:00), `fis-temizleme` (04:30), `usta-saklama` (05:00) ve `reminder-notifications` (06:00) kayıtlı mı ve **Türkiye saatinde** mi görünüyor?
+19. **Sürüm şeridi**: yayından sonra açık kalmış bir sekmede en fazla 15 dakika içinde "Yeni sürüm var" şeridi çıkmalı; `curl -I https://<site>/` yanıtında `X-App-Version` bulunmalı.
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

@@ -164,7 +164,7 @@ namespace Garajim.Tests.Unit
             var result = await CreateManager().GetUpcomingAsync(UserId, istenen);
 
             Assert.True(result.Success);
-            Assert.Equal(DateTime.UtcNow.Date.AddDays(beklenenGun), kullanilanLimit);
+            Assert.Equal(Saat.BugunTr().AddDays(beklenenGun), kullanilanLimit);
         }
     }
 }

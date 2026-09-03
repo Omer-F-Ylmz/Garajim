@@ -178,6 +178,8 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `RateLimiting__PahaliUcPerMinute` | Opsiyonel | `20` | Fiyat tahmini, içe/dışa aktarma, belge, fiş ve AI Usta uçlarında kullanıcı başına dakikalık istek sınırı |
 | `Security__ScriptKaynaklari` | Opsiyonel | `https://cdn.jsdelivr.net` | CSP script-src listesine eklenecek dış kaynaklar; Chart.js buradan geliyor, CDN değişirse güncelleyin |
 | `Swagger__Enabled` | Opsiyonel | Üretimde `false` | Swagger arayüzü ve şeması; üretimde tüm uç ve DTO yüzeyini yayınlamamak için kapalı gelir |
+| `Ai__AylikTokenTavani` | Opsiyonel | `0` (sınırsız) | Fiş okuma + AI Usta aylık token toplamı; aşılınca iki uç da 503 döner ve destek adresine tek e-posta gider |
+| `Receipts__AylikLimitFilo` | Opsiyonel | `500` | Filo planında şirket başına aylık fiş; Bireysel için `Receipts__AylikLimit` (varsayılan 100) |
 | `Hangfire__WorkerCount` | Opsiyonel | `1` | Aynı anda çalışacak arka plan job sayısı; job'lar tüm şirketleri tarar, 256 MB'lık sunucuda 1 bırakın |
 | `Evrak__KisLastigi` | Opsiyonel | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA); valilik ±1 ay uzatırsa örn. `15-10..15-05` |
 | `Evrak__UyariGunleri` | Opsiyonel | `30,7` | Evrak bitişinden kaç gün önce e-posta gider |

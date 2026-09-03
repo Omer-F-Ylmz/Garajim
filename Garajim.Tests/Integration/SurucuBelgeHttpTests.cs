@@ -1,4 +1,5 @@
 using System.Net;
+using Garajim.Business.Concrete;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -65,7 +66,7 @@ namespace Garajim.Tests.Integration
             var sahip = await SahipOlusturAsync();
             var (_, surucuId) = await UyeOlusturAsync(sahip, "Driver");
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = surucuId, evrakTuru = "Ehliyet", bitisTarihi = bugun.AddDays(400).ToString("yyyy-MM-dd") });
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = surucuId, evrakTuru = "SRC", bitisTarihi = bugun.AddDays(10).ToString("yyyy-MM-dd") });
 
@@ -86,7 +87,7 @@ namespace Garajim.Tests.Integration
             var sahip = await SahipOlusturAsync();
             var (_, surucuId) = await UyeOlusturAsync(sahip, "Driver");
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = surucuId, evrakTuru = "Ehliyet", bitisTarihi = bugun.AddDays(400).ToString("yyyy-MM-dd") });
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = surucuId, evrakTuru = "Psikoteknik", bitisTarihi = bugun.AddDays(-3).ToString("yyyy-MM-dd") });
 
@@ -103,7 +104,7 @@ namespace Garajim.Tests.Integration
             var (_, iyi) = await UyeOlusturAsync(sahip, "Driver");
             var (_, gecen) = await UyeOlusturAsync(sahip, "Manager");
 
-            var bugun = DateTime.UtcNow.Date;
+            var bugun = Saat.BugunTr();
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = iyi, evrakTuru = "Ehliyet", bitisTarihi = bugun.AddDays(500).ToString("yyyy-MM-dd") });
             await sahip.PostAsJsonAsync("/api/Evrak", new { userId = gecen, evrakTuru = "Ehliyet", bitisTarihi = bugun.AddDays(-1).ToString("yyyy-MM-dd") });
 
