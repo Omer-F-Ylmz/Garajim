@@ -95,7 +95,7 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 
 ## 4. Yayın sonrası doğrulama (bu sırayla)
 
-1. `https://<site>/swagger/v1/swagger.json` → **200** dönüyor mu? (Doküman üretimi bozulursa 500 döner.)
+1. `https://<site>/swagger/v1/swagger.json` → **404** dönüyor mu? Üretimde Swagger kapalıdır; 200 dönüyorsa `Swagger__Enabled` açık kalmış demektir ve tüm API yüzeyi yayında. Şemayı görmek gerekirse değişkeni geçici olarak açın, iş bitince kapatın.
 2. Demo veya gerçek bir **Owner** hesabıyla giriş: cevapta `role` ve `companyName` geliyor mu?
 3. **Driver** hesabıyla giriş: yalnızca zimmetli aracı görüyor mu? Zimmetsiz bir araç kimliğine `GET /api/Vehicles/{id}` → **404** mü?
 4. Bir bakım kaydına **belge yükle**, sonra **indir**. Dosya doğru geliyor mu?
