@@ -9,6 +9,7 @@ namespace Garajim.Entity.Concrete
         public int CompanyId { get; set; }
         public int UserId { get; set; }
         public string Plate { get; set; }
+        public bool YabanciPlaka { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
         public int Year { get; set; }

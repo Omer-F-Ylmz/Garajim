@@ -26,7 +26,7 @@ namespace Garajim.Tests.Integration
 
             var arac = await client.PostAsJsonAsync("/api/Vehicles", new
             {
-                plate = "34FM" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant(),
+                plate = TestPlaka.Uret(),
                 brand = "BilinmeyenMarka", model = "BilinmeyenSeri", year = 2019, currentKm = 80000,
                 fuelType = "Benzin", vites = "Manuel", kasaTipi = "Sedan"
             });

@@ -85,7 +85,7 @@ namespace Garajim.Tests.Integration
                 .RootElement.GetProperty("data").GetProperty("token").GetString();
             yonetici.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var oncePlaka = "34RL" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+            var oncePlaka = TestPlaka.Uret();
             Assert.Equal(HttpStatusCode.OK, (await yonetici.PostAsJsonAsync("/api/Vehicles", new
             {
                 plate = oncePlaka, brand = "Fiat", model = "Egea", year = 2020,
@@ -95,7 +95,7 @@ namespace Garajim.Tests.Integration
             var dusur = await sahip.PutAsJsonAsync($"/api/Team/{yoneticiId}/role", new { role = "Driver" });
             Assert.Equal(HttpStatusCode.OK, dusur.StatusCode);
 
-            var sonraPlaka = "34RL" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+            var sonraPlaka = TestPlaka.Uret();
             var sonra = await yonetici.PostAsJsonAsync("/api/Vehicles", new
             {
                 plate = sonraPlaka, brand = "Fiat", model = "Egea", year = 2020,

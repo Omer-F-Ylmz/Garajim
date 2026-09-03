@@ -79,8 +79,7 @@ namespace Garajim.Tests.Integration
         public async Task AracVeZimmetSayilariGorunur()
         {
             var sahip = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            var aracId = await AracEkleAsync(sahip, $"34PN{ek}");
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
             var (_, surucuId) = await SurucuOlusturAsync(sahip);
             await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId = surucuId });
 
@@ -94,8 +93,7 @@ namespace Garajim.Tests.Integration
         public async Task EvrakDurumlariSayilir()
         {
             var sahip = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            var aracId = await AracEkleAsync(sahip, $"06PN{ek}");
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
 
             var bugun = DateTime.UtcNow.Date;
             await sahip.PostAsJsonAsync("/api/Evrak", new { vehicleId = aracId, evrakTuru = "Muayene", bitisTarihi = bugun.AddDays(-5).ToString("yyyy-MM-dd") });
@@ -112,8 +110,7 @@ namespace Garajim.Tests.Integration
         public async Task BuAyMaliyetiVeGecenAyKarsilastirmasiHesaplanir()
         {
             var sahip = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            var aracId = await AracEkleAsync(sahip, $"35PN{ek}");
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
 
             var buAy = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
             var gecenAy = buAy.AddMonths(-1);
@@ -132,8 +129,7 @@ namespace Garajim.Tests.Integration
         public async Task HatirlatmaYaklasanlarSayilir()
         {
             var sahip = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            var aracId = await AracEkleAsync(sahip, $"41PN{ek}");
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
 
             var bugun = DateTime.UtcNow.Date;
             await sahip.PostAsJsonAsync("/api/Reminders", new { vehicleId = aracId, type = "Muayene", dueDate = bugun.AddDays(10).ToString("yyyy-MM-dd"), note = "yakin" });
@@ -148,8 +144,7 @@ namespace Garajim.Tests.Integration
         public async Task SirketlerBirbirininVerisiniGormez()
         {
             var birinci = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            await AracEkleAsync(birinci, $"07PN{ek}");
+            await AracEkleAsync(birinci, TestPlaka.Uret());
 
             var ikinci = await SahipOlusturAsync();
             var veri = await PaneAsync(ikinci);
@@ -161,9 +156,8 @@ namespace Garajim.Tests.Integration
         public async Task DriverYalnizZimmetliAracinipanelindeGorur()
         {
             var sahip = await SahipOlusturAsync();
-            var ek = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
-            var zimmetli = await AracEkleAsync(sahip, $"16PN{ek}");
-            await AracEkleAsync(sahip, $"17PN{ek}");
+            var zimmetli = await AracEkleAsync(sahip, TestPlaka.Uret());
+            await AracEkleAsync(sahip, TestPlaka.Uret());
 
             var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
             await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = zimmetli, userId = surucuId });

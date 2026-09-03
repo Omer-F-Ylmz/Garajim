@@ -19,6 +19,8 @@ namespace Garajim.Business.Constants
         public const string VehicleUpdated = "Araç güncellendi.";
         public const string VehicleDeleted = "Araç silindi.";
         public const string VehicleNotFound = "Araç bulunamadı.";
+        public const string PlakaGecersiz = "Plaka Türkiye plaka kuralına uymuyor. Örnek: 34 ABC 123. Yurt dışı plakası ise yabancı plaka kutusunu işaretleyin.";
+        public const string YabanciPlakaGecersiz = "Yabancı plaka 5-12 harf ve rakamdan oluşmalı, Türkçe karakter içermemeli.";
         public const string PlateAlreadyExists = "Bu plaka zaten kayıtlı.";
         public const string RecordAdded = "Kayıt eklendi.";
         public const string RecordDeleted = "Kayıt silindi.";

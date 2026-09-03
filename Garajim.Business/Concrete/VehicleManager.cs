@@ -47,9 +47,11 @@ namespace Garajim.Business.Concrete
                 string.IsNullOrWhiteSpace(dto.Model) || dto.Year < 1950 ||
                 dto.Year > DateTime.UtcNow.Year + 1 || dto.CurrentKm < 0 || !Enum.IsDefined(dto.FuelType))
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
-            var plate = dto.Plate.Trim().ToUpperInvariant().Replace(" ", "");
+            var plate = PlakaDogrulayici.Normalize(dto.Plate);
             if (plate.Length > AracAlanUzunluklari.Plaka)
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
+            if (!PlakaDogrulayici.Gecerli(dto.Plate, dto.YabanciPlaka))
+                return new ErrorDataResult<VehicleDto>(dto.YabanciPlaka ? Messages.YabanciPlakaGecersiz : Messages.PlakaGecersiz);
             if (await _vehicleDal.AnyAsync(v => v.Plate == plate))
                 return new ErrorDataResult<VehicleDto>(Messages.PlateAlreadyExists);
             var owner = await _userDal.GetAsync(u => u.Id == userId);
@@ -67,6 +69,7 @@ namespace Garajim.Business.Concrete
                 CompanyId = owner.CompanyId,
                 UserId = userId,
                 Plate = plate,
+                YabanciPlaka = dto.YabanciPlaka,
                 Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka),
                 Model = Kirp(dto.Model, AracAlanUzunluklari.Model),
                 Year = dto.Year,
@@ -149,6 +152,7 @@ namespace Garajim.Business.Concrete
             {
                 Id = vehicle.Id,
                 Plate = vehicle.Plate,
+                YabanciPlaka = vehicle.YabanciPlaka,
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Year = vehicle.Year,

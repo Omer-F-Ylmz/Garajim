@@ -53,7 +53,7 @@ namespace Garajim.Tests.Integration
             return JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data").GetProperty("id").GetInt32();
         }
 
-        private static string Plaka() => "34EX" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+        private static string Plaka() => TestPlaka.Uret();
 
         [Fact]
         public async Task YakitDisaAktarimiBomluCsvDoner()

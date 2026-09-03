@@ -45,7 +45,7 @@ namespace Garajim.Tests.Integration
 
             var arac = await client.PostAsJsonAsync("/api/Vehicles", new
             {
-                plate = "34UU" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant(),
+                plate = TestPlaka.Uret(),
                 brand = "Renault",
                 model = "Clio",
                 year = 2020,

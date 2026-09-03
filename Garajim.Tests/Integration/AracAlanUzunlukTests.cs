@@ -63,7 +63,7 @@ namespace Garajim.Tests.Integration
         public async Task EklemedeUzunAlanlarKolonSinirinaKirpilir()
         {
             var client = await SahipAsync("aracalan");
-            var plaka = "34AL" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+            var plaka = TestPlaka.Uret();
 
             var cevap = await client.PostAsJsonAsync("/api/Vehicles", UzunArac(plaka));
             Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
@@ -76,7 +76,7 @@ namespace Garajim.Tests.Integration
         public async Task GuncellemedeUzunAlanlarKolonSinirinaKirpilir()
         {
             var client = await SahipAsync("aracalanput");
-            var plaka = "34AP" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+            var plaka = TestPlaka.Uret();
 
             var olustur = await client.PostAsJsonAsync("/api/Vehicles", new
             {

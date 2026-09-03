@@ -25,7 +25,7 @@ namespace Garajim.Tests.Integration
 
             var arac = await client.PostAsJsonAsync("/api/Vehicles", new
             {
-                plate = "34EX" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant(),
+                plate = TestPlaka.Uret(),
                 brand = "Ford", model = "Focus", year = 2020, currentKm = 60000,
                 fuelType = "Dizel", vites = "Manuel", kasaTipi = "Sedan"
             });

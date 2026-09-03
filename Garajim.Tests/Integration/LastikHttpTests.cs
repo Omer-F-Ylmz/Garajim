@@ -16,7 +16,7 @@ namespace Garajim.Tests.Integration
 
         private static string Eposta(string on) => $"{on}-{Guid.NewGuid():N}@garajim.local";
 
-        private static string Plaka() => "34LS" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+        private static string Plaka() => TestPlaka.Uret();
 
         private async Task<HttpClient> SahipOlusturAsync()
         {

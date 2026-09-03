@@ -43,9 +43,9 @@ namespace Garajim.Tests.Unit
         }
 
         [Theory]
-        [InlineData(" 34 abc 123 ", "34ABC123")]
         [InlineData("06 xy 9876", "06XY9876")]
-        [InlineData("35bz1", "35BZ1")]
+        [InlineData(" 34 abc 123 ", "34ABC123")]
+        [InlineData("35bz123", "35BZ123")]
         public async Task AddAsync_PlakaBuyukHarfeCevrilipBosluklarSilinir(string girilen, string beklenen)
         {
             Vehicle eklenen = null;

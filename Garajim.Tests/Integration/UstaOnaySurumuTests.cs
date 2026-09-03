@@ -79,7 +79,7 @@ namespace Garajim.Tests.Integration
             var sahip = await SahipOlusturAsync();
             var arac = await sahip.PostAsJsonAsync("/api/Vehicles", new
             {
-                plate = "34SR" + Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant(),
+                plate = TestPlaka.Uret(),
                 brand = "Renault",
                 model = "Clio",
                 year = 2019,
