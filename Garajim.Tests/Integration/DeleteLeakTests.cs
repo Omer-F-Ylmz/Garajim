@@ -93,7 +93,7 @@ namespace Garajim.Tests.Integration
         [Fact]
         public async Task VehicleDelete_YabanciAracVeOlmayanAracAyniMesajiDoner()
         {
-            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
+            var manager = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari, _db.KmLogDal);
 
             var yabanci = await manager.DeleteAsync(_kullaniciB, _aracA.Id);
             var olmayan = await manager.DeleteAsync(_kullaniciB, OlmayanId);
@@ -109,7 +109,7 @@ namespace Garajim.Tests.Integration
             var fuel = new FuelManager(_db.FuelDal, _db.VehicleDal, _db.VehicleAccess);
             var expense = new ExpenseManager(_db.ExpenseDal, _db.VehicleAccess);
             var reminder = new ReminderManager(_db.ReminderDal, _db.VehicleAccess);
-            var vehicle = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari);
+            var vehicle = new VehicleManager(_db.VehicleDal, _db.UserDal, _db.VehicleAccess, _db.CompanyDal, _db.PlanKurallari, _db.KmLogDal);
 
             await maintenance.DeleteAsync(_kullaniciB, _bakimA.Id);
             await fuel.DeleteAsync(_kullaniciB, _yakitA.Id);

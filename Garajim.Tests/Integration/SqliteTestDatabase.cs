@@ -35,6 +35,7 @@ namespace Garajim.Tests.Integration
             Tenant.SetCompany(VarsayilanSirket.Id);
 
             CompanyDal = new EfCompanyDal(Context);
+            KmLogDal = new EfKmDuzeltmeLogDal(Context);
             PlanKurallari = new PlanKurallari(new ConfigurationBuilder().Build());
             UserDal = new EfUserDal(Context);
             VehicleDal = new EfVehicleDal(Context);
@@ -70,6 +71,8 @@ namespace Garajim.Tests.Integration
         public int CompanyId => VarsayilanSirket.Id;
 
         public EfCompanyDal CompanyDal { get; }
+
+        public EfKmDuzeltmeLogDal KmLogDal { get; }
 
         public PlanKurallari PlanKurallari { get; }
 

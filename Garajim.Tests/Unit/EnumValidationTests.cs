@@ -42,7 +42,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleAdd_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object);
 
             var result = await manager.AddAsync(UserId, new VehicleCreateDto
             {
@@ -62,7 +62,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task VehicleUpdate_TanimsizYakitTipiReddedilir()
         {
-            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
+            var manager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object);
 
             var result = await manager.UpdateAsync(UserId, VehicleId, new VehicleUpdateDto
             {
@@ -135,7 +135,7 @@ namespace Garajim.Tests.Unit
         [Fact]
         public async Task TanimliEnumDegerleriKabulEdilmeyeDevamEder()
         {
-            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
+            var vehicleManager = new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object);
             var maintenanceManager = new MaintenanceManager(_maintenanceDal.Object, _vehicleDal.Object, _vehicleAccess.Object, new Mock<IMaintenancePartDal>().Object, new Mock<IUnitOfWork>().Object);
             var expenseManager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
             var reminderManager = new ReminderManager(_reminderDal.Object, _vehicleAccess.Object);

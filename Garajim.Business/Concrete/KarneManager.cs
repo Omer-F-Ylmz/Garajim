@@ -22,6 +22,7 @@ namespace Garajim.Business.Concrete
         private readonly IFuelDal _fuelDal;
         private readonly IDocumentDal _documentDal;
         private readonly IEvrakDal _evrakDal;
+        private readonly IKmDuzeltmeLogDal _kmLogDal;
         private readonly IHasarDosyasiDal _hasarDosyasiDal;
         private readonly IDegerService _degerService;
         private readonly IVehicleAccessService _vehicleAccess;
@@ -37,6 +38,7 @@ namespace Garajim.Business.Concrete
             IFuelDal fuelDal,
             IDocumentDal documentDal,
             IEvrakDal evrakDal,
+            IKmDuzeltmeLogDal kmLogDal,
             IHasarDosyasiDal hasarDosyasiDal,
             IDegerService degerService,
             IVehicleAccessService vehicleAccess,
@@ -51,6 +53,7 @@ namespace Garajim.Business.Concrete
             _fuelDal = fuelDal;
             _documentDal = documentDal;
             _evrakDal = evrakDal;
+            _kmLogDal = kmLogDal;
             _hasarDosyasiDal = hasarDosyasiDal;
             _degerService = degerService;
             _vehicleAccess = vehicleAccess;
@@ -133,7 +136,8 @@ namespace Garajim.Business.Concrete
                     Yil = vehicle.Year,
                     YakitTipi = vehicle.FuelType.ToString(),
                     GuncelKm = vehicle.CurrentKm
-                }
+                },
+                KmDuzeltildi = await _kmLogDal.VarMiAsync(vehicle.Id)
             };
 
             if (paylasim.BakimGecmisi)

@@ -20,6 +20,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
         public DbSet<FuelRecord> FuelRecords { get; set; }
+        public DbSet<KmDuzeltmeLog> KmDuzeltmeLoglari { get; set; }
         public DbSet<ExpenseRecord> ExpenseRecords { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
         public DbSet<Document> Documents { get; set; }
@@ -83,6 +84,14 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasIndex(m => m.CompanyId);
                 entity.HasOne<Company>().WithMany().HasForeignKey(m => m.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(m => m.VehicleId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<KmDuzeltmeLog>(entity =>
+            {
+                entity.Property(l => l.Neden).HasMaxLength(200).IsRequired();
+                entity.HasIndex(l => l.CompanyId);
+                entity.HasIndex(l => new { l.VehicleId, l.Tarih });
+                entity.HasOne<Company>().WithMany().HasForeignKey(l => l.CompanyId).OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<FuelRecord>(entity =>
@@ -332,6 +341,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<Vehicle>().HasQueryFilter(v => v.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<MaintenanceRecord>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<FuelRecord>().HasQueryFilter(f => f.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<KmDuzeltmeLog>().HasQueryFilter(l => l.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<ExpenseRecord>().HasQueryFilter(e => e.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<Reminder>().HasQueryFilter(r => r.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<Document>().HasQueryFilter(d => d.CompanyId == CurrentCompanyId);

@@ -26,7 +26,7 @@ namespace Garajim.Tests.Unit
                 .ReturnsAsync(new AppUser { Id = UserId, CompanyId = 42 });
             _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
                 .ReturnsAsync(new Company { Id = 42, Name = "Test", PlanType = PlanType.Bireysel });
-            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur());
+            return new VehicleManager(_vehicleDal.Object, _userDal.Object, _vehicleAccess.Object, _companyDal.Object, TestPlanKurallari.Olustur(), new Mock<IKmDuzeltmeLogDal>().Object);
         }
 
         private static VehicleCreateDto ValidDto()

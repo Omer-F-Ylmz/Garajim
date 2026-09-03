@@ -47,6 +47,7 @@ builder.Services.AddScoped<IUserDal, EfUserDal>();
 builder.Services.AddScoped<IVehicleDal, EfVehicleDal>();
 builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();
 builder.Services.AddScoped<IFuelDal, EfFuelDal>();
+builder.Services.AddScoped<IKmDuzeltmeLogDal, EfKmDuzeltmeLogDal>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();

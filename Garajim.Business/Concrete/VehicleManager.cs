@@ -16,14 +16,16 @@ namespace Garajim.Business.Concrete
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly ICompanyDal _companyDal;
         private readonly PlanKurallari _planKurallari;
+        private readonly IKmDuzeltmeLogDal _kmLogDal;
 
-        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari)
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari, IKmDuzeltmeLogDal kmLogDal)
         {
             _vehicleDal = vehicleDal;
             _userDal = userDal;
             _vehicleAccess = vehicleAccess;
             _companyDal = companyDal;
             _planKurallari = planKurallari;
+            _kmLogDal = kmLogDal;
         }
 
         public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId)
@@ -100,6 +102,25 @@ namespace Garajim.Business.Concrete
             vehicle.Brand = Kirp(dto.Brand, AracAlanUzunluklari.Marka);
             vehicle.Model = Kirp(dto.Model, AracAlanUzunluklari.Model);
             vehicle.Year = dto.Year;
+            if (dto.CurrentKm < vehicle.CurrentKm)
+            {
+                var neden = (dto.KmDuzeltmeNedeni ?? string.Empty).Trim();
+
+                if (dto.KmDusurmeOnayi != true || neden.Length < 3)
+                    return new ErrorResult(Messages.KmDusurmeOnayiGerekli);
+
+                await _kmLogDal.AddAsync(new KmDuzeltmeLog
+                {
+                    CompanyId = vehicle.CompanyId,
+                    VehicleId = vehicle.Id,
+                    UserId = userId,
+                    EskiKm = vehicle.CurrentKm,
+                    YeniKm = dto.CurrentKm,
+                    Neden = Kirp(neden, 200),
+                    Tarih = DateTime.UtcNow
+                });
+            }
+
             vehicle.CurrentKm = dto.CurrentKm;
             vehicle.FuelType = dto.FuelType;
             vehicle.KullanimTuru = dto.KullanimTuru != null && Enum.IsDefined(dto.KullanimTuru.Value) ? dto.KullanimTuru.Value : vehicle.KullanimTuru;

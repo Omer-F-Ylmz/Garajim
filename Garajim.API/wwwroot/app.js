@@ -14,6 +14,7 @@
         dogrulanacakEposta: null,
         dogrulaSayac: null,
         duzenlenenAracId: null,
+        duzenlenenAracKm: null,
         ustaGonderiyor: false,
         sifirlanacakEposta: null,
         hasarAdim: 1,
@@ -4425,6 +4426,8 @@
     }
 
     function bindVehicle() {
+        el("vehicle-km").addEventListener("input", kmDuzeltmeAlaniniGuncelle);
+
         el("vehicle-select").addEventListener("change", function (event) {
             state.selectedVehicleId = Number(event.target.value);
             acilKartiSakla();
@@ -4494,6 +4497,8 @@
             model: el("vehicle-model").value,
             year: Number(el("vehicle-year").value),
             currentKm: Number(el("vehicle-km").value),
+            kmDusurmeOnayi: el("vehicle-km-onay").checked,
+            kmDuzeltmeNedeni: el("vehicle-km-neden").value,
             fuelType: el("vehicle-fuel").value,
             kullanimTuru: el("vehicle-kullanim").value,
             vites: el("vehicle-vites").value || null,
@@ -4536,6 +4541,25 @@
         el("vehicle-acil-ad").value = (arac && arac.acilKisiAd) || "";
         el("vehicle-acil-tel").value = (arac && arac.acilKisiTelefon) || "";
         el("vehicle-acil-not").value = (arac && arac.acilNot) || "";
+
+        el("vehicle-km-onay").checked = false;
+        el("vehicle-km-neden").value = "";
+        state.duzenlenenAracKm = arac ? arac.currentKm : null;
+        kmDuzeltmeAlaniniGuncelle();
+    }
+
+    function kmDuzeltmeAlaniniGuncelle() {
+        var kutu = el("vehicle-km-duzeltme");
+        var mevcut = state.duzenlenenAracKm;
+        var yeni = Number(el("vehicle-km").value);
+        var dusuyor = mevcut !== null && mevcut !== undefined && isFinite(yeni) && yeni < mevcut;
+
+        kutu.classList.toggle("hidden", !dusuyor);
+
+        if (!dusuyor) {
+            el("vehicle-km-onay").checked = false;
+            el("vehicle-km-neden").value = "";
+        }
     }
 
     function selectTab(tab) {

@@ -23,6 +23,8 @@ namespace Garajim.Entity.Dtos
 
     public class VehicleUpdateDto
     {
+        public bool? KmDusurmeOnayi { get; set; }
+        public string KmDuzeltmeNedeni { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
         public int Year { get; set; }
@@ -36,6 +38,14 @@ namespace Garajim.Entity.Dtos
         public string AcilKisiAd { get; set; }
         public string AcilKisiTelefon { get; set; }
         public string AcilNot { get; set; }
+    }
+
+    public class KmDuzeltmeDto
+    {
+        public int EskiKm { get; set; }
+        public int YeniKm { get; set; }
+        public string Neden { get; set; }
+        public DateTime Tarih { get; set; }
     }
 
     public class VehicleDto

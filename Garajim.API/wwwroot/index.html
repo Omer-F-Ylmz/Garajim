@@ -469,6 +469,15 @@
                     <label for="vehicle-km">Güncel km</label>
                     <input id="vehicle-km" type="number" min="0" value="0" required>
                 </div>
+                <div id="vehicle-km-duzeltme" class="hidden">
+                    <label for="vehicle-km-neden">Kilometre neden düşüyor?</label>
+                    <input id="vehicle-km-neden" type="text" maxlength="200" placeholder="Gösterge paneli değişti">
+                    <label class="onay-alan" for="vehicle-km-onay">
+                        <input id="vehicle-km-onay" type="checkbox">
+                        Kilometreyi düşürmeyi onaylıyorum
+                    </label>
+                    <small class="hint">Mevcut kayıtların kilometresi değişmez; düzeltme ayrıca kaydedilir.</small>
+                </div>
                 <div>
                     <label for="vehicle-fuel">Yakıt</label>
                     <select id="vehicle-fuel"></select>

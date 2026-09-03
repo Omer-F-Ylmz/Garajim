@@ -47,6 +47,7 @@ namespace Garajim.Entity.Dtos
         public int Yil { get; set; }
         public string YakitTipi { get; set; }
         public int GuncelKm { get; set; }
+
     }
 
     public class KarneBakimDto
@@ -76,6 +77,7 @@ namespace Garajim.Entity.Dtos
     public class KarneDto
     {
         public KarneAracDto Arac { get; set; }
+        public bool KmDuzeltildi { get; set; }
         public List<KarneBakimDto> Bakimlar { get; set; } = new List<KarneBakimDto>();
         public List<ParcaHafizasiDto> Parcalar { get; set; } = new List<ParcaHafizasiDto>();
         public KarneYakitOzetiDto YakitOzeti { get; set; }
