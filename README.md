@@ -176,6 +176,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Smtp__Host` `Smtp__User` `Smtp__Pass` `Smtp__From` | **Üretimde zorunlu** | boş | Kayıt doğrulama kodu buradan gider; üretimde eksikse uygulama başlamaz. Geliştirmede eksik olabilir, kod loga yazılır |
 | `Smtp__Port` | Opsiyonel | `587` | Sağlayıcı farklı port istiyorsa |
 | `RateLimiting__PahaliUcPerMinute` | Opsiyonel | `20` | Fiyat tahmini, içe/dışa aktarma, belge, fiş ve AI Usta uçlarında kullanıcı başına dakikalık istek sınırı |
+| `Security__ScriptKaynaklari` | Opsiyonel | `https://cdn.jsdelivr.net` | CSP script-src listesine eklenecek dış kaynaklar; Chart.js buradan geliyor, CDN değişirse güncelleyin |
 | `Swagger__Enabled` | Opsiyonel | Üretimde `false` | Swagger arayüzü ve şeması; üretimde tüm uç ve DTO yüzeyini yayınlamamak için kapalı gelir |
 | `Hangfire__WorkerCount` | Opsiyonel | `1` | Aynı anda çalışacak arka plan job sayısı; job'lar tüm şirketleri tarar, 256 MB'lık sunucuda 1 bırakın |
 | `Evrak__KisLastigi` | Opsiyonel | `15-11..15-04` | Kış lastiği zorunluluk penceresi (gg-AA..gg-AA); valilik ±1 ay uzatırsa örn. `15-10..15-05` |

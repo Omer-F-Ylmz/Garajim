@@ -311,6 +311,12 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseGuvenlikBasliklari(app.Configuration);
+
+if (app.Environment.IsProduction())
+{
+    app.UseHsts();
+}
 
 if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
 {
