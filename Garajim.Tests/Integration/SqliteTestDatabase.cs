@@ -40,6 +40,7 @@ namespace Garajim.Tests.Integration
             UserDal = new EfUserDal(Context);
             VehicleDal = new EfVehicleDal(Context);
             MaintenanceDal = new EfMaintenanceDal(Context);
+            DocumentDal = new EfDocumentDal(Context);
             FuelDal = new EfFuelDal(Context);
             ExpenseDal = new EfExpenseDal(Context);
             ReminderDal = new EfReminderDal(Context);
@@ -81,6 +82,8 @@ namespace Garajim.Tests.Integration
         public EfVehicleDal VehicleDal { get; }
 
         public EfMaintenanceDal MaintenanceDal { get; }
+
+        public EfDocumentDal DocumentDal { get; }
 
         public EfFuelDal FuelDal { get; }
 

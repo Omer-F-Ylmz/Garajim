@@ -166,6 +166,7 @@
                 <button id="receipt-btn" class="primary compact" type="button">Fiş Yükle <span id="receipt-badge" class="badge-count hidden"></span></button>
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
                 <button id="edit-vehicle-btn" class="ghost hidden" type="button">Düzenle</button>
+                <button id="arsiv-btn" class="ghost hidden" type="button">Arşiv</button>
                 <button id="team-btn" class="ghost hidden" type="button">Ekip</button>
                 <button id="karne-btn" class="ghost hidden" type="button">Karne paylaş</button>
                 <button id="ayarlar-btn" class="ghost" type="button">Ayarlar</button>
@@ -450,6 +451,22 @@
             </div>
         </section>
 
+        <section id="arsiv-box" class="panel hidden">
+            <h2>Arşiv</h2>
+            <p class="hint">Arşivdeki araç plan limitine sayılmaz, hatırlatma e-postası almaz ve yeni kayıt kabul etmez. Paylaşılan karne bağlantısı çalışmaya devam eder.</p>
+            <div class="inline-form">
+                <button id="arsiv-yenile" type="button" class="ghost">Listeyi yenile</button>
+                <button id="arsiv-kapat" type="button" class="ghost">Kapat</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr><th>Plaka</th><th>Araç</th><th>Neden</th><th>Tarih</th><th>İşlem</th></tr>
+                </thead>
+                <tbody id="arsiv-tbody"></tbody>
+            </table>
+            <p id="arsiv-mesaj" class="message" role="alert"></p>
+        </section>
+
         <section id="vehicle-form-box" class="panel hidden">
             <h2 id="vehicle-form-baslik">Yeni araç</h2>
             <form id="vehicle-form" class="grid-form">
@@ -520,6 +537,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="primary">Kaydet</button>
+                    <button id="vehicle-arsivle" type="button" class="ghost hidden">Arşive al</button>
                     <button id="vehicle-cancel" type="button" class="ghost">Vazgeç</button>
                 </div>
             </form>

@@ -407,6 +407,8 @@
         el("team-form").classList.toggle("hidden", !isOwner());
         el("plan-form").classList.toggle("hidden", !isOwner());
         el("karne-btn").classList.toggle("hidden", !canManage());
+        el("arsiv-btn").classList.toggle("hidden", !canManage());
+        el("vehicle-arsivle").classList.toggle("hidden", !canManage());
 
         var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
         if (zimmetTab) {
@@ -1398,6 +1400,102 @@
         ["Isyeri", "İş yeri"],
         ["HizliSarj", "Hızlı şarj"]
     ];
+
+    function arsivPaneliniAc() {
+        el("arsiv-box").classList.remove("hidden");
+        arsiviYukle();
+    }
+
+    function arsiviYukle() {
+        var tbody = el("arsiv-tbody");
+        clear(tbody);
+
+        return api("/api/Vehicles?arsiv=true").then(function (result) {
+            var rows = (result && result.data) || [];
+
+            if (rows.length === 0) {
+                emptyRow(tbody, 5, "Arşivde araç yok.");
+                return;
+            }
+
+            rows.forEach(function (arac) {
+                var tr = document.createElement("tr");
+                tr.appendChild(make("td", arac.plate));
+                tr.appendChild(make("td", arac.brand + " " + arac.model));
+                tr.appendChild(make("td", arac.arsivNedeni || "-"));
+                tr.appendChild(make("td", formatDate(arac.arsivTarihi)));
+
+                var islem = document.createElement("td");
+
+                var geri = make("button", "Arşivden çıkar", "ghost");
+                geri.type = "button";
+                geri.addEventListener("click", function () {
+                    api("/api/Vehicles/" + arac.id + "/arsivden-al", { method: "POST" })
+                        .then(function () { arsiviYukle(); loadVehicles(); })
+                        .catch(function (error) { handleError(el("arsiv-mesaj"), error); });
+                });
+                islem.appendChild(geri);
+
+                var sil = make("button", "Kalıcı sil", "ghost");
+                sil.type = "button";
+                sil.addEventListener("click", function () { araciKaliciSil(arac); });
+                islem.appendChild(sil);
+
+                tr.appendChild(islem);
+                tbody.appendChild(tr);
+            });
+        }).catch(function (error) {
+            clear(tbody);
+            emptyRow(tbody, 5, "Arşiv okunamadı.");
+            handleError(el("arsiv-mesaj"), error);
+        });
+    }
+
+    function araciKaliciSil(arac) {
+        var yazilan = window.prompt(
+            "Bu araç ve tüm kayıtları kalıcı olarak silinecek. Onaylamak için plakayı yazın: " + arac.plate);
+
+        if (yazilan === null) {
+            return;
+        }
+
+        if (yazilan.trim().toUpperCase() !== String(arac.plate).toUpperCase()) {
+            showMessage(el("arsiv-mesaj"), "Plaka eşleşmedi, araç silinmedi.", false);
+            return;
+        }
+
+        api("/api/Vehicles/" + arac.id, { method: "DELETE" }).then(function () {
+            showMessage(el("arsiv-mesaj"), "Araç silindi.", true);
+            arsiviYukle();
+            loadVehicles();
+        }).catch(function (error) {
+            handleError(el("arsiv-mesaj"), error);
+        });
+    }
+
+    function arsivSecenegiIleArsivle() {
+        var arac = seciliArac();
+        if (!arac) {
+            return;
+        }
+
+        var neden = window.prompt(
+            arac.plate + " arşive alınacak. Neden? (satildi / hurda / diger)", "satildi");
+
+        if (neden === null) {
+            return;
+        }
+
+        var esleme = { satildi: "Satildi", hurda: "Hurda", diger: "Diger" };
+        var secilen = esleme[neden.trim().toLowerCase()] || "Diger";
+
+        api("/api/Vehicles/" + arac.id + "/arsiv", { method: "POST", body: { neden: secilen } })
+            .then(function () {
+                showMessage(el("app-message"), arac.plate + " arşive alındı.", true);
+                loadVehicles();
+            })
+            .catch(function (error) { handleError(el("app-message"), error); });
+    }
 
     function seciliArac() {
         for (var i = 0; i < state.vehicles.length; i++) {
@@ -4426,6 +4524,10 @@
     }
 
     function bindVehicle() {
+        el("arsiv-btn").addEventListener("click", arsivPaneliniAc);
+        el("vehicle-arsivle").addEventListener("click", arsivSecenegiIleArsivle);
+        el("arsiv-yenile").addEventListener("click", arsiviYukle);
+        el("arsiv-kapat").addEventListener("click", function () { el("arsiv-box").classList.add("hidden"); });
         el("vehicle-km").addEventListener("input", kmDuzeltmeAlaniniGuncelle);
 
         el("vehicle-select").addEventListener("change", function (event) {

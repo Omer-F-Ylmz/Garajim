@@ -17,8 +17,13 @@ namespace Garajim.Business.Concrete
         private readonly ICompanyDal _companyDal;
         private readonly PlanKurallari _planKurallari;
         private readonly IKmDuzeltmeLogDal _kmLogDal;
+        private readonly IDocumentDal _documentDal;
+        private readonly IMaintenanceDal _maintenanceDal;
+        private readonly IDocumentService _documentService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari, IKmDuzeltmeLogDal kmLogDal)
+        public VehicleManager(IVehicleDal vehicleDal, IUserDal userDal, IVehicleAccessService vehicleAccess, ICompanyDal companyDal, PlanKurallari planKurallari, IKmDuzeltmeLogDal kmLogDal,
+            IDocumentDal documentDal, IMaintenanceDal maintenanceDal, IDocumentService documentService, IUnitOfWork unitOfWork)
         {
             _vehicleDal = vehicleDal;
             _userDal = userDal;
@@ -26,6 +31,10 @@ namespace Garajim.Business.Concrete
             _companyDal = companyDal;
             _planKurallari = planKurallari;
             _kmLogDal = kmLogDal;
+            _documentDal = documentDal;
+            _maintenanceDal = maintenanceDal;
+            _documentService = documentService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IDataResult<List<VehicleDto>>> GetAllAsync(int userId, bool arsiv = false)
@@ -199,7 +208,31 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, id);
             if (vehicle == null)
                 return new ErrorResult(Messages.VehicleNotFound);
-            await _vehicleDal.DeleteAsync(vehicle);
+
+            var bakimIdler = (await _maintenanceDal.GetListAsync(m => m.VehicleId == id)).Select(m => m.Id).ToList();
+
+            var belgeler = (await _documentDal.GetListAsync(d =>
+                d.VehicleId == id || (d.MaintenanceRecordId != null && bakimIdler.Contains(d.MaintenanceRecordId.Value))))
+                .ToList();
+
+            var silinecekDosyalar = belgeler.Select(b => b.StoredName).ToList();
+
+            await using (var islem = await _unitOfWork.BeginTransactionAsync())
+            {
+                foreach (var belge in belgeler)
+                {
+                    await _documentDal.DeleteAsync(belge);
+                }
+
+                await _vehicleDal.DeleteAsync(vehicle);
+                await _unitOfWork.CommitAsync();
+            }
+
+            foreach (var saklananAd in silinecekDosyalar)
+            {
+                _documentService.DosyaSil(saklananAd);
+            }
+
             return new SuccessResult(Messages.VehicleDeleted);
         }
 
