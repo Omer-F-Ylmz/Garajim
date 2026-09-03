@@ -11,9 +11,7 @@ Yayın öncesi durum: 929 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `
 
 Neden şart: `Down` migration'ları veri kaybettirir. `AddCompanyTenancy` geri alınırsa `CompanyId` kolonları, `AddCompanyRoles` geri alınırsa rol ve aktiflik bilgisi silinir. Sprint 3-6 ve AI Usta migration'larının `Down` gövdeleri de tablo ve kolon düşürür (evrak, takvim aboneliği, içe aktarma kayıtları, yolculuk defteri, lastik setleri, davet kodları, AI Usta sohbet ve mesajları). **Geri alma yok, yedekten dönülür.** Geri dönüşün tek güvenli yolu yedekten dönmektir.
 
-Migration provası (2 Eylül 2026, LocalDB): sıfır veritabanından 24 migration **4,7 sn**; Sprint 2 şemasından (`KarnePaylasimi`) sonraki 12 migration **3,4 sn**. `ApplyMigrationsAtStartup` açıksa açılış bu kadar gecikir; yayın penceresinde sorun değil, yine de tercihen kapalı tutulup migration ayrı çalıştırılır.
-
-Sprint 7 iki migration ekler, ikisi de **yalnız eklemeli**:
+Yayın penceresinde uygulanacak migration'ların tamamı **yalnız eklemelidir** — `AddColumn`, `CreateTable`, `CreateIndex`:
 
 | Migration | Yaptığı |
 |---|---|
@@ -21,6 +19,9 @@ Sprint 7 iki migration ekler, ikisi de **yalnız eklemeli**:
 | `AracDeger` | `AracDegerleri` tablosunu açar; `KarnePaylasimlari`'na `BeyanDegeri bit NOT NULL DEFAULT 0` kolonu ekler |
 | `AracKasaTipi` | `Vehicles`'a `KasaTipi int NULL` kolonu ekler |
 | `EmailDogrulama` | `Users`'a beş doğrulama kolonu ekler ve **mevcut satırları doğrulanmış yapar** (`UPDATE Users SET EmailDogrulandi = 1`), böylece eski kullanıcılar giriş yapmaya devam eder |
+| `LastikTekTakiliSet` | `LastikSetleri` üzerinde araç başına tek takılı seti garantileyen filtreli tekil indeks açar |
+| `SifreSifirlama` | `Users`'a şifre sıfırlama kolonlarını ve `SifreDegisimTarihi` kolonunu ekler |
+| `GeciciSifreBayragi` | `Users`'a `GeciciSifre bit NOT NULL DEFAULT 0` kolonu ekler |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
@@ -34,15 +35,18 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **27** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **15 migration** uygulanacak:
+Repoda bugün **31** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **19 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
 | Sprint 3-6 ve AI Usta | 12 |
 | Sprint 7 (`HasarDosyasi`, `AracDeger`) | 2 |
 | Launch hazırlık (`AracKasaTipi`) | 1 |
+| E-posta doğrulama (`EmailDogrulama`) | 1 |
+| Kırmızı takım (`LastikTekTakiliSet`) | 1 |
+| Sprint Şifre (`SifreSifirlama`, `GeciciSifreBayragi`) | 2 |
 
-Ölçülen süre (LocalDB, 2 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 27 migration **2,2 sn**; `KarnePaylasimi` şemasından sonraki 15 migration **2,0 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
+Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 31 migration **5,2 sn**. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
 
 Sayım beklenenden farklıysa **dur**: canlı şema tahmin ettiğinden eski ya da yeni demektir. Hangi migration'ların uygulanacağını görmeden yayına çıkma; `dotnet ef migrations list` ile karşılaştır.
 
@@ -64,7 +68,13 @@ Yayından **önce** ayarla:
 | `Smtp__From` | Gönderen adresi (doğrulanmış alan adı) | **Zorunlu.** Alan adı doğrulanmamışsa sağlayıcı reddeder, kimse kayıt olamaz |
 | `Smtp__Port` | Varsayılan `587` | Sağlayıcı farklı port istiyorsa |
 | `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
+| `Receipts__ApiKey` | Gemini/OpenAI anahtarı | **Fiş okuma için zorunlu.** Boşsa akış çalışır ama her fiş boş taslak ve sıfır güvenle döner; kullanıcı bunu hata sanar |
 | `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |
+| `Swagger__Enabled` | **ayarlanmaz** | Üretimde varsayılan kapalı. Açılırsa tüm uç ve DTO yüzeyi yayında olur; şemayı görmek gerekirse geçici aç, iş bitince kapat |
+| `Hangfire__WorkerCount` | `1` | Job'lar tüm şirketleri tarar; 256 MB'lık sunucuda paralellik bellek riskidir |
+| `ForwardedHeaders__KnownProxies` | Vekil sunucunun IP'si | Boşsa `X-Forwarded-For` hiç uygulanmaz ve **tüm istemciler tek IP** sayılır; giriş hız sınırı ile anonim uç sınırı ortaklaşır |
+| `Security__ScriptKaynaklari` | ayarlanmaz | CSP `script-src` listesi; varsayılan `https://cdn.jsdelivr.net` (Chart.js). CDN değişmedikçe dokunma |
+| `RateLimiting__PahaliUcPerMinute` | ayarlanmaz | Varsayılan 20; fiyat tahmini, içe/dışa aktarma, belge, fiş ve AI Usta uçlarında kullanıcı başına dakikalık sınır |
 
 Sprint 3-6'da gelen `Evrak__*` ve `Plan__*` değişkenleri opsiyoneldir; ayarlanmazsa koddaki varsayilanlar (muayene 2/1 yıl, kış lastiği 15-11..15-04, uyarı 30 ve 7 gün, bireysel 3 / filo 25 araç, davet başına en fazla 3 ek araç) geçerlidir. Tam liste README'deki panel değişkenleri tablosundadır.
 
@@ -109,6 +119,8 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 11. **Tanıtım ve demo**: çıkış yapıp `https://<site>` açıldığında tanıtım bölümü ve altı özellik kartı görünüyor mu? `DemoSeed__Enabled` açıksa **Demo ile dene** düğmesi giriş yapıyor mu? Kapalıysa hata yerine "kendi hesabınızı açın" yönlendirmesi mi veriyor?
 12. **Çevrimdışı**: mobil tarayıcıda siteyi açıp uçak moduna al; **Kaza anı** düğmesi rehberi gösteriyor mu, "Hasar dosyası aç" kuyruğa alındığını söylüyor mu? Bağlantı geri gelince dosya listede beliriyor mu?
 13. **E-posta doğrulama** (SMTP açıldıktan sonra, gerçek bir adresle): kayıt ol, kod e-postası **gerçekten geldi mi** ve spam'e mi düştü? Kodu gir, uygulamaya giriliyor mu? Doğrulamadan giriş denemesi 403 verip doğrulama ekranına mı düşüyor? Eski bir kullanıcıyla giriş **kod istemeden** çalışıyor mu (migration doğru çalıştıysa çalışmalı)?
+14. **Şifremi unuttum**: giriş ekranından kod iste. Kayıtlı **ve** kayıtsız bir adres için **aynı metnin** döndüğünü gör; kayıtlı adrese gelen kodla şifreyi değiştir, eski şifreyle girişin **401** verdiğini doğrula. Yanıtta token dönmemeli, kullanıcı yeniden giriş yapmalı.
+15. **Şifre değiştir**: Ayarlar'dan şifreyi değiştir. Yanlış mevcut şifre **400** vermeli; doğrusundan sonra başka bir cihazda açık kalan oturum bir sonraki istekte **401** almalı.
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

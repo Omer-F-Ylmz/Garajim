@@ -62,6 +62,30 @@ Bu yüzden:
 
 Karşı sürücünün adı, telefonu, kimlik ve sürücü belgesi bilgisi veritabanına yazılmaz. Bu alanlar yalnız yazdırılan tutanak çıktısında elle doldurulacak boş satır olarak durur. Yeni bir tutanak/teslim-iade akışı eklenirken aynı kural geçerlidir: uygulamanın işine yarayan alan (plaka, sigorta şirketi, poliçe no) saklanır, kişiyi tanımlayan alan saklanmaz.
 
+### Kimlik akışları
+
+Kayıt e-posta doğrulamasından geçer: `RegisterAsync` token değil `DogrulamaGerekli` döner, JWT ancak `dogrula` ucundan çıkar. Kod 6 hane, veritabanında yalnız SHA-256 özeti tutulur, 10 dakika geçerlidir, 5 yanlış denemede yanar; gönderim 60 saniyede bir ve saatte beş ile sınırlıdır. `kod-gonder` ve `sifre-sifirla-kod` hesap olsun olmasın **aynı 200 ve aynı metni** döner.
+
+Şifre sıfırlama aynı altyapıyı paylaşır ama **kendi kolonlarında** durur (`SifirlamaKodHash`, `SifirlamaKodSonTarih`, `SifirlamaDenemeSayisi`, `SonSifirlamaGonderim`); iki akış birbirinin kodunu ezmez ve saatlik sayaç ayrı anahtarla sayılır. Sıfırlama ucu JWT dönmez, kullanıcı yeniden giriş yapar.
+
+Şifre kuralı tek yerdedir: `AuthManager.SifreKuraliUyuyorMu`. Kayıt, sıfırlama ve değiştirme uçlarının üçü de bunu çağırır; yeni bir şifre alanı eklenirse aynı yerden geçer.
+
+Şifre değişince `AppUser.SifreDegisimTarihi` yazılır. JWT `iat` iddiası taşır ve `TokenGecerlilikDenetimi` `iat` bu tarihten eskiyse 401 verir — mevcut bütün oturumlar düşer. Aynı denetim her istekte hesabın açık, doğrulanmış ve rolünün değişmemiş olduğunu da okur; bu üçü tenant bağlamı kurulmadan önce çalışır.
+
+Ekip üyesi olarak açılan hesaplar `GeciciSifre` bayrağı taşır ve bayrak giriş yanıtında döner; arayüz bilgilendirme şeridi gösterir, zorlama yoktur. Bayrak ilk şifre değişiminde düşer.
+
+### Güvenlik değişmezleri
+
+Kırmızı takım denetimi ve güvenlik taramasında kapatılan bulgular; hepsi testle sabitlenmiştir, geri alınmaz:
+
+- **Güvenlik başlıkları** her yanıtta gider (`GuvenlikBasliklari`): CSP, `X-Frame-Options: DENY`, `nosniff`, `no-referrer`, `COOP`. CSP `script-src`'inde `unsafe-inline` **yoktur**; SPA'da satır içi script ya da `on*` niteliği yazılmaz. `style-src`'te vardır, çünkü yazdırılan tutanak sayfası kendi `<style>` bloğunu taşır. Dış script yalnız `Security__ScriptKaynaklari` listesindekilerdir.
+- **Swagger üretimde kapalıdır** (`Swagger__Enabled`); CI smoke adımı üretim imajında 200 dönerse işi düşürür.
+- **Hız sınırlayıcı kimlik doğrulamadan sonra, yetkilendirmeden önce çalışır.** Öncesine alınırsa `PahaliUclar.Bolum` kullanıcıyı göremez ve kota IP başına sayılır; sonrasına alınırsa kimliksiz istek 401 ile kesilip hiç sayılmaz.
+- **CSV dışa aktarımı formül önekini nötrleştirir** (`ExportManager`): `= + - @` sekme ve satır başı ile başlayan metnin önüne tek tırnak konur, sayısal alanlar kültüre göre ayrıştırılıp korunur.
+- **Yükleme uçları gövdeyi tek seferde okur** (`YuklemeOkuyucu`); büyüyen `MemoryStream` + `ToArray` deseni kullanılmaz. Fiş isteği gövdesi `Utf8JsonWriter` ile kurulur, base64 ara dizge olarak üretilmez.
+- **Hasar silme tek transaction'dadır**; fiziksel dosya ancak commit sonrası silinir, çünkü dosya silme geri alınamaz.
+- **Araç metin alanları kolon sınırına kırpılır** (`AracAlanUzunluklari`); uzunluklar hem `GarajimDbContext` hem `VehicleManager` tarafından oradan okunur ve test ikisinin eşitliğini sabitler. Plaka kırpılmaz, sığmazsa reddedilir.
+
 ### Anonim uçlar
 
 Anonim uçlar (`/api/karne/*`, `/api/takvim/*.ics`) aynı deseni izler: token yalnız oluşturma yanıtında ham döner, veritabanında SHA-256 özeti tutulur; uç `[AllowAnonymous]` ve `[EnableRateLimiting(KarneController.RateLimitPolicy)]` taşır (IP başına dakikada 30); okuma `SystemScope` içinde yapılır. Yeni anonim uç bu üçünü birden taşımadan eklenmez.

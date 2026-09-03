@@ -200,6 +200,33 @@ Kasa tipi bulgusu: değer tahmini bugüne kadar modele **boş kasa tipi** gönde
 
 Çevrimdışı kararı: CLAUDE.md anonim `acil.html` ve `/api/karne/*` yollarının önbelleğe girmesini yasaklıyor, çünkü bayat kopya paylaşılan araç hakkında yanlış bilgi verir. Bu kural korundu; acil kart bunun yerine giriş yapmış kullanıcının **kendi** aracının verisinden localStorage'a yazılıp Kaza anı ekranında çevrimdışı gösteriliyor. Kaza rehberi kişisel veri taşımadığı ve herkes için aynı olduğu için service worker'da önbelleğe alınıyor.
 
+## Sprint E-posta Doğrulama — TAMAMLANDI
+
+Kayıt artık e-posta doğrulamasından geçiyor; kod olmadan JWT üretilmiyor.
+
+| Madde | Commit |
+|---|---|
+| `AppUser`'a doğrulama alanları; migration mevcut satırları doğrulanmış sayıyor | `40e0557` |
+| Kayıt akışı: kod olmadan token yok, `kod-gonder` var/yok ayırt etmiyor | `0aaae98` |
+| Arayüz: altı kutulu doğrulama ekranı ve girişten yönlendirme | `b9a99db` |
+| Uçtan uca testler | `c3298d9` |
+| Belgeler, üretimde zorunlu SMTP, KVKK maddesi | `6b3b408` |
+
+Kod 6 hane, veritabanında yalnız SHA-256 özeti duruyor; 10 dakika geçerli, 5 yanlış denemede yanıyor, gönderim 60 saniyede bir ve saatte beş ile sınırlı. Üretimde `Smtp__*` eksikse uygulama başlamıyor: kod gidemezse kimse kayıt olamaz.
+
+## Sprint Şifre — TAMAMLANDI
+
+Kullanıcının şifresini kurtarmasının ve döndürmesinin hiçbir yolu yoktu; güvenlik taramasında da kayıtlıydı.
+
+| Madde | Commit |
+|---|---|
+| Şifremi unuttum: kod ile sıfırlama, eski token'ların düşmesi | `49b8d12` |
+| Şifre değiştir (girişli) ve geçici şifre bayrağı | `798a477` |
+| SPA: sıfırlama akışı ve ayarlarda şifre değiştir | `dd0c824` |
+| DEPLOY doğrulama adımı: üretimde Swagger 404 | `a236322` |
+
+Sıfırlama kodu doğrulama kodunun altyapısını paylaşıyor ama kendi kolonlarında duruyor, böylece iki akış birbirini ezmiyor. Şifre değişince `AppUser.SifreDegisimTarihi` yazılıyor ve JWT'nin `iat` iddiası bundan eskiyse token 401 alıyor. Bilinen sınır: `iat` saniye çözünürlüklü olduğu için değişimle aynı saniyede üretilmiş bir token bir saniyeliğine ayakta kalabiliyor; kapatmak gerekirse tarih yerine artan bir `TokenSurumu` sayacına geçilir.
+
 ## Sıradaki
 
 Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklardan okunacak:
