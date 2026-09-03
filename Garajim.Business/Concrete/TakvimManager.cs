@@ -166,7 +166,8 @@ namespace Garajim.Business.Concrete
                 .Replace(";", "\\;")
                 .Replace(",", "\\,")
                 .Replace("\r\n", "\\n")
-                .Replace("\n", "\\n");
+                .Replace("\n", "\\n")
+                .Replace("\r", "\\n");
         }
 
         private static string Buyuk(string metin)
