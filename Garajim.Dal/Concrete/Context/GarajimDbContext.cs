@@ -246,6 +246,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<AppUser>(entity =>
             {
                 entity.Property(u => u.DogrulamaKodHash).HasMaxLength(64);
+                entity.Property(u => u.SifirlamaKodHash).HasMaxLength(64);
             });
 
             modelBuilder.Entity<AracDeger>(entity =>

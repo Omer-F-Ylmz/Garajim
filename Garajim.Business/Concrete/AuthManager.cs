@@ -15,6 +15,8 @@ namespace Garajim.Business.Concrete
 {
     public class AuthManager : IAuthService
     {
+        public const int MinimumSifreUzunlugu = 6;
+
         private readonly IUserDal _userDal;
         private readonly ICompanyDal _companyDal;
         private readonly IConfiguration _configuration;
@@ -44,7 +46,7 @@ namespace Garajim.Business.Concrete
         public async Task<IDataResult<KayitSonucuDto>> RegisterAsync(RegisterDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.FullName) ||
-                string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
+                !SifreKuraliUyuyorMu(dto.Password))
                 return new ErrorDataResult<KayitSonucuDto>(Messages.InvalidValue);
             var email = dto.Email.Trim().ToLowerInvariant();
             if (await _userDal.ExistsForRegistrationAsync(email))
@@ -183,6 +185,107 @@ namespace Garajim.Business.Concrete
             user.DogrulamaKodHash = null;
             user.DogrulamaKodSonTarih = null;
             await _userDal.UpdateAsync(user);
+        }
+
+        public async Task<IResult> SifreSifirlamaKoduAsync(SifreSifirlamaKodDto dto)
+        {
+            var email = (dto?.Email ?? string.Empty).Trim().ToLowerInvariant();
+            var yanit = new SuccessResult(Messages.SifirlamaKoduYaniti);
+
+            if (email.Length == 0)
+                return yanit;
+
+            var user = await _userDal.GetForAuthenticationAsync(email);
+            if (user == null || !user.IsActive)
+                return yanit;
+
+            if (user.SonSifirlamaGonderim != null &&
+                user.SonSifirlamaGonderim.Value.AddSeconds(DogrulamaKodu.GonderimAraligiSaniye) > DateTime.UtcNow)
+                return yanit;
+
+            var sayacAnahtari = SifirlamaKodu.SayacAnahtari(email);
+            if (!_gonderimSayaci.IzinVer(sayacAnahtari))
+                return yanit;
+
+            var kod = DogrulamaKodu.Uret();
+
+            user.SifirlamaKodHash = DogrulamaKodu.Hashle(kod);
+            user.SifirlamaKodSonTarih = DateTime.UtcNow.AddMinutes(DogrulamaKodu.GecerlilikDakika);
+            user.SifirlamaDenemeSayisi = 0;
+            user.SonSifirlamaGonderim = DateTime.UtcNow;
+            await _userDal.UpdateAsync(user);
+
+            _gonderimSayaci.Say(sayacAnahtari);
+
+            try
+            {
+                await _emailSender.SendAsync(user.Email, SifirlamaKodu.EpostaKonusu, SifirlamaKodu.EpostaGovdesi(kod));
+            }
+            catch (Exception hata)
+            {
+                _logger.LogError(hata, "Şifre sıfırlama kodu e-postası gönderilemedi: {Alici}", user.Email);
+            }
+
+            return yanit;
+        }
+
+        public async Task<IResult> SifreSifirlaAsync(SifreSifirlaDto dto)
+        {
+            var email = (dto?.Email ?? string.Empty).Trim().ToLowerInvariant();
+            var kod = (dto?.Kod ?? string.Empty).Trim();
+
+            if (email.Length == 0 || kod.Length != DogrulamaKodu.Uzunluk)
+                return new ErrorResult(Messages.SifirlamaKoduGecersiz);
+
+            if (!SifreKuraliUyuyorMu(dto?.YeniSifre))
+                return new ErrorResult(Messages.InvalidValue);
+
+            var user = await _userDal.GetForAuthenticationAsync(email);
+            if (user == null || !user.IsActive || string.IsNullOrWhiteSpace(user.SifirlamaKodHash))
+                return new ErrorResult(Messages.SifirlamaKoduGecersiz);
+
+            if (user.SifirlamaKodSonTarih == null || user.SifirlamaKodSonTarih < DateTime.UtcNow)
+            {
+                await SifirlamaKodunuTemizleAsync(user);
+                return new ErrorResult(Messages.SifirlamaKoduGecersiz);
+            }
+
+            if (!DogrulamaKodu.Esit(kod, user.SifirlamaKodHash))
+            {
+                user.SifirlamaDenemeSayisi++;
+                if (user.SifirlamaDenemeSayisi >= DogrulamaKodu.MaxDeneme)
+                {
+                    user.SifirlamaKodHash = null;
+                    user.SifirlamaKodSonTarih = null;
+                }
+
+                await _userDal.UpdateAsync(user);
+                return new ErrorResult(Messages.SifirlamaKoduGecersiz);
+            }
+
+            HashingHelper.CreatePasswordHash(dto.YeniSifre, out var passwordHash, out var passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.SifirlamaKodHash = null;
+            user.SifirlamaKodSonTarih = null;
+            user.SifirlamaDenemeSayisi = 0;
+            user.SifreDegisimTarihi = DateTime.UtcNow;
+            await _userDal.UpdateAsync(user);
+
+            return new SuccessResult(Messages.SifreDegistirildi);
+        }
+
+        private async Task SifirlamaKodunuTemizleAsync(AppUser user)
+        {
+            user.SifirlamaKodHash = null;
+            user.SifirlamaKodSonTarih = null;
+            await _userDal.UpdateAsync(user);
+        }
+
+        public static bool SifreKuraliUyuyorMu(string sifre)
+        {
+            return !string.IsNullOrWhiteSpace(sifre) && sifre.Length >= MinimumSifreUzunlugu;
         }
 
         public async Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto)

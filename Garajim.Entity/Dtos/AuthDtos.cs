@@ -26,6 +26,24 @@ namespace Garajim.Entity.Dtos
         public string Email { get; set; }
     }
 
+    public class SifreSifirlamaKodDto
+    {
+        public string Email { get; set; }
+    }
+
+    public class SifreSifirlaDto
+    {
+        public string Email { get; set; }
+        public string Kod { get; set; }
+        public string YeniSifre { get; set; }
+    }
+
+    public class SifreDegistirDto
+    {
+        public string Mevcut { get; set; }
+        public string Yeni { get; set; }
+    }
+
     public class KayitSonucuDto
     {
         public bool DogrulamaGerekli { get; set; }

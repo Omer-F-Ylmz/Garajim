@@ -11,6 +11,10 @@ namespace Garajim.Business.Constants
         public const string EmailDogrulandiMesaji = "E-posta adresiniz doğrulandı.";
         public const string EmailDogrulanmadi = "E-posta adresiniz henüz doğrulanmadı. Size gönderilen kodu girin.";
         public const string KodGonderimYaniti = "Kod gönderildiyse e-posta adresinize ulaşacak. Spam klasörünü de kontrol edin.";
+        public const string SifirlamaKoduYaniti = "Hesap varsa şifre sıfırlama kodu e-posta adresinize ulaşacak. Spam klasörünü de kontrol edin.";
+        public const string SifirlamaKoduGecersiz = "Sıfırlama kodu hatalı ya da süresi dolmuş. Yeni kod isteyin.";
+        public const string SifreDegistirildi = "Şifreniz değiştirildi. Yeni şifrenizle giriş yapın.";
+        public const string MevcutSifreHatali = "Mevcut şifreniz hatalı.";
         public const string VehicleAdded = "Araç eklendi.";
         public const string VehicleUpdated = "Araç güncellendi.";
         public const string VehicleDeleted = "Araç silindi.";

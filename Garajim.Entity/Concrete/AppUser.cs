@@ -18,6 +18,11 @@ namespace Garajim.Entity.Concrete
         public DateTime? DogrulamaKodSonTarih { get; set; }
         public int DogrulamaDenemeSayisi { get; set; }
         public DateTime? SonKodGonderim { get; set; }
+        public string SifirlamaKodHash { get; set; }
+        public DateTime? SifirlamaKodSonTarih { get; set; }
+        public int SifirlamaDenemeSayisi { get; set; }
+        public DateTime? SonSifirlamaGonderim { get; set; }
+        public DateTime? SifreDegisimTarihi { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

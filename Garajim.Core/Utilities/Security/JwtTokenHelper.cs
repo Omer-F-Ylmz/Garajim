@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,7 +19,10 @@ namespace Garajim.Core.Utilities.Security
                 new Claim(GarajimClaimTypes.CompanyId, companyId.ToString()),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Name, fullName)
+                new Claim(ClaimTypes.Name, fullName),
+                new Claim(JwtRegisteredClaimNames.Iat,
+                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture),
+                    ClaimValueTypes.Integer64)
             };
             var token = new JwtSecurityToken(
                 issuer: issuer,

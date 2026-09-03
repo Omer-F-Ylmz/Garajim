@@ -9,5 +9,7 @@ namespace Garajim.Business.Abstract
         Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto);
         Task<IDataResult<TokenDto>> DogrulaAsync(DogrulaDto dto);
         Task<IResult> KodGonderAsync(KodGonderDto dto);
+        Task<IResult> SifreSifirlamaKoduAsync(SifreSifirlamaKodDto dto);
+        Task<IResult> SifreSifirlaAsync(SifreSifirlaDto dto);
     }
 }
