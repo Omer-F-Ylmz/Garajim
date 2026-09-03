@@ -299,6 +299,21 @@ Yayın öncesi dört bağımsız ajan (güvenlik, veri bütünlüğü, mobil/UX,
 
 - **Demo hesabın parolası repoda** — bulgu olarak açılmıştı, kusur değil. Parola zaten `app.js` içinde tarayıcıya gönderiliyor; "Demo ile dene" düğmesinin çalışması için gönderilmek zorunda ve `DEPLOY.md` demo verisini bilinçli bir dağıtım kararı olarak tanımlıyor. Guard'a eklemek belgelenmiş bir özelliği kırardı. Gerçek artık risk parola değil, canlıda herkese açık bir demo kiracısının kota ve AI Usta maliyetini tüketebilmesi; bu ayrı bir madde olarak ele alınmalı.
 
+## Güvenlik Taraması — açık kalan bulgular
+
+`b966145..HEAD` (87 commit) ile `Garajim.API`, `Garajim.Business` ve `Garajim.Dal`'ın tamamı veri akışı izlenerek tarandı. Enjeksiyon, XSS, kimlik/yetki, dosya yükleme, kriptografi, loglama, yapılandırma ve üçüncü taraf çağrıları kapsandı. İki Orta bulgu kapatıldı (`fd1cbd9`, `ff1cc75`), bir Düşük erken kapatıldı (`0e43216`). Aşağıdakiler ertelendi.
+
+- [ ] **Ekip üyesi ekleme e-postayı kanıtsız sahipleniyor** (`TeamManager.cs:120-135`) — Sahip herhangi bir adresle `EmailDogrulandi = true` hesap açabiliyor. Adres genel tekil olduğu için o kişi bir daha kendi şirketini kuramaz; adresin sahibine hiçbir bildirim gitmez. Doğru çözüm davet-ve-onay akışı; bu bir özellik, yama değil.
+- [ ] **Parola değiştirme ve sıfırlama akışı yok** — hiçbir uçta yok. Ekip üyesine verilen geçici parola kalıcı ve Sahip tarafından biliniyor; üye kendi kimliğini döndüremiyor, Sahip süresiz olarak üye adına işlem yapabiliyor.
+- [ ] **Tutanak açılır penceresi uygulamayla aynı kaynakta çalışıyor** (`app.js:2038-2047`) — `window.open("")` + `document.write` kullanıldığı için sayfa `about:blank` olarak açılıp kaynağı devralıyor. Bugün sömürülebilir değil: `TutanakSayfasi.Kacir` `& < > " '` karakterlerinin hepsini kaçırıyor. Ancak sunucu kaçışındaki ileride oluşacak tek bir açık, JWT `localStorage`'da durduğu için doğrudan token hırsızlığına döner. `srcdoc` taşıyan `sandbox`'lı bir iframe ya da ayrı bir uç daha güvenli olur. CSP eklenmesi (`ff1cc75`) etkiyi azalttı, kökü kapatmadı.
+- [ ] **Usta geri bildirimi sohbetin sahibini denetlemiyor** (`UstaManager.cs:323-355`) — araç erişimi denetleniyor, dolayısıyla kiracılar arası sızma yok; aynı şirkette aracı gören başka bir kullanıcı, meslektaşının sohbet mesajına geri bildirim yazabiliyor.
+- [ ] **Vekil sunucu arkasında istemci IP'si çözülmüyor** (`Program.cs:181-207`) — `KnownProxies`/`KnownNetworks` temizleniyor ve yapılandırma boşsa `X-Forwarded-For` hiç uygulanmıyor. Güvenlik açısından doğru yön (başlık sahteciliği kapalı) ama `ForwardedHeaders__KnownProxies` tanımlanmadan IIS arkasına konursa tüm istemciler tek IP bölümüne düşer ve giriş hız sınırı ile anonim uç sınırı ortaklaşır. `DEPLOY.md` bunu söylemiyor.
+- [ ] **`DEPLOY.md` doğrulama adımı Swagger'dan 200 bekliyor** (`DEPLOY.md:98`) — Swagger üretimde kapatıldıktan sonra (`0486f9f`) bu adım artık 404 döner; dağıtımı yapan kişi hatalı olarak başarısızlık sanır.
+
+### İncelenip temiz çıkanlar
+
+Ham SQL, komut çalıştırma, XML ayrıştırma ve güvensiz deserialization hiç yok. Parola `HMACSHA512` + `FixedTimeEquals`; doğrulama kodu, paylaşım ve takvim token'ları, davet kodu ve geçici parola `RandomNumberGenerator` ile üretiliyor; token'lar veritabanında SHA-256 özetiyle duruyor. Global sorgu filtresi 22 entity'yi kapsıyor, rol değişimi ve hesap kapatma hedefi filtre üzerinden okuduğu için kiracılar arası yetki yükseltme kapalı. `AppUser.CompanyId` oluşturulduktan sonra hiç değişmiyor, dolayısıyla JWT'deki kiracı iddiası bayatlamıyor. Dosya yükleme uzantı beyaz listesi, sihirli bayt denetimi ve boyut sınırı taşıyor; kayıtlı ad sunucuda üretilen GUID olduğu için yol geçişi yok. Anonim karne belge ucu belgeyi paylaşılan araca bağlıyor. İndirmeler `Content-Disposition: attachment` ile dönüyor. Loglarda parola, token ya da doğrulama kodu yok. CORS hiç açılmamış. Üretimde geliştirici hata sayfası yok. `dotnet list package --vulnerable --include-transitive` dokuz projede de temiz.
+
 ## Birikim (planlanmamış)
 
 Hiçbir sprinte bağlanmamış işler. Sprint 3-6'ya taşınanlar buradan çıkarıldı; her madde tek yerde durur.
