@@ -49,6 +49,8 @@ builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();
 builder.Services.AddScoped<IFuelDal, EfFuelDal>();
 builder.Services.AddScoped<IKmDuzeltmeLogDal, EfKmDuzeltmeLogDal>();
 builder.Services.AddSingleton<ISaat, Saat>();
+builder.Services.AddScoped<IHesapService, HesapManager>();
+builder.Services.AddScoped<HesapSilmeJob>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
 builder.Services.AddScoped<IVehicleAssignmentDal, EfVehicleAssignmentDal>();
@@ -435,6 +437,12 @@ if (useBackgroundJobs)
             "usta-cozum-ozeti",
             job => job.RunAsync(),
             Cron.Daily(4),
+            trSaati);
+
+        recurringJobManager.AddOrUpdate<HesapSilmeJob>(
+            "hesap-silme",
+            job => job.RunAsync(),
+            Cron.Daily(3),
             trSaati);
 
         recurringJobManager.AddOrUpdate<UstaSaklamaJob>(

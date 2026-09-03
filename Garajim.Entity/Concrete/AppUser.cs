@@ -24,6 +24,10 @@ namespace Garajim.Entity.Concrete
         public DateTime? SonSifirlamaGonderim { get; set; }
         public DateTime? SifreDegisimTarihi { get; set; }
         public bool GeciciSifre { get; set; }
+        public string SilmeKodHash { get; set; }
+        public DateTime? SilmeKodSonTarih { get; set; }
+        public int SilmeDenemeSayisi { get; set; }
+        public DateTime? SonSilmeGonderim { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

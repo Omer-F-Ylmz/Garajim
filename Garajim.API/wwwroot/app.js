@@ -409,6 +409,8 @@
         el("karne-btn").classList.toggle("hidden", !canManage());
         el("arsiv-btn").classList.toggle("hidden", !canManage());
         el("vehicle-arsivle").classList.toggle("hidden", !canManage());
+        el("hesap-sil-kod").classList.toggle("hidden", !isOwner());
+        el("uye-hesap-sil").classList.toggle("hidden", isOwner());
 
         var zimmetTab = document.querySelector('.tab-btn[data-manager-only="true"]');
         if (zimmetTab) {
@@ -435,6 +437,7 @@
         }
         el("user-label").textContent = label;
         geciciSifreUyarisi(user);
+        hesapDurumunuYukle();
         applyRole();
         loadVehicles();
         loadPendingReceipts();
@@ -2726,6 +2729,72 @@
         uyari.classList.remove("hidden");
     }
 
+    function hesapDurumunuYukle() {
+        return api("/api/Account/durum").then(function (result) {
+            var veri = (result && result.data) || {};
+            var serit = el("silme-serit");
+
+            if (!veri.silmePlanlandi) {
+                serit.classList.add("hidden");
+                return;
+            }
+
+            el("silme-serit-metin").textContent =
+                "Hesabınız " + veri.kalanGun + " gün sonra kalıcı olarak silinecek.";
+            el("silme-iptal").classList.toggle("hidden", !isOwner());
+            serit.classList.remove("hidden");
+        }).catch(function () {
+        });
+    }
+
+    function bindHesapSilme() {
+        el("hesap-sil-kod").addEventListener("click", function () {
+            api("/api/Account/sil-kod", { method: "POST" }).then(function (result) {
+                el("hesap-sil-form").classList.remove("hidden");
+                showMessage(el("hesap-sil-mesaj"), (result && result.message) || "", true);
+            }).catch(function (error) { handleError(el("hesap-sil-mesaj"), error); });
+        });
+
+        el("hesap-sil-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var sirket = (state.user && state.user.companyName) || "";
+            var yazilan = el("hesap-sil-ad").value.trim();
+
+            if (yazilan.toLocaleLowerCase("tr") !== sirket.trim().toLocaleLowerCase("tr")) {
+                showMessage(el("hesap-sil-mesaj"), "Şirket adı eşleşmedi, hesap silinmedi.", false);
+                return;
+            }
+
+            api("/api/Account/sil", { method: "POST", body: { kod: el("hesap-sil-kodu").value.trim() } })
+                .then(function (result) {
+                    el("hesap-sil-form").classList.add("hidden");
+                    el("hesap-sil-kodu").value = "";
+                    el("hesap-sil-ad").value = "";
+                    showMessage(el("hesap-sil-mesaj"), (result && result.message) || "", true);
+                    hesapDurumunuYukle();
+                })
+                .catch(function (error) { handleError(el("hesap-sil-mesaj"), error); });
+        });
+
+        el("silme-iptal").addEventListener("click", function () {
+            api("/api/Account/sil-iptal", { method: "POST" }).then(function () {
+                hesapDurumunuYukle();
+            }).catch(function (error) { handleError(el("app-message"), error); });
+        });
+
+        el("uye-hesap-sil").addEventListener("click", function () {
+            if (!window.confirm("Hesabınız kapatılacak ve kişisel bilgileriniz kaldırılacak. Devam edilsin mi?")) {
+                return;
+            }
+
+            api("/api/Account", { method: "DELETE" }).then(function () {
+                clearSession();
+                location.reload();
+            }).catch(function (error) { handleError(el("hesap-sil-mesaj"), error); });
+        });
+    }
+
     function bindSifreDegistir() {
         el("sifre-degistir-form").addEventListener("submit", function (event) {
             event.preventDefault();
@@ -4892,6 +4961,7 @@
         bindDogrulama();
         bindSifirlama();
         bindSifreDegistir();
+        bindHesapSilme();
         bindHasar();
         bindDeger();
         bindDavet();

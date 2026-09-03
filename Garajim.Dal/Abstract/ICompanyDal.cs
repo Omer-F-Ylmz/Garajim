@@ -7,6 +7,7 @@ namespace Garajim.Dal.Abstract
     {
         Task<Company> GetByDavetKoduAsync(string kod);
         Task<bool> DavetKoduVarMiAsync(string kod);
+        Task SirketVerisiniSilAsync(int companyId);
         Task<List<Company>> GetDavetlilerAsync(int companyId);
         Task<int> DavetSayisiAsync(int companyId);
     }

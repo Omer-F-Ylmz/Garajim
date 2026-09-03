@@ -152,6 +152,10 @@
 
     <div id="app-screen" class="screen hidden">
         <p id="gecici-sifre-uyari" class="message hidden" role="status"></p>
+        <div id="silme-serit" class="surum-serit hidden" role="status">
+            <span id="silme-serit-metin"></span>
+            <button id="silme-iptal" type="button" class="ghost">İptal et</button>
+        </div>
         <div id="surum-serit" class="surum-serit hidden" role="status">
             <span>Yeni sürüm var.</span>
             <button id="surum-yenile" type="button" class="ghost">Yenile</button>
@@ -275,6 +279,27 @@
                 </div>
             </form>
             <p id="sifre-degistir-mesaj" class="message" role="alert"></p>
+
+            <h3>Hesabı sil</h3>
+            <p class="hint">Şirket sahibi hesabı silerse şirket, araçlar, kayıtlar ve belgeler 7 gün sonra kalıcı olarak silinir. Bu süre içinde iptal edebilirsiniz. Ekip üyesi kendi hesabını silerse kişisel bilgileri kaldırılır, şirketin kayıtları yerinde kalır.</p>
+            <div class="inline-form">
+                <button id="hesap-sil-kod" type="button" class="ghost">Silme kodu gönder</button>
+                <button id="uye-hesap-sil" type="button" class="ghost hidden">Hesabımı sil</button>
+            </div>
+            <form id="hesap-sil-form" class="grid-form hidden">
+                <div>
+                    <label for="hesap-sil-kodu">E-postaya gelen 6 haneli kod</label>
+                    <input id="hesap-sil-kodu" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                </div>
+                <div>
+                    <label for="hesap-sil-ad">Onay için şirket adını yazın</label>
+                    <input id="hesap-sil-ad" type="text" maxlength="150">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Hesabı sil</button>
+                </div>
+            </form>
+            <p id="hesap-sil-mesaj" class="message" role="alert"></p>
 
             <h3>Takvime abone ol</h3>
             <p class="hint">Evrak bitişleri ve hatırlatmalar telefon takviminize düşer. Bağlantı kişiye özeldir, paylaşmayın.</p>
