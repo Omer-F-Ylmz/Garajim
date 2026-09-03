@@ -270,6 +270,30 @@ namespace Garajim.Business.Concrete
             user.SifirlamaKodHash = null;
             user.SifirlamaKodSonTarih = null;
             user.SifirlamaDenemeSayisi = 0;
+            user.GeciciSifre = false;
+            user.SifreDegisimTarihi = DateTime.UtcNow;
+            await _userDal.UpdateAsync(user);
+
+            return new SuccessResult(Messages.SifreDegistirildi);
+        }
+
+        public async Task<IResult> SifreDegistirAsync(int userId, SifreDegistirDto dto)
+        {
+            if (!SifreKuraliUyuyorMu(dto?.Yeni))
+                return new ErrorResult(Messages.InvalidValue);
+
+            var user = await _userDal.GetForAuthenticationByIdAsync(userId);
+            if (user == null || !user.IsActive)
+                return new ErrorResult(Messages.UserNotFound);
+
+            if (!HashingHelper.VerifyPasswordHash(dto.Mevcut ?? string.Empty, user.PasswordHash, user.PasswordSalt))
+                return new ErrorResult(Messages.MevcutSifreHatali);
+
+            HashingHelper.CreatePasswordHash(dto.Yeni, out var passwordHash, out var passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.GeciciSifre = false;
             user.SifreDegisimTarihi = DateTime.UtcNow;
             await _userDal.UpdateAsync(user);
 
@@ -326,7 +350,8 @@ namespace Garajim.Business.Concrete
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = user.Role.ToString(),
-                CompanyName = companyName
+                CompanyName = companyName,
+                GeciciSifre = user.GeciciSifre
             };
         }
     }

@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
 using Garajim.Entity.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -55,6 +57,20 @@ namespace Garajim.API.Controllers
         public async Task<IActionResult> SifreSifirla(SifreSifirlaDto dto)
         {
             var result = await _authService.SifreSifirlaAsync(dto);
+            if (!result.Success)
+                return BadRequest(result);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("sifre-degistir")]
+        public async Task<IActionResult> SifreDegistir(SifreDegistirDto dto)
+        {
+            var kimlik = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(kimlik, out var userId))
+                return Unauthorized();
+
+            var result = await _authService.SifreDegistirAsync(userId, dto);
             if (!result.Success)
                 return BadRequest(result);
             return Ok(result);

@@ -11,5 +11,6 @@ namespace Garajim.Business.Abstract
         Task<IResult> KodGonderAsync(KodGonderDto dto);
         Task<IResult> SifreSifirlamaKoduAsync(SifreSifirlamaKodDto dto);
         Task<IResult> SifreSifirlaAsync(SifreSifirlaDto dto);
+        Task<IResult> SifreDegistirAsync(int userId, SifreDegistirDto dto);
     }
 }
