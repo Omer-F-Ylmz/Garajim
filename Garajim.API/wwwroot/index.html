@@ -157,6 +157,10 @@
             <input id="km-hizli" type="number" min="0" inputmode="numeric" aria-label="Güncel kilometre">
             <button id="km-hizli-kaydet" type="button" class="ghost">Kaydet</button>
         </div>
+        <div id="katalog-serit" class="surum-serit hidden" role="status">
+            <span id="katalog-serit-metin"></span>
+            <button id="katalog-duzenle" type="button" class="ghost">Düzenle</button>
+        </div>
         <div id="silme-serit" class="surum-serit hidden" role="status">
             <span id="silme-serit-metin"></span>
             <button id="silme-iptal" type="button" class="ghost">İptal et</button>
@@ -506,15 +510,22 @@
                 </div>
                 <div>
                     <label for="vehicle-brand">Marka</label>
-                    <input id="vehicle-brand" type="text" required>
+                    <select id="vehicle-brand" required></select>
+                    <small class="hint">Listeye yazmaya başlayarak arayabilirsiniz.</small>
                 </div>
                 <div>
                     <label for="vehicle-model">Model</label>
-                    <input id="vehicle-model" type="text" required>
+                    <select id="vehicle-model" required></select>
+                    <label class="onay-alan" for="vehicle-model-listede-yok">
+                        <input id="vehicle-model-listede-yok" type="checkbox">
+                        Listede yok
+                    </label>
+                    <input id="vehicle-model-serbest" type="text" class="hidden" maxlength="40" placeholder="Model adı" aria-label="Model adı">
+                    <small id="vehicle-model-ipucu" class="hint hidden">Katalogda olmayan model için değer tahmini yapılamaz.</small>
                 </div>
                 <div>
                     <label for="vehicle-year">Yıl</label>
-                    <input id="vehicle-year" type="number" min="1950" required>
+                    <select id="vehicle-year" required></select>
                 </div>
                 <div>
                     <label for="vehicle-km">Güncel km</label>
@@ -847,19 +858,19 @@
 
             <section id="panel-tahmin" class="panel tab-panel hidden">
                 <h2>İkinci el fiyat tahmini</h2>
-                <p class="hint">Değerler ilan verisindeki yazımla eşleşmelidir. Tahmin medyan piyasa fiyatına yakındır.</p>
+                <p class="hint">Marka ve seriyi katalogdan seçin. Tahmin medyan piyasa fiyatına yakındır.</p>
                 <form id="price-form" class="grid-form">
                     <div>
                         <label for="price-marka">Marka</label>
-                        <input id="price-marka" type="text" required>
+                        <select id="price-marka" required></select>
                     </div>
                     <div>
                         <label for="price-seri">Seri</label>
-                        <input id="price-seri" type="text" required>
+                        <select id="price-seri" required></select>
                     </div>
                     <div>
                         <label for="price-yil">Yıl</label>
-                        <input id="price-yil" type="number" min="1990" required>
+                        <select id="price-yil" required></select>
                     </div>
                     <div>
                         <label for="price-km">Kilometre</label>

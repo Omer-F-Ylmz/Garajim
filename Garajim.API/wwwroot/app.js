@@ -476,6 +476,7 @@
             }
             select.value = String(state.selectedVehicleId);
             kmSeridiniGuncelle();
+            katalogUyarisiniGuncelle();
             tescilUyarisiniGuncelle();
             acilKartiSakla();
             kuyrugoBosalt();
@@ -538,6 +539,8 @@
             loadPartMemory();
         } else if (tab === "evrak") {
             loadEvrak();
+        } else if (tab === "tahmin") {
+            fiyatFormunuHazirla();
         }
     }
 
@@ -1558,6 +1561,117 @@
                 loadVehicles();
             })
             .catch(function (error) { handleError(el("app-message"), error); });
+    }
+
+    var EN_ESKI_YIL = 1950;
+
+    var katalog = { markalar: [], seriler: {} };
+
+    function katalogMarkalari() {
+        if (katalog.markalar.length) {
+            return Promise.resolve(katalog.markalar);
+        }
+
+        return api("/api/Katalog/markalar").then(function (result) {
+            katalog.markalar = (result && result.data) || [];
+            return katalog.markalar;
+        });
+    }
+
+    function katalogSerileri(marka) {
+        if (!marka) {
+            return Promise.resolve([]);
+        }
+
+        if (katalog.seriler[marka]) {
+            return Promise.resolve(katalog.seriler[marka]);
+        }
+
+        return api("/api/Katalog/seriler?marka=" + encodeURIComponent(marka)).then(function (result) {
+            katalog.seriler[marka] = (result && result.data) || [];
+            return katalog.seriler[marka];
+        });
+    }
+
+    function katalogSecenekleri(select, degerler, bosMetin) {
+        clear(select);
+
+        var bos = document.createElement("option");
+        bos.value = "";
+        bos.textContent = bosMetin;
+        select.appendChild(bos);
+
+        degerler.forEach(function (deger) {
+            var secenek = document.createElement("option");
+            secenek.value = deger;
+            secenek.textContent = deger;
+            select.appendChild(secenek);
+        });
+    }
+
+    function yillariDoldur(select, secili) {
+        var enYeni = new Date().getFullYear() + 1;
+        var yillar = [];
+
+        for (var yil = enYeni; yil >= EN_ESKI_YIL; yil--) {
+            yillar.push(String(yil));
+        }
+
+        fillSimpleSelect(select, yillar);
+        select.value = String(secili || new Date().getFullYear());
+    }
+
+    function markaSecenekleriniDoldur(select, secili) {
+        return katalogMarkalari().then(function (markalar) {
+            katalogSecenekleri(select, markalar, "Marka seçin");
+            select.value = secili && markalar.indexOf(secili) >= 0 ? secili : "";
+            return select.value;
+        });
+    }
+
+    function seriSecenekleriniDoldur(markaSelect, seriSelect, secili) {
+        return katalogSerileri(markaSelect.value).then(function (seriler) {
+            katalogSecenekleri(seriSelect, seriler, seriler.length ? "Seri seçin" : "Önce marka seçin");
+            seriSelect.disabled = seriler.length === 0;
+            seriSelect.value = secili && seriler.indexOf(secili) >= 0 ? secili : "";
+            return seriSelect.value;
+        });
+    }
+
+    function listedeYokDurumu() {
+        var acik = el("vehicle-model-listede-yok").checked;
+
+        el("vehicle-model").classList.toggle("hidden", acik);
+        el("vehicle-model").required = !acik;
+        el("vehicle-model-serbest").classList.toggle("hidden", !acik);
+        el("vehicle-model-serbest").required = acik;
+        el("vehicle-model-ipucu").classList.toggle("hidden", !acik);
+    }
+
+    function fiyatFormunuHazirla() {
+        if (el("price-marka").options.length > 1) {
+            return;
+        }
+
+        yillariDoldur(el("price-yil"), null);
+
+        markaSecenekleriniDoldur(el("price-marka"), "").then(function () {
+            return seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), "");
+        }).catch(function (error) { handleError(el("app-message"), error); });
+    }
+
+    function katalogUyarisiniGuncelle() {
+        var serit = el("katalog-serit");
+        var arac = seciliArac();
+
+        if (!arac || !canManage() || !arac.modelEslesmedi) {
+            serit.classList.add("hidden");
+            return;
+        }
+
+        el("katalog-serit-metin").textContent =
+            arac.plate + " için model katalogda yok; değer tahmini için listeden seçin.";
+        serit.classList.remove("hidden");
     }
 
     function seciliArac() {
@@ -4661,6 +4775,21 @@
         el("arsiv-kapat").addEventListener("click", function () { el("arsiv-box").classList.add("hidden"); });
         el("vehicle-km").addEventListener("input", kmDuzeltmeAlaniniGuncelle);
 
+        el("vehicle-brand").addEventListener("change", function () {
+            seriSecenekleriniDoldur(el("vehicle-brand"), el("vehicle-model"), "")
+                .catch(function (error) { handleError(el("app-message"), error); });
+        });
+
+        el("vehicle-model-listede-yok").addEventListener("change", listedeYokDurumu);
+
+        el("katalog-duzenle").addEventListener("click", function () {
+            var arac = seciliArac();
+
+            if (arac) {
+                aracFormunuAc(arac);
+            }
+        });
+
         el("vehicle-select").addEventListener("change", function (event) {
             state.selectedVehicleId = Number(event.target.value);
             acilKartiSakla();
@@ -4725,9 +4854,12 @@
     }
 
     function aracFormGovdesi() {
+        var listedeYok = el("vehicle-model-listede-yok").checked;
+
         var govde = {
             brand: el("vehicle-brand").value,
-            model: el("vehicle-model").value,
+            model: listedeYok ? el("vehicle-model-serbest").value : el("vehicle-model").value,
+            listedeYok: listedeYok,
             year: Number(el("vehicle-year").value),
             currentKm: Number(el("vehicle-km").value),
             kmDusurmeOnayi: el("vehicle-km-onay").checked,
@@ -4761,9 +4893,15 @@
         el("vehicle-plate").required = !arac;
 
         el("vehicle-plate").value = arac ? arac.plate : "";
-        el("vehicle-brand").value = arac ? arac.brand : "";
-        el("vehicle-model").value = arac ? arac.model : "";
-        el("vehicle-year").value = arac ? arac.year : new Date().getFullYear();
+        el("vehicle-model-listede-yok").checked = !!(arac && arac.modelEslesmedi);
+        el("vehicle-model-serbest").value = arac && arac.modelEslesmedi ? arac.model : "";
+        listedeYokDurumu();
+
+        markaSecenekleriniDoldur(el("vehicle-brand"), arac ? arac.brand : "").then(function () {
+            return seriSecenekleriniDoldur(el("vehicle-brand"), el("vehicle-model"), arac ? arac.model : "");
+        }).catch(function (error) { handleError(el("app-message"), error); });
+
+        yillariDoldur(el("vehicle-year"), arac ? arac.year : null);
         el("vehicle-km").value = arac ? arac.currentKm : 0;
         el("vehicle-fuel").value = arac ? arac.fuelType : "Benzin";
         el("vehicle-vites").value = (arac && arac.vites) || "";
@@ -4927,6 +5065,11 @@
             loadFuelStats();
             loadMaliyet();
             loadFiloMaliyet();
+        });
+
+        el("price-marka").addEventListener("change", function () {
+            seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), "")
+                .catch(function (error) { handleError(el("app-message"), error); });
         });
 
         el("price-form").addEventListener("submit", function (event) {
