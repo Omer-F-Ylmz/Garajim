@@ -403,6 +403,26 @@
         return role === "Owner" || role === "Manager";
     }
 
+    function ustaDurumunuUygula() {
+        return api("/api/Receipts/stats").then(function (result) {
+            var acik = !result || !result.data || result.data.ustaAcik !== false;
+            var sekme = document.querySelector('.tab-btn[data-tab="usta"]');
+
+            if (sekme) {
+                sekme.classList.toggle("hidden", !acik);
+
+                if (!acik && sekme.classList.contains("active")) {
+                    selectTab("bakim");
+                }
+            }
+
+            if (!acik) {
+                el("usta-onay-kutusu").classList.add("hidden");
+                el("usta-govde").classList.add("hidden");
+            }
+        }).catch(function () { });
+    }
+
     function applyRole() {
         el("add-vehicle-btn").classList.toggle("hidden", !canManage());
         el("edit-vehicle-btn").classList.toggle("hidden", !canManage());
@@ -481,6 +501,7 @@
                 state.selectedVehicleId = state.vehicles[0].id;
             }
             select.value = String(state.selectedVehicleId);
+            ustaDurumunuUygula();
             kmSeridiniGuncelle();
             katalogUyarisiniGuncelle();
             tescilUyarisiniGuncelle();

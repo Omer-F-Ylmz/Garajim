@@ -2,6 +2,7 @@ namespace Garajim.Entity.Dtos
 {
     public class ReceiptStatsDto
     {
+        public bool UstaAcik { get; set; }
         public int ToplamCagri { get; set; }
         public int Onaylanan { get; set; }
         public int Reddedilen { get; set; }

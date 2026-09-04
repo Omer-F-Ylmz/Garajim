@@ -133,7 +133,7 @@ namespace Garajim.Tests.Integration
         {
             return new UstaOzetJob(
                 _db.CompanyDal, _db.UstaMesajDal, _db.UstaSohbetDal, _db.VehicleDal,
-                _db.PartDal, ozetDal, _db.UserDal, _db.UnitOfWork, _db.Tenant);
+                _db.PartDal, ozetDal, _db.UserDal, _db.UnitOfWork, _db.Tenant, _db.Yapilandirma);
         }
 
         [Fact]

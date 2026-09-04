@@ -90,6 +90,8 @@ namespace Garajim.Tests.Integration
 
         public IDocumentService DocumentService { get; }
 
+        public IConfiguration Yapilandirma { get; } = new ConfigurationBuilder().Build();
+
         public EfFuelDal FuelDal { get; }
 
         public EfExpenseDal ExpenseDal { get; }

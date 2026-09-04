@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Garajim.Business.Seed;
 using Garajim.Core.Multitenancy;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace Garajim.Business.Jobs
         private readonly IUserDal _userDal;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TenantContext _tenantContext;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<UstaOzetJob> _logger;
 
         public UstaOzetJob(
@@ -31,6 +33,7 @@ namespace Garajim.Business.Jobs
             IUserDal userDal,
             IUnitOfWork unitOfWork,
             TenantContext tenantContext,
+            IConfiguration configuration,
             ILogger<UstaOzetJob> logger = null)
         {
             _logger = logger ?? NullLogger<UstaOzetJob>.Instance;
@@ -43,10 +46,16 @@ namespace Garajim.Business.Jobs
             _userDal = userDal;
             _unitOfWork = unitOfWork;
             _tenantContext = tenantContext;
+            _configuration = configuration;
         }
 
         public async Task RunAsync()
         {
+            if (!_configuration.GetValue("Usta:Enabled", true))
+            {
+                return;
+            }
+
             var companies = await _companyDal.GetListAsync();
 
             try

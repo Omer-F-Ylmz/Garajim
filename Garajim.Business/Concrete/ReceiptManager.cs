@@ -559,6 +559,7 @@ namespace Garajim.Business.Concrete
 
             var istatistik = new ReceiptStatsDto
             {
+                UstaAcik = _configuration.GetValue("Usta:Enabled", true),
                 AiTokenTavani = butce.Tavan,
                 AiTokenKullanilan = butce.Kullanilan,
                 AiTokenKalan = butce.Kalan,

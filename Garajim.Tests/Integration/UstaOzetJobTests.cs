@@ -19,7 +19,7 @@ namespace Garajim.Tests.Integration
                 _db.UstaCozumOzetiDal,
                 _db.UserDal,
                 _db.UnitOfWork,
-                _db.Tenant);
+                _db.Tenant, _db.Yapilandirma);
         }
 
         private (Vehicle Arac, int MesajId) SenaryoKur(string eposta, string plaka, string marka, string model, UstaGeriBildirim geri, string kategori, bool bakimBagla = true)

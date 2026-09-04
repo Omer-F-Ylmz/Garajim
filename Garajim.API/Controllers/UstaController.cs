@@ -9,6 +9,7 @@ namespace Garajim.API.Controllers
 {
     [EnableRateLimiting(PahaliUclar.RateLimitPolicy)]
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(Garajim.API.Startup.UstaKapisi))]
     public class UstaController : SecureControllerBase
     {
         public const string OnayGerekliKodu = "ONAY_GEREKLI";

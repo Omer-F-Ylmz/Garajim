@@ -57,6 +57,7 @@ builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();
 builder.Services.AddScoped<FisTemizlemeJob>();
 builder.Services.AddScoped<KatalogEslemeJob>();
+builder.Services.AddScoped<Garajim.API.Startup.UstaKapisi>();
 builder.Services.AddScoped<DemoSifirlamaJob>();
 builder.Services.AddScoped<IExpenseDal, EfExpenseDal>();
 builder.Services.AddScoped<IReminderDal, EfReminderDal>();
