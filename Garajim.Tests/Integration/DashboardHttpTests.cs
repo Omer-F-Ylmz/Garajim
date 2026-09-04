@@ -166,5 +166,24 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(1, veri.GetProperty("aracSayisi").GetInt32());
         }
+        [Fact]
+        public async Task ArsivliAracPanelSayisinaGirmez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var birinci = await AracEkleAsync(sahip, TestPlaka.Uret());
+            await AracEkleAsync(sahip, TestPlaka.Uret());
+
+            var oncesi = await PaneAsync(sahip);
+            Assert.Equal(2, oncesi.GetProperty("aracSayisi").GetInt32());
+
+            var arsiv = await sahip.PostAsJsonAsync($"/api/Vehicles/{birinci}/arsiv", new { neden = "Satildi" });
+            Assert.True(arsiv.IsSuccessStatusCode, await arsiv.Content.ReadAsStringAsync());
+
+            var sonrasi = await PaneAsync(sahip);
+
+            Assert.Equal(1, sonrasi.GetProperty("aracSayisi").GetInt32());
+            Assert.True(sonrasi.GetProperty("aracSayisi").GetInt32() <= sonrasi.GetProperty("aracLimiti").GetInt32());
+        }
+
     }
 }

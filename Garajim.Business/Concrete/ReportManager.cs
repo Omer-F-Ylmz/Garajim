@@ -269,7 +269,7 @@ namespace Garajim.Business.Concrete
             var panel = new DashboardDto
             {
                 Plan = sirket.PlanType.ToString(),
-                AracSayisi = araclar.Count,
+                AracSayisi = araclar.Count(a => !a.Arsivli),
                 AracLimiti = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, await _companyDal.DavetSayisiAsync(sirket.Id))
             };
 
