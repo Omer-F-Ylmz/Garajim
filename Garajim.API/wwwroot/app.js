@@ -4461,10 +4461,35 @@
         };
     }
 
+    function baglantiKopyala(metin) {
+        if (!metin) {
+            return;
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(metin).then(function () {
+                showMessage(el("app-message"), "Bağlantı kopyalandı.", true);
+            });
+        }
+    }
+
     function karneSonucGoster(veri) {
         el("karne-sonuc").classList.remove("hidden");
         el("karne-url").textContent = veri.url;
         el("karne-goruntulenme").textContent = "Görüntülenme: " + (veri.goruntulenmeSayisi || 0);
+
+        var acilKutu = el("karne-acil-sonuc");
+        acilKutu.classList.toggle("hidden", !veri.acilUrl);
+
+        if (veri.acilUrl) {
+            el("karne-acil-url").textContent = veri.acilUrl;
+
+            try {
+                window.GarajimQR.canvasaCiz(el("karne-acil-qr"), veri.acilUrl, 4, 2);
+            } catch (hata) {
+                el("karne-acil-qr").classList.add("hidden");
+            }
+        }
 
         try {
             window.GarajimQR.canvasaCiz(el("karne-qr"), veri.url, 4, 2);
@@ -4529,16 +4554,11 @@
         });
 
         el("karne-kopyala").addEventListener("click", function () {
-            var metin = el("karne-url").textContent;
-            if (!metin) {
-                return;
-            }
+            baglantiKopyala(el("karne-url").textContent);
+        });
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(metin).then(function () {
-                    showMessage(el("app-message"), "Bağlantı kopyalandı.", true);
-                });
-            }
+        el("karne-acil-kopyala").addEventListener("click", function () {
+            baglantiKopyala(el("karne-acil-url").textContent);
         });
     }
 

@@ -22,6 +22,7 @@ namespace Garajim.Entity.Dtos
     public class KarneLinkDto
     {
         public string Url { get; set; }
+        public string AcilUrl { get; set; }
         public DateTime? SonKullanma { get; set; }
         public int GoruntulenmeSayisi { get; set; }
     }

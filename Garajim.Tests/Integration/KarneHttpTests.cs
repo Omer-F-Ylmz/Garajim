@@ -156,6 +156,37 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task AcilKartAcikkenPaylasimYanitiAcilBaglantisiVerir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN903");
+
+            var kapsam = new
+            {
+                bakimGecmisi = true, parcaHafizasi = false, yakitOzeti = false,
+                belgeler = false, plakaGoster = true, tutarGoster = false, acilKart = true
+            };
+
+            var veri = await VeriAsync(await KarneOlusturAsync(sahip, aracId, kapsam));
+            var acilUrl = veri.GetProperty("acilUrl").GetString();
+
+            Assert.False(string.IsNullOrWhiteSpace(acilUrl));
+            Assert.Contains("acil.html?t=", acilUrl);
+            Assert.Equal(TokenAl(veri.GetProperty("url").GetString()), TokenAl(acilUrl));
+        }
+
+        [Fact]
+        public async Task AcilKartKapaliykenPaylasimYanitiBaglantiVermez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN904");
+
+            var veri = await VeriAsync(await KarneOlusturAsync(sahip, aracId, TamKapsam));
+
+            Assert.Equal(JsonValueKind.Null, veri.GetProperty("acilUrl").ValueKind);
+        }
+
+        [Fact]
         public async Task HasarFotografiKarneBelgelerindeListelenmez()
         {
             var sahip = await SahipOlusturAsync();

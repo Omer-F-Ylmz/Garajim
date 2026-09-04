@@ -104,6 +104,7 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<KarneLinkDto>(new KarneLinkDto
             {
                 Url = $"{taban}/karne.html?t={hamToken}",
+                AcilUrl = paylasim.AcilKart ? $"{taban}/acil.html?t={hamToken}" : null,
                 SonKullanma = paylasim.SonKullanma,
                 GoruntulenmeSayisi = 0
             }, Messages.KarneCreated);

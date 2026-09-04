@@ -58,6 +58,19 @@
         el("icerik").classList.add("hidden");
     }
 
+    function acilKartiDenetle(token) {
+        fetch("/api/karne/" + encodeURIComponent(token) + "/acil")
+            .then(function (cevap) {
+                if (!cevap.ok) {
+                    return;
+                }
+
+                el("acil-baglanti").href = "acil.html?t=" + encodeURIComponent(token);
+                el("acil-bolumu").classList.remove("hidden");
+            })
+            .catch(function () { });
+    }
+
     function ciz(karne, token) {
         var arac = karne.arac;
 
@@ -150,6 +163,8 @@
                 belgeListesi.appendChild(li);
             });
         }
+
+        acilKartiDenetle(token);
 
         el("durum").classList.add("hidden");
         el("icerik").classList.remove("hidden");
