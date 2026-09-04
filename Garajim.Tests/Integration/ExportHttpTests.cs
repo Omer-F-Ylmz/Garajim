@@ -74,7 +74,7 @@ namespace Garajim.Tests.Integration
             var metin = Encoding.UTF8.GetString(bayt, 3, bayt.Length - 3);
             var satirlar = metin.Replace("\r\n", "\n").TrimEnd('\n').Split('\n');
 
-            Assert.Equal("Plaka;Tarih;Kilometre;Litre;BirimFiyat;Tutar;Kwh;SarjTuru", satirlar[0]);
+            Assert.Equal("Plaka;Tarih;Kilometre;Litre;BirimFiyat;Tutar;Kwh;SarjTuru;TamDolum", satirlar[0]);
             Assert.Equal(2, satirlar.Length);
             Assert.Contains("01.03.2026", satirlar[1]);
             Assert.Contains("40,50", satirlar[1]);
