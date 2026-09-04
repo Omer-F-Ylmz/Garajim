@@ -37,7 +37,7 @@ namespace Garajim.Tests.Integration
             var aracB = _db.AracEkleSirketle(kullaniciB.Id, "06BBB222", sirketB.Id);
 
             _db.Tenant.SetCompany(sirketA.Id);
-            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork).AddAsync(kullaniciA.Id, new MaintenanceCreateDto
+            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.DocumentDal, _db.DocumentService, _db.UnitOfWork).AddAsync(kullaniciA.Id, new MaintenanceCreateDto
             {
                 VehicleId = aracA.Id,
                 Type = MaintenanceType.PeriyodikBakim,

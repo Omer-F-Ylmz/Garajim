@@ -14,6 +14,8 @@ namespace Garajim.Business.Concrete
         private readonly IVehicleDal _vehicleDal;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IMaintenancePartDal _partDal;
+        private readonly IDocumentDal _documentDal;
+        private readonly IDocumentService _documentService;
         private readonly IUnitOfWork _unitOfWork;
 
         public MaintenanceManager(
@@ -21,12 +23,16 @@ namespace Garajim.Business.Concrete
             IVehicleDal vehicleDal,
             IVehicleAccessService vehicleAccess,
             IMaintenancePartDal partDal,
+            IDocumentDal documentDal,
+            IDocumentService documentService,
             IUnitOfWork unitOfWork)
         {
             _maintenanceDal = maintenanceDal;
             _vehicleDal = vehicleDal;
             _vehicleAccess = vehicleAccess;
             _partDal = partDal;
+            _documentDal = documentDal;
+            _documentService = documentService;
             _unitOfWork = unitOfWork;
         }
 
@@ -143,7 +149,25 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.RecordNotFound);
-            await _maintenanceDal.DeleteAsync(record);
+            var belgeler = (await _documentDal.GetListAsync(d => d.MaintenanceRecordId == record.Id)).ToList();
+            var silinecekDosyalar = belgeler.Select(b => b.StoredName).ToList();
+
+            await using (var islem = await _unitOfWork.BeginTransactionAsync())
+            {
+                foreach (var belge in belgeler)
+                {
+                    await _documentDal.DeleteAsync(belge);
+                }
+
+                await _maintenanceDal.DeleteAsync(record);
+                await _unitOfWork.CommitAsync();
+            }
+
+            foreach (var saklananAd in silinecekDosyalar)
+            {
+                _documentService.DosyaSil(saklananAd);
+            }
+
             return new SuccessResult(Messages.RecordDeleted);
         }
 

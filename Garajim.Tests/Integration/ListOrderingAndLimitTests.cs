@@ -39,7 +39,7 @@ namespace Garajim.Tests.Integration
         public async Task BakimListesiEnYeniKayittanBaslar()
         {
             BakimEkle(10);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.DocumentDal, _db.DocumentService, _db.UnitOfWork);
 
             var result = await manager.GetListAsync(_userId, _arac.Id);
 
@@ -53,7 +53,7 @@ namespace Garajim.Tests.Integration
         public async Task BakimListesiUstSinirdaKesilir()
         {
             BakimEkle(QueryLimits.MaxListSize + 25);
-            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork);
+            var manager = new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.DocumentDal, _db.DocumentService, _db.UnitOfWork);
 
             var result = await manager.GetListAsync(_userId, _arac.Id);
 
@@ -103,7 +103,7 @@ namespace Garajim.Tests.Integration
             BakimEkle(5);
             _db.Context.ChangeTracker.Clear();
 
-            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.UnitOfWork).GetListAsync(_userId, _arac.Id);
+            await new MaintenanceManager(_db.MaintenanceDal, _db.VehicleDal, _db.VehicleAccess, _db.PartDal, _db.DocumentDal, _db.DocumentService, _db.UnitOfWork).GetListAsync(_userId, _arac.Id);
 
             Assert.Empty(_db.Context.ChangeTracker.Entries<MaintenanceRecord>());
         }

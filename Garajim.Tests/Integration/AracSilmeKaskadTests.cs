@@ -116,6 +116,57 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task BakimSilinincaBelgeSatiriVeDosyasiGider()
+        {
+            var client = _factory.CreateClient();
+            var kayit = await client.PostAsJsonAsync("/api/Auth/register",
+                new { email = Eposta("bakimsil"), fullName = "Bakım Sahibi", password = "Test1234!" });
+            var token = await TestKayit.TokenAl(client, kayit);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var arac = await client.PostAsJsonAsync("/api/Vehicles", new
+            {
+                plate = TestPlaka.Uret(), brand = "Fiat", model = "Egea", year = 2020,
+                currentKm = 40000, fuelType = "Dizel", vites = "Manuel", kasaTipi = "Sedan"
+            });
+            var aracId = JsonDocument.Parse(await arac.Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").GetProperty("id").GetInt32();
+
+            var bakim = await client.PostAsJsonAsync("/api/Maintenance", new
+            {
+                vehicleId = aracId, type = "PeriyodikBakim",
+                date = DateTime.UtcNow.Date.ToString("yyyy-MM-dd"),
+                km = 40100, cost = 3000m, serviceName = "Yetkili Servis", note = ""
+            });
+            var bakimId = JsonDocument.Parse(await bakim.Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").GetProperty("id").GetInt32();
+
+            var icerik = new byte[256];
+            Array.Copy(PngBaslik, icerik, PngBaslik.Length);
+
+            using (var form = new MultipartFormDataContent())
+            {
+                var dosya = new ByteArrayContent(icerik);
+                dosya.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                form.Add(dosya, "file", "fis.png");
+                form.Add(new StringContent(aracId.ToString()), "vehicleId");
+                form.Add(new StringContent(bakimId.ToString()), "maintenanceRecordId");
+
+                var yukle = await client.PostAsync("/api/Documents", form);
+                Assert.True(yukle.IsSuccessStatusCode, await yukle.Content.ReadAsStringAsync());
+            }
+
+            Assert.Equal(1, Sayimlar().Belge);
+            Assert.Single(Directory.GetFiles(_klasor));
+
+            var sil = await client.DeleteAsync($"/api/Maintenance/{bakimId}");
+            Assert.True(sil.IsSuccessStatusCode, await sil.Content.ReadAsStringAsync());
+
+            Assert.Equal(0, Sayimlar().Belge);
+            Assert.Empty(Directory.GetFiles(_klasor));
+        }
+
+        [Fact]
         public async Task YabanciAracSilinemez()
         {
             var birinci = _factory.CreateClient();

@@ -1,3 +1,5 @@
+using Garajim.Business.Abstract;
+using Moq;
 using Garajim.Core.Multitenancy;
 using Garajim.Business.Concrete;
 using Garajim.Business.Seed;
@@ -41,6 +43,7 @@ namespace Garajim.Tests.Integration
             VehicleDal = new EfVehicleDal(Context);
             MaintenanceDal = new EfMaintenanceDal(Context);
             DocumentDal = new EfDocumentDal(Context);
+            DocumentService = new Mock<IDocumentService>().Object;
             FuelDal = new EfFuelDal(Context);
             ExpenseDal = new EfExpenseDal(Context);
             ReminderDal = new EfReminderDal(Context);
@@ -84,6 +87,8 @@ namespace Garajim.Tests.Integration
         public EfMaintenanceDal MaintenanceDal { get; }
 
         public EfDocumentDal DocumentDal { get; }
+
+        public IDocumentService DocumentService { get; }
 
         public EfFuelDal FuelDal { get; }
 
