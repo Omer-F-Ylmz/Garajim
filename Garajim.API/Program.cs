@@ -51,7 +51,9 @@ builder.Services.AddScoped<IMaintenanceDal, EfMaintenanceDal>();
 builder.Services.AddScoped<IFuelDal, EfFuelDal>();
 builder.Services.AddScoped<IKmDuzeltmeLogDal, EfKmDuzeltmeLogDal>();
 builder.Services.AddSingleton<ISaat, Saat>();
-builder.Services.AddSingleton(sp => AracKatalogu.Yukle(Path.Combine(AppContext.BaseDirectory, AracKatalogu.KlasorAdi)));
+builder.Services.AddSingleton(sp => new Lazy<AracKatalogu>(
+    () => AracKatalogu.Yukle(Path.Combine(AppContext.BaseDirectory, AracKatalogu.KlasorAdi))));
+builder.Services.AddTransient(sp => sp.GetRequiredService<Lazy<AracKatalogu>>().Value);
 builder.Services.AddScoped<IHesapService, HesapManager>();
 builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
@@ -375,6 +377,8 @@ if (builder.Configuration.GetValue("ApplyMigrationsAtStartup", false))
         }
     }
 }
+
+app.Logger.LogInformation("Başlangıç {Bellek}", Garajim.API.Startup.BellekDurumu.TekSatir());
 
 if (builder.Configuration.GetValue("Katalog:BaslangictaEsle", true))
 {
