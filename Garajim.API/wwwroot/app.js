@@ -31,6 +31,12 @@
         tuketimChart: null
     };
 
+    var KURULUM_ADIMLARI = [
+        ["aracVar", "Aracını ekle", "Araç ekle"],
+        ["ilkKayitVar", "İlk kaydını gir", "Yakıt ekle"],
+        ["evrakVar", "Evrakını tanımla", "Evrak ekle"]
+    ];
+
     var TEAM_ROLES = [
         ["Manager", "Yönetici"],
         ["Driver", "Sürücü"],
@@ -496,6 +502,7 @@
 
     function loadVehicles() {
         loadPanelUyarisi();
+        kurulumDurumunuYukle();
         return api("/api/Vehicles").then(function (result) {
             state.vehicles = (result && result.data) || [];
             var select = el("vehicle-select");
@@ -549,6 +556,83 @@
             el("empty-title").textContent = "Size zimmetli araç yok";
             el("empty-text").textContent = "Bir araç zimmetlendiğinde kayıtları burada görürsünüz. Zimmet için şirket yöneticinize başvurun.";
         }
+    }
+
+    function kurulumAdimiAc(anahtar) {
+        if (anahtar === "aracVar") {
+            aracFormunuAc(null);
+            return;
+        }
+
+        if (!state.selectedVehicleId) {
+            showMessage(el("app-message"), "Önce bir araç ekleyin.");
+            return;
+        }
+
+        selectTab(anahtar === "evrakVar" ? "evrak" : "yakit");
+    }
+
+    function kurulumDurumunuYukle() {
+        var cubuk = el("kurulum-cubugu");
+        if (!cubuk) {
+            return Promise.resolve();
+        }
+
+        if (!canManage()) {
+            cubuk.classList.add("hidden");
+            return Promise.resolve();
+        }
+
+        return api("/api/Kurulum").then(function (sonuc) {
+            kurulumCubuguCiz((sonuc && sonuc.data) || null);
+        }).catch(function () {
+            cubuk.classList.add("hidden");
+        });
+    }
+
+    function kurulumCubuguCiz(durum) {
+        var cubuk = el("kurulum-cubugu");
+        var liste = el("kurulum-adimlar");
+
+        if (!durum || durum.gizlendi) {
+            cubuk.classList.add("hidden");
+            return;
+        }
+
+        var tamam = durum.yuzde >= 100;
+
+        el("kurulum-baslik").textContent = tamam
+            ? "Kurulum tamam"
+            : "Kurulumu tamamla — %" + durum.yuzde;
+        el("kurulum-gizle").textContent = tamam ? "Kapat" : "Gizle";
+        el("kurulum-dolgu").style.width = durum.yuzde + "%";
+
+        clear(liste);
+
+        KURULUM_ADIMLARI.forEach(function (adim, sira) {
+            var bitti = durum[adim[0]] === true;
+            var li = document.createElement("li");
+            li.className = bitti ? "kurulum-adim bitti" : "kurulum-adim";
+
+            li.appendChild(make("span", bitti ? "✓" : String(sira + 1), "kurulum-no"));
+            li.appendChild(make("span", adim[1], "kurulum-metin"));
+
+            if (!bitti) {
+                var dugme = make("button", adim[2], "ghost compact");
+                dugme.type = "button";
+                dugme.addEventListener("click", function () { kurulumAdimiAc(adim[0]); });
+                li.appendChild(dugme);
+            }
+
+            liste.appendChild(li);
+        });
+
+        cubuk.classList.remove("hidden");
+    }
+
+    function kurulumuGizle() {
+        el("kurulum-cubugu").classList.add("hidden");
+        api("/api/Kurulum/gizle", { method: "POST" }).catch(function () { });
     }
 
     function activeTab() {
@@ -4293,6 +4377,7 @@
                 showMessage(el("app-message"), (result && result.message) || "Evrak eklendi.", true);
                 evrakFormunuSifirla();
                 loadEvrak();
+                kurulumDurumunuYukle();
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
             });
@@ -5408,6 +5493,7 @@
         bindLastik();
         bindKaza();
         bindTanitim();
+        el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();
         bindSifirlama();
         bindSifreDegistir();

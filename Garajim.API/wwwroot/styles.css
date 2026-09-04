@@ -1257,3 +1257,83 @@ button.compact {
     border-bottom: 1px solid var(--line);
     font-size: 13px;
 }
+
+.kurulum-cubugu {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+}
+
+.kurulum-ust {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.kurulum-baslik {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.kurulum-bar {
+    margin-top: 8px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--line);
+    overflow: hidden;
+}
+
+.kurulum-dolgu {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.25s ease;
+}
+
+.kurulum-adimlar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kurulum-adim {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.kurulum-adim.bitti .kurulum-metin {
+    color: var(--ok);
+}
+
+.kurulum-no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--text);
+    font-size: 12px;
+}
+
+.kurulum-adim.bitti .kurulum-no {
+    background: var(--ok);
+    color: var(--bg);
+}
+
+@media (max-width: 640px) {
+    .kurulum-adimlar {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

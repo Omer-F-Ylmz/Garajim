@@ -55,6 +55,7 @@ builder.Services.AddSingleton(sp => new Lazy<AracKatalogu>(
     () => AracKatalogu.Yukle(Path.Combine(AppContext.BaseDirectory, AracKatalogu.KlasorAdi))));
 builder.Services.AddTransient(sp => sp.GetRequiredService<Lazy<AracKatalogu>>().Value);
 builder.Services.AddScoped<IHesapService, HesapManager>();
+builder.Services.AddScoped<IKurulumService, KurulumManager>();
 builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();

@@ -180,6 +180,8 @@ namespace Garajim.Business.Constants
 
         public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin veya bir aracı silin.";
 
+        public const string KurulumGizlendi = "Kurulum çubuğu gizlendi.";
+
         public const string ImportTamamlandi = "İçe aktarma tamamlandı.";
     }
 }
