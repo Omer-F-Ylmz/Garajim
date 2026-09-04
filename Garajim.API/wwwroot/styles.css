@@ -1596,3 +1596,31 @@ button.compact {
     text-transform: uppercase;
     vertical-align: middle;
 }
+
+.geri-bildirim-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 40;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel-2);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.geri-bildirim-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+@media (max-width: 640px) {
+    .geri-bildirim-btn {
+        right: 10px;
+        bottom: 10px;
+        padding: 8px 12px;
+    }
+}

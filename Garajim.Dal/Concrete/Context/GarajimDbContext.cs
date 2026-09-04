@@ -36,6 +36,7 @@ namespace Garajim.Dal.Concrete.Context
         public DbSet<UstaSohbet> UstaSohbetleri { get; set; }
         public DbSet<UstaMesaj> UstaMesajlari { get; set; }
         public DbSet<UstaOnay> UstaOnaylari { get; set; }
+        public DbSet<GeriBildirim> GeriBildirimler { get; set; }
         public DbSet<UstaCozumOzeti> UstaCozumOzetleri { get; set; }
         public DbSet<AiTokenSayaci> AiTokenSayaclari { get; set; }
         public DbSet<HasarDosyasi> HasarDosyalari { get; set; }
@@ -220,6 +221,17 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasOne<AppUser>().WithMany().HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<GeriBildirim>(entity =>
+            {
+                entity.Property(g => g.Mesaj).HasMaxLength(1000).IsRequired();
+                entity.Property(g => g.Sayfa).HasMaxLength(60);
+                entity.Property(g => g.Surum).HasMaxLength(60);
+                entity.HasIndex(g => g.CompanyId);
+                entity.HasIndex(g => new { g.UserId, g.Tarih });
+                entity.HasOne<Company>().WithMany().HasForeignKey(g => g.CompanyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<AppUser>().WithMany().HasForeignKey(g => g.UserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<UstaCozumOzeti>(entity =>
             {
                 entity.Property(o => o.Marka).HasMaxLength(60).IsRequired();
@@ -364,6 +376,7 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<UstaSohbet>().HasQueryFilter(s => s.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<UstaMesaj>().HasQueryFilter(m => m.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<UstaOnay>().HasQueryFilter(o => o.CompanyId == CurrentCompanyId);
+            modelBuilder.Entity<GeriBildirim>().HasQueryFilter(g => g.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<HasarDosyasi>().HasQueryFilter(h => h.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<HasarFoto>().HasQueryFilter(f => f.CompanyId == CurrentCompanyId);
             modelBuilder.Entity<AracDeger>().HasQueryFilter(d => d.CompanyId == CurrentCompanyId);

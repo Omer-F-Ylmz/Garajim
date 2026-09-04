@@ -57,6 +57,7 @@ builder.Services.AddTransient(sp => sp.GetRequiredService<Lazy<AracKatalogu>>().
 builder.Services.AddScoped<IHesapService, HesapManager>();
 builder.Services.AddScoped<IKurulumService, KurulumManager>();
 builder.Services.AddScoped<IOrnekAracService, OrnekAracManager>();
+builder.Services.AddScoped<IGeriBildirimService, GeriBildirimManager>();
 builder.Services.AddSingleton(sp => YardimSss.Yukle(Path.Combine(AppContext.BaseDirectory, YardimSss.KlasorAdi)));
 builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
@@ -81,6 +82,7 @@ builder.Services.AddScoped<IYolculukDal, EfYolculukDal>();
 builder.Services.AddScoped<IUstaSohbetDal, EfUstaSohbetDal>();
 builder.Services.AddScoped<IUstaMesajDal, EfUstaMesajDal>();
 builder.Services.AddScoped<IUstaOnayDal, EfUstaOnayDal>();
+builder.Services.AddScoped<IGeriBildirimDal, EfGeriBildirimDal>();
 builder.Services.AddScoped<IUstaCozumOzetiDal, EfUstaCozumOzetiDal>();
 builder.Services.AddScoped<ILastikDal, EfLastikDal>();
 builder.Services.AddScoped<IHasarDosyasiDal, EfHasarDosyasiDal>();

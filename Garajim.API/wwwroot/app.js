@@ -589,6 +589,69 @@
         }
     }
 
+    var GERI_BILDIRIM_TURLERI = [
+        ["Hata", "Hata bildir"],
+        ["Oneri", "Öneri"],
+        ["Diger", "Diğer"]
+    ];
+
+    function geriBildirimSayfasi() {
+        if (el("app-screen").classList.contains("hidden")) {
+            return "giris";
+        }
+
+        var acikKutu = ["receipt-box", "ayarlar-box", "karne-box", "team-box", "arsiv-box"].filter(function (id) {
+            var n = el(id);
+            return n && !n.classList.contains("hidden");
+        })[0];
+
+        return acikKutu ? acikKutu.replace("-box", "") : activeTab();
+    }
+
+    function geriBildirimGonder(event) {
+        event.preventDefault();
+
+        var acKilit = formuKilitle(event.target);
+        var kutu = el("geri-bildirim-mesaji");
+
+        api("/api/GeriBildirim", {
+            method: "POST",
+            body: {
+                tur: el("geri-bildirim-tur").value,
+                mesaj: el("geri-bildirim-mesaj").value,
+                sayfa: geriBildirimSayfasi(),
+                surum: document.documentElement.dataset.surum || ""
+            }
+        }).then(function (sonuc) {
+            showMessage(kutu, (sonuc && sonuc.message) || "Geri bildirimin alındı.", true);
+            el("geri-bildirim-mesaj").value = "";
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
+            handleError(kutu, hata);
+        });
+    }
+
+    function bindGeriBildirim() {
+        fillSelect(el("geri-bildirim-tur"), GERI_BILDIRIM_TURLERI);
+
+        el("geri-bildirim-btn").addEventListener("click", function () {
+            var kutu = el("geri-bildirim-box");
+            var acilacak = kutu.classList.contains("hidden");
+
+            kutu.classList.toggle("hidden", !acilacak);
+
+            if (acilacak) {
+                showMessage(el("geri-bildirim-mesaji"), "");
+                el("geri-bildirim-mesaj").focus();
+            }
+        });
+
+        el("geri-bildirim-kapat").addEventListener("click", function () {
+            el("geri-bildirim-box").classList.add("hidden");
+        });
+
+        el("geri-bildirim-form").addEventListener("submit", geriBildirimGonder);
+    }
+
     function ornekAracOlustur() {
         clearMessages();
 
@@ -5813,6 +5876,7 @@
         bindKaza();
         bindTanitim();
         turBagla();
+        bindGeriBildirim();
         ornekDugmeleriniBagla();
         el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();

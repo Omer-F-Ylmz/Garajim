@@ -391,6 +391,28 @@
             <ul id="receipt-pending" class="upcoming"></ul>
         </section>
 
+        <button id="geri-bildirim-btn" class="geri-bildirim-btn" type="button">Geri bildirim</button>
+
+        <section id="geri-bildirim-box" class="panel hidden">
+            <h2>Geri bildirim</h2>
+            <p class="hint">Hangi sayfada olduğun ve sürüm bilgisi otomatik eklenir. Günde en fazla 5 mesaj gönderebilirsin.</p>
+            <form id="geri-bildirim-form" class="grid-form">
+                <div>
+                    <label for="geri-bildirim-tur">Tür</label>
+                    <select id="geri-bildirim-tur"></select>
+                </div>
+                <div class="parts-cell">
+                    <label for="geri-bildirim-mesaj">Mesaj</label>
+                    <textarea id="geri-bildirim-mesaj" maxlength="1000" rows="4" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Gönder</button>
+                    <button id="geri-bildirim-kapat" type="button" class="ghost">Kapat</button>
+                </div>
+            </form>
+            <p id="geri-bildirim-mesaji" class="message" role="alert"></p>
+        </section>
+
         <section id="ayarlar-box" class="panel hidden">
             <h2>Ayarlar</h2>
             <h3>Şifre değiştir</h3>
