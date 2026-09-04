@@ -195,8 +195,9 @@ namespace Garajim.Business.Concrete
             var yakit = (await _fuelDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
             var bakim = (await _maintenanceDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
             var masraf = (await _expenseDal.GetTotalsByVehicleAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
-            var ozet = (await _fuelDal.GetYakitOzetiAsync(idler, bas, son)).ToDictionary(o => o.VehicleId);
-            var ilkDolum = (await _fuelDal.GetIlkDolumLitreleriAsync(idler, bas, son)).ToDictionary(t => t.VehicleId, t => t.Toplam);
+            var olcumler = (await _fuelDal.GetOlcumlerAsync(idler, bas, son))
+                .GroupBy(o => o.VehicleId)
+                .ToDictionary(g => g.Key, g => g.ToList());
 
             foreach (var arac in araclar)
             {
@@ -213,20 +214,24 @@ namespace Garajim.Business.Concrete
 
                 satir.ToplamMaliyet = satir.ToplamYakit + satir.ToplamBakim + satir.ToplamMasraf;
 
-                if (ozet.TryGetValue(arac.Id, out var yakitOzeti))
+                if (olcumler.TryGetValue(arac.Id, out var aracOlcumleri))
                 {
-                    satir.YakitKaydiSayisi = yakitOzeti.Adet;
+                    satir.YakitKaydiSayisi = aracOlcumleri.Count;
 
-                    if (yakitOzeti.Adet >= 2 && yakitOzeti.EnYuksekKm > yakitOzeti.EnDusukKm)
+                    var tuketim = TuketimHesabi.Olcumlerden(aracOlcumleri.Select(o => new YakitOlcumDto
                     {
-                        satir.MesafeKm = yakitOzeti.EnYuksekKm - yakitOzeti.EnDusukKm;
-                        satir.MaliyetKmBasi = Math.Round(satir.ToplamMaliyet / satir.MesafeKm, 2);
+                        Tarih = o.Tarih,
+                        Km = o.Km,
+                        Litre = o.Litre,
+                        Kwh = o.Kwh,
+                        TamDolum = o.TamDolum
+                    }));
 
-                        var tuketilenLitre = yakitOzeti.Litre - Deger(ilkDolum, arac.Id);
-                        if (tuketilenLitre > 0)
-                        {
-                            satir.Litre100Km = Math.Round(tuketilenLitre / satir.MesafeKm * 100, 2);
-                        }
+                    if (tuketim.OlculenKm > 0)
+                    {
+                        satir.MesafeKm = tuketim.OlculenKm;
+                        satir.MaliyetKmBasi = Math.Round(satir.ToplamMaliyet / satir.MesafeKm, 2);
+                        satir.Litre100Km = tuketim.Litre100Km;
                     }
                 }
 

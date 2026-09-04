@@ -69,6 +69,24 @@ namespace Garajim.Dal.Concrete
                 .ToListAsync();
         }
 
+        public async Task<List<AracYakitOlcumDto>> GetOlcumlerAsync(List<int> vehicleIds, DateTime start, DateTime end)
+        {
+            return await Context.FuelRecords
+                .AsNoTracking()
+                .Where(f => vehicleIds.Contains(f.VehicleId) && f.Km > 0 && !f.SupheliKm && f.Date >= start && f.Date <= end)
+                .OrderBy(f => f.VehicleId).ThenBy(f => f.Km).ThenBy(f => f.Id)
+                .Select(f => new AracYakitOlcumDto
+                {
+                    VehicleId = f.VehicleId,
+                    Tarih = f.Date,
+                    Km = f.Km,
+                    Litre = f.Liters,
+                    Kwh = f.Kwh ?? 0m,
+                    TamDolum = f.TamDolum
+                })
+                .ToListAsync();
+        }
+
         public async Task<List<AracToplamDto>> GetTotalsByVehicleAsync(List<int> vehicleIds, DateTime start, DateTime end)
         {
             return await Context.FuelRecords
@@ -76,36 +94,6 @@ namespace Garajim.Dal.Concrete
                 .Where(f => vehicleIds.Contains(f.VehicleId) && f.Date >= start && f.Date <= end)
                 .GroupBy(f => f.VehicleId)
                 .Select(g => new AracToplamDto { VehicleId = g.Key, Toplam = g.Sum(x => (decimal?)x.TotalCost) ?? 0 })
-                .ToListAsync();
-        }
-
-        public async Task<List<AracYakitOzetDto>> GetYakitOzetiAsync(List<int> vehicleIds, DateTime start, DateTime end)
-        {
-            return await Context.FuelRecords
-                .AsNoTracking()
-                .Where(f => vehicleIds.Contains(f.VehicleId) && f.Km > 0 && f.Date >= start && f.Date <= end)
-                .GroupBy(f => f.VehicleId)
-                .Select(g => new AracYakitOzetDto
-                {
-                    VehicleId = g.Key,
-                    Adet = g.Count(),
-                    Litre = g.Sum(x => (decimal?)x.Liters) ?? 0,
-                    Tutar = g.Sum(x => (decimal?)x.TotalCost) ?? 0,
-                    EnDusukKm = g.Min(x => x.Km),
-                    EnYuksekKm = g.Max(x => x.Km)
-                })
-                .ToListAsync();
-        }
-
-        public async Task<List<AracToplamDto>> GetIlkDolumLitreleriAsync(List<int> vehicleIds, DateTime start, DateTime end)
-        {
-            var kapsam = Context.FuelRecords
-                .AsNoTracking()
-                .Where(f => vehicleIds.Contains(f.VehicleId) && f.Km > 0 && f.Date >= start && f.Date <= end);
-
-            return await kapsam
-                .Where(f => !kapsam.Any(o => o.VehicleId == f.VehicleId && (o.Km < f.Km || (o.Km == f.Km && o.Id < f.Id))))
-                .Select(f => new AracToplamDto { VehicleId = f.VehicleId, Toplam = f.Liters })
                 .ToListAsync();
         }
 

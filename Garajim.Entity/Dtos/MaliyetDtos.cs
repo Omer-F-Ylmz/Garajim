@@ -71,14 +71,14 @@ namespace Garajim.Entity.Dtos
         public decimal Toplam { get; set; }
     }
 
-    public class AracYakitOzetDto
+    public class AracYakitOlcumDto
     {
         public int VehicleId { get; set; }
-        public int Adet { get; set; }
+        public DateTime Tarih { get; set; }
+        public int Km { get; set; }
         public decimal Litre { get; set; }
-        public decimal Tutar { get; set; }
-        public int EnDusukKm { get; set; }
-        public int EnYuksekKm { get; set; }
+        public decimal Kwh { get; set; }
+        public bool TamDolum { get; set; }
     }
 
     public class YakitOlcumDto
