@@ -1477,3 +1477,122 @@ button.compact {
     display: inline-flex;
     gap: 6px;
 }
+
+.tanitim-bolum {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+}
+
+.tanitim-bolum h2 {
+    margin: 0 0 14px;
+    font-size: 20px;
+}
+
+.tanitim-adimlar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0 0 0 18px;
+}
+
+.tanitim-adimlar h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+}
+
+.tanitim-adimlar p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.tanitim-ekran-liste {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.tanitim-ekran-liste figure {
+    margin: 0;
+}
+
+.tanitim-ekran-liste img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.tanitim-ekran-liste figcaption {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.tanitim-plan-liste {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.tanitim-plan {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel-2);
+}
+
+.tanitim-plan h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+}
+
+.tanitim-plan-fiyat {
+    margin: 0 0 10px;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.tanitim-plan ul {
+    margin: 0 0 14px;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+#tanitim-sss details {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+#tanitim-sss summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#tanitim-sss p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.tanitim-guven-liste {
+    margin: 0 0 12px;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.kart-etiket {
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    vertical-align: middle;
+}

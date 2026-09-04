@@ -47,6 +47,112 @@
             </p>
         </section>
 
+        <section id="tanitim-nasil" class="tanitim tanitim-bolum">
+            <h2>Nasıl çalışır</h2>
+            <ol class="tanitim-adimlar">
+                <li>
+                    <h3>Aracını ekle</h3>
+                    <p>Plaka, marka ve kilometreyi gir; iki dakikada hazır.</p>
+                </li>
+                <li>
+                    <h3>Fişi fotoğrafla</h3>
+                    <p>Servis ya da yakıt fişini çek; tarih, tutar ve litre otomatik dolsun, sen onayla.</p>
+                </li>
+                <li>
+                    <h3>Geçmişi yanında taşı</h3>
+                    <p>Evrak bitişleri hatırlatılır, sattığında karneyi tek bağlantıyla paylaşırsın.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section id="tanitim-ekranlar" class="tanitim tanitim-bolum">
+            <h2>Uygulamadan görüntüler</h2>
+            <div class="tanitim-ekran-liste">
+                <figure>
+                    <img src="img/ss-fis.png" width="1280" height="700" loading="lazy" alt="Fiş yükleme ekranı: tek fiş ve toplu yükleme formları, otomatik onay seçeneği.">
+                    <figcaption>Fiş yükle — tek tek ya da toplu.</figcaption>
+                </figure>
+                <figure>
+                    <img src="img/ss-bakim.png" width="1280" height="790" loading="lazy" alt="Bakım kayıtları tablosu: tarih, tür, kilometre, tutar ve servis sütunlarıyla iki bakım satırı.">
+                    <figcaption>Bakım geçmişi, parçalarıyla birlikte.</figcaption>
+                </figure>
+                <figure>
+                    <img src="img/ss-evrak.png" width="1280" height="790" loading="lazy" alt="Evrak takvimi: araç muayenesi kaydı, bitiş tarihi, kalan 20 gün ve Yaklaşıyor durumu.">
+                    <figcaption>Evrak takvimi ve kalan gün uyarısı.</figcaption>
+                </figure>
+                <figure>
+                    <img src="img/ss-rapor.png" width="1280" height="880" loading="lazy" alt="Raporlar ekranı: yakıt, bakım ve diğer masraf kartları, kategori kırılımı ve aylık toplam grafiği.">
+                    <figcaption>Aylık maliyet ve kategori kırılımı.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="tanitim-planlar" class="tanitim tanitim-bolum">
+            <h2>Paketler</h2>
+            <div class="tanitim-plan-liste">
+                <div class="tanitim-plan">
+                    <h3>Bireysel</h3>
+                    <p class="tanitim-plan-fiyat">Ücretsiz</p>
+                    <ul>
+                        <li>3 araç</li>
+                        <li>Fiş okuma, karne paylaşımı, evrak takvimi</li>
+                        <li>Davet ettiğin her şirket için ek araç hakkı</li>
+                    </ul>
+                    <button id="tanitim-plan-basla" class="primary" type="button">Ücretsiz başla</button>
+                </div>
+                <div class="tanitim-plan">
+                    <h3>Filo</h3>
+                    <p class="tanitim-plan-fiyat">İletişime geç</p>
+                    <ul>
+                        <li>Çok araç, sürücü zimmeti, ekip belgeleri</li>
+                        <li>Km başına maliyet karşılaştırması</li>
+                        <li>Yüksek fiş kotası ve toplu içe aktarma</li>
+                    </ul>
+                    <a id="tanitim-plan-iletisim" class="ghost-link" href="/">İletişime geç</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="tanitim-sss" class="tanitim tanitim-bolum">
+            <h2>Sık sorulanlar</h2>
+            <details>
+                <summary>Ücretsiz sürüm gerçekten ücretsiz mi?</summary>
+                <p>Evet. Bireysel planda üç araca kadar bütün özellikler açıktır; kart bilgisi istenmez.</p>
+            </details>
+            <details>
+                <summary>Fişten okuma ne kadar doğru?</summary>
+                <p>Tarih, tutar, litre ve tür alanları otomatik çıkarılır ve güven skoruyla gelir. Kaydetmeden önce hepsini görüp düzeltebilirsin.</p>
+            </details>
+            <details>
+                <summary>Verilerimi dışa aktarabilir miyim?</summary>
+                <p>Bütün kayıtlarını CSV olarak indirirsin. Veriler senindir, istediğin an alıp gidebilirsin.</p>
+            </details>
+            <details>
+                <summary>Aracımı satarsam geçmiş ne olur?</summary>
+                <p>Aracı arşivlersin; paylaştığın karne bağlantısı çalışmaya devam eder, alıcı bakım geçmişini görür.</p>
+            </details>
+            <details>
+                <summary>Telefona kurabilir miyim?</summary>
+                <p>Evet, uygulama telefona kurulabilir ve tam ekran açılır; kurulum için mağazaya gerek yok.</p>
+            </details>
+            <details>
+                <summary>AI Usta ne zaman açılacak?</summary>
+                <p>Yakında. Açıldığında aracının kendi kayıtlarını okuyup olasılık sıralayacak; teşhis koymayacak.</p>
+            </details>
+            <p><a href="/yardim.html">Bütün soruları yardım sayfasında gör</a></p>
+        </section>
+
+        <section id="tanitim-guven" class="tanitim tanitim-bolum">
+            <h2>Verilerin nerede duruyor?</h2>
+            <ul class="tanitim-guven-liste">
+                <li>Kayıtların kendi şirketine bağlıdır; başka bir şirket verini göremez.</li>
+                <li>KVKK gereği karşı sürücünün kimlik ve iletişim bilgisi veritabanına yazılmaz, yalnız yazdırdığın tutanakta boş satır olarak durur.</li>
+                <li>Hesabını silersen şirket, araçlar, kayıtlar ve belgeler yedi gün sonra kalıcı olarak silinir.</li>
+            </ul>
+            <p><a href="/sartlar.html">Kullanım Şartları ve Aydınlatma Metni</a></p>
+            <p>Sorun ya da öneri: <a id="tanitim-destek" href="/yardim.html">yardım sayfası</a></p>
+        </section>
+
         <div class="auth-card">
             <div class="brand">
                 <span class="brand-mark"></span>
@@ -99,11 +205,11 @@
                 <label for="dogrula-1">6 haneli kod</label>
                 <div id="dogrula-kutular" class="kod-kutular">
                     <input id="dogrula-1" class="kod-kutu" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" required>
-                    <input id="dogrula-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="dogrula-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="dogrula-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="dogrula-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="dogrula-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="dogrula-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 2. hanesi" required>
+                    <input id="dogrula-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 3. hanesi" required>
+                    <input id="dogrula-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 4. hanesi" required>
+                    <input id="dogrula-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 5. hanesi" required>
+                    <input id="dogrula-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 6. hanesi" required>
                 </div>
                 <small class="hint">Kod 10 dakika geçerlidir. E-posta gelmediyse <strong>spam / gereksiz</strong> klasörünü kontrol edin.</small>
                 <button type="submit" class="primary">Doğrula</button>
@@ -133,11 +239,11 @@
                 <label for="sifirlama-1">6 haneli kod</label>
                 <div id="sifirlama-kutular" class="kod-kutular">
                     <input id="sifirlama-1" class="kod-kutu" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" required>
-                    <input id="sifirlama-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="sifirlama-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="sifirlama-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="sifirlama-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
-                    <input id="sifirlama-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" required>
+                    <input id="sifirlama-2" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 2. hanesi" required>
+                    <input id="sifirlama-3" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 3. hanesi" required>
+                    <input id="sifirlama-4" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 4. hanesi" required>
+                    <input id="sifirlama-5" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 5. hanesi" required>
+                    <input id="sifirlama-6" class="kod-kutu" type="text" inputmode="numeric" maxlength="1" aria-label="Kodun 6. hanesi" required>
                 </div>
                 <label for="sifirlama-yeni">Yeni şifre</label>
                 <input id="sifirlama-yeni" type="password" autocomplete="new-password" required>

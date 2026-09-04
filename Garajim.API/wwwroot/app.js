@@ -3073,13 +3073,14 @@
     var DEMO_SIFRE = "Demo1234!";
 
     var TANITIM_KARTLARI = [
-        ["Fişi fotoğrafla", "Servis fişini çek, tarih, tutar ve işlem türü otomatik çıkarılsın; sen yalnız onayla."],
-        ["Araç karnesi ve QR", "Bakım geçmişini tek bağlantıyla paylaş. Alıcı QR'ı okutur, kayıtları görür; neyi paylaştığına sen karar verirsin."],
-        ["Parça hafızası", "Hangi parça ne zaman, kaç kilometrede değişti? Sıradaki değişim yaklaşınca haber verir."],
-        ["Evrak takvimi", "Muayene, sigorta, kasko ve egzoz bitişleri takvimine düşer; süresi dolmadan e-posta gelir."],
-        ["AI Usta", "Aracının kendi kayıtlarını okuyup olasılık sıralar. Teşhis koymaz, ustaya gitmeden önce ne soracağını bilirsin."],
-        ["Filo paketi", "Birden çok araç, sürücü zimmeti, ekip belgeleri ve km başına maliyet karşılaştırması."]
+        ["Fişi fotoğrafla", "Servis fişini çek, tarih, tutar ve işlem türü otomatik çıkarılsın; sen yalnız onayla.", ""],
+        ["Araç karnesi ve QR", "Bakım geçmişini tek bağlantıyla paylaş. Alıcı QR'ı okutur, kayıtları görür; neyi paylaştığına sen karar verirsin.", ""],
+        ["Parça hafızası", "Hangi parça ne zaman, kaç kilometrede değişti? Sıradaki değişim yaklaşınca haber verir.", ""],
+        ["Evrak takvimi", "Muayene, sigorta, kasko ve egzoz bitişleri takvimine düşer; süresi dolmadan e-posta gelir.", ""],
+        ["AI Usta", "Aracının kendi kayıtlarını okuyup olasılık sıralar. Teşhis koymaz, ustaya gitmeden önce ne soracağını bilirsin.", "yakında"],
+        ["Filo paketi", "Birden çok araç, sürücü zimmeti, ekip belgeleri ve km başına maliyet karşılaştırması.", ""]
     ];
+
 
     function tanitimKartlariniCiz() {
         var liste = el("tanitim-kartlar");
@@ -3092,10 +3093,39 @@
         TANITIM_KARTLARI.forEach(function (kart) {
             var li = document.createElement("li");
             li.className = "tanitim-kart";
-            li.appendChild(make("h2", kart[0]));
+
+            var baslik = make("h2", kart[0]);
+            if (kart[2]) {
+                baslik.appendChild(make("span", kart[2], "kart-etiket"));
+            }
+
+            li.appendChild(baslik);
             li.appendChild(make("p", kart[1]));
             liste.appendChild(li);
         });
+    }
+
+    function tanitimDesteginiYukle() {
+        var baglanti = el("tanitim-destek");
+        var plan = el("tanitim-plan-iletisim");
+
+        if (!baglanti) {
+            return;
+        }
+
+        fetch("/api/Yardim/sss", { headers: { "Accept": "application/json" } })
+            .then(function (cevap) { return cevap.json(); })
+            .then(function (sonuc) {
+                var eposta = sonuc && sonuc.data ? sonuc.data.destekEposta : "";
+                if (!eposta) {
+                    return;
+                }
+
+                baglanti.href = "mailto:" + eposta;
+                baglanti.textContent = eposta;
+                plan.href = "mailto:" + eposta + "?subject=" + encodeURIComponent("Garajım filo paketi");
+            })
+            .catch(function () { });
     }
 
     function kayitSekmesineGec() {
@@ -3521,9 +3551,11 @@
 
     function bindTanitim() {
         tanitimKartlariniCiz();
+        tanitimDesteginiYukle();
 
         el("tanitim-demo").addEventListener("click", demoIleGir);
         el("tanitim-basla").addEventListener("click", kayitSekmesineGec);
+        el("tanitim-plan-basla").addEventListener("click", kayitSekmesineGec);
 
         el("tanitim-davet-btn").addEventListener("click", function () {
             var kod = el("tanitim-davet-kod").value.trim();
