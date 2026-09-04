@@ -222,6 +222,8 @@ Aracın belgeli geçmişi tek bağlantıyla paylaşılır — satışta alıcıy
 
 - `POST /api/vehicles/{id}/karne` (Owner / Manager) kapsam ve isteğe bağlı süre alıp bağlantı üretir. Araç başına tek aktif bağlantı vardır; yenisi eskisini pasifleştirir.
 - Kapsam bayrakları bağımsızdır: bakım geçmişi, parça hafızası, yakıt özeti, belgeler, plaka gösterimi, tutar gösterimi, hasar geçmişi, beyan edilen değer. Hasar geçmişi ve beyan edilen değer **varsayılan kapalıdır**; açıkken hasar satırı yalnız tarih + tür + onarıldı/açık, değer satırı yalnız son beyan/ekspertiz taşır — hasar tutarı, konum, karşı taraf bilgisi, fotoğraflar ve model tahmini karnede paylaşılmaz. Plaka kapalıysa `34 *** 217` biçiminde maskelenir; tutar kapalıysa bakım tutarları, bakım toplamı ve parça toplamları yanıta hiç girmez.
+- Belgeler bayrağı açıkken bile **hasar fotoğrafları listelenmez ve indirilemez**; hasar fotoğrafına bağlı belgeler hem listeden hem indirme ucundan çıkarılır.
+- Acil durum kartı işaretliyse paylaşım yanıtı ayrı bir `acilUrl` döner (`acil.html?t=`), karne sayfası da açık olduğunda karta bağlantı koyar.
 - `GET /api/karne/{token}` giriş istemez. Kayıt yok, pasif ya da süresi dolmuşsa hepsi aynı 404'ü döndürür. Uç IP başına dakikada 30 istekle sınırlıdır.
 - Token'ın yalnız SHA-256 özeti saklanır; ham değer sadece oluşturma yanıtındaki bağlantıda görünür.
 - `karne.html` ana uygulamadan bağımsız çalışır, yazdırma düzeni taşır ve QR kodu istemcide üretilir (dış servise istek gitmez). Bu sayfa service worker önbelleğine alınmaz.

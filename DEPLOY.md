@@ -83,6 +83,7 @@ Yayından **önce** ayarla:
 | `Receipts__ApiKey` | Gemini/OpenAI anahtarı | **Fiş okuma için zorunlu.** Boşsa akış çalışır ama her fiş boş taslak ve sıfır güvenle döner; kullanıcı bunu hata sanar |
 | `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |
 | `Swagger__Enabled` | **ayarlanmaz** | Üretimde varsayılan kapalı. Açılırsa tüm uç ve DTO yüzeyi yayında olur; şemayı görmek gerekirse geçici aç, iş bitince kapat |
+| `Katalog__BaslangictaEsle` | ayarlanmaz | Varsayılan açık; açılışta mevcut araçların marka/modelini katalog yazımına çeker, fikir sabitidir. Kapatılırsa eski yazımlar kalır |
 | `Hangfire__WorkerCount` | `1` | Job'lar tüm şirketleri tarar; 256 MB'lık sunucuda paralellik bellek riskidir |
 | `Ai__AylikTokenTavani` | Aylık token bütçesi ya da ayarlanmaz | Fiş + AI Usta toplamı; aşılınca iki uç 503 döner ve destek adresine tek e-posta gider. `0` ya da boş = sınırsız |
 | `ForwardedHeaders__KnownProxies` | Vekil sunucunun IP'si | Boşsa `X-Forwarded-For` hiç uygulanmaz ve **tüm istemciler tek IP** sayılır; giriş hız sınırı ile anonim uç sınırı ortaklaşır |

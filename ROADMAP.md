@@ -372,6 +372,43 @@ Yayın öncesi dört bağımsız ajan (güvenlik, veri bütünlüğü, mobil/UX,
 
 Ham SQL, komut çalıştırma, XML ayrıştırma ve güvensiz deserialization hiç yok. Parola `HMACSHA512` + `FixedTimeEquals`; doğrulama kodu, paylaşım ve takvim token'ları, davet kodu ve geçici parola `RandomNumberGenerator` ile üretiliyor; token'lar veritabanında SHA-256 özetiyle duruyor. Global sorgu filtresi 22 entity'yi kapsıyor, rol değişimi ve hesap kapatma hedefi filtre üzerinden okuduğu için kiracılar arası yetki yükseltme kapalı. `AppUser.CompanyId` oluşturulduktan sonra hiç değişmiyor, dolayısıyla JWT'deki kiracı iddiası bayatlamıyor. Dosya yükleme uzantı beyaz listesi, sihirli bayt denetimi ve boyut sınırı taşıyor; kayıtlı ad sunucuda üretilen GUID olduğu için yol geçişi yok. Anonim karne belge ucu belgeyi paylaşılan araca bağlıyor. İndirmeler `Content-Disposition: attachment` ile dönüyor. Loglarda parola, token ya da doğrulama kodu yok. CORS hiç açılmamış. Üretimde geliştirici hata sayfası yok. `dotnet list package --vulnerable --include-transitive` dokuz projede de temiz.
 
+## Mantık Turu — dört persona
+
+Dört alt-ajan uygulamayı persona olarak uçtan uca kullandı (kod okuma + tarayıcıda gerçek tıklama, sahte Gemini): bireysel sahip, filo yöneticisi, sürücü, dış kullanıcı. Toplam 29 bulgu; 9 Yüksek ve 10 Orta kapatıldı, 8 Düşük aşağıda, 2 madde bilinçli davranış olarak belgelendi.
+
+| Bulgu | Persona | Commit |
+|---|---|---|
+| Günlük tahmin kotası TR gününü saymıyordu (sorgu pencereyi UTC gününe kırpıyordu) | tur sırasında bulundu | `f87ff8b` |
+| Karne Belgeler bölümü hasar fotoğrafını anonim sızdırıyordu | P1 | `01a9568` |
+| Bakım silinince belgeleri yetim kalıyor, kota geri açılmıyordu | P1 | `3a18c3d` |
+| Yakıt dışa aktarımında TamDolum sütunu yoktu, tur tüketimi bozuyordu | P2 | `5b22f3d` |
+| Filo maliyeti ile araç maliyeti farklı TL/km gösteriyordu | P2 | `a1d8ecf` |
+| Arşive al düğmesi formdaki değil seçili aracı arşivliyordu | P1 | `7ffd815` |
+| Acil durum kartına arayüzden hiç erişilemiyordu | P1, P4 | `9e5436c` |
+| Yabancı plaka arayüzde yoktu | P1 | `ba51d34` |
+| Yolculuk km aralıkları çakışabiliyordu | P2 | `a3aed95` |
+| Bakım, evrak ve yolculuk düzenlenemiyordu | P1 | `989b2c2` |
+| Aylık fiş limiti UTC ayını kullanıyordu | P2 | `6b15889` |
+| Panel araç sayısı arşivliyi sayıyordu | P1, P2 | `f126e50` |
+| Evrakta başlangıç > bitiş kabul ediliyor, ikinci evrak eskisini pasifleştirmiyordu | P1, P2 | `05cd9ec` |
+| Pasifleştirilen üyenin zimmeti açık kalıyordu | P2 | `428ad4e` |
+| Davet ödülü doğrulanmamış hesaba sayılıyordu | P4 | `cca204f` |
+| Fiş "okundu"/"okunamadı" çelişkisi ve karnede yanlış "Süresiz" | P1 | `5d8c0a9` |
+| Yönetici ekranları sürücüde gizlenmiyordu | P3 | `dcbaf09` |
+
+Bilinçli davranış sayılıp değiştirilmeyenler: bir sürücünün aynı anda birden çok araca zimmetlenebilmesi (filoda olağan) ve ekip formundan ikinci bir Owner açılabilmesi (ortak sahiplik). İkisi de CLAUDE.md'de yazılı.
+
+### Mantık turundan kalan düşük öncelikliler
+
+- [ ] Üst şeritte şirket adı verilmemişse ad iki kez yazılıyor ("Ad · Ad")
+- [ ] Araç limiti mesajı yalnız "silin" diyor, veri kaybettirmeyen arşivlemeyi önermiyor
+- [ ] `DegerSinirlari.EnYeniYil()` UTC yılını kullanıyor; yıl dönümünde TR ile üç saat ayrışıyor
+- [ ] Ekip formundan ikinci Owner eklemek sürücü eklemekle aynı sürtünmede; ek onay yok
+- [ ] Ayarlardaki hesap silme metni sürücüye şirket silmeyi de anlatıyor
+- [ ] Zimmetsiz sürücüde "Fiş Yükle" düğmesi boş durum mesajıyla çelişiyor
+- [ ] Hesap silmede şirket adı onayı yalnız istemcide denetleniyor, uç yalnız kodu istiyor
+- [ ] ICS `DTSTAMP` alanı üretim anı yerine olayın tarihini taşıyor (RFC 5545)
+
 ## Birikim (planlanmamış)
 
 Hiçbir sprinte bağlanmamış işler. Sprint 3-6'ya taşınanlar buradan çıkarıldı; her madde tek yerde durur.

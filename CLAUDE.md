@@ -56,6 +56,12 @@ Araç eklemede marka katalogda olmalıdır; model ya markanın serisidir ya da `
 
 Mevcut kayıtlar `KatalogEslemeJob` ile açılışta bir kez katalog yazımına çekilir (`AracEslestirici`: takma ad tablosu, Türkçe karakter katlama, sonek ayırma). İş birikimli değil **fikir sabitidir**: aynı satırı ikinci kez çalıştırmak hiçbir şeyi değiştirmez. Yeni takma ad gerektiğinde `MarkaTakmaAdlari` tablosuna eklenir ve testle sabitlenir.
 
+### Zimmet ve sahiplik: bilinçli esneklikler
+
+Bir sürücü **aynı anda birden çok araca zimmetlenebilir**; filoda olağandır ve engellenmez. Engellenen tersidir: aynı araca ikinci aktif zimmet açılamaz (`AssignmentAlreadyActive`). Üye pasifleştirilince ya da kendi hesabını silince açık zimmetleri kapanır.
+
+Ekip formundan **ikinci bir Owner** açılabilir; ortak sahiplik bilinçlidir. Son Owner pasifleştirilemez (`LastOwnerRequired`).
+
 ### Uygunsuz ifade listesi veridir, kod değildir
 
 Karneye ve paylaşılan sayfalara çıkan serbest metinler `UygunsuzIfadeFiltresi`'nden geçer: servis adı, bakım notu, parça açıklaması ve markası, hasar açıklaması ve konumu, evrak notu ve sağlayıcısı, katalogda olmayan araç modeli, motor metni ve kayıttaki şirket adı. Eşleşme 400 ve `Messages.UygunsuzIfade` döner.
