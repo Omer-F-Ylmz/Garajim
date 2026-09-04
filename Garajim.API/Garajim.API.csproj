@@ -56,4 +56,64 @@
     </MsDeploySkipRules>
   </ItemGroup>
 
+  <UsingTask TaskName="YenilikleriUret" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Kaynak ParameterType="System.String" Required="true" />
+      <Hedef ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        var satirlar = System.IO.File.ReadAllLines(Kaynak);
+        var sb = new System.Text.StringBuilder();
+        var maddeler = new System.Collections.Generic.List<string>();
+        string baslik = null;
+        var ilk = true;
+
+        System.Func<string, string> kacir = m => m.Replace("\\", "\\\\").Replace("\"", "\\\"");
+
+        System.Action yaz = () =>
+        {
+            if (baslik == null) return;
+            if (!ilk) sb.Append(",");
+            ilk = false;
+            sb.Append("{\"baslik\":\"").Append(kacir(baslik)).Append("\",\"maddeler\":[");
+            for (var i = 0; i < maddeler.Count; i++)
+            {
+                if (i > 0) sb.Append(",");
+                sb.Append("\"").Append(kacir(maddeler[i])).Append("\"");
+            }
+            sb.Append("]}");
+        };
+
+        sb.Append("[");
+
+        foreach (var ham in satirlar)
+        {
+            var satir = ham.Trim();
+            if (satir.StartsWith("## "))
+            {
+                yaz();
+                baslik = satir.Substring(3).Trim();
+                maddeler = new System.Collections.Generic.List<string>();
+            }
+            else if (satir.StartsWith("- ") && baslik != null)
+            {
+                maddeler.Add(satir.Substring(2).Trim());
+            }
+        }
+
+        yaz();
+        sb.Append("]");
+
+        System.IO.File.WriteAllText(Hedef, sb.ToString(), new System.Text.UTF8Encoding(false));
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="DegisiklikGunlugunuCevir" BeforeTargets="BeforeBuild">
+    <YenilikleriUret Kaynak="$(MSBuildProjectDirectory)\..\CHANGELOG.md" Hedef="$(MSBuildProjectDirectory)\wwwroot\yenilikler.json" />
+  </Target>
+
 </Project>

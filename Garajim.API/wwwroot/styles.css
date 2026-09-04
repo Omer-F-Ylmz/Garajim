@@ -1624,3 +1624,25 @@ button.compact {
         padding: 8px 12px;
     }
 }
+
+.yenilik-surum {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.yenilik-surum h2 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: var(--accent);
+}
+
+.yenilik-surum ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.yenilik-surum li {
+    margin-bottom: 4px;
+}

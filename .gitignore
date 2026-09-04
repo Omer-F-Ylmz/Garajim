@@ -36,6 +36,9 @@ publish/
 Thumbs.db
 .DS_Store
 
+## Build sirasinda uretilir
+Garajim.API/wwwroot/yenilikler.json
+
 ## Kalibrasyon ciktilari (repoya girmez)
 kalibrasyon-*.md
 cevap-anahtari.csv
