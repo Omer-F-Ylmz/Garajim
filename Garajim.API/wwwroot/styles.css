@@ -829,6 +829,14 @@ button.compact {
     cursor: pointer;
 }
 
+@media (max-width: 767px) {
+    .kaza-ani {
+        position: sticky;
+        top: 8px;
+        z-index: 20;
+    }
+}
+
 .kaza-ani:hover {
     background: rgba(255, 90, 90, 0.2);
 }

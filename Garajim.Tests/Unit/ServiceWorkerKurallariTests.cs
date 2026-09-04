@@ -107,5 +107,31 @@ namespace Garajim.Tests.Unit
             Assert.Contains("function acilKartiCiz()", app);
             Assert.DoesNotContain("/acil.html", app);
         }
+        [Fact]
+        public void KuyrukBildirimiVeRozetiVar()
+        {
+            var app = Oku("app.js");
+            var html = Oku("index.html");
+
+            Assert.Contains("Kaydınız kuyruğa alındı, bağlantı gelince gönderilecek.", app);
+            Assert.Contains("el(\"kaza-modal\").classList.add(\"hidden\");", app);
+            Assert.Contains("id=\"kuyruk-serit\"", html);
+            Assert.Contains("function kuyrukRozetiniGuncelle()", app);
+        }
+
+        [Fact]
+        public void KazaAniMobildeYapiskan()
+        {
+            var css = Oku("styles.css");
+            var baslangic = css.IndexOf("@media (max-width: 767px)", StringComparison.Ordinal);
+
+            Assert.True(baslangic > 0, "mobil media query yok");
+
+            var blok = css.Substring(baslangic, Math.Min(220, css.Length - baslangic));
+
+            Assert.Contains(".kaza-ani", blok);
+            Assert.Contains("position: sticky", blok);
+        }
+
     }
 }

@@ -531,7 +531,7 @@
             katalogUyarisiniGuncelle();
             tescilUyarisiniGuncelle();
             acilKartiSakla();
-            kuyrugoBosalt();
+            kuyrugoBosalt().then(kuyrukRozetiniGuncelle);
             loadActiveTab();
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
@@ -2026,6 +2026,25 @@
         kutu.classList.toggle("hidden", sayi === 0);
     }
 
+    function kuyrugaAlVeBildir(govde) {
+        kuyrugaEkle(govde);
+        kuyrukRozetiniGuncelle();
+        el("kaza-modal").classList.add("hidden");
+        showMessage(el("app-message"), "Kaydınız kuyruğa alındı, bağlantı gelince gönderilecek.", true);
+    }
+
+    function kuyrukRozetiniGuncelle() {
+        var adet = kuyrugoOku().length;
+        var serit = el("kuyruk-serit");
+
+        serit.classList.toggle("hidden", adet === 0);
+
+        if (adet > 0) {
+            el("kuyruk-serit-metin").textContent =
+                adet + " hasar kaydı gönderilmeyi bekliyor; bağlantı gelince gönderilecek.";
+        }
+    }
+
     function kuyrugoBosalt() {
         var kuyruk = kuyrugoOku();
         if (kuyruk.length === 0 || !state.token) {
@@ -2159,8 +2178,7 @@
         };
 
         if (!navigator.onLine) {
-            kuyrugaEkle(govde);
-            showMessage(el("kaza-durum"), "Bağlantı yok. Dosya kaydedildi, bağlantı gelince gönderilecek. Fotoğrafları şimdi çekip telefonunuzda tutun.", true);
+            kuyrugaAlVeBildir(govde);
             return;
         }
 
@@ -2179,8 +2197,7 @@
                 return;
             }
 
-            kuyrugaEkle(govde);
-            showMessage(el("kaza-durum"), "Bağlantı kurulamadı. Dosya kaydedildi, bağlantı gelince gönderilecek.", true);
+            kuyrugaAlVeBildir(govde);
         });
     }
 
