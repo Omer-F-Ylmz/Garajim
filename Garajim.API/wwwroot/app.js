@@ -14,6 +14,9 @@
         dogrulanacakEposta: null,
         dogrulaSayac: null,
         duzenlenenAracId: null,
+        duzenlenenBakimId: null,
+        duzenlenenEvrakId: null,
+        duzenlenenYolculukId: null,
         duzenlenenAracKm: null,
         ustaGonderiyor: false,
         sifirlanacakEposta: null,
@@ -568,7 +571,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 7, "Kayıt yok.");
+                emptyRow(tbody, 8, "Kayıt yok.");
                 return;
             }
             rows.forEach(function (item) {
@@ -579,12 +582,54 @@
                 tr.appendChild(make("td", money(item.cost)));
                 tr.appendChild(make("td", item.serviceName || "-"));
                 tr.appendChild(documentButton(item.id));
+                tr.appendChild(duzenleButonu(function () { bakimiDuzenle(item); }));
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Maintenance/" + item.id, loadMaintenance); }));
                 tbody.appendChild(tr);
             });
         }).catch(function (error) {
             handleError(el("app-message"), error);
         });
+    }
+
+    function duzenleButonu(islev) {
+        var hucre = document.createElement("td");
+        var dugme = make("button", "Düzenle", "link-btn");
+        dugme.type = "button";
+        dugme.addEventListener("click", islev);
+        hucre.appendChild(dugme);
+        return hucre;
+    }
+
+    function bakimiDuzenle(kayit) {
+        state.duzenlenenBakimId = kayit.id;
+
+        el("maintenance-type").value = kayit.type;
+        el("maintenance-date").value = String(kayit.date).slice(0, 10);
+        el("maintenance-km").value = kayit.km;
+        el("maintenance-cost").value = kayit.cost;
+        el("maintenance-service").value = kayit.serviceName || "";
+        el("maintenance-note").value = kayit.note || "";
+
+        var kutu = el("maintenance-parts");
+        clear(kutu);
+        (kayit.parcalar || []).forEach(function (parca) { addPartRow(kutu, parca); });
+
+        bakimFormModu();
+    }
+
+    function bakimFormModu() {
+        var duzenleme = state.duzenlenenBakimId !== null;
+
+        el("maintenance-submit").textContent = duzenleme ? "Bakımı güncelle" : "Bakım ekle";
+        el("maintenance-vazgec").classList.toggle("hidden", !duzenleme);
+    }
+
+    function bakimFormunuSifirla() {
+        state.duzenlenenBakimId = null;
+        el("maintenance-form").reset();
+        clear(el("maintenance-parts"));
+        el("maintenance-date").value = todayInput();
+        bakimFormModu();
     }
 
     function documentButton(recordId) {
@@ -1224,7 +1269,7 @@
         clear(tbody);
 
         if (kayitlar.length === 0) {
-            emptyRow(tbody, 8, "Bu araç için yolculuk kaydı yok.");
+            emptyRow(tbody, 9, "Bu araç için yolculuk kaydı yok.");
             return;
         }
 
@@ -1240,10 +1285,39 @@
             tr.appendChild(make("td", guzergah || "-"));
             tr.appendChild(make("td", kayit.surucuAdi || "-"));
 
+            tr.appendChild(duzenleButonu(function () { yolculugoDuzenle(kayit); }));
             tr.appendChild(deleteButton(function () { yolculukSil(kayit.id); }));
 
             tbody.appendChild(tr);
         });
+    }
+
+    function yolculugoDuzenle(kayit) {
+        state.duzenlenenYolculukId = kayit.id;
+
+        el("yolculuk-tarih").value = String(kayit.tarih).slice(0, 10);
+        el("yolculuk-bas-km").value = kayit.baslangicKm;
+        el("yolculuk-bitis-km").value = kayit.bitisKm;
+        el("yolculuk-amac").value = kayit.amac;
+        el("yolculuk-nereden").value = kayit.nereden || "";
+        el("yolculuk-nereye").value = kayit.nereye || "";
+        el("yolculuk-not").value = kayit.not || "";
+
+        yolculukFormModu();
+    }
+
+    function yolculukFormModu() {
+        var duzenleme = state.duzenlenenYolculukId !== null;
+
+        el("yolculuk-submit").textContent = duzenleme ? "Yolculuğu güncelle" : "Yolculuk ekle";
+        el("yolculuk-vazgec").classList.toggle("hidden", !duzenleme);
+    }
+
+    function yolculukFormunuSifirla() {
+        state.duzenlenenYolculukId = null;
+        el("yolculuk-form").reset();
+        el("yolculuk-tarih").value = todayInput();
+        yolculukFormModu();
     }
 
     function loadYolculuk() {
@@ -1288,6 +1362,8 @@
     }
 
     function bindYolculuk() {
+        el("yolculuk-vazgec").addEventListener("click", yolculukFormunuSifirla);
+
         el("yolculuk-form").addEventListener("submit", function (event) {
             event.preventDefault();
             clearMessages();
@@ -1297,8 +1373,10 @@
                 return;
             }
 
-            api("/api/Yolculuk", {
-                method: "POST",
+            var duzenleme = state.duzenlenenYolculukId !== null;
+
+            api(duzenleme ? "/api/Yolculuk/" + state.duzenlenenYolculukId : "/api/Yolculuk", {
+                method: duzenleme ? "PUT" : "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
                     tarih: el("yolculuk-tarih").value,
@@ -1311,8 +1389,7 @@
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Yolculuk eklendi.", true);
-                el("yolculuk-form").reset();
-                el("yolculuk-tarih").value = todayInput();
+                yolculukFormunuSifirla();
                 loadYolculuk();
                 loadVehicles();
             }).catch(function (error) {
@@ -4028,11 +4105,43 @@
                 yenile.type = "button";
                 yenile.addEventListener("click", function () { evrakYenile(item.id); });
                 hucre.appendChild(yenile);
+
+                var duzenle = make("button", "Düzenle", "link-btn");
+                duzenle.type = "button";
+                duzenle.addEventListener("click", function () { evrakiDuzenle(item); });
+                hucre.appendChild(duzenle);
             }
             tr.appendChild(hucre);
 
             tbody.appendChild(tr);
         });
+    }
+
+    function evrakiDuzenle(kayit) {
+        state.duzenlenenEvrakId = kayit.id;
+
+        el("evrak-tur").value = kayit.evrakTuru;
+        el("evrak-baslangic").value = kayit.baslangicTarihi ? String(kayit.baslangicTarihi).slice(0, 10) : "";
+        el("evrak-bitis").value = kayit.bitisTarihi ? String(kayit.bitisTarihi).slice(0, 10) : "";
+        el("evrak-saglayici").value = kayit.saglayici || "";
+        el("evrak-police").value = kayit.policeNo || "";
+        el("evrak-not").value = kayit.not || "";
+
+        evrakFormModu();
+        tescilUyarisiniGuncelle();
+    }
+
+    function evrakFormModu() {
+        var duzenleme = state.duzenlenenEvrakId !== null;
+
+        el("evrak-submit").textContent = duzenleme ? "Evrakı güncelle" : "Evrak ekle";
+        el("evrak-vazgec").classList.toggle("hidden", !duzenleme);
+    }
+
+    function evrakFormunuSifirla() {
+        state.duzenlenenEvrakId = null;
+        el("evrak-form").reset();
+        evrakFormModu();
     }
 
     function loadEvrak() {
@@ -4081,8 +4190,10 @@
             var bitis = el("evrak-bitis").value;
             var baslangic = el("evrak-baslangic").value;
 
-            api("/api/Evrak", {
-                method: "POST",
+            var duzenleme = state.duzenlenenEvrakId !== null;
+
+            api(duzenleme ? "/api/Evrak/" + state.duzenlenenEvrakId : "/api/Evrak", {
+                method: duzenleme ? "PUT" : "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
                     evrakTuru: el("evrak-tur").value,
@@ -4094,13 +4205,14 @@
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Evrak eklendi.", true);
-                el("evrak-form").reset();
+                evrakFormunuSifirla();
                 loadEvrak();
             }).catch(function (error) {
                 handleError(el("app-message"), error);
             });
         });
 
+        el("evrak-vazgec").addEventListener("click", evrakFormunuSifirla);
         el("evrak-ay-btn").addEventListener("click", loadEvrakAy);
         el("evrak-hepsi-btn").addEventListener("click", function () {
             clearMessages();
@@ -4990,11 +5102,15 @@
     }
 
     function bindRecordForms() {
+        el("maintenance-vazgec").addEventListener("click", bakimFormunuSifirla);
+
         el("maintenance-form").addEventListener("submit", function (event) {
             event.preventDefault();
             clearMessages();
-            api("/api/Maintenance", {
-                method: "POST",
+            var duzenleme = state.duzenlenenBakimId !== null;
+
+            api(duzenleme ? "/api/Maintenance/" + state.duzenlenenBakimId : "/api/Maintenance", {
+                method: duzenleme ? "PUT" : "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
                     parcalar: readPartRows(el("maintenance-parts")),
@@ -5007,9 +5123,7 @@
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);
-                el("maintenance-form").reset();
-                clear(el("maintenance-parts"));
-                el("maintenance-date").value = todayInput();
+                bakimFormunuSifirla();
                 loadMaintenance();
                 loadVehicles();
             }).catch(function (error) {

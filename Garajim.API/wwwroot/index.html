@@ -654,13 +654,14 @@
                         <button id="maintenance-part-add" type="button" class="ghost compact">+ Parça satırı</button>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="primary">Bakım ekle</button>
+                        <button id="maintenance-submit" type="submit" class="primary">Bakım ekle</button>
+                        <button id="maintenance-vazgec" type="button" class="ghost hidden">Vazgeç</button>
                     </div>
                 </form>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Tarih</th><th>Tür</th><th>Km</th><th>Tutar</th><th>Servis</th><th>Belge</th><th></th></tr>
+                            <tr><th>Tarih</th><th>Tür</th><th>Km</th><th>Tutar</th><th>Servis</th><th>Belge</th><th></th><th></th></tr>
                         </thead>
                         <tbody id="maintenance-rows"></tbody>
                     </table>
@@ -941,7 +942,8 @@
                         <input id="evrak-not" type="text">
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="primary">Evrak ekle</button>
+                        <button id="evrak-submit" type="submit" class="primary">Evrak ekle</button>
+                        <button id="evrak-vazgec" type="button" class="ghost hidden">Vazgeç</button>
                     </div>
                 </form>
 
@@ -1008,7 +1010,8 @@
                         <input id="yolculuk-not" type="text" maxlength="500">
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="primary">Yolculuk ekle</button>
+                        <button id="yolculuk-submit" type="submit" class="primary">Yolculuk ekle</button>
+                        <button id="yolculuk-vazgec" type="button" class="ghost hidden">Vazgeç</button>
                     </div>
                 </form>
 
@@ -1017,7 +1020,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Tarih</th><th>Amaç</th><th>Başlangıç</th><th>Bitiş</th><th>Mesafe</th><th>Güzergah</th><th>Sürücü</th><th></th></tr>
+                            <tr><th>Tarih</th><th>Amaç</th><th>Başlangıç</th><th>Bitiş</th><th>Mesafe</th><th>Güzergah</th><th>Sürücü</th><th></th><th></th></tr>
                         </thead>
                         <tbody id="yolculuk-rows"></tbody>
                     </table>
