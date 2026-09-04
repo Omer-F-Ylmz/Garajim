@@ -293,6 +293,47 @@ namespace Garajim.Tests.Unit
 
             Assert.False(sonuc.HizmetDolu);
         }
+        [Fact]
+        public async Task BasarisizCikarimSebebiBildirir()
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla(HttpStatusCode.BadRequest, "{\"error\":{\"code\":400,\"message\":\"bilinmeyen alan\"}}");
+            handler.Kuyrukla(HttpStatusCode.BadRequest, "{\"error\":{\"code\":400,\"message\":\"bilinmeyen alan\"}}");
+
+            var sonuc = await GeminiOlustur(handler).ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.False(sonuc.HizmetDolu);
+            Assert.Contains("400", sonuc.CikarimHatasi ?? string.Empty);
+        }
+
+        [Fact]
+        public async Task AnahtarYokkaSebepBildirilir()
+        {
+            var handler = new SahteHandler();
+            var yapilandirma = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["Receipts:Provider"] = "Gemini"
+            }).Build();
+
+            var cikarici = new GeminiReceiptExtractor(new SahteFactory(handler), yapilandirma, NullLogger<GeminiReceiptExtractor>.Instance);
+            var sonuc = await cikarici.ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.Equal("ANAHTAR_YOK", sonuc.CikarimHatasi);
+        }
+
+        [Fact]
+        public async Task DusunmeAyariReddedilirseAyarsizTekrarDenenir()
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla(HttpStatusCode.BadRequest, "{\"error\":{\"code\":400,\"message\":\"Unknown name \\\"thinkingConfig\\\"\"}}");
+            handler.Kuyrukla(HttpStatusCode.OK, GeminiCevabi(ModelJson()));
+
+            var sonuc = await GeminiOlustur(handler).ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.True(sonuc.GuvenSkoru > 0, "ayarsiz tekrar basarisiz: " + sonuc.CikarimHatasi);
+            Assert.DoesNotContain("thinkingConfig", handler.Govdeler[1]);
+        }
+
 
 
     }

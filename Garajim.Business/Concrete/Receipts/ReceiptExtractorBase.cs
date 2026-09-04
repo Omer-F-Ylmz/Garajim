@@ -25,7 +25,7 @@ namespace Garajim.Business.Concrete.Receipts
 
         protected abstract string VarsayilanModel { get; }
 
-        protected abstract HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType);
+        protected abstract HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType, bool dusunmeAyariyla);
 
         protected abstract string MetniCikar(JsonElement kok);
 
@@ -40,7 +40,10 @@ namespace Garajim.Business.Concrete.Receipts
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 _logger.LogWarning("Fiş çıkarımı yapılandırılmadı (Receipts__ApiKey boş), boş sonuç dönüldü.");
-                return ReceiptResponseParser.Bos(null);
+
+                var anahtarsiz = ReceiptResponseParser.Bos(null);
+                anahtarsiz.CikarimHatasi = "ANAHTAR_YOK";
+                return anahtarsiz;
             }
 
             var model = Configuration["Receipts:Model"];
@@ -51,12 +54,13 @@ namespace Garajim.Business.Concrete.Receipts
 
             string sonHata = null;
             var hizmetDolu = false;
+            var dusunmeAyariyla = true;
 
             for (var deneme = 1; deneme <= DenemeSayisi; deneme++)
             {
                 try
                 {
-                    using var istek = IstekOlustur(model, apiKey, imageBytes, mimeType);
+                    using var istek = IstekOlustur(model, apiKey, imageBytes, mimeType, dusunmeAyariyla);
                     var client = _httpClientFactory.CreateClient(HttpClientName);
                     using var cevap = await client.SendAsync(istek, ct);
 
@@ -70,6 +74,11 @@ namespace Garajim.Business.Concrete.Receipts
                         if (HizmetDoluMu(cevap.StatusCode, govde))
                         {
                             hizmetDolu = true;
+                        }
+                        else if (dusunmeAyariyla && DusunmeReddedildiMi(cevap.StatusCode, govde))
+                        {
+                            _logger.LogWarning("Model düşünme ayarını reddetti, ayarsız tekrar denenecek.");
+                            dusunmeAyariyla = false;
                         }
 
                         continue;
@@ -86,7 +95,10 @@ namespace Garajim.Business.Concrete.Receipts
                     catch (Exception zarfHatasi) when (zarfHatasi is JsonException or KeyNotFoundException or InvalidOperationException or IndexOutOfRangeException)
                     {
                         _logger.LogWarning(zarfHatasi, "Fiş çıkarımı sağlayıcı zarfı çözümlenemedi.");
-                        return ReceiptResponseParser.Bos(govde);
+
+                        var zarfsiz = ReceiptResponseParser.Bos(govde);
+                        zarfsiz.CikarimHatasi = "ZARF_COZULEMEDI";
+                        return zarfsiz;
                     }
 
                     var sonuc = ReceiptResponseParser.Parse(metin);
@@ -103,8 +115,19 @@ namespace Garajim.Business.Concrete.Receipts
 
             var bos = ReceiptResponseParser.Bos(sonHata);
             bos.HizmetDolu = hizmetDolu;
+            bos.CikarimHatasi = sonHata;
             return bos;
         }
+        private static bool DusunmeReddedildiMi(System.Net.HttpStatusCode durum, string govde)
+        {
+            if (durum != System.Net.HttpStatusCode.BadRequest || govde == null)
+            {
+                return false;
+            }
+
+            return govde.Contains("thinking", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static bool HizmetDoluMu(System.Net.HttpStatusCode durum, string govde)
         {
             if (durum == System.Net.HttpStatusCode.TooManyRequests || durum == System.Net.HttpStatusCode.ServiceUnavailable)

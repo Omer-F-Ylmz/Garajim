@@ -189,14 +189,14 @@ namespace Garajim.Business.Concrete
             if (!otoOnay)
             {
                 await _draftDal.AddAsync(draft);
-                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), yuklemeMesaji);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null, sonuc.CikarimHatasi), yuklemeMesaji);
             }
 
             draft.AtlamaNedeni = OtoOnayEngeli(draft, sonuc, onerilenArac);
             if (draft.AtlamaNedeni != null)
             {
                 await _draftDal.AddAsync(draft);
-                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), yuklemeMesaji);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null, sonuc.CikarimHatasi), yuklemeMesaji);
             }
 
             var onayDto = new ReceiptConfirmDto
@@ -286,10 +286,11 @@ namespace Garajim.Business.Concrete
             }
         }
 
-        private static ReceiptUploadResultDto Sonuc(ReceiptDraft draft, OlusturulanKayitDto olusturulan)
+        private static ReceiptUploadResultDto Sonuc(ReceiptDraft draft, OlusturulanKayitDto olusturulan, string cikarimHatasi = null)
         {
             return new ReceiptUploadResultDto
             {
+                CikarimHatasi = cikarimHatasi,
                 TaslakId = draft.Id,
                 Durum = draft.Durum.ToString(),
                 AtlamaNedeni = draft.AtlamaNedeni,

@@ -22,7 +22,7 @@ namespace Garajim.Tests.Unit
             {
             }
 
-            public HttpRequestMessage Govde(byte[] ham, string tip) => IstekOlustur("model-x", "anahtar", ham, tip);
+            public HttpRequestMessage Govde(byte[] ham, string tip) => IstekOlustur("model-x", "anahtar", ham, tip, true);
         }
 
         private sealed class AcikOpenAi : OpenAiReceiptExtractor
@@ -32,7 +32,7 @@ namespace Garajim.Tests.Unit
             {
             }
 
-            public HttpRequestMessage Govde(byte[] ham, string tip) => IstekOlustur("model-y", "anahtar", ham, tip);
+            public HttpRequestMessage Govde(byte[] ham, string tip) => IstekOlustur("model-y", "anahtar", ham, tip, true);
         }
 
         private static byte[] SahteGoruntu(int uzunluk)

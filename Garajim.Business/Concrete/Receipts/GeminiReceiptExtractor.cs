@@ -16,7 +16,7 @@ namespace Garajim.Business.Concrete.Receipts
 
         protected override string VarsayilanModel => VarsayilanModelAdi;
 
-        protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType)
+        protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType, bool dusunmeAyariyla)
         {
             var tampon = IstekGovdesi.Tampon(imageBytes.Length);
 
@@ -46,9 +46,14 @@ namespace Garajim.Business.Concrete.Receipts
                 yazici.WriteStartObject("generationConfig");
                 yazici.WriteNumber("temperature", 0);
                 yazici.WriteString("response_mime_type", "application/json");
-                yazici.WriteStartObject("thinkingConfig");
-                yazici.WriteNumber("thinkingBudget", 0);
-                yazici.WriteEndObject();
+
+                if (dusunmeAyariyla)
+                {
+                    yazici.WriteStartObject("thinkingConfig");
+                    yazici.WriteNumber("thinkingBudget", 0);
+                    yazici.WriteEndObject();
+                }
+
                 yazici.WriteEndObject();
 
                 yazici.WriteEndObject();

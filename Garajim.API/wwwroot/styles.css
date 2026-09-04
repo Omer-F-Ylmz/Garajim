@@ -938,8 +938,6 @@ button.compact {
 
 @media (max-width: 640px) {
     .kaza-ani {
-        position: static;
-        z-index: 1;
         padding: 18px;
         font-size: 18px;
     }

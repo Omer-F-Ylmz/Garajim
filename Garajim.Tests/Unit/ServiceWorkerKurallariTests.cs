@@ -127,6 +127,9 @@ namespace Garajim.Tests.Unit
 
             Assert.NotNull(mobilBlok);
             Assert.Contains("position: sticky", mobilBlok);
+
+            var sonrakiEzme = css.Substring(css.IndexOf(mobilBlok, StringComparison.Ordinal) + mobilBlok.Length);
+            Assert.DoesNotContain("position: static", sonrakiEzme.Split(".kaza-ani").Skip(1).FirstOrDefault() ?? string.Empty);
         }
 
         [Fact]

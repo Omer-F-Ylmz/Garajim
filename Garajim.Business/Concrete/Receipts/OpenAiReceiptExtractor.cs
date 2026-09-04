@@ -14,7 +14,7 @@ namespace Garajim.Business.Concrete.Receipts
 
         protected override string VarsayilanModel => "gpt-4.1-nano";
 
-        protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType)
+        protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType, bool dusunmeAyariyla)
         {
             var tampon = IstekGovdesi.Tampon(imageBytes.Length);
 
