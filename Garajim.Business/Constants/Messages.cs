@@ -181,6 +181,13 @@ namespace Garajim.Business.Constants
         public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin veya bir aracı silin.";
 
         public const string TurTamamlandi = "Ürün turu tamamlandı.";
+        public const string ProfilGuncellendi = "Profil güncellendi.";
+        public const string EpostaKoduGonderildi = "Doğrulama kodu yeni adresine gönderildi.";
+        public const string EpostaDegistirildi = "E-posta adresin değiştirildi.";
+        public const string EpostaZatenKullanimda = "Bu e-posta adresi kullanımda.";
+        public const string EpostaKoduGecersiz = "Kod geçersiz ya da süresi dolmuş.";
+        public const string EpostaKoduIstenmedi = "Önce yeni adrese kod iste.";
+        public const string EpostaGecersiz = "Geçerli bir e-posta adresi girin.";
         public const string GeriBildirimAlindi = "Geri bildirimin alındı, teşekkürler.";
         public const string GeriBildirimBos = "Geri bildirim mesajı boş olamaz.";
         public const string GeriBildirimGunlukSinir = "Günde en fazla 5 geri bildirim gönderebilirsin.";

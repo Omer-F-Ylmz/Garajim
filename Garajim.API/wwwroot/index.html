@@ -415,6 +415,49 @@
 
         <section id="ayarlar-box" class="panel hidden">
             <h2>Ayarlar</h2>
+            <h3>Profil</h3>
+            <form id="profil-form" class="grid-form">
+                <div>
+                    <label for="profil-ad">Ad soyad</label>
+                    <input id="profil-ad" type="text" maxlength="100" required>
+                </div>
+                <div>
+                    <label for="profil-eposta">E-posta</label>
+                    <input id="profil-eposta" type="email" readonly>
+                </div>
+                <div class="parts-cell">
+                    <label>Bildirimler</label>
+                    <label class="switch-label"><input id="profil-bildirim-evrak" type="checkbox"> Evrak bitiş uyarıları</label>
+                    <label class="switch-label"><input id="profil-bildirim-hatirlatma" type="checkbox"> Hatırlatma e-postaları</label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Profili kaydet</button>
+                </div>
+            </form>
+            <p id="profil-mesaj" class="message" role="alert"></p>
+
+            <h3>E-posta adresini değiştir</h3>
+            <p class="hint">Kod yeni adrese gönderilir; eski adrese bilgi maili gider. Değişiklik ancak kod girilince tamamlanır.</p>
+            <form id="eposta-kod-form" class="grid-form">
+                <div>
+                    <label for="eposta-yeni">Yeni e-posta</label>
+                    <input id="eposta-yeni" type="email" autocomplete="email" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Kod gönder</button>
+                </div>
+            </form>
+            <form id="eposta-degistir-form" class="grid-form hidden">
+                <div>
+                    <label for="eposta-kod">Yeni adrese gelen 6 haneli kod</label>
+                    <input id="eposta-kod" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">E-postayı değiştir</button>
+                </div>
+            </form>
+            <p id="eposta-mesaj" class="message" role="alert"></p>
+
             <h3>Şifre değiştir</h3>
             <p class="hint">Şifrenizi değiştirdiğinizde diğer cihazlardaki oturumlarınız kapanır.</p>
             <form id="sifre-degistir-form" class="grid-form">

@@ -26,6 +26,13 @@ namespace Garajim.Entity.Concrete
         public bool GeciciSifre { get; set; }
         public bool KurulumGizlendi { get; set; }
         public bool TurTamamlandi { get; set; }
+        public bool BildirimEvrak { get; set; } = true;
+        public bool BildirimHatirlatma { get; set; } = true;
+        public string YeniEposta { get; set; }
+        public string EpostaKodHash { get; set; }
+        public DateTime? EpostaKodSonTarih { get; set; }
+        public int EpostaDenemeSayisi { get; set; }
+        public DateTime? SonEpostaGonderim { get; set; }
         public string SilmeKodHash { get; set; }
         public DateTime? SilmeKodSonTarih { get; set; }
         public int SilmeDenemeSayisi { get; set; }

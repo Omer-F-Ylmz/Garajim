@@ -276,6 +276,10 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(u => u.DogrulamaKodHash).HasMaxLength(64);
                 entity.Property(u => u.SifirlamaKodHash).HasMaxLength(64);
                 entity.Property(u => u.SilmeKodHash).HasMaxLength(64);
+                entity.Property(u => u.EpostaKodHash).HasMaxLength(64);
+                entity.Property(u => u.YeniEposta).HasMaxLength(200);
+                entity.Property(u => u.BildirimEvrak).HasDefaultValue(true);
+                entity.Property(u => u.BildirimHatirlatma).HasDefaultValue(true);
             });
 
             modelBuilder.Entity<AracDeger>(entity =>

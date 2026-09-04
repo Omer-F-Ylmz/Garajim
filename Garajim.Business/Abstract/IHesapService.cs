@@ -5,6 +5,14 @@ namespace Garajim.Business.Abstract
 {
     public interface IHesapService
     {
+        Task<IDataResult<ProfilDto>> ProfilAsync(int userId);
+
+        Task<IResult> ProfilGuncelleAsync(int userId, ProfilGuncelleDto dto);
+
+        Task<IResult> EpostaKoduGonderAsync(int userId, EpostaDegistirKodDto dto);
+
+        Task<IResult> EpostaDegistirAsync(int userId, EpostaDegistirDto dto);
+
         Task<IResult> SilmeKoduGonderAsync(int userId);
 
         Task<IResult> SilmeyiPlanlaAsync(int userId, HesapSilDto dto);

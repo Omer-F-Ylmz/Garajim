@@ -1,5 +1,6 @@
 using Garajim.Business.Abstract;
 using Garajim.Business.Constants;
+using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
 using Garajim.Entity.Concrete;
@@ -35,6 +36,151 @@ namespace Garajim.Business.Concrete
             _gonderimSayaci = gonderimSayaci;
             _assignmentDal = assignmentDal;
             _logger = logger ?? NullLogger<HesapManager>.Instance;
+        }
+
+        public async Task<IDataResult<ProfilDto>> ProfilAsync(int userId)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<ProfilDto>(Messages.UserNotFound);
+
+            return new SuccessDataResult<ProfilDto>(new ProfilDto
+            {
+                FullName = user.FullName,
+                Email = user.Email,
+                BildirimEvrak = user.BildirimEvrak,
+                BildirimHatirlatma = user.BildirimHatirlatma,
+                GeciciSifre = user.GeciciSifre
+            });
+        }
+
+        public async Task<IResult> ProfilGuncelleAsync(int userId, ProfilGuncelleDto dto)
+        {
+            var ad = (dto?.FullName ?? string.Empty).Trim();
+            if (ad.Length == 0)
+                return new ErrorResult(Messages.InvalidValue);
+
+            if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(ad))
+                return new ErrorResult(Messages.UygunsuzIfade);
+
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResult(Messages.UserNotFound);
+
+            user.FullName = MetinSinirlari.Kirp(ad, 100);
+            user.BildirimEvrak = dto.BildirimEvrak;
+            user.BildirimHatirlatma = dto.BildirimHatirlatma;
+            await _userDal.UpdateAsync(user);
+
+            return new SuccessResult(Messages.ProfilGuncellendi);
+        }
+
+        public async Task<IResult> EpostaKoduGonderAsync(int userId, EpostaDegistirKodDto dto)
+        {
+            var yeni = (dto?.YeniEposta ?? string.Empty).Trim().ToLowerInvariant();
+
+            if (!EpostaGecerliMi(yeni))
+                return new ErrorResult(Messages.EpostaGecersiz);
+
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResult(Messages.UserNotFound);
+
+            if (string.Equals(user.Email, yeni, StringComparison.OrdinalIgnoreCase))
+                return new ErrorResult(Messages.EpostaZatenKullanimda);
+
+            if (await _userDal.ExistsForRegistrationAsync(yeni))
+                return new ErrorResult(Messages.EpostaZatenKullanimda);
+
+            if (user.SonEpostaGonderim != null &&
+                user.SonEpostaGonderim.Value.AddSeconds(DogrulamaKodu.GonderimAraligiSaniye) > DateTime.UtcNow)
+                return new SuccessResult(Messages.EpostaKoduGonderildi);
+
+            var kod = DogrulamaKodu.Uret();
+
+            user.YeniEposta = yeni;
+            user.EpostaKodHash = DogrulamaKodu.Hashle(kod);
+            user.EpostaKodSonTarih = DateTime.UtcNow.AddMinutes(DogrulamaKodu.GecerlilikDakika);
+            user.EpostaDenemeSayisi = 0;
+            user.SonEpostaGonderim = DateTime.UtcNow;
+            await _userDal.UpdateAsync(user);
+
+            try
+            {
+                await _emailSender.SendAsync(yeni, "Garajım e-posta değişikliği kodunuz",
+                    "Garajım e-posta değişikliği kodunuz: " + kod + Environment.NewLine + Environment.NewLine +
+                    "Kod " + DogrulamaKodu.GecerlilikDakika + " dakika geçerlidir." + Environment.NewLine +
+                    "Bu isteği siz yapmadıysanız kodu kimseyle paylaşmayın; adresiniz değişmez.");
+
+                await _emailSender.SendAsync(user.Email, "Garajım e-posta değişikliği isteği",
+                    "Hesabınız için yeni bir e-posta adresi istendi: " + yeni + Environment.NewLine + Environment.NewLine +
+                    "Değişiklik ancak yeni adrese gelen kod girildiğinde tamamlanır." + Environment.NewLine +
+                    "Bu isteği siz yapmadıysanız şifrenizi değiştirin.");
+            }
+            catch (Exception hata)
+            {
+                _logger.LogWarning(hata, "E-posta değişikliği kodu gönderilemedi.");
+            }
+
+            return new SuccessResult(Messages.EpostaKoduGonderildi);
+        }
+
+        public async Task<IResult> EpostaDegistirAsync(int userId, EpostaDegistirDto dto)
+        {
+            var kod = (dto?.Kod ?? string.Empty).Trim();
+
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResult(Messages.UserNotFound);
+
+            if (string.IsNullOrWhiteSpace(user.YeniEposta) || user.EpostaKodHash == null)
+                return new ErrorResult(Messages.EpostaKoduIstenmedi);
+
+            if (user.EpostaKodSonTarih == null || user.EpostaKodSonTarih < DateTime.UtcNow ||
+                user.EpostaDenemeSayisi >= DogrulamaKodu.MaxDeneme)
+                return new ErrorResult(Messages.EpostaKoduGecersiz);
+
+            if (!DogrulamaKodu.Esit(kod, user.EpostaKodHash))
+            {
+                user.EpostaDenemeSayisi++;
+                await _userDal.UpdateAsync(user);
+                return new ErrorResult(Messages.EpostaKoduGecersiz);
+            }
+
+            if (await _userDal.ExistsForRegistrationAsync(user.YeniEposta))
+            {
+                EpostaAlanlariniTemizle(user);
+                await _userDal.UpdateAsync(user);
+                return new ErrorResult(Messages.EpostaZatenKullanimda);
+            }
+
+            user.Email = user.YeniEposta;
+            EpostaAlanlariniTemizle(user);
+            await _userDal.UpdateAsync(user);
+
+            return new SuccessResult(Messages.EpostaDegistirildi);
+        }
+
+        private static void EpostaAlanlariniTemizle(AppUser user)
+        {
+            user.YeniEposta = null;
+            user.EpostaKodHash = null;
+            user.EpostaKodSonTarih = null;
+            user.EpostaDenemeSayisi = 0;
+        }
+
+        private static bool EpostaGecerliMi(string eposta)
+        {
+            if (eposta.Length < 5 || eposta.Length > 200)
+                return false;
+
+            var at = eposta.IndexOf('@');
+            if (at <= 0 || at != eposta.LastIndexOf('@') || at == eposta.Length - 1)
+                return false;
+
+            var alan = eposta[(at + 1)..];
+
+            return alan.Contains('.') && !alan.StartsWith('.') && !alan.EndsWith('.') && !eposta.Contains(' ');
         }
 
         public async Task<IResult> SilmeKoduGonderAsync(int userId)

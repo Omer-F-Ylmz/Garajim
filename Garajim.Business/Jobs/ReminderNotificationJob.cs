@@ -170,7 +170,7 @@ namespace Garajim.Business.Jobs
                 }
             }
 
-            return alicilar.GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            return alicilar.Where(a => a.BildirimEvrak).GroupBy(a => a.Id).Select(g => g.First()).ToList();
         }
 
         private async Task SirketIcinCalistirAsync()

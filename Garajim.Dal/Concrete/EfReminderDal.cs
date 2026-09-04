@@ -19,6 +19,7 @@ namespace Garajim.Dal.Concrete
                         join v in Context.Vehicles on r.VehicleId equals v.Id
                         join u in Context.Users on v.UserId equals u.Id
                         where !r.IsCompleted
+                              && u.BildirimHatirlatma
                               && !v.Arsivli
                               && r.DueDate != null
                               && r.DueDate <= dueLimit

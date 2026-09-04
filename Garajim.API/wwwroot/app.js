@@ -523,6 +523,7 @@
         geciciSifreUyarisi(user);
         hesapDurumunuYukle();
         applyRole();
+        profiliYukle();
         loadVehicles();
         loadPendingReceipts();
     }
@@ -628,6 +629,95 @@
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
             handleError(kutu, hata);
         });
+    }
+
+    function profiliYukle() {
+        return api("/api/Account/profil").then(function (sonuc) {
+            var veri = (sonuc && sonuc.data) || {};
+
+            el("profil-ad").value = veri.fullName || "";
+            el("profil-eposta").value = veri.email || "";
+            el("profil-bildirim-evrak").checked = veri.bildirimEvrak !== false;
+            el("profil-bildirim-hatirlatma").checked = veri.bildirimHatirlatma !== false;
+        }).catch(function () { });
+    }
+
+    function profiliKaydet(event) {
+        event.preventDefault();
+
+        var acKilit = formuKilitle(event.target);
+
+        api("/api/Account/profil", {
+            method: "PUT",
+            body: {
+                fullName: el("profil-ad").value,
+                bildirimEvrak: el("profil-bildirim-evrak").checked,
+                bildirimHatirlatma: el("profil-bildirim-hatirlatma").checked
+            }
+        }).then(function (sonuc) {
+            showMessage(el("profil-mesaj"), (sonuc && sonuc.message) || "Profil güncellendi.", true);
+
+            if (state.user) {
+                state.user.fullName = el("profil-ad").value.trim();
+                saveSession(state.token, state.user);
+                enterAppEtiketiTazele();
+            }
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
+            handleError(el("profil-mesaj"), hata);
+        });
+    }
+
+    function enterAppEtiketiTazele() {
+        var user = state.user || {};
+        var etiket = user.fullName || "";
+
+        if (user.companyName) {
+            etiket = etiket ? etiket + " · " + user.companyName : user.companyName;
+        }
+
+        el("user-label").textContent = etiket;
+    }
+
+    function epostaKoduIste(event) {
+        event.preventDefault();
+
+        var acKilit = formuKilitle(event.target);
+
+        api("/api/Account/eposta-degistir-kod", {
+            method: "POST",
+            body: { yeniEposta: el("eposta-yeni").value }
+        }).then(function (sonuc) {
+            showMessage(el("eposta-mesaj"), (sonuc && sonuc.message) || "Kod gönderildi.", true);
+            el("eposta-degistir-form").classList.remove("hidden");
+            el("eposta-kod").focus();
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
+            handleError(el("eposta-mesaj"), hata);
+        });
+    }
+
+    function epostayiDegistir(event) {
+        event.preventDefault();
+
+        var acKilit = formuKilitle(event.target);
+
+        api("/api/Account/eposta-degistir", {
+            method: "POST",
+            body: { kod: el("eposta-kod").value }
+        }).then(function (sonuc) {
+            showMessage(el("eposta-mesaj"), (sonuc && sonuc.message) || "E-posta değiştirildi.", true);
+            el("eposta-degistir-form").classList.add("hidden");
+            el("eposta-yeni").value = "";
+            el("eposta-kod").value = "";
+            profiliYukle();
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
+            handleError(el("eposta-mesaj"), hata);
+        });
+    }
+
+    function bindProfil() {
+        el("profil-form").addEventListener("submit", profiliKaydet);
+        el("eposta-kod-form").addEventListener("submit", epostaKoduIste);
+        el("eposta-degistir-form").addEventListener("submit", epostayiDegistir);
     }
 
     function bindGeriBildirim() {
@@ -5877,6 +5967,7 @@
         bindTanitim();
         turBagla();
         bindGeriBildirim();
+        bindProfil();
         ornekDugmeleriniBagla();
         el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();
