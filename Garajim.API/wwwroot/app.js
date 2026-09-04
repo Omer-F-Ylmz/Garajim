@@ -48,6 +48,20 @@
         ["#ayarlar-btn", "Ayarlar", "Şifre, takvim aboneliği, plan ve ekip işlerinin tamamı burada."]
     ];
 
+    var BOS_DURUMLAR = {
+        arac: ["Araçlarını buraya ekler, bütün kayıtları tek yerde toplarsın.", "İlk aracını ekle", "#add-vehicle-btn"],
+        yakit: ["Her dolumu yazarsan ortalama tüketimini ve yakıt maliyetini görürsün.", "İlk dolumu ekle", "#fuel-date"],
+        bakim: ["Yapılan işi parçalarıyla yazarsan aracın bakım geçmişi belgeli olur.", "İlk bakımı ekle", "#maintenance-date"],
+        masraf: ["Sigorta, muayene, otopark gibi harcamalar burada toplanır.", "İlk masrafı ekle", "#expense-date"],
+        fis: ["Fişin fotoğrafını çekersen tarih, tutar ve litre otomatik dolar.", "Fiş yükle", "#receipt-file"],
+        evrak: ["Muayene ve sigorta bitişlerini girersen süresi yaklaşınca uyarı gelir.", "İlk evrakı ekle", "#evrak-tur"],
+        lastik: ["Yaz ve kış setlerini kaydedersen değişim zamanı ve set ömrü izlenir.", "İlk lastik setini ekle", "#lastik-tarih"],
+        hasar: ["Kaza ve hasarları fotoğraflarıyla dosyalarsan tutanak çıktısı hazır olur.", "Hasar dosyası aç", "#hasar-yeni"],
+        yolculuk: ["Görev ve özel yolculukları ayırırsan iş kilometresi raporlanabilir.", "İlk yolculuğu ekle", "#yolculuk-tarih"],
+        karne: ["Aracın bakım geçmişini tek bağlantıyla paylaşırsın; satarken alıcı geçmişi görür.", "Bağlantı oluştur", "#karne-olustur"],
+        ekip: ["Yönetici ve sürücü ekleyip araçları zimmetleyebilirsin.", "İlk üyeyi ekle", "#team-name"]
+    };
+
     var TEAM_ROLES = [
         ["Manager", "Yönetici"],
         ["Driver", "Sürücü"],
@@ -560,12 +574,15 @@
         if (hasVehicles) {
             return;
         }
+        var kap = el("empty-kutu");
+        clear(kap);
+
         if (canManage()) {
             el("empty-title").textContent = "Henüz aracınız yok";
-            el("empty-text").textContent = "Kayıt tutmaya başlamak için üstteki + Araç düğmesiyle bir araç ekleyin.";
+            kap.appendChild(bosDurumKutusu("arac"));
         } else {
             el("empty-title").textContent = "Size zimmetli araç yok";
-            el("empty-text").textContent = "Bir araç zimmetlendiğinde kayıtları burada görürsünüz. Zimmet için şirket yöneticinize başvurun.";
+            kap.appendChild(make("p", "Bir araç zimmetlendiğinde kayıtları burada görürsünüz. Zimmet için şirket yöneticinize başvurun."));
         }
     }
 
@@ -835,6 +852,70 @@
         }
     }
 
+    function bosDurumHedefi(secici) {
+        var hedef = document.querySelector(secici);
+        if (!hedef) {
+            return;
+        }
+
+        if (hedef.tagName === "BUTTON") {
+            hedef.click();
+            return;
+        }
+
+        hedef.scrollIntoView({ block: "center" });
+        hedef.focus();
+    }
+
+    function bosDurumKutusu(anahtar) {
+        var tanim = BOS_DURUMLAR[anahtar];
+        if (!tanim) {
+            return null;
+        }
+
+        var kutu = document.createElement("div");
+        kutu.className = "bos-durum";
+        kutu.appendChild(make("p", tanim[0]));
+
+        var dugme = make("button", tanim[1], "primary compact");
+        dugme.type = "button";
+        dugme.addEventListener("click", function () { bosDurumHedefi(tanim[2]); });
+        kutu.appendChild(dugme);
+
+        return kutu;
+    }
+
+    function bosSatir(tbody, sutun, anahtar) {
+        var kutu = bosDurumKutusu(anahtar);
+        if (!kutu) {
+            return;
+        }
+
+        var satir = document.createElement("tr");
+        satir.className = "empty-row";
+
+        var hucre = document.createElement("td");
+        hucre.colSpan = sutun;
+        hucre.appendChild(kutu);
+
+        satir.appendChild(hucre);
+        tbody.appendChild(satir);
+    }
+
+    function bosKutuyaCiz(kapId, anahtar) {
+        var kap = el(kapId);
+        if (!kap) {
+            return;
+        }
+
+        clear(kap);
+
+        var kutu = bosDurumKutusu(anahtar);
+        if (kutu) {
+            kap.appendChild(kutu);
+        }
+    }
+
     function emptyRow(tbody, columns, text) {
         var row = document.createElement("tr");
         row.className = "empty-row";
@@ -859,7 +940,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 8, "Kayıt yok.");
+                bosSatir(tbody, 8, "bakim");
                 return;
             }
             rows.forEach(function (item) {
@@ -1026,7 +1107,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 5, "Kayıt yok.");
+                bosSatir(tbody, 5, "ekip");
                 return;
             }
             rows.forEach(function (item) {
@@ -1143,7 +1224,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 6, "Kayıt yok.");
+                bosSatir(tbody, 6, "yakit");
                 return;
             }
             rows.forEach(function (item) {
@@ -1176,7 +1257,7 @@
             var rows = (result && result.data) || [];
             clear(tbody);
             if (rows.length === 0) {
-                emptyRow(tbody, 5, "Kayıt yok.");
+                bosSatir(tbody, 5, "masraf");
                 return;
             }
             rows.forEach(function (item) {
@@ -1557,7 +1638,7 @@
         clear(tbody);
 
         if (kayitlar.length === 0) {
-            emptyRow(tbody, 9, "Bu araç için yolculuk kaydı yok.");
+            bosSatir(tbody, 9, "yolculuk");
             return;
         }
 
@@ -2081,7 +2162,7 @@
         clear(tbody);
 
         if (setler.length === 0) {
-            emptyRow(tbody, 8, "Bu araç için lastik seti kaydı yok.");
+            bosSatir(tbody, 8, "lastik");
             return;
         }
 
@@ -2689,7 +2770,7 @@
             clear(tbody);
 
             if (liste.length === 0) {
-                emptyRow(tbody, 7, "Bu araçta hasar dosyası yok.");
+                bosSatir(tbody, 7, "hasar");
                 return;
             }
 
@@ -4186,6 +4267,13 @@
             rozet.classList.toggle("hidden", rows.length === 0);
             el("receipt-pending-title").classList.toggle("hidden", rows.length === 0);
 
+            if (rows.length === 0) {
+                var bos = document.createElement("li");
+                bos.className = "bos-satir";
+                bos.appendChild(bosDurumKutusu("fis"));
+                liste.appendChild(bos);
+            }
+
             rows.forEach(function (item) {
                 var li = document.createElement("li");
                 var ozet = item.orijinalAd;
@@ -4410,7 +4498,7 @@
         clear(tbody);
 
         if (rows.length === 0) {
-            emptyRow(tbody, 7, "Evrak kaydı yok.");
+            bosSatir(tbody, 7, "evrak");
             return;
         }
 
@@ -4912,6 +5000,8 @@
     }
 
     function karneSonucGoster(veri) {
+        clear(el("karne-bos"));
+
         el("karne-sonuc").classList.remove("hidden");
         el("karne-url").textContent = veri.url;
         el("karne-goruntulenme").textContent = "Görüntülenme: " + (veri.goruntulenmeSayisi || 0);
@@ -4943,6 +5033,7 @@
             kutu.classList.toggle("hidden", !acilacak);
             if (acilacak) {
                 el("karne-sonuc").classList.add("hidden");
+                bosKutuyaCiz("karne-bos", "karne");
             }
         });
 

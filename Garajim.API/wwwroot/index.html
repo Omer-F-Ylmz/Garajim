@@ -431,6 +431,7 @@
         </section>
 
         <section id="karne-box" class="panel hidden">
+            <div id="karne-bos"></div>
             <h2>Karne paylaş</h2>
             <p class="hint">Aracın belgeli geçmişini bağlantıyla paylaşın; hangi bölümlerin görüneceğini siz seçin.</p>
             <form id="karne-form" class="grid-form">
@@ -451,7 +452,7 @@
                     <input id="karne-sure" type="number" min="1" placeholder="Boş bırakılırsa 90 gün">
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="primary">Bağlantı oluştur</button>
+                    <button id="karne-olustur" type="submit" class="primary">Bağlantı oluştur</button>
                     <button id="karne-kapat" type="button" class="ghost">Paylaşımı kapat</button>
                     <button id="karne-close" type="button" class="ghost">Kapat</button>
                 </div>
@@ -622,7 +623,7 @@
 
         <div id="empty-state" class="panel hidden">
             <h2 id="empty-title">Henüz aracınız yok</h2>
-            <p id="empty-text">Kayıt tutmaya başlamak için üstteki <strong>+ Araç</strong> düğmesiyle bir araç ekleyin.</p>
+            <div id="empty-kutu"></div>
         </div>
 
         <div id="workspace" class="hidden">
