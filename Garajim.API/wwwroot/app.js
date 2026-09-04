@@ -408,7 +408,7 @@
         el("plan-form").classList.toggle("hidden", !isOwner());
         el("karne-btn").classList.toggle("hidden", !canManage());
         el("arsiv-btn").classList.toggle("hidden", !canManage());
-        el("vehicle-arsivle").classList.toggle("hidden", !canManage());
+
         el("hesap-sil-kod").classList.toggle("hidden", !isOwner());
         el("uye-hesap-sil").classList.toggle("hidden", isOwner());
 
@@ -1482,7 +1482,7 @@
     }
 
     function arsivSecenegiIleArsivle() {
-        var arac = seciliArac();
+        var arac = duzenlenenArac();
         if (!arac) {
             return;
         }
@@ -1672,6 +1672,14 @@
         el("katalog-serit-metin").textContent =
             arac.plate + " için model katalogda yok; değer tahmini için listeden seçin.";
         serit.classList.remove("hidden");
+    }
+
+    function duzenlenenArac() {
+        if (state.duzenlenenAracId === null) {
+            return null;
+        }
+
+        return state.vehicles.filter(function (v) { return v.id === state.duzenlenenAracId; })[0] || null;
     }
 
     function seciliArac() {
@@ -4912,6 +4920,8 @@
         el("vehicle-acil-ad").value = (arac && arac.acilKisiAd) || "";
         el("vehicle-acil-tel").value = (arac && arac.acilKisiTelefon) || "";
         el("vehicle-acil-not").value = (arac && arac.acilNot) || "";
+
+        el("vehicle-arsivle").classList.toggle("hidden", !arac || !canManage());
 
         el("vehicle-km-onay").checked = false;
         el("vehicle-km-neden").value = "";

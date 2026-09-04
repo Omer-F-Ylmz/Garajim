@@ -64,6 +64,29 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
+        public void ArsivleDugmesiDuzenlenenAracaBaglidir()
+        {
+            var app = Oku("app.js");
+            var baslangic = app.IndexOf("function arsivSecenegiIleArsivle()", StringComparison.Ordinal);
+            var bitis = app.IndexOf("function tescilUyarisiniGuncelle", baslangic, StringComparison.Ordinal);
+
+            Assert.True(baslangic > 0);
+
+            var govde = app.Substring(baslangic, bitis - baslangic);
+
+            Assert.Contains("duzenlenenArac()", govde);
+            Assert.DoesNotContain("seciliArac()", govde);
+        }
+
+        [Fact]
+        public void YeniAracModundaArsivleDugmesiGizlenir()
+        {
+            var app = Oku("app.js");
+
+            Assert.Contains("el(\"vehicle-arsivle\").classList.toggle(\"hidden\", !arac || !canManage());", app);
+        }
+
+        [Fact]
         public void FormTumAlanlariTasir()
         {
             var app = Oku("app.js");
