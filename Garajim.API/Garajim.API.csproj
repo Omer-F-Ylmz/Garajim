@@ -56,7 +56,7 @@
     </MsDeploySkipRules>
   </ItemGroup>
 
-  <UsingTask TaskName="YenilikleriUret" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+  <UsingTask TaskName="YenilikleriUret" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Kaynak ParameterType="System.String" Required="true" />
       <Hedef ParameterType="System.String" Required="true" />
@@ -112,8 +112,8 @@
     </Task>
   </UsingTask>
 
-  <Target Name="DegisiklikGunlugunuCevir" BeforeTargets="BeforeBuild">
-    <YenilikleriUret Kaynak="$(MSBuildProjectDirectory)\..\CHANGELOG.md" Hedef="$(MSBuildProjectDirectory)\wwwroot\yenilikler.json" />
+  <Target Name="DegisiklikGunlugunuCevir" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)/../CHANGELOG.md')">
+    <YenilikleriUret Kaynak="$(MSBuildProjectDirectory)/../CHANGELOG.md" Hedef="$(MSBuildProjectDirectory)/wwwroot/yenilikler.json" />
   </Target>
 
 </Project>

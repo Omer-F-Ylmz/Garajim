@@ -7,6 +7,7 @@ COPY Garajim.Dal/Garajim.Dal.csproj Garajim.Dal/
 COPY Garajim.Business/Garajim.Business.csproj Garajim.Business/
 COPY Garajim.ML/Garajim.ML.csproj Garajim.ML/
 COPY Garajim.API/Garajim.API.csproj Garajim.API/
+COPY CHANGELOG.md ./
 RUN dotnet restore Garajim.API/Garajim.API.csproj -r linux-x64
 
 COPY Garajim.Core/ Garajim.Core/
