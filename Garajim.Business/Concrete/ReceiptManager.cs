@@ -379,8 +379,8 @@ namespace Garajim.Business.Concrete
                     Date = dto.Tarih.Date,
                     Km = dto.Km ?? vehicle.CurrentKm,
                     Cost = dto.Tutar,
-                    ServiceName = dto.ServisAdi,
-                    Note = dto.Not
+                    ServiceName = MetinSinirlari.Kirp(dto.ServisAdi, MetinSinirlari.ServisAdi),
+                    Note = MetinSinirlari.Kirp(dto.Not, MetinSinirlari.Not)
                 };
                 await _maintenanceDal.AddAsync(record);
                 maintenanceRecordId = record.Id;
@@ -416,7 +416,7 @@ namespace Garajim.Business.Concrete
                     Category = dto.MasrafKategorisi ?? ExpenseCategory.Diger,
                     Date = dto.Tarih.Date,
                     Amount = dto.Tutar,
-                    Note = dto.Not
+                    Note = MetinSinirlari.Kirp(dto.Not, MetinSinirlari.Not)
                 };
                 await _expenseDal.AddAsync(record);
                 olusturulan.Id = record.Id;

@@ -74,8 +74,8 @@ namespace Garajim.Business.Concrete
                 Date = dto.Date,
                 Km = dto.Km,
                 Cost = dto.Cost,
-                ServiceName = dto.ServiceName,
-                Note = dto.Note
+                ServiceName = MetinSinirlari.Kirp(dto.ServiceName, MetinSinirlari.ServisAdi),
+                Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not)
             };
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
@@ -124,8 +124,8 @@ namespace Garajim.Business.Concrete
             record.Date = dto.Date;
             record.Km = dto.Km;
             record.Cost = dto.Cost;
-            record.ServiceName = dto.ServiceName;
-            record.Note = dto.Note;
+            record.ServiceName = MetinSinirlari.Kirp(dto.ServiceName, MetinSinirlari.ServisAdi);
+            record.Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not);
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
 
@@ -208,10 +208,10 @@ namespace Garajim.Business.Concrete
                     MaintenanceRecordId = record.Id,
                     VehicleId = record.VehicleId,
                     ParcaTuru = parca.ParcaTuru,
-                    Aciklama = parca.Aciklama,
+                    Aciklama = MetinSinirlari.Kirp(parca.Aciklama, MetinSinirlari.ParcaAciklama),
                     Adet = parca.Adet,
                     Tutar = parca.Tutar,
-                    Marka = parca.Marka
+                    Marka = MetinSinirlari.Kirp(parca.Marka, MetinSinirlari.ParcaMarka)
                 });
             }
         }

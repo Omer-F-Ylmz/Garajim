@@ -57,7 +57,7 @@ namespace Garajim.Business.Concrete
                 Type = dto.Type,
                 DueDate = dto.DueDate,
                 DueKm = dto.DueKm,
-                Note = dto.Note,
+                Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not),
                 IsCompleted = false,
                 CreatedAt = DateTime.UtcNow
             };

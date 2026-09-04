@@ -45,7 +45,7 @@ namespace Garajim.Business.Concrete
                 Category = dto.Category,
                 Date = dto.Date,
                 Amount = dto.Amount,
-                Note = dto.Note
+                Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not)
             };
             await _expenseDal.AddAsync(record);
             return new SuccessDataResult<ExpenseDto>(MapToDto(record), Messages.RecordAdded);
