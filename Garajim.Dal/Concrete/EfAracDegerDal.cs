@@ -36,13 +36,13 @@ namespace Garajim.Dal.Concrete
 
         public async Task<int> GunlukTahminSayisiAsync(int vehicleId, DateTime gun)
         {
-            var ertesi = gun.Date.AddDays(1);
+            var ertesi = gun.AddDays(1);
 
             return await Context.AracDegerleri
                 .AsNoTracking()
                 .CountAsync(d => d.VehicleId == vehicleId
                                  && d.Kaynak == DegerKaynagi.Tahmin
-                                 && d.OlusturmaTarihi >= gun.Date
+                                 && d.OlusturmaTarihi >= gun
                                  && d.OlusturmaTarihi < ertesi);
         }
 
