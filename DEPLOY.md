@@ -2,7 +2,7 @@
 
 MonsterASP.NET üzerine Web Deploy (MSDeploy) ile yayın içindir. Adımları sırayla uygula; bir adım beklenenden farklı sonuç verirse **dur**, sonraki adıma geçme.
 
-Yayın öncesi durum: 929 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
+Yayın öncesi durum: 1388 test yeşil, Release derlemesi 0 uyarı / 0 hata, CI `main` üzerinde başarılı.
 
 ## 1. Veritabanı yedeği (atlanamaz)
 
@@ -30,6 +30,12 @@ Yayın penceresinde uygulanacak migration'ların tamamı **yalnız eklemelidir**
 | `AiTokenVeFisTokenlari` | `AiTokenSayaclari` tablosunu açar, `ReceiptDrafts`'a token kolonlarını ekler |
 | `KmTazeligiVeKarneVarsayilani` | `Vehicles`'a `SonKmGuncelleme` kolonu ekler |
 | `AracModelEslesmedi` | `Vehicles`'a `ModelEslesmedi bit NOT NULL DEFAULT 0` kolonu ekler |
+| `KurulumGizlendi` | `Users`'a `KurulumGizlendi bit NOT NULL DEFAULT 0` kolonu ekler |
+| `TurTamamlandi` | `Users`'a `TurTamamlandi bit NOT NULL DEFAULT 0` kolonu ekler |
+| `OrnekArac` | `Vehicles`'a `Ornek bit NOT NULL DEFAULT 0` kolonu ekler |
+| `GeriBildirim` | `GeriBildirimler` tablosunu ve iki indeksini açar |
+| `ProfilVeBildirimTercihleri` | `Users`'a `BildirimEvrak` ve `BildirimHatirlatma` (ikisi de **varsayılan true**) ile e-posta değişikliği kolonlarını ekler |
+| `YonetimKotaHatasi` | `AiTokenSayaclari`'na `KotaHatasi int NOT NULL DEFAULT 0` kolonu ekler |
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
@@ -47,7 +53,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **39** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
+Repoda bugün **45** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -65,6 +71,16 @@ Repoda bugün **39** migration var. Canlı Sprint 2 şemasındaysa (son uygulana
 Sayım beklenenden farklıysa **dur**: canlı şema tahmin ettiğinden eski ya da yeni demektir. Hangi migration'ların uygulanacağını görmeden yayına çıkma; `dotnet ef migrations list` ile karşılaştır.
 
 ## 2. Panel ortam değişkenleri
+
+### Sprint ONBOARDING ile gelen değişken
+
+| Değişken | Durum | Not |
+|---|---|---|
+| `App__YoneticiEposta` | Yönetim paneli için zorunlu | Tek adres. Bu hesap `/api/Yonetim/*` uçlarını ve `yonetim.html` sayfasını açar; boş bırakılırsa panel herkese 403 döner ve uygulamanın geri kalanı etkilenmez. Bu yayında `omery3899@gmail.com` girilecek |
+
+Yeni bir zorunlu değişken yok. Onboarding akışının kalanı (kurulum çubuğu, ürün turu, boş durumlar, örnek araç, yardım sayfası, geri bildirim, profil, PWA ipucu) yapılandırma istemez. Geri bildirim e-postası mevcut `App__DestekEposta` adresine gider; boşsa kayıt yine tutulur, yalnız e-posta gönderilmez.
+
+
 
 Yayından **önce** ayarla:
 
@@ -144,6 +160,11 @@ Belge ikinci yayından sonra kayıpsa: `Documents__StoragePath`'i site kökü d�
 17. **Arşiv**: bir aracı arşivle; aktif listeden düşmeli, plan limiti bir azalmalı, arşivli araca masraf eklemek **409** dönmeli, paylaşılmış karne bağlantısı hâlâ **200** vermeli.
 18. **Hangfire panosu**: `demo-sifirlama` (03:30), `hesap-silme` (03:00), `usta-cozum-ozeti` (04:00), `fis-temizleme` (04:30), `usta-saklama` (05:00) ve `reminder-notifications` (06:00) kayıtlı mı ve **Türkiye saatinde** mi görünüyor?
 19. **Sürüm şeridi**: yayından sonra açık kalmış bir sekmede en fazla 15 dakika içinde "Yeni sürüm var" şeridi çıkmalı; `curl -I https://<site>/` yanıtında `X-App-Version` bulunmalı.
+
+20. **Onboarding**: yeni bir hesapla gir — üstte üç adımlı kurulum çubuğu ve ürün turu açılıyor mu? Turu Esc ile kapat, Ayarlar → "Turu tekrar göster" yeniden açıyor mu? "Örnek araçla dene" düğmesi altı aylık kayıtlarla dolu aracı oluşturuyor mu, Ayarlar'dan temizce siliniyor mu?
+21. **Yardım ve geri bildirim**: `https://<site>/yardim.html` girişsiz açılıyor, arama süzüyor ve destek adresi görünüyor mu? Uygulamada sağ alttaki "Geri bildirim" düğmesinden mesaj gönder — destek kutusuna e-posta düştü mü?
+22. **Yönetim**: `App__YoneticiEposta` girildikten sonra o hesapla `https://<site>/yonetim.html` açılıyor mu? Başka bir hesapla 403 mü dönüyor?
+23. **SEO ve yenilikler**: `https://<site>/robots.txt`, `https://<site>/sitemap.xml` ve `https://<site>/yenilikler.html` 200 dönüyor mu? Ana sayfanın kaynağındaki `og:image` adresi (`/img/og.png`) 200 mü?
 
 Adım 1 veya 2 başarısızsa devam etme, bölüm 5'e geç.
 

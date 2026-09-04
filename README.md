@@ -187,6 +187,7 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Plan__FiloAracLimiti` | Opsiyonel | `25` | Filo paketinde araç üst sınırı |
 | `Plan__DavetMaxEkArac` | Opsiyonel | `3` | Davetle kazanılabilecek en fazla ek araç (Bireysel); `0` kapatır |
 | `App__DestekEposta` | Plan talebi için zorunlu | boş | Boşsa `POST /api/plan/yukseltme-talebi` 400 döner; talep sessizce yutulmaz |
+| `App__YoneticiEposta` | Yönetim paneli için zorunlu | boş | Tek adres; giriş yapmış kullanıcının e-postası buna eşitse `/api/Yonetim/*` ve `yonetim.html` açılır. Boşsa panel herkese 403 döner |
 | `Usta__ApiKey` | AI Usta için zorunlu | boş | Boşsa `Receipts__ApiKey` kullanılır; ikisi de boşsa uç 502 döner |
 | `Usta__Model` | Opsiyonel | `Receipts__Model` → `gemini-2.5-flash` | AI Usta için model kimliği |
 | `Usta__OnaySurumu` | Opsiyonel | `2026-09-v1` | Onay metni sürümü; değişirse kullanıcıdan yeniden onay istenir |
@@ -197,6 +198,29 @@ Ortam değişkenleri `appsettings.json` içindeki değerlerin üzerine yazar, do
 | `Usta__SahteYanit` | Yalnız geliştirme | `false` | Açıkken model çağrılmaz, sabit örnek yanıt döner; **Production ortamında açıksa uygulama başlamaz** |
 | `DemoSeed__Enabled` | Opsiyonel | `false` | Açıkken eksik demo verisi tamamlanır, mevcut veriye dokunulmaz |
 | `ApplyMigrationsAtStartup` | Opsiyonel | `false` | Açıkken açılışta migration uygular |
+
+## Onboarding
+
+Yeni hesabın ilk on dakikası dört parçadan oluşur; hepsi Owner ve Manager rollerinde çalışır, Driver'da gizlenir.
+
+- **Kurulum çubuğu** — `GET /api/Kurulum` üç adımın durumunu döner (`aracVar`, `ilkKayitVar`, `evrakVar`) ve yüzdeyi hesaplar. Durum dinamiktir, kayıt tutulmaz; yalnız kullanıcının çubuğu kapatması `AppUser.KurulumGizlendi` ile saklanır (`POST /api/Kurulum/gizle`). Örnek araç adımları tamamlamaz, çünkü kullanıcının kendi aracını eklemesi beklenir.
+- **Ürün turu** — altı adımlık spotlight (araç kartı, fiş yükle, bakım, evrak, karne, ayarlar). Kendi bileşenidir, dış kütüphane yoktur; Esc kapatır, ok tuşları gezinir. Hedefi görünmeyen adım atlanır. İlk girişte otomatik açılır, `POST /api/Kurulum/tur-tamam` bayrağı yazar, Ayarlar'daki "Turu tekrar göster" yeniden başlatır.
+- **Boş durumlar** — on bir sekmede (araç, yakıt, bakım, masraf, fiş, evrak, lastik, hasar, yolculuk, karne, ekip) tek bileşen: bir cümle açıklama ve doğrudan forma götüren düğme. Tanımlar `BOS_DURUMLAR` sözlüğünde durur; hedefler CSS seçicisidir ve testle HTML'de var olduğu doğrulanır.
+- **Örnek araç** — `POST /api/Vehicles/ornek` "34 ORN 001" plakalı Fiat Egea 2019 aracı altı aylık gerçekçi kayıtlarla açar: altı tam dolum, iki bakım (parçalarıyla), bir masraf, 20 gün sonra biten muayene ve bir yaz lastiği seti. `Vehicle.Ornek` bayrağı plan limiti sayımlarının dışındadır ve karne paylaşımını 400 ile reddeder. İkinci çağrı 409 döner, `DELETE /api/Vehicles/ornek` aracı kayıtları ve belgeleriyle siler.
+
+## Yardım ve geri bildirim
+
+`wwwroot/yardim.html` girişsiz açılır ve soruları `GET /api/Yardim/sss` ucundan alır. İçerik `Garajim.Business/Katalog/yardim-sss.json` dosyasındadır ve **veridir**: `{id, baslik, cevap, anahtarlar[]}` şemasıyla yeni soru eklemek için kod değişmez. Aynı dosya açılışta `uygulama-kullanim` kategorisiyle AI Usta bilgi tabanına yüklenir, böylece "karneyi nasıl paylaşırım" gibi uygulama soruları da yanıtlanabilir.
+
+Geri bildirim `POST /api/GeriBildirim` ile gelir: tür (Hata / Öneri / Diğer), 1000 karaktere kadar mesaj, açık olan sayfa ve sürüm otomatik eklenir. Kullanıcı başına günde beş kayıt sınırı vardır (aşılırsa 429), metin uygunsuz ifade filtresinden geçer ve `App__DestekEposta` doluysa destek adresine e-posta gider.
+
+## Yönetim paneli
+
+`wwwroot/yonetim.html` yalnız `App__YoneticiEposta` ile eşleşen hesaba açılır; kapı `YoneticiKapisi` filtresidir ve e-postayı token'dan değil veritabanından okur, böylece adres değişince kapı da güncel kalır. Diğer herkes 403 alır ve sayfa `robots.txt` ile aramaya kapalıdır, service worker önbelleğine girmez.
+
+`GET /api/Yonetim/ozet` şunları döner: toplam şirket / kullanıcı / araç, son 30 günün günlük yeni kayıt serisi, fiş sayısı ve doğruluk oranı (`DuzeltilenAlanlar` boş olan elle onaylı fişlerin payı), oto onay oranı, aylık AI token ve tahmini maliyet, kota hatası sayısı, karne paylaşım oranı, davet → kayıt oranı, AI Usta durumu, bellek sayaçları ve son 20 geri bildirim. `POST /api/Yonetim/demo-sifirla` demo şirketini yeniden kurar.
+
+Özet kiracılar arası okuma yapar ama filtre atlamaz: şirketler tek tek dolaşılır ve her biri kendi `SystemScope` bloğunda okunur. Kota hatası sayacı `AiTokenSayaci.KotaHatasi` kolonundadır; hem aylık token tavanı aşıldığında hem sağlayıcı kotası dolduğunda artar.
 
 ## Fişten otomatik kayıt
 
@@ -391,6 +415,25 @@ Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (
 - `GET|POST /api/vehicles/{id}/deger`, `POST /api/vehicles/{id}/deger/tahmin`, `PUT /api/vehicles/{id}/kasa-tipi`
 - `POST /api/price/estimate`
 
+
+### Onboarding ve yönetim uçları
+
+| Uç | Yetki | Not |
+|---|---|---|
+| `GET /api/Kurulum` | Owner/Manager | Kurulum çubuğu durumu ve yüzdesi |
+| `POST /api/Kurulum/gizle` | Owner/Manager | Kurulum çubuğunu kalıcı gizler |
+| `POST /api/Kurulum/tur-tamam` | Owner/Manager | Ürün turunu tamamlandı işaretler |
+| `POST /api/Vehicles/ornek` | Owner/Manager | Örnek aracı kayıtlarıyla açar (ikinci çağrı 409) |
+| `DELETE /api/Vehicles/ornek` | Owner/Manager | Örnek aracı ve kayıtlarını siler |
+| `GET /api/Yardim/sss` | Anonim | Yardım sayfasının soruları ve destek adresi |
+| `POST /api/GeriBildirim` | Girişli | Geri bildirim gönderir (günde 5) |
+| `GET /api/GeriBildirim` | Girişli | Şirketin son geri bildirimleri |
+| `GET/PUT /api/Account/profil` | Girişli | Ad ve bildirim tercihleri |
+| `POST /api/Account/eposta-degistir-kod` | Girişli | Yeni adrese kod gönderir |
+| `POST /api/Account/eposta-degistir` | Girişli | Kodu doğrulayıp e-postayı değiştirir |
+| `GET /api/Saglik/ping` | Anonim | Ayakta mı? Yalnız `ok` döner, veri taşımaz |
+| `GET /api/Yonetim/ozet` | Yönetici | Ürün ve altyapı özeti |
+| `POST /api/Yonetim/demo-sifirla` | Yönetici | Demo verisini yeniden kurar |
 
 ## Fiyat Tahmini (ML.NET)
 

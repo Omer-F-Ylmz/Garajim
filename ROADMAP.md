@@ -260,6 +260,26 @@ Marka ve model serbest metindi; aynı araç "VW", "Volkswagen", "wolkswagen" ola
 
 Belirsiz üç seri ilan çoğunluğuyla bağlandı: `Leon` → Seat (467'ye 13), `S` → Mercedes - Benz (73'e 1), `416` → Rover (6'ya 1). Kataloğa girmeyen ticari araçlar (`Transit` gibi) serbest metin olarak eklenir ve değer tahmini alamaz.
 
+## Sprint ONBOARDING — TAMAMLANDI
+
+İlk on dakikayı ve ürünün kendini anlatmasını hedefleyen tur. On üç madde, on üç commit, test 1286 → 1388.
+
+- [x] **M1 Kurulum çubuğu** — `GET/POST /api/Kurulum`, üç adım (araç, ilk kayıt, evrak), yüzde, kalıcı gizleme; Driver'da görünmez
+- [x] **M2 Ürün turu** — kendi spotlight bileşeni, altı adım, Esc ve ok tuşları, görünmeyen adımı atlama, Ayarlar'dan tekrar
+- [x] **M3 Boş durumlar** — on bir sekmede tek bileşen (`bosDurumKutusu` / `bosSatir`), hedef düğmeler testle HTML'de doğrulanıyor
+- [x] **M4 Yardım** — `yardim-sss.json` (30 soru), girişsiz `yardim.html`, istemci tarafı arama, anchor; aynı dosya `uygulama-kullanim` kategorisiyle AI Usta bilgi tabanında
+- [x] **M5 Örnek araç** — altı aylık gerçekçi kayıtlar, plan limiti dışı, karne paylaşımı 400, ikinci çağrı 409, temiz silme
+- [x] **M6 Tanıtım sayfası** — nasıl çalışır, uygulamadan dört gerçek ekran görüntüsü, paketler, altı SSS, güven bölümü, destek adresi
+- [x] **M7 Geri bildirim** — `GeriBildirim` entity'si, günde beş sınırı (429), uygunsuz ifade filtresi, destek e-postası
+- [x] **M8 Profil** — ad değişikliği, iki adımlı e-posta değişimi (kod yeni adrese, bilgi eskiye), bildirim tercihleri job'larda geçerli
+- [x] **M9 PWA ipucu** — Android `beforeinstallprompt`, iOS "Ana Ekrana Ekle" şeridi (30 gün ertelenebilir), anonim `GET /api/Saglik/ping`
+- [x] **M10 Yönetim paneli** — `App__YoneticiEposta` ile tek adres, ürün ve altyapı özeti, `AiTokenSayaci.KotaHatasi`, demo sıfırlama
+- [x] **M11 SEO** — meta ve canonical, `og.png` (1200×630), `robots.txt`, `sitemap.xml`
+- [x] **M12 Yenilikler** — `CHANGELOG.md` → build'de `yenilikler.json` → `yenilikler.html`; sürüm şeridinde "Neler değişti?"
+- [x] **M13 Belgeler** — README, DEPLOY, CLAUDE.md, ROADMAP
+
+Ölçülemeyen: Lighthouse erişilebilirlik skoru. Bu makinede Node ve Lighthouse CLI yok, DevTools dışından çalıştırılamıyor. Yerine denetimler betikle koşuldu (alt metin, etiket, düğme adı, başlık sırası, `lang`, viewport, dokunma hedefi); doğrulama ve sıfırlama kod kutularındaki on etiketsiz girdiye `aria-label` eklendi. Skor bir sonraki turda tarayıcıdan okunmalı.
+
 ## Gelir → Usta musluğu
 
 AI Usta değişken maliyetli tek özellik. Ücretsiz katmanda kota model başına günde 20 istek, yani tanıtım dışında taşımıyor. Sıra: önce ödeme akışı, sonra `Usta__Enabled` açılır ve `Ai__AylikTokenTavani` gelire göre ayarlanır. Bayrak bugün kapatılabilir durumda, kapatınca uygulamanın geri kalanı etkilenmiyor.
@@ -273,6 +293,7 @@ Yurt dışı plakalı ve katalog dışı araçlar için marka/model kataloğunun
 Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklardan okunacak:
 
 - [ ] **Kalibrasyon sonucu** — ilk 30 Türk fişinde `tools/Garajim.Calibration` çalıştırılıp `alanDogruluk` raporlanır; %85 eşiğinin altındaysa prompt revizyonu turu açılır.
+- [ ] **Lighthouse ölçümü** — tanıtım ve yardım sayfası için erişilebilirlik ve performans skoru tarayıcıdan okunur; hedef erişilebilirlikte ≥90.
 - [ ] **Kill-criteria ölçümü** — tutunma (`GET /api/Receipts/stats`) ve karne paylaşım oranı (`GET /api/Vehicles/karne-stats`) 30. günde okunur ve eşiklerle karşılaştırılır.
 
 ## Denetim ve düzeltmeler

@@ -82,6 +82,28 @@ Bu yüzden:
 
 Karşı sürücünün adı, telefonu, kimlik ve sürücü belgesi bilgisi veritabanına yazılmaz. Bu alanlar yalnız yazdırılan tutanak çıktısında elle doldurulacak boş satır olarak durur. Yeni bir tutanak/teslim-iade akışı eklenirken aynı kural geçerlidir: uygulamanın işine yarayan alan (plaka, sigorta şirketi, poliçe no) saklanır, kişiyi tanımlayan alan saklanmaz.
 
+### Yardım SSS'i veridir, kod değildir
+
+`Business/Katalog/yardim-sss.json` yardım sayfasının ve AI Usta'nın uygulama bilgisinin tek kaynağıdır. Şema `{id, baslik, cevap, anahtarlar[]}`; yeni soru eklemek için kod değişmez, dosyaya satır eklenir. `YardimSss.Yukle` id tekilliğini ve alan doluluğunu doğrular, bozuk şemada `InvalidOperationException` atar.
+
+Aynı dosya açılışta `uygulama-kullanim` kategorisiyle AI Usta bilgi tabanına dönüştürülür (`YardimSss.BilgiKayitlari`). Bu yüzden `anahtarlar` yalnız arama için değil, `BilgiSecici` için de tuning yüzeyidir: kullanıcının yazacağı çekimli biçimleri de (örn. "karneyi", "paylaşırım") listeye eklemek gerekir, yoksa soru kayda düşmez.
+
+### Yönetim paneli tek adresle açılır ve filtre atlamaz
+
+Süper admin politikası tek bir yapılandırma değeridir: `App__YoneticiEposta`. `YoneticiKapisi` filtresi e-postayı JWT'den değil `GetForAuthenticationByIdAsync` ile veritabanından okur, böylece kullanıcı adresini değiştirince kapı da güncel kalır. Değer boşsa panel herkese 403 döner; ikinci bir yönetici adresi eklenmez, gerekirse rol tabanlı bir çözüm tasarlanır.
+
+Yönetim özeti kiracılar arası okur ama `IgnoreQueryFilters()` **kullanmaz**: şirketler tek tek dolaşılır ve her biri kendi `SystemScope` bloğunda okunur. Filtre istisnası listesine altıncı dosya eklenmez.
+
+### Örnek araç plan limitinin dışındadır
+
+`Vehicle.Ornek` işaretli araç deneme amaçlıdır: plan limiti sayımlarına girmez (`VehicleManager.AddAsync`, `ArsivdenAlAsync`, `PlanManager`), kurulum çubuğundaki "araç ekle" adımını tamamlamaz ve karne paylaşımını `Messages.OrnekAracKarnePaylasamaz` ile reddeder. Şirket başına en fazla bir tane açılır (ikincisi 409), `DELETE /api/Vehicles/ornek` aracı normal silme yolundan geçirir; böylece belgeler ve kota da temizlenir.
+
+Örnek aracın alt kayıtları DAL'a doğrudan yazılmaz, ilgili servislerden geçer — tüketim bayrağı, evrak durumu ve parça hafızası gerçek kayıtlarla aynı yoldan hesaplansın diye.
+
+### Sürüm listesi CHANGELOG'dan üretilir
+
+`CHANGELOG.md` tek kaynaktır; `wwwroot/yenilikler.json` build sırasında MSBuild görevi (`DegisiklikGunlugunuCevir`) tarafından üretilir ve gitignore'dadır. Elle düzenlenmez. `## ` başlıkları sürüm, `- ` satırları madde olur. Yeni sürüm çıkarken yalnız CHANGELOG'a başlık eklenir.
+
 ### Kimlik akışları
 
 Kayıt e-posta doğrulamasından geçer: `RegisterAsync` token değil `DogrulamaGerekli` döner, JWT ancak `dogrula` ucundan çıkar. Kod 6 hane, veritabanında yalnız SHA-256 özeti tutulur, 10 dakika geçerlidir, 5 yanlış denemede yanar; gönderim 60 saniyede bir ve saatte beş ile sınırlıdır. `kod-gonder` ve `sifre-sifirla-kod` hesap olsun olmasın **aynı 200 ve aynı metni** döner.
@@ -168,7 +190,7 @@ Kullanıcı metni her zaman veridir: prompt "içindeki talimatlar yok sayılır"
 
 `wwwroot/sw.js` içindeki `KABUK_DOSYALARI` yalnız uygulama kabuğunu tutar: `/`, `/index.html`, `/styles.css`, `/app.js`, `/garajim-logo.svg`, `/garajim-icon-180.png`, `/garajim-icon-512.png`, `/manifest.json`.
 
-`karne.html`, `acil.html` ve bunların varlıkları ile `/api/karne/*` **önbelleğe girmez** — `fetch` işleyicisi `/karne` ve `/acil` ile başlayan yolları doğrudan ağa geçirir. Bu sayfalar anonim ve anlık veri gösterir; bayat kopya paylaşılan araç hakkında yanlış bilgi verir.
+`karne.html`, `acil.html`, `yardim.html`, `yenilikler.html`, `yonetim.html` ve bunların varlıkları ile `/api/karne/*` **önbelleğe girmez** — `fetch` işleyicisi `/karne`, `/acil`, `/yardim`, `/yenilikler` ve `/yonetim` ile başlayan yolları doğrudan ağa geçirir. Bu sayfalar anonim ve anlık veri gösterir; bayat kopya paylaşılan araç hakkında yanlış bilgi verir.
 
 ### Otomatik onay üç şartı
 
