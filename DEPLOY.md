@@ -33,6 +33,8 @@ Yayın penceresinde uygulanacak migration'ların tamamı **yalnız eklemelidir**
 
 İki karne kolonu da varsayılan `0` ile gelir; mevcut karne bağlantıları hasar ve değer bilgisini **paylaşmadan** çalışmaya devam eder. Kolon ya da tablo düşürülmez, tip değiştirilmez. Hasar fotoğrafları mevcut belge deposuna yazılır ve şirket kotasından düşer; yedek alırken `documents` klasörünü de indir.
 
+**Ücretsiz katman kotası model başına günde 20 istektir** (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`). Fiş ve Usta aynı anahtarı paylaşır ama farklı model adları ayrı kotadan sayılır; kota dolunca uç 503 "AI hizmeti geçici olarak dolu" döner, taslak oluşmaz ve aylık fiş limiti düşmez.
+
 İlk açılışta `KatalogEslemeJob` bir kez çalışır: mevcut araçların marka ve modelini katalog yazımına çeker, eşleşmeyenlere `ModelEslesmedi = 1` yazar. İş şirket şirket ilerler, kendini tekrar ettiğinde hiçbir satırı değiştirmez ve `Katalog__BaslangictaEsle=false` ile kapatılabilir. Kapatırsan mevcut araçlar eski yazımıyla kalır ve değer tahmini isteyene kadar sorun çıkmaz.
 
 Ayrıca: **belgeler veritabanı yedeğinde yoktur.** Sunucuda daha önce yüklenmiş belge varsa, `App_Data/documents` klasörünü de ayrıca indir.
@@ -79,6 +81,9 @@ Yayından **önce** ayarla:
 | `Smtp__Pass` | SMTP parolası / API anahtarı | **Zorunlu.** Panelde saklanır, repoya yazılmaz |
 | `Smtp__From` | Gönderen adresi (doğrulanmış alan adı) | **Zorunlu.** Alan adı doğrulanmamışsa sağlayıcı reddeder, kimse kayıt olamaz |
 | `Smtp__Port` | Varsayılan `587` | Sağlayıcı farklı port istiyorsa |
+| `Receipts__Model` | `gemini-3.5-flash-lite` | Kodun varsayılanı da budur. **2.5 modelleri yeni anahtarlara kapalı**, `generateContent` 404 döner ve uç 502 verir |
+| `Usta__Model` | ayarlanmaz | Boşsa `Receipts__Model`'e düşer |
+| `Usta__Enabled` | `true` ya da `false` | `false` iken Usta sekmesi gizlenir, `/api/Usta/*` 503 döner, özet job'ı atlar |
 | `Usta__ApiKey` | Gemini anahtarı | AI Usta için; boşsa `Receipts__ApiKey` kullanılır, o da boşsa uç 502 döner |
 | `Receipts__ApiKey` | Gemini/OpenAI anahtarı | **Fiş okuma için zorunlu.** Boşsa akış çalışır ama her fiş boş taslak ve sıfır güvenle döner; kullanıcı bunu hata sanar |
 | `Usta__SahteYanit` | **canlıda ayarlanmaz** | Yalnız geliştirmede `true`; üretimde açık bırakılırsa uygulama açılışta açık hatayla durur |

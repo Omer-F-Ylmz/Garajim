@@ -324,6 +324,10 @@ Ayarlar → **Planı yükselt** formu `POST /api/plan/yukseltme-talebi` çağır
 
 ## AI Usta
 
+AI Usta `Usta__Enabled` ile kapatılabilir (varsayılan açık). Kapalıyken sekme arayüzde görünmez, `/api/Usta/*` 503 "AI Usta yakında" döner ve özet job'ı çalışmaz.
+
+Model adı `Receipts__Model` (Usta ayrıca `Usta__Model` ile ezilebilir), varsayılan **`gemini-3.5-flash-lite`**. Gemini'nin 2.5 modelleri yeni anahtarlara kapalıdır; eski ada düşen kurulum 502 verir. Ücretsiz katmanda kota **model başına günde 20 istektir**, dolunca fiş ucu 503 döner ve boş taslak yazmaz.
+
 Aracin kendi kayitlarini okuyup belirtiler icin olasilik siralayan yardimci. Teshis koymaz.
 
 - **Onay kapisi:** `GET /api/usta/onay` yururlukteki metin surumunu doner; onaysiz her AI Usta cagrisi `403` ve `kod: ONAY_GEREKLI` ile reddedilir. Metin `wwwroot/sartlar.html`, surum `Usta:OnaySurumu` (varsayilan `2026-09-v1`). Surum degisince onay yeniden istenir.

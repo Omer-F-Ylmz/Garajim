@@ -260,6 +260,14 @@ Marka ve model serbest metindi; aynı araç "VW", "Volkswagen", "wolkswagen" ola
 
 Belirsiz üç seri ilan çoğunluğuyla bağlandı: `Leon` → Seat (467'ye 13), `S` → Mercedes - Benz (73'e 1), `416` → Rover (6'ya 1). Kataloğa girmeyen ticari araçlar (`Transit` gibi) serbest metin olarak eklenir ve değer tahmini alamaz.
 
+## Gelir → Usta musluğu
+
+AI Usta değişken maliyetli tek özellik. Ücretsiz katmanda kota model başına günde 20 istek, yani tanıtım dışında taşımıyor. Sıra: önce ödeme akışı, sonra `Usta__Enabled` açılır ve `Ai__AylikTokenTavani` gelire göre ayarlanır. Bayrak bugün kapatılabilir durumda, kapatınca uygulamanın geri kalanı etkilenmiyor.
+
+## KATALOG-GLOBAL — beklemede
+
+Yurt dışı plakalı ve katalog dışı araçlar için marka/model kataloğunun genişletilmesi bekliyor; fiyat modeli Türkiye ilan verisiyle eğitildiği için katalog da onunla sınırlı. Model yeniden eğitilmeden katalog büyütülmez.
+
 ## Sıradaki
 
 Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklardan okunacak:
