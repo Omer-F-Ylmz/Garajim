@@ -47,7 +47,7 @@ namespace Garajim.Business.Concrete.Receipts
                 yazici.WriteNumber("temperature", 0);
                 yazici.WriteString("response_mime_type", "application/json");
 
-                if (dusunmeAyariyla)
+                if (dusunmeAyariyla && DusunmeDestekleniyorMu(model))
                 {
                     yazici.WriteStartObject("thinkingConfig");
                     yazici.WriteNumber("thinkingBudget", 0);
@@ -96,5 +96,10 @@ namespace Garajim.Business.Concrete.Receipts
 
             return birlesik.ToString();
         }
+        public static bool DusunmeDestekleniyorMu(string model)
+        {
+            return model != null && !model.Contains("lite", StringComparison.OrdinalIgnoreCase);
+        }
+
     }
 }

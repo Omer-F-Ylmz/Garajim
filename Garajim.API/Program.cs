@@ -42,7 +42,7 @@ ProductionConfigurationGuard.Validate(builder.Configuration, builder.Environment
 builder.Services.AddScoped<TenantContext>();
 builder.Services.AddScoped<ITenantProvider>(provider => provider.GetRequiredService<TenantContext>());
 
-builder.Services.AddDbContext<GarajimDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<GarajimDbContext>(options => options.UseSqlServer(MarsKapali(connectionString)));
 
 builder.Services.AddScoped<ICompanyDal, EfCompanyDal>();
 builder.Services.AddScoped<IUserDal, EfUserDal>();
@@ -510,4 +510,18 @@ app.Run();
 
 public partial class Program
 {
+    public static string MarsKapali(string baglanti)
+    {
+        if (string.IsNullOrWhiteSpace(baglanti))
+        {
+            return baglanti;
+        }
+
+        var kurucu = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(baglanti)
+        {
+            MultipleActiveResultSets = false
+        };
+
+        return kurucu.ConnectionString;
+    }
 }

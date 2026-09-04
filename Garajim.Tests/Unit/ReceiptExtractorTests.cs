@@ -333,6 +333,34 @@ namespace Garajim.Tests.Unit
             Assert.True(sonuc.GuvenSkoru > 0, "ayarsiz tekrar basarisiz: " + sonuc.CikarimHatasi);
             Assert.DoesNotContain("thinkingConfig", handler.Govdeler[1]);
         }
+        [Theory]
+        [InlineData("gemini-3.5-flash-lite", false)]
+        [InlineData("gemini-flash-lite-latest", false)]
+        [InlineData("gemini-3.6-flash", true)]
+        public void LiteModellerdeDusunmeGonderilmez(string model, bool beklenen)
+        {
+            Assert.Equal(beklenen, GeminiReceiptExtractor.DusunmeDestekleniyorMu(model));
+        }
+
+        [Fact]
+        public async Task LiteModelIstegindeThinkingConfigYok()
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla(HttpStatusCode.OK, GeminiCevabi(ModelJson()));
+
+            var yapilandirma = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["Receipts:Provider"] = "Gemini",
+                ["Receipts:ApiKey"] = "test-anahtar",
+                ["Receipts:Model"] = "gemini-3.5-flash-lite"
+            }).Build();
+
+            var cikarici = new GeminiReceiptExtractor(new SahteFactory(handler), yapilandirma, NullLogger<GeminiReceiptExtractor>.Instance);
+            await cikarici.ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.DoesNotContain("thinkingConfig", handler.Govdeler[0]);
+        }
+
 
 
 
