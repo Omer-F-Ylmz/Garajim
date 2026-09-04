@@ -3819,7 +3819,7 @@
         var guven = Math.round((Number(draft.guvenSkoru) || 0) * 100);
         el("receipt-confidence").textContent = guven > 0
             ? "Okuma güveni %" + guven + ". Boş kalan alanları siz doldurun."
-            : "Fiş okunamadı. Alanları elle doldurabilirsiniz.";
+            : "Fiş okunamadı; alanları doldurup onaylayabilirsiniz.";
 
         fillReceiptVehicles(draft.vehicleId);
 

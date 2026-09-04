@@ -181,17 +181,19 @@ namespace Garajim.Business.Concrete
             var onerilenArac = await OnerilenAracAsync(userId, sonuc.Plaka);
             draft.VehicleId = onerilenArac?.Id;
 
+            var yuklemeMesaji = sonuc.GuvenSkoru > 0 ? Messages.ReceiptUploaded : Messages.ReceiptOkunamadi;
+
             if (!otoOnay)
             {
                 await _draftDal.AddAsync(draft);
-                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), Messages.ReceiptUploaded);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), yuklemeMesaji);
             }
 
             draft.AtlamaNedeni = OtoOnayEngeli(draft, sonuc, onerilenArac);
             if (draft.AtlamaNedeni != null)
             {
                 await _draftDal.AddAsync(draft);
-                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), Messages.ReceiptUploaded);
+                return new SuccessDataResult<ReceiptUploadResultDto>(Sonuc(draft, null), yuklemeMesaji);
             }
 
             var onayDto = new ReceiptConfirmDto
