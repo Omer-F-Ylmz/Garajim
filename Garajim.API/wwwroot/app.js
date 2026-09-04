@@ -17,6 +17,7 @@
         duzenlenenBakimId: null,
         duzenlenenEvrakId: null,
         duzenlenenYolculukId: null,
+        kilitAc: null,
         duzenlenenAracKm: null,
         ustaGonderiyor: false,
         sifirlanacakEposta: null,
@@ -309,6 +310,25 @@
         showMessage(el("auth-message"), message || "");
     }
 
+    function formuKilitle(form) {
+        if (!form) {
+            return function () { };
+        }
+
+        var dugmeler = Array.prototype.filter.call(
+            form.querySelectorAll("button"),
+            function (d) { return d.type !== "button"; });
+
+        dugmeler.forEach(function (d) { d.disabled = true; });
+
+        var ac = function () { dugmeler.forEach(function (d) { d.disabled = false; }); };
+
+        state.kilitAc = ac;
+        window.setTimeout(ac, 20000);
+
+        return ac;
+    }
+
     function api(path, options) {
         var settings = options || {};
         var headers = { "Accept": "application/json" };
@@ -352,6 +372,11 @@
                 }
                 return payload;
             });
+        }).finally(function () {
+            if (typeof state.kilitAc === "function") {
+                state.kilitAc();
+                state.kilitAc = null;
+            }
         });
     }
 
@@ -508,7 +533,7 @@
             acilKartiSakla();
             kuyrugoBosalt();
             loadActiveTab();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -610,7 +635,7 @@
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Maintenance/" + item.id, loadMaintenance); }));
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -709,7 +734,7 @@
                 li.appendChild(actions);
                 list.appendChild(li);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -741,7 +766,7 @@
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -750,7 +775,7 @@
         api("/api/Documents/" + id, { method: "DELETE" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Belge silindi.", true);
             loadDocuments();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -794,7 +819,7 @@
                 tr.appendChild(actionCell);
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -803,7 +828,7 @@
         api("/api/Team/" + id + "/role", { method: "PUT", body: { role: role } }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Rol güncellendi.", true);
             loadTeam();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
             loadTeam();
         });
@@ -813,7 +838,7 @@
         api("/api/Team/" + id + "/deactivate", { method: "PUT" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Üye pasifleştirildi.", true);
             loadTeam();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -852,7 +877,7 @@
             }
 
             return loadAssignableUsers();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -901,7 +926,7 @@
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Fuel/" + item.id, loadFuel); }));
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -924,7 +949,7 @@
                 tr.appendChild(deleteButton(function () { removeRecord("/api/Expenses/" + item.id, loadExpenses); }));
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -963,7 +988,7 @@
 
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
 
@@ -993,7 +1018,7 @@
 
                 list.appendChild(li);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1002,7 +1027,7 @@
         api("/api/Reminders/" + id + "/complete", { method: "PUT" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Hatırlatma tamamlandı.", true);
             loadReminders();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1015,7 +1040,7 @@
         api(path, { method: "DELETE" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Kayıt silindi.", true);
             reload();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1076,7 +1101,7 @@
         return api("/api/Reports/monthly?vehicleId=" + state.selectedVehicleId).then(function (result) {
             var rows = (result && result.data) || [];
             drawChart(rows);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1369,7 +1394,7 @@
             cards.appendChild(card("Özel", km(ozet.ozelKm)));
             cards.appendChild(card("İş oranı", (Number(ozet.isOrani) || 0) + " %", true));
             cards.appendChild(card("Yolculuk", String(ozet.yolculukSayisi || 0)));
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1380,7 +1405,7 @@
             showMessage(el("app-message"), (result && result.message) || "Kayıt silindi.", true);
             loadYolculuk();
             loadVehicles();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1390,6 +1415,7 @@
 
         el("yolculuk-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             if (!state.selectedVehicleId) {
@@ -1416,8 +1442,8 @@
                 yolculukFormunuSifirla();
                 loadYolculuk();
                 loadVehicles();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -1484,7 +1510,7 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             showMessage(el("app-message"), "CSV indirildi.", true);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1577,7 +1603,7 @@
             showMessage(el("arsiv-mesaj"), "Araç silindi.", true);
             arsiviYukle();
             loadVehicles();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("arsiv-mesaj"), error);
         });
     }
@@ -1858,7 +1884,7 @@
             var durum = (result && result.data) || {};
             el("lastik-uyari").textContent = durum.uyari || (durum.kisLastigiDonemi ? "Kış lastiği dönemindesiniz." : "");
             renderLastikRows(durum.setler || []);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1881,7 +1907,7 @@
         }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Set söküldü.", true);
             loadLastik();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -1891,7 +1917,7 @@
         api("/api/Lastik/" + id, { method: "DELETE" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Set silindi.", true);
             loadLastik();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -2181,7 +2207,7 @@
 
         sira.then(function () {
             showMessage(el("kaza-durum"), yuklenen + " fotoğraf yüklendi. Ayrıntıları Hasar sekmesinden tamamlayabilirsiniz.", true);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("kaza-durum"), error);
         });
     }
@@ -2473,7 +2499,7 @@
             }
             pencere.document.write(html);
             pencere.document.close();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -2512,6 +2538,7 @@
 
         el("hasar-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             hasarDosyasiniKaydet().then(function (result) {
@@ -2629,6 +2656,7 @@
     function bindDeger() {
         el("deger-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             el("deger-uyari").classList.add("hidden");
 
@@ -2854,6 +2882,7 @@
 
         el("dogrula-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             kodDogrula();
         });
 
@@ -2866,8 +2895,8 @@
                 kodTemizle();
                 kodKutulari()[0].focus();
                 geriSayimBaslat();
-            }).catch(function (error) {
-                handleError(el("dogrula-mesaj"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("dogrula-mesaj"), error);
             });
         });
 
@@ -2929,7 +2958,7 @@
             sifirlamaKutulari().forEach(function (kutu) { kutu.value = ""; });
             el("sifirlama-yeni").value = "";
             sifirlamaKutulari()[0].focus();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("sifirlama-mesaj"), error);
         }).then(function () {
             gonderimKilitle("sifirlama-kod-gonder", false);
@@ -2955,7 +2984,7 @@
             el("login-password").value = "";
             el("login-password").focus();
             showMessage(el("auth-message"), (result && result.message) || "Şifreniz değiştirildi.", true);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("sifirlama-mesaj"), error);
             sifirlamaKutulari().forEach(function (kutu) { kutu.value = ""; });
             sifirlamaKutulari()[0].focus();
@@ -2994,11 +3023,13 @@
 
         el("sifirlama-eposta-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             sifirlamaKoduIste();
         });
 
         el("sifirlama-kod-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             sifreyiSifirla();
         });
     }
@@ -3044,6 +3075,7 @@
 
         el("hesap-sil-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
 
             var sirket = (state.user && state.user.companyName) || "";
             var yazilan = el("hesap-sil-ad").value.trim();
@@ -3085,6 +3117,7 @@
     function bindSifreDegistir() {
         el("sifre-degistir-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
 
             var mevcut = el("sifre-mevcut").value;
             var yeni = el("sifre-yeni").value;
@@ -3102,8 +3135,8 @@
                     clearSession();
                     location.reload();
                 }, 1500);
-            }).catch(function (error) {
-                handleError(el("sifre-degistir-mesaj"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("sifre-degistir-mesaj"), error);
             });
         });
     }
@@ -3130,6 +3163,7 @@
     function bindLastik() {
         el("lastik-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             if (!state.selectedVehicleId) {
@@ -3156,8 +3190,8 @@
                 el("lastik-form").reset();
                 el("lastik-tarih").value = todayInput();
                 loadLastik();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -3235,6 +3269,7 @@
     function bindPlan() {
         el("plan-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             api("/api/Plan/yukseltme-talebi", {
@@ -3246,8 +3281,8 @@
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Talebiniz iletildi.", true);
                 el("plan-mesaj").value = "";
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -3439,7 +3474,7 @@
             });
 
             kutu.appendChild(liste);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -3452,7 +3487,7 @@
         }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Geri bildirim alındı.", true);
             ustaSohbetYukle(ustaDurum.sohbetId);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -3490,7 +3525,7 @@
             var sohbet = (result && result.data) || {};
             ustaDurum.sohbetId = sohbet.id;
             ustaAkisCiz(sohbet.mesajlar || []);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -3604,7 +3639,7 @@
             ustaAkisCiz([]);
             el("usta-kalan").textContent = "";
             return ustaGecmisYukle();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -3651,8 +3686,8 @@
             api("/api/Usta/onay", { method: "POST", body: { metinSurumu: ustaDurum.surum } }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Onayınız kaydedildi.", true);
                 loadUsta();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -3671,6 +3706,7 @@
 
         el("usta-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             ustaSor(null);
         });
 
@@ -3687,6 +3723,7 @@
 
         el("login-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/Auth/login", {
                 method: "POST",
@@ -3711,6 +3748,7 @@
 
         el("register-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/Auth/register", {
                 method: "POST",
@@ -3724,8 +3762,8 @@
             }).then(function (result) {
                 el("register-password").value = "";
                 dogrulamaEkraniniAc(result.data.email, result.message);
-            }).catch(function (error) {
-                handleError(el("auth-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("auth-message"), error);
             });
         });
 
@@ -3751,6 +3789,7 @@
 
         el("team-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/Team", {
                 method: "POST",
@@ -3766,8 +3805,8 @@
                 el("team-credential-email").textContent = result.data.email;
                 el("team-credential-password").textContent = result.data.temporaryPassword;
                 loadTeam();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -3775,6 +3814,7 @@
     function bindAssignment() {
         el("assignment-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             var userId = Number(el("assignment-user").value);
             if (!userId) {
@@ -3788,8 +3828,8 @@
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Zimmet güncellendi.", true);
                 loadAssignments();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -3801,8 +3841,8 @@
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Zimmet sonlandırıldı.", true);
                 loadAssignments();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -4070,7 +4110,7 @@
 
                 tbody.appendChild(tr);
             });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4176,7 +4216,7 @@
         var yol = state.selectedVehicleId ? "/api/Evrak?vehicleId=" + state.selectedVehicleId : "/api/Evrak";
         api(yol).then(function (result) {
             renderEvrakRows((result && result.data) || []);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4190,7 +4230,7 @@
         clearMessages();
         api("/api/Evrak/takvim?ay=" + ay).then(function (result) {
             renderEvrakRows((result && result.data) || []);
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4200,7 +4240,7 @@
         api("/api/Evrak/" + id + "/yenile", { method: "POST" }).then(function (result) {
             showMessage(el("app-message"), (result && result.message) || "Evrak yenilendi.", true);
             loadEvrak();
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4208,6 +4248,7 @@
     function bindEvrak() {
         el("evrak-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             if (!state.selectedVehicleId) {
@@ -4235,8 +4276,8 @@
                 showMessage(el("app-message"), (result && result.message) || "Evrak eklendi.", true);
                 evrakFormunuSifirla();
                 loadEvrak();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4464,7 +4505,7 @@
                 loadVehicles();
                 loadActiveTab();
             }
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4518,8 +4559,8 @@
                 renderImportOrnek(veri);
                 renderImportHatalar(veri.hataliSatirlar);
                 fillImportVehicles();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4562,8 +4603,8 @@
                 showMessage(el("app-message"), (result && result.message) || "Abonelik oluşturuldu.", true);
                 el("takvim-sonuc").classList.remove("hidden");
                 el("takvim-url").textContent = result.data.url;
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4572,8 +4613,8 @@
             api("/api/Takvim/abonelik", { method: "DELETE" }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Abonelik kapatıldı.", true);
                 el("takvim-sonuc").classList.add("hidden");
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4654,6 +4695,7 @@
 
         el("karne-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             if (!state.selectedVehicleId) {
@@ -4672,8 +4714,8 @@
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Bağlantı oluşturuldu.", true);
                 karneSonucGoster(result.data);
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4720,7 +4762,7 @@
             el("receipt-box").classList.remove("hidden");
             showReceiptReview(result.data);
             el("receipt-review").scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }).catch(function (error) {
+        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
@@ -4769,6 +4811,7 @@
     function bindBulkUpload() {
         el("bulk-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             var input = el("bulk-files");
@@ -4828,6 +4871,7 @@
 
         el("receipt-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             var input = el("receipt-file");
@@ -4855,6 +4899,7 @@
 
         el("receipt-confirm-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             if (!state.receiptDraft) {
@@ -4885,8 +4930,8 @@
                 loadVehicles();
                 selectTab(tur === "Yakit" ? "yakit" : tur === "Bakim" ? "bakim" : "masraf");
                 showMessage(el("app-message"), (result && result.message) || "Kayıt oluşturuldu.", true);
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
@@ -4899,8 +4944,8 @@
                 showMessage(el("app-message"), (result && result.message) || "Taslak silindi.", true);
                 hideReceiptReview();
                 loadPendingReceipts();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -4910,6 +4955,7 @@
 
         el("document-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             if (!state.documentRecordId) {
                 showMessage(el("app-message"), "Önce bir bakım kaydının Belgeler düğmesine basın.");
@@ -4928,8 +4974,8 @@
                 showMessage(el("app-message"), (result && result.message) || "Belge yüklendi.", true);
                 el("document-form").reset();
                 loadDocuments();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -4986,6 +5032,7 @@
 
         el("vehicle-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
 
             var govde = aracFormGovdesi();
@@ -5011,8 +5058,8 @@
 
                 state.duzenlenenAracId = null;
                 loadVehicles();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
     }
@@ -5134,6 +5181,7 @@
 
         el("maintenance-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             var duzenleme = state.duzenlenenBakimId !== null;
 
@@ -5154,13 +5202,14 @@
                 bakimFormunuSifirla();
                 loadMaintenance();
                 loadVehicles();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
         el("fuel-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/Fuel", {
                 method: "POST",
@@ -5180,13 +5229,14 @@
                 el("fuel-date").value = todayInput();
                 loadFuel();
                 loadVehicles();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
         el("expense-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/Expenses", {
                 method: "POST",
@@ -5202,13 +5252,14 @@
                 el("expense-form").reset();
                 el("expense-date").value = todayInput();
                 loadExpenses();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
         el("reminder-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             var dateValue = el("reminder-date").value;
             var kmValue = el("reminder-km").value;
@@ -5225,13 +5276,14 @@
                 showMessage(el("app-message"), (result && result.message) || "Hatırlatma eklendi.", true);
                 el("reminder-form").reset();
                 loadReminders();
-            }).catch(function (error) {
-                handleError(el("app-message"), error);
+            }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+            handleError(el("app-message"), error);
             });
         });
 
         el("report-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             loadSummary().catch(function (error) {
                 handleError(el("app-message"), error);
@@ -5249,6 +5301,7 @@
 
         el("price-form").addEventListener("submit", function (event) {
             event.preventDefault();
+            var acKilit = formuKilitle(event.target);
             clearMessages();
             api("/api/price/estimate", {
                 method: "POST",

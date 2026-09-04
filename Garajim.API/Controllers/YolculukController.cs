@@ -27,6 +27,8 @@ namespace Garajim.API.Controllers
             return Sonuc(await _yolculukService.GetOzetAsync(CurrentUserId, vehicleId, baslangic, bitis));
         }
 
+        [ServiceFilter(typeof(Garajim.API.Startup.TekrarKorumasi))]
+
         [HttpPost]
         public async Task<IActionResult> Add(YolculukCreateDto dto)
         {

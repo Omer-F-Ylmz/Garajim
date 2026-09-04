@@ -24,6 +24,8 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [ServiceFilter(typeof(Garajim.API.Startup.TekrarKorumasi))]
+
         [HttpPost]
         public async Task<IActionResult> Add(MaintenanceCreateDto dto)
         {
