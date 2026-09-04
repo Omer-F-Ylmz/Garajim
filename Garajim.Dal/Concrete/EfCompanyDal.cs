@@ -70,19 +70,24 @@ namespace Garajim.Dal.Concrete
 
         public async Task<int> DavetSayisiAsync(int companyId)
         {
-            return await Context.Companies
-                .IgnoreQueryFilters()
-                .CountAsync(c => c.DavetEdenCompanyId == companyId);
+            return await DogrulanmisDavetliler(companyId).CountAsync();
         }
 
         public async Task<List<Company>> GetDavetlilerAsync(int companyId)
         {
-            return await Context.Companies
-                .IgnoreQueryFilters()
+            return await DogrulanmisDavetliler(companyId)
                 .AsNoTracking()
-                .Where(c => c.DavetEdenCompanyId == companyId)
                 .OrderBy(c => c.CreatedAt)
                 .ToListAsync();
+        }
+
+        private IQueryable<Company> DogrulanmisDavetliler(int companyId)
+        {
+            return Context.Companies
+                .IgnoreQueryFilters()
+                .Where(c => c.DavetEdenCompanyId == companyId
+                            && Context.Users.IgnoreQueryFilters()
+                                .Any(u => u.CompanyId == c.Id && u.EmailDogrulandi));
         }
     }
 }

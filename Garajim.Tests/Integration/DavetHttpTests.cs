@@ -169,5 +169,43 @@ namespace Garajim.Tests.Integration
             Assert.Equal(0, durum.GetProperty("davetSayisi").GetInt32());
             Assert.Equal(0, durum.GetProperty("davetliler").GetArrayLength());
         }
+        [Fact]
+        public async Task DogrulanmamisDavetliOduleSayilmaz()
+        {
+            var davetEden = await SahipOlusturAsync("Davet Eden A.Ş.");
+            var kod = (await DurumAsync(davetEden)).GetProperty("kod").GetString();
+
+            var yeni = _factory.CreateClient();
+            var kayit = await yeni.PostAsJsonAsync("/api/Auth/register", new
+            {
+                email = Eposta("dogrulanmamis"),
+                fullName = "Doğrulanmamış",
+                companyName = "Doğrulanmamış Ltd.",
+                password = "Test1234!",
+                davetKodu = kod
+            });
+
+            Assert.Equal(HttpStatusCode.Created, kayit.StatusCode);
+
+            var durum = await DurumAsync(davetEden);
+
+            Assert.Equal(0, durum.GetProperty("davetSayisi").GetInt32());
+            Assert.Empty(durum.GetProperty("davetliler").EnumerateArray());
+        }
+
+        [Fact]
+        public async Task DogrulanmisDavetliOduleSayilir()
+        {
+            var davetEden = await SahipOlusturAsync("Davet Eden B A.Ş.");
+            var kod = (await DurumAsync(davetEden)).GetProperty("kod").GetString();
+
+            await SahipOlusturAsync("Doğrulanmış Ltd.", kod);
+
+            var durum = await DurumAsync(davetEden);
+
+            Assert.Equal(1, durum.GetProperty("davetSayisi").GetInt32());
+            Assert.Single(durum.GetProperty("davetliler").EnumerateArray());
+        }
+
     }
 }
