@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /yonetim.html
+Disallow: /yonetim
+Disallow: /karne.html
+Disallow: /acil.html
+
+Sitemap: https://garajim.runasp.net/sitemap.xml
