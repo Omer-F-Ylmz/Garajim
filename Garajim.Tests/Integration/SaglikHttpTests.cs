@@ -42,6 +42,17 @@ namespace Garajim.Tests.Integration
             Assert.False(string.IsNullOrWhiteSpace(veri.GetProperty("surum").GetString()));
         }
 
+
+        [Fact]
+        public async Task PingGirissizCalisir()
+        {
+            var cevap = await _factory.CreateClient().GetAsync("/api/Saglik/ping");
+            var govde = await cevap.Content.ReadAsStringAsync();
+
+            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
+            Assert.Equal("ok", govde.Trim());
+        }
+
         [Fact]
         public async Task SaglikGirissiz401Doner()
         {

@@ -20,6 +20,7 @@
         kilitAc: null,
         duzenlenenAracKm: null,
         ustaGonderiyor: false,
+        pwaIstemi: null,
         turSirasi: 0,
         turGosterildi: false,
         sifirlanacakEposta: null,
@@ -629,6 +630,80 @@
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (hata) {
             handleError(kutu, hata);
         });
+    }
+
+    var IOS_IPUCU_ANAHTARI = "garajim_ios_ipucu";
+    var IOS_IPUCU_GUN = 30;
+
+    function pwaSeridiniAc(metin, yuklemeVar) {
+        el("pwa-serit-metin").textContent = metin;
+        el("pwa-yukle").classList.toggle("hidden", !yuklemeVar);
+        el("pwa-serit").classList.remove("hidden");
+    }
+
+    function pwaSeridiniKapat() {
+        el("pwa-serit").classList.add("hidden");
+        yerelYaz(IOS_IPUCU_ANAHTARI, String(Date.now()));
+    }
+
+    function ipucuErtelendiMi() {
+        var son = Number(yerelOku(IOS_IPUCU_ANAHTARI) || 0);
+        if (!son) {
+            return false;
+        }
+
+        return Date.now() - son < IOS_IPUCU_GUN * 24 * 60 * 60 * 1000;
+    }
+
+    function iosMu() {
+        return /iphone|ipad|ipod/i.test(navigator.userAgent);
+    }
+
+    function iosSeridiniDegerlendir() {
+        if (!iosMu() || ipucuErtelendiMi()) {
+            return;
+        }
+
+        var kurulu = window.navigator.standalone === true ||
+            (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+
+        if (kurulu) {
+            return;
+        }
+
+        pwaSeridiniAc("Garajım'ı ana ekranına ekle: Paylaş → Ana Ekrana Ekle.", false);
+    }
+
+    function bindKurulumIpucu() {
+        el("pwa-kapat").addEventListener("click", pwaSeridiniKapat);
+
+        el("pwa-yukle").addEventListener("click", function () {
+            if (!state.pwaIstemi) {
+                return;
+            }
+
+            state.pwaIstemi.prompt();
+            state.pwaIstemi = null;
+            el("pwa-serit").classList.add("hidden");
+        });
+
+        window.addEventListener("beforeinstallprompt", function (olay) {
+            olay.preventDefault();
+
+            if (ipucuErtelendiMi()) {
+                return;
+            }
+
+            state.pwaIstemi = olay;
+            pwaSeridiniAc("Garajım'ı telefonuna kurabilirsin.", true);
+        });
+
+        window.addEventListener("appinstalled", function () {
+            el("pwa-serit").classList.add("hidden");
+            state.pwaIstemi = null;
+        });
+
+        iosSeridiniDegerlendir();
     }
 
     function profiliYukle() {
@@ -5968,6 +6043,7 @@
         turBagla();
         bindGeriBildirim();
         bindProfil();
+        bindKurulumIpucu();
         ornekDugmeleriniBagla();
         el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();
