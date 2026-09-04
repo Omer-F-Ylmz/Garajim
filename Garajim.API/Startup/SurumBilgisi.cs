@@ -23,9 +23,18 @@ namespace Garajim.API.Startup
             return Sadelestir(derleme.GetName().Version?.ToString() ?? "0.0.0");
         }
 
-        private static string Sadelestir(string ham)
+        public static string Sadelestir(string ham)
         {
-            var temiz = new string(ham.Where(k => char.IsLetterOrDigit(k) || k == '.' || k == '-').ToArray());
+            var temiz = new string(ham.Where(k => char.IsLetterOrDigit(k) || k == '.' || k == '-' || k == '+').ToArray());
+            var arti = temiz.IndexOf('+');
+
+            if (arti >= 0)
+            {
+                var surum = temiz.Substring(0, arti);
+                var ek = temiz.Substring(arti + 1);
+                temiz = surum + "+" + (ek.Length > 7 ? ek.Substring(0, 7) : ek);
+            }
+
             return temiz.Length > 40 ? temiz.Substring(0, 40) : temiz;
         }
     }

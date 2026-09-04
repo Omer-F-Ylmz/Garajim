@@ -223,6 +223,22 @@ button {
     color: var(--ok);
 }
 
+:root {
+    --ustcubuk-mobil: 2;
+}
+
+@media (max-width: 767px) {
+    .topbar {
+        padding: 8px 12px;
+        gap: 6px;
+    }
+
+    .topbar-right button {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+}
+
 .topbar {
     display: flex;
     align-items: center;

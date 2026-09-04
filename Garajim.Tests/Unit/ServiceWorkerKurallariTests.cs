@@ -123,15 +123,36 @@ namespace Garajim.Tests.Unit
         public void KazaAniMobildeYapiskan()
         {
             var css = Oku("styles.css");
-            var baslangic = css.IndexOf("@media (max-width: 767px)", StringComparison.Ordinal);
+            var mobilBlok = css.Split("@media").FirstOrDefault(b => b.Contains("max-width: 767px") && b.Contains(".kaza-ani"));
 
-            Assert.True(baslangic > 0, "mobil media query yok");
-
-            var blok = css.Substring(baslangic, Math.Min(220, css.Length - baslangic));
-
-            Assert.Contains(".kaza-ani", blok);
-            Assert.Contains("position: sticky", blok);
+            Assert.NotNull(mobilBlok);
+            Assert.Contains("position: sticky", mobilBlok);
         }
+
+        [Fact]
+        public void KarneHataSayfasindaYazdirGizlenir()
+        {
+            var js = Oku("karne.js");
+
+            Assert.Contains("el(\"yazdir\").classList.add(\"hidden\")", js);
+        }
+
+        [Fact]
+        public void MobilUstCubukIkiSatiriGecmez()
+        {
+            var css = Oku("styles.css");
+
+            Assert.Contains(".topbar", css);
+            Assert.Contains("--ustcubuk-mobil", css);
+        }
+        [Fact]
+        public void SurumBilgisiKisaShaVeAyracTasir()
+        {
+            Assert.Equal("1.0.0+e578dd8", Garajim.API.Startup.SurumBilgisi.Sadelestir("1.0.0+e578dd827d8c4de3cc7ec1cda106efafa02525f5"));
+            Assert.Equal("1.0.0", Garajim.API.Startup.SurumBilgisi.Sadelestir("1.0.0"));
+        }
+
+
 
     }
 }

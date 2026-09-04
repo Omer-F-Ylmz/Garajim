@@ -130,7 +130,7 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public async Task ExpenseAdd_SifirTutarKabulEdilir()
+        public async Task ExpenseAdd_SifirTutarReddedilir()
         {
             _expenseDal.Setup(d => d.AddAsync(It.IsAny<ExpenseRecord>())).Returns(Task.CompletedTask);
             var manager = new ExpenseManager(_expenseDal.Object, _vehicleAccess.Object);
@@ -139,7 +139,7 @@ namespace Garajim.Tests.Unit
 
             var result = await manager.AddAsync(UserId, dto);
 
-            Assert.True(result.Success);
+            Assert.False(result.Success);
         }
     }
 }

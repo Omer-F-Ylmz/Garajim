@@ -130,5 +130,19 @@ namespace Garajim.Tests.Integration
             var veri = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
             Assert.Equal(150, veri.GetProperty("serviceName").GetString().Length);
         }
+        [Fact]
+        public async Task SifirTutarliMasrafReddedilir()
+        {
+            var (client, aracId) = await HazirlaAsync("sifir");
+
+            var cevap = await client.PostAsJsonAsync("/api/Expenses", new
+            {
+                vehicleId = aracId, category = "Otopark",
+                date = DateTime.UtcNow.Date, amount = 0m, note = "sıfır"
+            });
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
+
     }
 }

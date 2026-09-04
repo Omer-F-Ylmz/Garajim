@@ -56,6 +56,7 @@
     function hataGoster(mesaj) {
         el("durum").textContent = mesaj;
         el("icerik").classList.add("hidden");
+        el("yazdir").classList.add("hidden");
     }
 
     function acilKartiDenetle(token) {

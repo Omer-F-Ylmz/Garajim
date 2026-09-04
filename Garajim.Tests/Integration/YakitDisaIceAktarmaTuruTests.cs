@@ -108,5 +108,19 @@ namespace Garajim.Tests.Integration
             Assert.True(yakitlar[0].GetProperty("tamDolum").GetBoolean());
             Assert.False(yakitlar[1].GetProperty("tamDolum").GetBoolean());
         }
+        [Fact]
+        public async Task KendiDosyamizGarajimSablonuOlarakTaninir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, 10000);
+
+            await sahip.PostAsJsonAsync("/api/Fuel", new { vehicleId = aracId, date = "2026-03-01", liters = 40m, totalCost = 1900m, km = 10100, tamDolum = true });
+
+            var csv = await (await sahip.GetAsync($"/api/Export/yakit.csv?vehicleId={aracId}")).Content.ReadAsStringAsync();
+            var onizleme = await VeriAsync(await sahip.PostAsync("/api/Import/onizle", Form(csv, aracId)));
+
+            Assert.Equal("Garajım dışa aktarımı", onizleme.GetProperty("sablon").GetString());
+        }
+
     }
 }

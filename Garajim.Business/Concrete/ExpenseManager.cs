@@ -35,7 +35,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ExpenseDto>(Messages.VehicleNotFound);
             if (vehicle.Arsivli)
                 return new ErrorDataResult<ExpenseDto>(Messages.AracArsivli);
-            if (!DegerSinirlari.TutarGecerli(dto.Amount) || !DegerSinirlari.GecmisTarih(dto.Date)
+            if (!DegerSinirlari.TutarGecerli(dto.Amount) || dto.Amount <= 0 || !DegerSinirlari.GecmisTarih(dto.Date)
                 || !Enum.IsDefined(dto.Category))
                 return new ErrorDataResult<ExpenseDto>(Messages.InvalidValue);
             var record = new ExpenseRecord

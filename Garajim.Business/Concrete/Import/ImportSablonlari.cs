@@ -23,6 +23,11 @@ namespace Garajim.Business.Concrete.Import
             }
 
             var basliklar = tablo.Basliklar.Select(Sadelestir).ToList();
+
+            if (basliklar.Contains("plaka") && basliklar.Contains("tamdolum"))
+            {
+                return "Garajım dışa aktarımı";
+            }
             var drivvoIzi = basliklar.Count(b => Esanlamlar["km"].Contains(b) || Esanlamlar["litre"].Contains(b) || Esanlamlar["tutar"].Contains(b));
 
             return drivvoIzi >= 2 ? "Drivvo" : "Genel";
