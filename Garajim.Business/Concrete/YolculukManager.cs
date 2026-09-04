@@ -85,6 +85,9 @@ namespace Garajim.Business.Concrete
             if (hata != null)
                 return new ErrorDataResult<YolculukDto>(hata);
 
+            if (await CakisiyorMuAsync(vehicle.Id, dto.BaslangicKm, dto.BitisKm, null))
+                return new ErrorDataResult<YolculukDto>(Messages.YolculukKmCakisiyor);
+
             var kayit = new YolculukKaydi
             {
                 CompanyId = vehicle.CompanyId,
@@ -124,6 +127,9 @@ namespace Garajim.Business.Concrete
             var hata = Dogrula(dto.Tarih, dto.BaslangicKm, dto.BitisKm, dto.Amac);
             if (hata != null)
                 return new ErrorResult(hata);
+
+            if (await CakisiyorMuAsync(erisim.Kayit.VehicleId, dto.BaslangicKm, dto.BitisKm, erisim.Kayit.Id))
+                return new ErrorResult(Messages.YolculukKmCakisiyor);
 
             var kayit = erisim.Kayit;
             kayit.Tarih = dto.Tarih.Date;
@@ -192,6 +198,15 @@ namespace Garajim.Business.Concrete
 
             var kullanicilar = await _userDal.GetListAsync(u => benzersiz.Contains(u.Id));
             return kullanicilar.ToDictionary(u => u.Id, u => u.FullName);
+        }
+
+        private async Task<bool> CakisiyorMuAsync(int vehicleId, int baslangicKm, int bitisKm, int? haricId)
+        {
+            var kayitlar = await _yolculukDal.GetListAsync(y => y.VehicleId == vehicleId
+                                                              && y.BaslangicKm < bitisKm
+                                                              && y.BitisKm > baslangicKm);
+
+            return kayitlar.Any(y => haricId == null || y.Id != haricId.Value);
         }
 
         private static string Dogrula(DateTime tarih, int baslangicKm, int bitisKm, YolculukAmaci amac)

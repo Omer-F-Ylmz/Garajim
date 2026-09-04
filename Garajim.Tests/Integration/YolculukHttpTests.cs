@@ -261,5 +261,54 @@ namespace Garajim.Tests.Integration
             var liste = await VeriAsync(await sahip.GetAsync($"/api/Yolculuk?vehicleId={aracId}"));
             Assert.Equal(0, liste.GetArrayLength());
         }
+        [Fact]
+        public async Task CakisanKmAraligiReddedilir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret(), 10000);
+
+            Assert.Equal(HttpStatusCode.OK, (await YolculukEkleAsync(sahip, aracId, 10200, 10350)).StatusCode);
+
+            var cakisan = await YolculukEkleAsync(sahip, aracId, 10250, 10380);
+            var govde = await cakisan.Content.ReadAsStringAsync();
+
+            Assert.Equal(HttpStatusCode.BadRequest, cakisan.StatusCode);
+            Assert.Contains("çakış", govde, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public async Task BitisiOncekininBaslangicinaDegenYolculukKabulEdilir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret(), 10000);
+
+            Assert.Equal(HttpStatusCode.OK, (await YolculukEkleAsync(sahip, aracId, 20200, 20350)).StatusCode);
+            Assert.Equal(HttpStatusCode.OK, (await YolculukEkleAsync(sahip, aracId, 20350, 20500)).StatusCode);
+            Assert.Equal(HttpStatusCode.OK, (await YolculukEkleAsync(sahip, aracId, 20050, 20200)).StatusCode);
+        }
+
+        [Fact]
+        public async Task GuncellemeKendiAraligiylaCakismaz()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret(), 10000);
+
+            var ekleme = await YolculukEkleAsync(sahip, aracId, 30200, 30350);
+            var id = (await VeriAsync(ekleme)).GetProperty("id").GetInt32();
+
+            var guncelleme = await sahip.PutAsJsonAsync($"/api/Yolculuk/{id}", new
+            {
+                tarih = "2026-03-01",
+                baslangicKm = 30200,
+                bitisKm = 30400,
+                amac = "Is",
+                nereden = "Kadıköy",
+                nereye = "Ataşehir",
+                not = "güncellendi"
+            });
+
+            Assert.Equal(HttpStatusCode.OK, guncelleme.StatusCode);
+        }
+
     }
 }

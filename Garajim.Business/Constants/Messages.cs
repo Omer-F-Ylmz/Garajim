@@ -170,6 +170,7 @@ namespace Garajim.Business.Constants
         public const string YolculukSilindi = "Yolculuk kaydı silindi.";
         public const string YolculukBulunamadi = "Yolculuk kaydı bulunamadı.";
         public const string YolculukKmHatali = "Bitiş kilometresi başlangıçtan büyük olmalı.";
+        public const string YolculukKmCakisiyor = "Bu kilometre aralığı aynı aracın başka bir yolculuğuyla çakışıyor.";
 
         public const string ExportTuruBulunamadi = "Bilinmeyen dışa aktarma türü.";
         public const string ExportHazir = "Dosya hazırlandı.";
