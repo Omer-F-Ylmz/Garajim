@@ -408,7 +408,10 @@
         el("edit-vehicle-btn").classList.toggle("hidden", !canManage());
         el("team-btn").classList.toggle("hidden", !canManage());
         el("team-form").classList.toggle("hidden", !isOwner());
-        el("plan-form").classList.toggle("hidden", !isOwner());
+        el("plan-bolumu").classList.toggle("hidden", !isOwner());
+        el("davet-bolumu").classList.toggle("hidden", !isOwner());
+        el("import-bolumu").classList.toggle("hidden", !canManage());
+        el("evrak-form").classList.toggle("hidden", !canManage());
         el("karne-btn").classList.toggle("hidden", !canManage());
         el("arsiv-btn").classList.toggle("hidden", !canManage());
 
@@ -2402,26 +2405,30 @@
 
                 var islem = document.createElement("td");
 
-                var duzenle = make("button", "Düzenle", "ghost");
-                duzenle.type = "button";
-                duzenle.addEventListener("click", function () {
-                    api("/api/Hasar/" + dosya.id).then(function (tam) {
-                        hasarSihirbaziniAc(tam.data);
-                    }).catch(function (error) { handleError(el("app-message"), error); });
-                });
-                islem.appendChild(duzenle);
+                if (canManage()) {
+                    var duzenle = make("button", "Düzenle", "ghost");
+                    duzenle.type = "button";
+                    duzenle.addEventListener("click", function () {
+                        api("/api/Hasar/" + dosya.id).then(function (tam) {
+                            hasarSihirbaziniAc(tam.data);
+                        }).catch(function (error) { handleError(el("app-message"), error); });
+                    });
+                    islem.appendChild(duzenle);
+                }
 
                 var tutanak = make("button", "Tutanak", "ghost");
                 tutanak.type = "button";
                 tutanak.addEventListener("click", function () { hasarTutanagiAc(dosya.id); });
                 islem.appendChild(tutanak);
 
-                var sil = make("button", "Sil", "ghost");
-                sil.type = "button";
-                sil.addEventListener("click", function () {
-                    removeRecord("/api/Hasar/" + dosya.id, loadHasar);
-                });
-                islem.appendChild(sil);
+                if (canManage()) {
+                    var sil = make("button", "Sil", "ghost");
+                    sil.type = "button";
+                    sil.addEventListener("click", function () {
+                        removeRecord("/api/Hasar/" + dosya.id, loadHasar);
+                    });
+                    islem.appendChild(sil);
+                }
 
                 tr.appendChild(islem);
                 tbody.appendChild(tr);
