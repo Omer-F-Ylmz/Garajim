@@ -119,7 +119,9 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var payload = await response.Content.ReadAsStringAsync();
-            Assert.Contains("password", payload, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("$.", payload, StringComparison.Ordinal);
+            Assert.DoesNotContain("traceId", payload, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("\"success\":false", payload, StringComparison.Ordinal);
         }
 
         [Fact]

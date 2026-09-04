@@ -22,6 +22,7 @@ using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete;
 using Garajim.Dal.Concrete.Context;
 using Garajim.ML.Models;
+using Microsoft.AspNetCore.Mvc;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -296,6 +297,11 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddControllers(options => options.Filters.Add<DurumKoduFiltresi>()).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = BaglamaHatasi.Yanit;
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
