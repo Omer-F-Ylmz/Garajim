@@ -9,5 +9,7 @@ namespace Garajim.Business.Abstract
         Task<bool> AsildiMiAsync();
 
         Task KaydetAsync(int giris, int cikis);
+
+        Task KotaHatasiAsync();
     }
 }

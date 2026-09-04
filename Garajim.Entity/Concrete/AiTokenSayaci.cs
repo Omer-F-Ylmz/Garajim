@@ -9,6 +9,7 @@ namespace Garajim.Entity.Concrete
         public int Ay { get; set; }
         public long TokenGiris { get; set; }
         public long TokenCikis { get; set; }
+        public int KotaHatasi { get; set; }
         public bool BildirimGonderildi { get; set; }
     }
 }

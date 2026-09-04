@@ -9,6 +9,8 @@ namespace Garajim.Dal.Abstract
 
         Task EkleAsync(int yil, int ay, int giris, int cikis);
 
+        Task KotaHatasiEkleAsync(int yil, int ay);
+
         Task<bool> BildirimiIsaretleAsync(int yil, int ay);
     }
 }

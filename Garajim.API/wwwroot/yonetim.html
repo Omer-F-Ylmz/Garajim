@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yönetim — Garajım</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="garajim-logo.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="screen yardim-sayfa">
+        <header class="yardim-ust">
+            <a class="brand small" href="/">
+                <span class="brand-mark"></span>
+                <span class="brand-name">Garajım</span>
+            </a>
+            <span class="ghost-link">Yönetim</span>
+        </header>
+
+        <p id="yonetim-mesaj" class="message" role="alert"></p>
+
+        <section class="panel">
+            <h1>Özet</h1>
+            <div id="ozet-kartlar" class="cards"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Son 30 gün yeni kayıt</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Gün</th><th>Şirket</th><th>Kullanıcı</th></tr>
+                    </thead>
+                    <tbody id="seri-satirlar"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Son geri bildirimler</h2>
+            <ul id="geri-bildirim-liste" class="upcoming"></ul>
+        </section>
+
+        <section class="panel">
+            <h2>İşlemler</h2>
+            <p class="hint">Demo şirketinin verisini siler ve seed'i yeniden koşar.</p>
+            <button id="demo-sifirla" type="button" class="ghost">Demo verisini sıfırla</button>
+        </section>
+    </div>
+
+    <script defer src="yonetim.js"></script>
+</body>
+</html>

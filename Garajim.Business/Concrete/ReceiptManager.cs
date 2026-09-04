@@ -143,6 +143,11 @@ namespace Garajim.Business.Concrete
             var sureMs = (int)kronometre.ElapsedMilliseconds;
 
             if (sonuc.HizmetDolu)
+            {
+                await _aiButcesi.KotaHatasiAsync();
+            }
+
+            if (sonuc.HizmetDolu)
                 return new ErrorDataResult<ReceiptUploadResultDto>(Messages.AiHizmetiDolu);
 
             await _aiButcesi.KaydetAsync(sonuc.TokenGiris, sonuc.TokenCikis);

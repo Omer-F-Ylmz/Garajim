@@ -56,6 +56,7 @@ namespace Garajim.Business.Concrete
             }
 
             await BildirAsync(durum);
+            await KotaHatasiAsync();
 
             return true;
         }
@@ -64,6 +65,12 @@ namespace Garajim.Business.Concrete
         {
             var bugun = Saat.BugunTr();
             await _tokenDal.EkleAsync(bugun.Year, bugun.Month, giris, cikis);
+        }
+
+        public async Task KotaHatasiAsync()
+        {
+            var bugun = Saat.BugunTr();
+            await _tokenDal.KotaHatasiEkleAsync(bugun.Year, bugun.Month);
         }
 
         private async Task BildirAsync(AiButceDurumuDto durum)

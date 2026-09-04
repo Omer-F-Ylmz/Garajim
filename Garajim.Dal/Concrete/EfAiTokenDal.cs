@@ -40,6 +40,21 @@ namespace Garajim.Dal.Concrete
             await Context.SaveChangesAsync();
         }
 
+        public async Task KotaHatasiEkleAsync(int yil, int ay)
+        {
+            var satir = await Context.AiTokenSayaclari.SingleOrDefaultAsync(s => s.Yil == yil && s.Ay == ay);
+
+            if (satir == null)
+            {
+                satir = new AiTokenSayaci { Yil = yil, Ay = ay };
+                Context.AiTokenSayaclari.Add(satir);
+            }
+
+            satir.KotaHatasi++;
+
+            await Context.SaveChangesAsync();
+        }
+
         public async Task<bool> BildirimiIsaretleAsync(int yil, int ay)
         {
             var satir = await Context.AiTokenSayaclari.SingleOrDefaultAsync(s => s.Yil == yil && s.Ay == ay);
