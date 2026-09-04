@@ -321,6 +321,12 @@
             </form>
             <p id="hesap-sil-mesaj" class="message" role="alert"></p>
 
+            <h3>Ürün turu</h3>
+            <p class="hint">Uygulamayı ilk kez açtığında gösterilen altı adımlı tanıtımı yeniden izleyebilirsin.</p>
+            <div class="inline-form">
+                <button id="tur-tekrar" type="button" class="ghost">Turu tekrar göster</button>
+            </div>
+
             <h3>Takvime abone ol</h3>
             <p class="hint">Evrak bitişleri ve hatırlatmalar telefon takviminize düşer. Bağlantı kişiye özeldir, paylaşmayın.</p>
             <div class="inline-form">
@@ -1320,6 +1326,22 @@
                 <p id="kaza-durum" class="hint"></p>
             </div>
             <p id="kaza-kaynak" class="hint"></p>
+        </div>
+    </div>
+
+    <div id="tur-katman" class="tur-katman hidden">
+        <div id="tur-isik" class="tur-isik"></div>
+        <div id="tur-kutu" class="tur-kutu" role="dialog" aria-modal="true" aria-labelledby="tur-baslik">
+            <h3 id="tur-baslik"></h3>
+            <p id="tur-metin"></p>
+            <div class="tur-alt">
+                <span id="tur-sayac" class="hint"></span>
+                <span class="tur-dugmeler">
+                    <button id="tur-geri" type="button" class="ghost compact">Geri</button>
+                    <button id="tur-ileri" type="button" class="primary compact">İleri</button>
+                    <button id="tur-kapat" type="button" class="ghost compact">Kapat</button>
+                </span>
+            </div>
         </div>
     </div>
 

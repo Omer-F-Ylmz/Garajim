@@ -20,6 +20,8 @@
         kilitAc: null,
         duzenlenenAracKm: null,
         ustaGonderiyor: false,
+        turSirasi: 0,
+        turGosterildi: false,
         sifirlanacakEposta: null,
         hasarAdim: 1,
         hasarDosyaId: null,
@@ -35,6 +37,15 @@
         ["aracVar", "Aracını ekle", "Araç ekle"],
         ["ilkKayitVar", "İlk kaydını gir", "Yakıt ekle"],
         ["evrakVar", "Evrakını tanımla", "Evrak ekle"]
+    ];
+
+    var TUR_ADIMLARI = [
+        ["#vehicle-select", "Araç kartın", "Üstteki listeden aracını seçersin. Bakım, yakıt ve masraf kayıtlarının tamamı seçili araca yazılır."],
+        ["#receipt-btn", "Fiş yükle", "Fişin fotoğrafını çek; tarih, tutar ve litre otomatik dolsun. Kontrol edip onaylarsın."],
+        ["[data-tab=\"bakim\"]", "Bakım ve parça", "Yapılan işi parçalarıyla birlikte yazarsın; aynı parça yenilenince hatırlatma çıkar."],
+        ["[data-tab=\"evrak\"]", "Evrak takvimi", "Muayene, sigorta ve kaskonun bitişini gir; süresi yaklaşınca e-posta ve takvim uyarısı gelir."],
+        ["#karne-btn", "Karne paylaş", "Aracın bakım geçmişini tek bağlantıyla paylaşırsın; satarken alıcı geçmişi görür."],
+        ["#ayarlar-btn", "Ayarlar", "Şifre, takvim aboneliği, plan ve ekip işlerinin tamamı burada."]
     ];
 
     var TEAM_ROLES = [
@@ -558,6 +569,144 @@
         }
     }
 
+    function turHedefi(sira) {
+        var adim = TUR_ADIMLARI[sira];
+        if (!adim) {
+            return null;
+        }
+
+        var hedef = document.querySelector(adim[0]);
+        if (!hedef || hedef.classList.contains("hidden") || hedef.offsetParent === null) {
+            return null;
+        }
+
+        return hedef;
+    }
+
+    function turSonrakiGorunur(sira, yon) {
+        var i = sira;
+        while (i >= 0 && i < TUR_ADIMLARI.length) {
+            if (turHedefi(i)) {
+                return i;
+            }
+            i += yon;
+        }
+        return -1;
+    }
+
+    function turAdimiCiz() {
+        var sira = state.turSirasi;
+        var adim = TUR_ADIMLARI[sira];
+        var hedef = turHedefi(sira);
+
+        if (!adim || !hedef) {
+            turKapat(true);
+            return;
+        }
+
+        var kutu = el("tur-kutu");
+        var isik = el("tur-isik");
+        var alan = hedef.getBoundingClientRect();
+
+        el("tur-baslik").textContent = adim[1];
+        el("tur-metin").textContent = adim[2];
+        el("tur-sayac").textContent = (sira + 1) + " / " + TUR_ADIMLARI.length;
+        el("tur-geri").disabled = turSonrakiGorunur(sira - 1, -1) < 0;
+        el("tur-ileri").textContent = turSonrakiGorunur(sira + 1, 1) < 0 ? "Bitir" : "İleri";
+
+        isik.style.top = (alan.top - 6) + "px";
+        isik.style.left = (alan.left - 6) + "px";
+        isik.style.width = (alan.width + 12) + "px";
+        isik.style.height = (alan.height + 12) + "px";
+
+        var genislik = Math.min(320, window.innerWidth - 24);
+        kutu.style.width = genislik + "px";
+
+        var sol = Math.min(Math.max(12, alan.left), window.innerWidth - genislik - 12);
+        var altBosluk = window.innerHeight - alan.bottom;
+        var yukseklik = kutu.offsetHeight || 160;
+        var ust = altBosluk > yukseklik + 24 ? alan.bottom + 12 : Math.max(12, alan.top - yukseklik - 12);
+
+        kutu.style.left = sol + "px";
+        kutu.style.top = ust + "px";
+    }
+
+    function turKlavye(olay) {
+        if (olay.key === "Escape") {
+            olay.preventDefault();
+            turKapat(true);
+            return;
+        }
+
+        if (olay.key === "ArrowRight") {
+            olay.preventDefault();
+            turIlerle(1);
+            return;
+        }
+
+        if (olay.key === "ArrowLeft") {
+            olay.preventDefault();
+            turIlerle(-1);
+        }
+    }
+
+    function turIlerle(yon) {
+        var sonraki = turSonrakiGorunur(state.turSirasi + yon, yon);
+
+        if (sonraki < 0) {
+            if (yon > 0) {
+                turKapat(true);
+            }
+            return;
+        }
+
+        state.turSirasi = sonraki;
+        turAdimiCiz();
+    }
+
+    function turBaslat() {
+        var ilk = turSonrakiGorunur(0, 1);
+        if (ilk < 0) {
+            return;
+        }
+
+        state.turSirasi = ilk;
+        el("tur-katman").classList.remove("hidden");
+        document.addEventListener("keydown", turKlavye);
+        window.addEventListener("resize", turAdimiCiz);
+        turAdimiCiz();
+        el("tur-ileri").focus();
+    }
+
+    function turKapat(isaretle) {
+        if (el("tur-katman").classList.contains("hidden")) {
+            return;
+        }
+
+        el("tur-katman").classList.add("hidden");
+        document.removeEventListener("keydown", turKlavye);
+        window.removeEventListener("resize", turAdimiCiz);
+
+        if (isaretle) {
+            api("/api/Kurulum/tur-tamam", { method: "POST" }).catch(function () { });
+        }
+    }
+
+    function turBagla() {
+        el("tur-ileri").addEventListener("click", function () { turIlerle(1); });
+        el("tur-geri").addEventListener("click", function () { turIlerle(-1); });
+        el("tur-kapat").addEventListener("click", function () { turKapat(true); });
+        el("tur-katman").addEventListener("click", function (olay) {
+            if (olay.target === el("tur-katman")) {
+                turKapat(true);
+            }
+        });
+        el("tur-tekrar").addEventListener("click", function () {
+            el("ayarlar-box").classList.add("hidden");
+            turBaslat();
+        });
+    }
+
     function kurulumAdimiAc(anahtar) {
         if (anahtar === "aracVar") {
             aracFormunuAc(null);
@@ -584,7 +733,13 @@
         }
 
         return api("/api/Kurulum").then(function (sonuc) {
-            kurulumCubuguCiz((sonuc && sonuc.data) || null);
+            var durum = (sonuc && sonuc.data) || null;
+            kurulumCubuguCiz(durum);
+
+            if (durum && !durum.turTamamlandi && !state.turGosterildi) {
+                state.turGosterildi = true;
+                window.setTimeout(turBaslat, 400);
+            }
         }).catch(function () {
             cubuk.classList.add("hidden");
         });
@@ -5493,6 +5648,7 @@
         bindLastik();
         bindKaza();
         bindTanitim();
+        turBagla();
         el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();
         bindSifirlama();

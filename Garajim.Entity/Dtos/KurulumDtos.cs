@@ -7,5 +7,6 @@ namespace Garajim.Entity.Dtos
         public bool EvrakVar { get; set; }
         public int Yuzde { get; set; }
         public bool Gizlendi { get; set; }
+        public bool TurTamamlandi { get; set; }
     }
 }

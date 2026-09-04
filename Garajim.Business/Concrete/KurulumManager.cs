@@ -52,7 +52,8 @@ namespace Garajim.Business.Concrete
                 IlkKayitVar = ilkKayitVar,
                 EvrakVar = evrakVar,
                 Yuzde = tamamlanan * 100 / KurulumAdimlari.Sayi,
-                Gizlendi = user.KurulumGizlendi
+                Gizlendi = user.KurulumGizlendi,
+                TurTamamlandi = user.TurTamamlandi
             });
         }
 
@@ -69,6 +70,21 @@ namespace Garajim.Business.Concrete
             }
 
             return new SuccessResult(Messages.KurulumGizlendi);
+        }
+
+        public async Task<IResult> TurTamamAsync(int userId)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResult(Messages.UserNotFound);
+
+            if (!user.TurTamamlandi)
+            {
+                user.TurTamamlandi = true;
+                await _userDal.UpdateAsync(user);
+            }
+
+            return new SuccessResult(Messages.TurTamamlandi);
         }
     }
 }

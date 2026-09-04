@@ -32,5 +32,14 @@ namespace Garajim.API.Controllers
                 return BadRequest(result);
             return Ok(result);
         }
+
+        [HttpPost("tur-tamam")]
+        public async Task<IActionResult> TurTamam()
+        {
+            var result = await _kurulumService.TurTamamAsync(CurrentUserId);
+            if (!result.Success)
+                return BadRequest(result);
+            return Ok(result);
+        }
     }
 }

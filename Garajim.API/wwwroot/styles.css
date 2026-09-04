@@ -1337,3 +1337,52 @@ button.compact {
         gap: 8px;
     }
 }
+
+.tur-katman {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.tur-isik {
+    position: absolute;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.001);
+    pointer-events: none;
+    transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+
+.tur-kutu {
+    position: absolute;
+    max-width: 320px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.tur-kutu h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+}
+
+.tur-kutu p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.tur-alt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.tur-dugmeler {
+    display: inline-flex;
+    gap: 6px;
+}

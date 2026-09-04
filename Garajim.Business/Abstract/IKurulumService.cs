@@ -8,5 +8,7 @@ namespace Garajim.Business.Abstract
         Task<IDataResult<KurulumDurumDto>> DurumAsync(int userId);
 
         Task<IResult> GizleAsync(int userId);
+
+        Task<IResult> TurTamamAsync(int userId);
     }
 }
