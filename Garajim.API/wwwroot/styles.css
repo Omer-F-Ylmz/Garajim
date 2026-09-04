@@ -1472,3 +1472,8 @@ button.compact {
 .sss-capa:hover {
     opacity: 1;
 }
+
+.kurulum-dugmeler {
+    display: inline-flex;
+    gap: 6px;
+}

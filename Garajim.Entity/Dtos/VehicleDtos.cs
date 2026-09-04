@@ -66,6 +66,7 @@ namespace Garajim.Entity.Dtos
         public string Plate { get; set; }
         public bool YabanciPlaka { get; set; }
         public bool Arsivli { get; set; }
+        public bool Ornek { get; set; }
         public bool ModelEslesmedi { get; set; }
         public DateTime? SonKmGuncelleme { get; set; }
         public string ArsivNedeni { get; set; }

@@ -491,6 +491,8 @@
         el("karne-btn").classList.toggle("hidden", !canManage());
         el("arsiv-btn").classList.toggle("hidden", !canManage());
 
+        el("ornek-ekle").classList.toggle("hidden", !canManage());
+        el("ornek-sil").classList.toggle("hidden", !canManage());
         el("hesap-sil-kod").classList.toggle("hidden", !isOwner());
         el("uye-hesap-sil").classList.toggle("hidden", isOwner());
 
@@ -536,7 +538,7 @@
             state.vehicles.forEach(function (vehicle) {
                 var option = document.createElement("option");
                 option.value = String(vehicle.id);
-                option.textContent = vehicle.plate + " - " + vehicle.brand + " " + vehicle.model;
+                option.textContent = vehicle.plate + " - " + vehicle.brand + " " + vehicle.model + (vehicle.ornek ? " · Örnek" : "");
                 select.appendChild(option);
             });
 
@@ -576,6 +578,7 @@
         }
         var kap = el("empty-kutu");
         clear(kap);
+        el("empty-ornek").classList.toggle("hidden", !canManage());
 
         if (canManage()) {
             el("empty-title").textContent = "Henüz aracınız yok";
@@ -584,6 +587,42 @@
             el("empty-title").textContent = "Size zimmetli araç yok";
             kap.appendChild(make("p", "Bir araç zimmetlendiğinde kayıtları burada görürsünüz. Zimmet için şirket yöneticinize başvurun."));
         }
+    }
+
+    function ornekAracOlustur() {
+        clearMessages();
+
+        return api("/api/Vehicles/ornek", { method: "POST" }).then(function (sonuc) {
+            showMessage(el("app-message"), (sonuc && sonuc.message) || "Örnek araç oluşturuldu.", true);
+            el("ayarlar-box").classList.add("hidden");
+            state.selectedVehicleId = sonuc && sonuc.data ? sonuc.data.id : state.selectedVehicleId;
+            loadVehicles();
+        }).catch(function (hata) {
+            handleError(el("app-message"), hata);
+        });
+    }
+
+    function ornekAraciSil() {
+        clearMessages();
+
+        return api("/api/Vehicles/ornek", { method: "DELETE" }).then(function (sonuc) {
+            showMessage(el("app-message"), (sonuc && sonuc.message) || "Örnek araç kaldırıldı.", true);
+            state.selectedVehicleId = null;
+            loadVehicles();
+        }).catch(function (hata) {
+            handleError(el("app-message"), hata);
+        });
+    }
+
+    function ornekDugmeleriniBagla() {
+        ["kurulum-ornek", "empty-ornek", "ornek-ekle"].forEach(function (id) {
+            var dugme = el(id);
+            if (dugme) {
+                dugme.addEventListener("click", ornekAracOlustur);
+            }
+        });
+
+        el("ornek-sil").addEventListener("click", ornekAraciSil);
     }
 
     function turHedefi(sira) {
@@ -772,6 +811,8 @@
         }
 
         var tamam = durum.yuzde >= 100;
+
+        el("kurulum-ornek").classList.toggle("hidden", durum.aracVar);
 
         el("kurulum-baslik").textContent = tamam
             ? "Kurulum tamam"
@@ -5740,6 +5781,7 @@
         bindKaza();
         bindTanitim();
         turBagla();
+        ornekDugmeleriniBagla();
         el("kurulum-gizle").addEventListener("click", kurulumuGizle);
         bindDogrulama();
         bindSifirlama();

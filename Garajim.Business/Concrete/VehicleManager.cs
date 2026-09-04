@@ -76,7 +76,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<VehicleDto>(Messages.InvalidValue);
             var davetSayisi = await _companyDal.DavetSayisiAsync(sirket.Id);
             var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
-            if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId && !v.Arsivli) >= limit)
+            if (await _vehicleDal.CountAsync(v => v.CompanyId == owner.CompanyId && !v.Arsivli && !v.Ornek) >= limit)
                 return new ErrorDataResult<VehicleDto>(Messages.AracLimitiAsildi);
             var model = MarkaModelCoz(dto.Brand, dto.Model, dto.ListedeYok);
             if (model.Hata != null)
@@ -239,7 +239,7 @@ namespace Garajim.Business.Concrete
             var davetSayisi = await _companyDal.DavetSayisiAsync(sirket.Id);
             var limit = _planKurallari.AracLimiti(sirket.PlanType, sirket.AracLimiti, davetSayisi);
 
-            if (await _vehicleDal.CountAsync(v => v.CompanyId == vehicle.CompanyId && !v.Arsivli) >= limit)
+            if (await _vehicleDal.CountAsync(v => v.CompanyId == vehicle.CompanyId && !v.Arsivli && !v.Ornek) >= limit)
                 return new ErrorResult(Messages.AracLimitiAsildi);
 
             vehicle.Arsivli = false;
@@ -334,6 +334,7 @@ namespace Garajim.Business.Concrete
                 Plate = vehicle.Plate,
                 YabanciPlaka = vehicle.YabanciPlaka,
                 Arsivli = vehicle.Arsivli,
+                Ornek = vehicle.Ornek,
                 ModelEslesmedi = vehicle.ModelEslesmedi,
                 SonKmGuncelleme = vehicle.SonKmGuncelleme,
                 ArsivNedeni = vehicle.ArsivNedeni?.ToString(),

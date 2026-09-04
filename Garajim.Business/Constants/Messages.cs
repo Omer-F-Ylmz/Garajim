@@ -181,6 +181,10 @@ namespace Garajim.Business.Constants
         public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin veya bir aracı silin.";
 
         public const string TurTamamlandi = "Ürün turu tamamlandı.";
+        public const string OrnekAracEklendi = "Örnek araç altı aylık kayıtlarıyla oluşturuldu.";
+        public const string OrnekAracZatenVar = "Şirkette zaten bir örnek araç var.";
+        public const string OrnekAracSilindi = "Örnek araç ve kayıtları silindi.";
+        public const string OrnekAracKarnePaylasamaz = "Örnek araç için karne paylaşılamaz.";
         public const string KurulumGizlendi = "Kurulum çubuğu gizlendi.";
 
         public const string ImportTamamlandi = "İçe aktarma tamamlandı.";

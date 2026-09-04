@@ -61,7 +61,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorResult(Messages.DestekEpostasiTanimsiz);
 
             var davetSayisi = await _companyDal.DavetSayisiAsync(company.Id);
-            var aracSayisi = await _vehicleDal.CountAsync(v => v.CompanyId == company.Id && !v.Arsivli);
+            var aracSayisi = await _vehicleDal.CountAsync(v => v.CompanyId == company.Id && !v.Arsivli && !v.Ornek);
             var limit = _planKurallari.AracLimiti(company.PlanType, company.AracLimiti, davetSayisi);
 
             var govde = new StringBuilder();

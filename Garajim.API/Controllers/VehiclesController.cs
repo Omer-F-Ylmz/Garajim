@@ -17,8 +17,9 @@ namespace Garajim.API.Controllers
         private readonly IReportService _reportService;
         private readonly IHasarService _hasarService;
         private readonly IDegerService _degerService;
+        private readonly IOrnekAracService _ornekAracService;
 
-        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService, IHasarService hasarService, IDegerService degerService)
+        public VehiclesController(IVehicleService vehicleService, IPartMemoryService partMemoryService, IKarneService karneService, IEvrakService evrakService, IReportService reportService, IHasarService hasarService, IDegerService degerService, IOrnekAracService ornekAracService)
         {
             _vehicleService = vehicleService;
             _partMemoryService = partMemoryService;
@@ -27,6 +28,7 @@ namespace Garajim.API.Controllers
             _reportService = reportService;
             _hasarService = hasarService;
             _degerService = degerService;
+            _ornekAracService = ornekAracService;
         }
 
         [HttpPost("{id}/karne")]
@@ -35,7 +37,7 @@ namespace Garajim.API.Controllers
         {
             var result = await _karneService.OlusturAsync(CurrentUserId, id, dto);
             if (!result.Success)
-                return NotFound(result);
+                return result.Message == Messages.VehicleNotFound ? NotFound(result) : BadRequest(result);
             return Ok(result);
         }
 
@@ -201,6 +203,30 @@ namespace Garajim.API.Controllers
             var result = await _vehicleService.GetByIdAsync(CurrentUserId, id);
             if (!result.Success)
                 return NotFound(result);
+            return Ok(result);
+        }
+
+        [HttpPost("ornek")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> OrnekOlustur()
+        {
+            var result = await _ornekAracService.OlusturAsync(CurrentUserId);
+            if (!result.Success)
+            {
+                if (result.Message == Messages.OrnekAracZatenVar)
+                    return Conflict(result);
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("ornek")]
+        [Authorize(Roles = CompanyRoles.OwnerOrManager)]
+        public async Task<IActionResult> OrnekSil()
+        {
+            var result = await _ornekAracService.SilAsync(CurrentUserId);
+            if (!result.Success)
+                return BadRequest(result);
             return Ok(result);
         }
 

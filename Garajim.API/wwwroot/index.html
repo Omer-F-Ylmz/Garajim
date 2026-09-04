@@ -175,7 +175,10 @@
         <section id="kurulum-cubugu" class="kurulum-cubugu hidden" aria-label="Kurulum adımları">
             <div class="kurulum-ust">
                 <span id="kurulum-baslik" class="kurulum-baslik"></span>
-                <button id="kurulum-gizle" type="button" class="ghost compact">Gizle</button>
+                <span class="kurulum-dugmeler">
+                    <button id="kurulum-ornek" type="button" class="ghost compact">Örnek araçla dene</button>
+                    <button id="kurulum-gizle" type="button" class="ghost compact">Gizle</button>
+                </span>
             </div>
             <div class="kurulum-bar"><span id="kurulum-dolgu" class="kurulum-dolgu"></span></div>
             <ol id="kurulum-adimlar" class="kurulum-adimlar"></ol>
@@ -321,6 +324,13 @@
                 </div>
             </form>
             <p id="hesap-sil-mesaj" class="message" role="alert"></p>
+
+            <h3>Örnek araç</h3>
+            <p class="hint">Örnek araç plan limitine sayılmaz ve karnesi paylaşılamaz; denemen bitince kaldırabilirsin.</p>
+            <div class="inline-form">
+                <button id="ornek-ekle" type="button" class="ghost">Örnek araç oluştur</button>
+                <button id="ornek-sil" type="button" class="ghost">Örnek aracı kaldır</button>
+            </div>
 
             <h3>Ürün turu</h3>
             <p class="hint">Uygulamayı ilk kez açtığında gösterilen altı adımlı tanıtımı yeniden izleyebilirsin.</p>
@@ -625,6 +635,7 @@
         <div id="empty-state" class="panel hidden">
             <h2 id="empty-title">Henüz aracınız yok</h2>
             <div id="empty-kutu"></div>
+            <button id="empty-ornek" type="button" class="ghost">Örnek araçla dene</button>
         </div>
 
         <div id="workspace" class="hidden">

@@ -73,6 +73,9 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<KarneLinkDto>(Messages.VehicleNotFound);
 
+            if (vehicle.Ornek)
+                return new ErrorDataResult<KarneLinkDto>(Messages.OrnekAracKarnePaylasamaz);
+
             await _karneDal.PasiflestirAsync(vehicleId);
 
             var hamToken = HamTokenUret();

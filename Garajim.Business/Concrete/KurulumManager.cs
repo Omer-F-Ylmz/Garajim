@@ -37,7 +37,7 @@ namespace Garajim.Business.Concrete
             if (user == null)
                 return new ErrorDataResult<KurulumDurumDto>(Messages.UserNotFound);
 
-            var aracVar = await _vehicleDal.AnyAsync(v => !v.Arsivli);
+            var aracVar = await _vehicleDal.AnyAsync(v => !v.Arsivli && !v.Ornek);
             var ilkKayitVar = aracVar &&
                 (await _fuelDal.AnyAsync(f => f.Id > 0)
                  || await _maintenanceDal.AnyAsync(m => m.Id > 0)
