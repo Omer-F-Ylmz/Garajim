@@ -50,6 +50,7 @@ namespace Garajim.Business.Concrete.Receipts
             }
 
             string sonHata = null;
+            var hizmetDolu = false;
 
             for (var deneme = 1; deneme <= DenemeSayisi; deneme++)
             {
@@ -65,6 +66,12 @@ namespace Garajim.Business.Concrete.Receipts
                     {
                         sonHata = $"HTTP {(int)cevap.StatusCode}";
                         _logger.LogWarning("Fiş çıkarımı {Deneme}. denemede {Durum} döndü.", deneme, (int)cevap.StatusCode);
+
+                        if (HizmetDoluMu(cevap.StatusCode, govde))
+                        {
+                            hizmetDolu = true;
+                        }
+
                         continue;
                     }
 
@@ -94,7 +101,19 @@ namespace Garajim.Business.Concrete.Receipts
                 }
             }
 
-            return ReceiptResponseParser.Bos(sonHata);
+            var bos = ReceiptResponseParser.Bos(sonHata);
+            bos.HizmetDolu = hizmetDolu;
+            return bos;
         }
+        private static bool HizmetDoluMu(System.Net.HttpStatusCode durum, string govde)
+        {
+            if (durum == System.Net.HttpStatusCode.TooManyRequests || durum == System.Net.HttpStatusCode.ServiceUnavailable)
+            {
+                return true;
+            }
+
+            return govde != null && govde.Contains("RESOURCE_EXHAUSTED", StringComparison.OrdinalIgnoreCase);
+        }
+
     }
 }

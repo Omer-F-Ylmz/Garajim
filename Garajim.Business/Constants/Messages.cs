@@ -81,6 +81,7 @@ namespace Garajim.Business.Constants
         public const string ReceiptAlreadyHandled = "Bu taslak zaten sonuçlandırılmış.";
         public const string ReceiptMonthlyLimitExceeded = "Bu ay için fiş okuma limitiniz doldu; yeni fişleri gelecek ay yükleyebilir veya kayıtları elle girebilirsiniz.";
         public const string ReceiptUploaded = "Fiş okundu, kontrol edip onaylayın.";
+        public const string AiHizmetiDolu = "AI hizmeti geçici olarak dolu, sonra tekrar deneyin.";
         public const string ReceiptOkunamadi = "Fiş okunamadı; alanları doldurup onaylayabilirsiniz.";
         public const string ReceiptAutoConfirmed = "Fiş okundu ve otomatik kaydedildi.";
         public const string ReceiptConfirmed = "Kayıt oluşturuldu.";

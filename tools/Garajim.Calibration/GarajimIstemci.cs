@@ -26,6 +26,8 @@ namespace Garajim.Calibration
 
     public class YuklemeSonucu
     {
+        public bool HizmetDolu { get; set; }
+        public int IstemciSureMs { get; set; }
         public int TaslakId { get; set; }
         public TaslakOzeti Taslak { get; set; }
     }
@@ -63,8 +65,15 @@ namespace Garajim.Calibration
             dosya.Headers.ContentType = new MediaTypeHeaderValue(TipTahmin(dosyaAdi));
             form.Add(dosya, "file", dosyaAdi);
 
+            var kronometre = System.Diagnostics.Stopwatch.StartNew();
             using var cevap = await _client.PostAsync("/api/Receipts?otoOnay=false", form);
             var metin = await cevap.Content.ReadAsStringAsync();
+            kronometre.Stop();
+
+            if (cevap.StatusCode == HttpStatusCode.ServiceUnavailable)
+            {
+                return new YuklemeSonucu { HizmetDolu = true, IstemciSureMs = (int)kronometre.ElapsedMilliseconds };
+            }
 
             if (cevap.StatusCode == HttpStatusCode.TooManyRequests)
             {
@@ -82,6 +91,7 @@ namespace Garajim.Calibration
 
             return new YuklemeSonucu
             {
+                IstemciSureMs = (int)kronometre.ElapsedMilliseconds,
                 TaslakId = veri.GetProperty("taslakId").GetInt32(),
                 Taslak = new TaslakOzeti
                 {

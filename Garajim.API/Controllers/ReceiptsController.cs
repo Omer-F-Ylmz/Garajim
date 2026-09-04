@@ -67,6 +67,8 @@ namespace Garajim.API.Controllers
             {
                 if (result.Message == Messages.ReceiptMonthlyLimitExceeded)
                     return StatusCode(StatusCodes.Status429TooManyRequests, result);
+                if (result.Message == Messages.AiHizmetiDolu)
+                    return StatusCode(StatusCodes.Status503ServiceUnavailable, result);
                 return BadRequest(result);
             }
 

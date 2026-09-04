@@ -142,6 +142,9 @@ namespace Garajim.Business.Concrete
             kronometre.Stop();
             var sureMs = (int)kronometre.ElapsedMilliseconds;
 
+            if (sonuc.HizmetDolu)
+                return new ErrorDataResult<ReceiptUploadResultDto>(Messages.AiHizmetiDolu);
+
             await _aiButcesi.KaydetAsync(sonuc.TokenGiris, sonuc.TokenCikis);
 
             _logger.LogInformation(

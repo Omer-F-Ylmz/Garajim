@@ -65,10 +65,17 @@ foreach (var beklenen in beklenenler)
     try
     {
         var yukleme = await istemci.FisYukleAsync(await File.ReadAllBytesAsync(dosyaYolu), beklenen.Dosya);
+
+        if (yukleme.HizmetDolu)
+        {
+            Console.WriteLine($"[{sira}/{beklenenler.Count}] {beklenen.Dosya}: AI hizmeti dolu, atlandı ({yukleme.IstemciSureMs} ms).");
+            continue;
+        }
+
         var gelen = yukleme.Taslak;
 
         sonuc.GuvenSkoru = gelen.GuvenSkoru;
-        sonuc.SureMs = gelen.SureMs;
+        sonuc.SureMs = yukleme.IstemciSureMs;
 
         Karsilastir(sonuc, "tarih", Karsilastirici.TarihEsit(beklenen.Tarih, gelen.Tarih),
             beklenen.Tarih?.ToString("dd.MM.yyyy"), gelen.Tarih?.ToString("dd.MM.yyyy"));
@@ -95,7 +102,7 @@ foreach (var beklenen in beklenenler)
         }
 
         var dogru = sonuc.AlanDogru.Values.Count(v => v);
-        Console.WriteLine($"[{sira}/{beklenenler.Count}] {beklenen.Dosya}: {dogru}/{sonuc.AlanDogru.Count} alan doğru, güven {gelen.GuvenSkoru:0.00}, {gelen.SureMs} ms");
+        Console.WriteLine($"[{sira}/{beklenenler.Count}] {beklenen.Dosya}: {dogru}/{sonuc.AlanDogru.Count} alan doğru, güven {gelen.GuvenSkoru:0.00}, {yukleme.IstemciSureMs} ms");
     }
     catch (LimitAsildiException ex)
     {

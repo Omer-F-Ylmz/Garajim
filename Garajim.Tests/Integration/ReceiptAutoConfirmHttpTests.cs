@@ -354,5 +354,22 @@ namespace Garajim.Tests.Integration
             _factory.Dispose();
             try { Directory.Delete(_klasor, true); } catch { }
         }
+        [Fact]
+        public async Task HizmetDoluysaTaslakOlusmazVe503Doner()
+        {
+            var sahip = await SahipOlusturAsync();
+            await AracEkleAsync(sahip, "34DOL001");
+            _factory.Extractor.Sonuc = new ReceiptExtractionResult { HizmetDolu = true };
+
+            var cevap = await YukleAsync(sahip, false);
+            var govde = await cevap.Content.ReadAsStringAsync();
+
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, cevap.StatusCode);
+            Assert.Contains("dolu", govde, StringComparison.OrdinalIgnoreCase);
+
+            var taslaklar = await VeriAsync(await sahip.GetAsync("/api/Receipts"));
+            Assert.Equal(0, taslaklar.GetArrayLength());
+        }
+
     }
 }

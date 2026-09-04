@@ -17,6 +17,7 @@ namespace Garajim.Entity.Dtos
         public string HamYanit { get; set; }
         public int TokenGiris { get; set; }
         public int TokenCikis { get; set; }
+        public bool HizmetDolu { get; set; }
     }
 
     public class ReceiptItemResult

@@ -269,6 +269,31 @@ namespace Garajim.Tests.Unit
         {
             Assert.Equal("gemini-3.5-flash-lite", GeminiReceiptExtractor.VarsayilanModelAdi);
         }
+        [Theory]
+        [InlineData(429)]
+        [InlineData(503)]
+        public async Task KotaVeDoluHatasiHizmetDoluIsaretler(int durum)
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla((HttpStatusCode)durum, "{\"error\":{\"code\":" + durum + ",\"status\":\"RESOURCE_EXHAUSTED\"}}");
+            handler.Kuyrukla((HttpStatusCode)durum, "{\"error\":{\"code\":" + durum + ",\"status\":\"RESOURCE_EXHAUSTED\"}}");
+
+            var sonuc = await GeminiOlustur(handler).ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.True(sonuc.HizmetDolu, "HizmetDolu isaretlenmedi");
+        }
+
+        [Fact]
+        public async Task BasariliYanitHizmetDoluIsaretlemez()
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla(HttpStatusCode.OK, GeminiCevabi(ModelJson()));
+
+            var sonuc = await GeminiOlustur(handler).ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            Assert.False(sonuc.HizmetDolu);
+        }
+
 
     }
 }
