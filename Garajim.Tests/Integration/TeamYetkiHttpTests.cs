@@ -132,5 +132,39 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(2, veri.GetArrayLength());
         }
+        [Fact]
+        public async Task PasiflestirilenUyeninZimmetiKapanir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var arac = await sahip.PostAsJsonAsync("/api/Vehicles", new
+            {
+                plate = TestPlaka.Uret(), brand = "Fiat", model = "Egea",
+                year = 2020, currentKm = 10000, fuelType = "Benzin"
+            });
+            var aracId = JsonDocument.Parse(await arac.Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").GetProperty("id").GetInt32();
+
+            var uye = await sahip.PostAsJsonAsync("/api/Team", new
+            {
+                email = $"zimmet-{Guid.NewGuid():N}@garajim.local",
+                fullName = "Zimmetli Sürücü",
+                role = "Driver"
+            });
+            var userId = JsonDocument.Parse(await uye.Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").GetProperty("userId").GetInt32();
+
+            var zimmet = await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId });
+            Assert.True(zimmet.IsSuccessStatusCode, await zimmet.Content.ReadAsStringAsync());
+
+            var pasif = await sahip.PutAsync($"/api/Team/{userId}/deactivate", null);
+            Assert.True(pasif.IsSuccessStatusCode, await pasif.Content.ReadAsStringAsync());
+
+            var zimmetler = JsonDocument.Parse(
+                await (await sahip.GetAsync($"/api/Assignments?vehicleId={aracId}")).Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").EnumerateArray().ToList();
+
+            Assert.All(zimmetler, z => Assert.False(z.GetProperty("isActive").GetBoolean()));
+        }
+
     }
 }

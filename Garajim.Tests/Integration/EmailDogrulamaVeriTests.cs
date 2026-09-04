@@ -43,7 +43,7 @@ namespace Garajim.Tests.Integration
         public async Task OwnerinDavetEttigiSurucuDogrulanmisAcilir()
         {
             var sahip = SahipEkle();
-            var yonetici = new TeamManager(_db.UserDal, _db.EvrakDal);
+            var yonetici = new TeamManager(_db.UserDal, _db.EvrakDal, _db.AssignmentDal);
 
             var sonuc = await yonetici.AddAsync(sahip.Id, new TeamMemberCreateDto
             {

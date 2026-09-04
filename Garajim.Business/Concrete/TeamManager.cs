@@ -18,11 +18,13 @@ namespace Garajim.Business.Concrete
 
         private readonly IUserDal _userDal;
         private readonly IEvrakDal _evrakDal;
+        private readonly IVehicleAssignmentDal _assignmentDal;
 
-        public TeamManager(IUserDal userDal, IEvrakDal evrakDal)
+        public TeamManager(IUserDal userDal, IEvrakDal evrakDal, IVehicleAssignmentDal assignmentDal)
         {
             _userDal = userDal;
             _evrakDal = evrakDal;
+            _assignmentDal = assignmentDal;
         }
 
         public async Task<IDataResult<List<TeamMemberDto>>> GetListAsync(int currentUserId)
@@ -185,6 +187,14 @@ namespace Garajim.Business.Concrete
 
             target.IsActive = false;
             await _userDal.UpdateAsync(target);
+
+            var zimmetler = await _assignmentDal.GetListAsync(a => a.UserId == targetUserId && a.EndDate == null);
+            foreach (var zimmet in zimmetler)
+            {
+                zimmet.EndDate = DateTime.UtcNow;
+                await _assignmentDal.UpdateAsync(zimmet);
+            }
+
             return new SuccessResult(Messages.UserDeactivated);
         }
 
