@@ -25,6 +25,8 @@ namespace Garajim.Business.Usta
     public class GeminiUstaIstemci : IUstaIstemci
     {
         public const string HttpClientName = "usta-istemci";
+        public const string VarsayilanModel = "gemini-3.5-flash-lite";
+        public const int DusunmeButcesi = 512;
         private const int DenemeSayisi = 2;
 
         private static readonly JsonSerializerOptions Secenekler = new JsonSerializerOptions
@@ -64,7 +66,7 @@ namespace Garajim.Business.Usta
 
             if (string.IsNullOrWhiteSpace(model))
             {
-                model = "gemini-2.5-flash";
+                model = VarsayilanModel;
             }
 
             var parcalar = new List<object> { new { text = sabitBlok }, new { text = aracBaglami } };
@@ -77,7 +79,12 @@ namespace Garajim.Business.Usta
             var govde = JsonSerializer.Serialize(new
             {
                 contents = new[] { new { parts = parcalar.ToArray() } },
-                generationConfig = new { temperature = 0.3, response_mime_type = "application/json" }
+                generationConfig = new
+                {
+                    temperature = 0.3,
+                    response_mime_type = "application/json",
+                    thinkingConfig = new { thinkingBudget = DusunmeButcesi }
+                }
             });
 
             var kronometre = Stopwatch.StartNew();

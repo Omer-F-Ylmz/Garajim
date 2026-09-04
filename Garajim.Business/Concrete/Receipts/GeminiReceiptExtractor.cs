@@ -12,7 +12,9 @@ namespace Garajim.Business.Concrete.Receipts
         {
         }
 
-        protected override string VarsayilanModel => "gemini-2.5-flash";
+        public const string VarsayilanModelAdi = "gemini-3.5-flash-lite";
+
+        protected override string VarsayilanModel => VarsayilanModelAdi;
 
         protected override HttpRequestMessage IstekOlustur(string model, string apiKey, byte[] imageBytes, string mimeType)
         {
@@ -44,6 +46,9 @@ namespace Garajim.Business.Concrete.Receipts
                 yazici.WriteStartObject("generationConfig");
                 yazici.WriteNumber("temperature", 0);
                 yazici.WriteString("response_mime_type", "application/json");
+                yazici.WriteStartObject("thinkingConfig");
+                yazici.WriteNumber("thinkingBudget", 0);
+                yazici.WriteEndObject();
                 yazici.WriteEndObject();
 
                 yazici.WriteEndObject();

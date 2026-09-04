@@ -109,8 +109,8 @@ builder.Services.AddScoped<IReminderService, ReminderManager>();
 builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddSingleton<IKodGonderimSayaci, BellekKodGonderimSayaci>();
-builder.Services.AddHttpClient(ReceiptExtractorBase.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(30));
-builder.Services.AddHttpClient(GeminiUstaIstemci.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(40));
+builder.Services.AddHttpClient(ReceiptExtractorBase.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(60));
+builder.Services.AddHttpClient(GeminiUstaIstemci.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(60));
 if (builder.Configuration.GetValue("Usta:SahteYanit", false))
 {
     builder.Services.AddSingleton<IUstaIstemci, SahteUstaIstemcisi>();

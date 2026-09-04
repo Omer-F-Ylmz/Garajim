@@ -29,9 +29,16 @@ namespace Garajim.Tests.Unit
                 _cevaplar.Enqueue(() => throw new TaskCanceledException("zaman aşımı"));
             }
 
+            public List<string> Govdeler { get; } = new List<string>();
+
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 CagriSayisi++;
+                if (request.Content != null)
+                {
+                    Govdeler.Add(request.Content.ReadAsStringAsync(cancellationToken).GetAwaiter().GetResult());
+                }
+
                 return Task.FromResult(_cevaplar.Dequeue()());
             }
         }
@@ -241,5 +248,27 @@ namespace Garajim.Tests.Unit
 
             Assert.Equal(new DateTime(2026, 8, 15), sonuc.Tarih);
         }
+        [Fact]
+        public async Task FisIstegiDusunmeyiKapatir()
+        {
+            var handler = new SahteHandler();
+            handler.Kuyrukla(HttpStatusCode.OK, GeminiCevabi(ModelJson()));
+
+            var cikarici = GeminiOlustur(handler);
+            await cikarici.ExtractAsync(OrnekGoruntu, "image/jpeg", CancellationToken.None);
+
+            using var govde = JsonDocument.Parse(handler.Govdeler[0]);
+            var ayar = govde.RootElement.GetProperty("generationConfig");
+
+            Assert.True(ayar.TryGetProperty("thinkingConfig", out var dusunme), "thinkingConfig yok: " + handler.Govdeler[0]);
+            Assert.Equal(0, dusunme.GetProperty("thinkingBudget").GetInt32());
+        }
+
+        [Fact]
+        public void FisVarsayilanModeliLiteOlur()
+        {
+            Assert.Equal("gemini-3.5-flash-lite", GeminiReceiptExtractor.VarsayilanModelAdi);
+        }
+
     }
 }

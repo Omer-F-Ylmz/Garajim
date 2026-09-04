@@ -292,5 +292,25 @@ namespace Garajim.Tests.Unit
                 SahteGeminiHandler.GecerliYanit(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
+        [Fact]
+        public async Task UstaIstegiDusukDusunmeButcesiTasir()
+        {
+            var handler = new SahteGeminiHandler(_ => SahteGeminiHandler.Cevap(SahteGeminiHandler.GecerliYanit()));
+            await Istemci(handler).SorAsync("sabit", "baglam", new List<(string Rol, string Metin)>(), "soru", CancellationToken.None);
+
+            using var govde = JsonDocument.Parse(handler.Istekler[0]);
+            var ayar = govde.RootElement.GetProperty("generationConfig");
+
+            Assert.True(ayar.TryGetProperty("thinkingConfig", out var dusunme), "thinkingConfig yok: " + handler.Istekler[0]);
+            Assert.Equal(GeminiUstaIstemci.DusunmeButcesi, dusunme.GetProperty("thinkingBudget").GetInt32());
+            Assert.InRange(GeminiUstaIstemci.DusunmeButcesi, 1, 1024);
+        }
+
+        [Fact]
+        public void VarsayilanModelLiteOlur()
+        {
+            Assert.Equal("gemini-3.5-flash-lite", GeminiUstaIstemci.VarsayilanModel);
+        }
+
     }
 }
