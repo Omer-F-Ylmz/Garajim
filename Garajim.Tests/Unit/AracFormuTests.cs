@@ -64,6 +64,16 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
+        public void YabanciPlakaSecenegiFormdaVar()
+        {
+            var html = Oku("index.html");
+            var app = Oku("app.js");
+
+            Assert.Contains("id=\"vehicle-yabanci-plaka\"", html);
+            Assert.Contains("govde.yabanciPlaka = el(\"vehicle-yabanci-plaka\").checked;", app);
+        }
+
+        [Fact]
         public void ArsivleDugmesiDuzenlenenAracaBaglidir()
         {
             var app = Oku("app.js");

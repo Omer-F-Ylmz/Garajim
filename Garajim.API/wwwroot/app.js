@@ -4905,6 +4905,7 @@
 
         if (state.duzenlenenAracId === null) {
             govde.plate = el("vehicle-plate").value;
+            govde.yabanciPlaka = el("vehicle-yabanci-plaka").checked;
         }
 
         return govde;
@@ -4921,6 +4922,8 @@
         el("vehicle-plate").required = !arac;
 
         el("vehicle-plate").value = arac ? arac.plate : "";
+        el("vehicle-yabanci-plaka").checked = !!(arac && arac.yabanciPlaka);
+        el("vehicle-yabanci-plaka").parentNode.classList.toggle("hidden", !!arac);
         el("vehicle-model-listede-yok").checked = !!(arac && arac.modelEslesmedi);
         el("vehicle-model-serbest").value = arac && arac.modelEslesmedi ? arac.model : "";
         listedeYokDurumu();
