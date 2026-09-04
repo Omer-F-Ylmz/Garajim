@@ -5,6 +5,25 @@ namespace Garajim.Tests.Unit
 {
     public class SaatTests
     {
+        [Fact]
+        public void AyBasiTurkiyeAyininIlkGunudur()
+        {
+            var ayBasi = Saat.AyBasiUtc();
+            var yerel = Saat.Yerel(ayBasi);
+
+            Assert.Equal(DateTimeKind.Utc, ayBasi.Kind);
+            Assert.Equal(1, yerel.Day);
+            Assert.Equal(TimeSpan.Zero, yerel.TimeOfDay);
+            Assert.Equal(Saat.BugunTr().Month, yerel.Month);
+            Assert.Equal(Saat.BugunTr().Year, yerel.Year);
+        }
+
+        [Fact]
+        public void AyBasiGunBasindanSonraOlamaz()
+        {
+            Assert.True(Saat.AyBasiUtc() <= Saat.GunBasiUtc());
+        }
+
         private static string DepoKoku()
         {
             var klasor = new DirectoryInfo(AppContext.BaseDirectory);

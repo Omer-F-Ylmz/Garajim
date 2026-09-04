@@ -120,7 +120,7 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ReceiptUploadResultDto>(Messages.UserNotFound);
 
             var sirket = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
-            var ayBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var ayBasi = Saat.AyBasiUtc();
             if (await _draftDal.GetMonthlyCountAsync(ayBasi) >= _planKurallari.AylikFisLimiti(sirket?.PlanType ?? PlanType.Bireysel))
                 return new ErrorDataResult<ReceiptUploadResultDto>(Messages.ReceiptMonthlyLimitExceeded);
 

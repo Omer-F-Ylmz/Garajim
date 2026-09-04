@@ -31,6 +31,14 @@ namespace Garajim.Business.Concrete
             return Yerel(DateTime.UtcNow).Date;
         }
 
+        public static DateTime AyBasiUtc()
+        {
+            var bugun = BugunTr();
+            var ayBasi = new DateTime(bugun.Year, bugun.Month, 1, 0, 0, 0, DateTimeKind.Unspecified);
+
+            return TimeZoneInfo.ConvertTimeToUtc(ayBasi, Dilim);
+        }
+
         public static DateTime GunBasiUtc()
         {
             return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(BugunTr(), DateTimeKind.Unspecified), Dilim);
