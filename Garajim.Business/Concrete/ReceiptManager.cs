@@ -468,12 +468,19 @@ namespace Garajim.Business.Concrete
 
         private async Task<Vehicle> OnerilenAracAsync(int userId, string plaka)
         {
-            if (string.IsNullOrWhiteSpace(plaka))
+            if (string.IsNullOrWhiteSpace(plaka) || PlakaDogrulayici.TurkceKarakterTasiyorMu(plaka))
             {
                 return null;
             }
 
-            var vehicle = await _vehicleDal.GetAsync(v => v.Plate == plaka);
+            var normalPlaka = PlakaDogrulayici.Normalize(plaka);
+
+            if (normalPlaka.Length == 0)
+            {
+                return null;
+            }
+
+            var vehicle = await _vehicleDal.GetAsync(v => v.Plate == normalPlaka);
             if (vehicle == null)
             {
                 return null;

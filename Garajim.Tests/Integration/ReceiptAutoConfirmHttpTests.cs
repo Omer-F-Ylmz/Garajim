@@ -184,6 +184,56 @@ namespace Garajim.Tests.Integration
             Assert.Equal(JsonValueKind.Null, veri.GetProperty("olusturulanKayit").ValueKind);
         }
 
+        [Theory]
+        [InlineData("35 EZ 7721")]
+        [InlineData("35 ez 7721")]
+        [InlineData("35-EZ-7721")]
+        [InlineData("  35ez7721  ")]
+        public async Task FistekiPlakaNormalizeEdilerekEslesir(string fistekiPlaka)
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "35EZ7721");
+            _factory.Extractor.Sonuc = TamSonuc(fistekiPlaka);
+
+            var veri = await VeriAsync(await YukleAsync(sahip, false));
+
+            Assert.Equal(aracId, veri.GetProperty("taslak").GetProperty("vehicleId").GetInt32());
+        }
+
+        [Theory]
+        [InlineData("35 EZ 7721")]
+        [InlineData("35 ez 7721")]
+        [InlineData("35-EZ-7721")]
+        public async Task NormalizePlakaOtoOnayiAcar(string fistekiPlaka)
+        {
+            var sahip = await SahipOlusturAsync();
+            await AracEkleAsync(sahip, "35EZ7721");
+            _factory.Extractor.Sonuc = TamSonuc(fistekiPlaka);
+
+            var veri = await VeriAsync(await YukleAsync(sahip, true));
+
+            Assert.Equal("Onaylandi", veri.GetProperty("durum").GetString());
+            Assert.Equal(JsonValueKind.Null, veri.GetProperty("atlamaNedeni").ValueKind);
+        }
+
+        [Theory]
+        [InlineData("35 EZ 77ı1")]
+        [InlineData("35 EZ 7Ş21")]
+        [InlineData("OKUNAMADI!")]
+        [InlineData("35/EZ/7721")]
+        public async Task NormalizeEdilemeyenPlakaEslesmez(string fistekiPlaka)
+        {
+            var sahip = await SahipOlusturAsync();
+            await AracEkleAsync(sahip, "35EZ7721");
+            _factory.Extractor.Sonuc = TamSonuc(fistekiPlaka);
+
+            var veri = await VeriAsync(await YukleAsync(sahip, true));
+
+            Assert.Equal(JsonValueKind.Null, veri.GetProperty("taslak").GetProperty("vehicleId").ValueKind);
+            Assert.Equal("Bekliyor", veri.GetProperty("durum").GetString());
+            Assert.Contains("plaka", veri.GetProperty("atlamaNedeni").GetString(), StringComparison.OrdinalIgnoreCase);
+        }
+
         [Fact]
         public async Task PlakaEslesmezseBekliyorVeNedenDoner()
         {
