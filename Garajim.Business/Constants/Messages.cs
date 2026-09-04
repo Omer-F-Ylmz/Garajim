@@ -96,6 +96,7 @@ namespace Garajim.Business.Constants
         public const string EvrakNotFound = "Evrak kaydı bulunamadı.";
         public const string EvrakSahibiTekOlmali = "Evrak ya bir araca ya da bir kullanıcıya bağlanmalıdır; ikisi birden olamaz.";
         public const string EvrakAdded = "Evrak kaydı eklendi.";
+        public const string EvrakTarihAraligiGecersiz = "Başlangıç tarihi bitiş tarihinden sonra olamaz.";
         public const string EvrakUpdated = "Evrak kaydı güncellendi.";
         public const string EvrakRenewed = "Evrak yenilendi.";
         public const string EvrakDeleted = "Evrak kaydı silindi.";

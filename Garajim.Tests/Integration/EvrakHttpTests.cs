@@ -290,5 +290,61 @@ namespace Garajim.Tests.Integration
             Assert.Equal("Yeni Sigorta", veri.GetProperty("saglayici").GetString());
             Assert.Equal(new DateTime(2027, 2, 1), veri.GetProperty("bitisTarihi").GetDateTime());
         }
+        [Fact]
+        public async Task BaslangicBitistenSonraOlamaz()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
+
+            var cevap = await sahip.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId,
+                evrakTuru = "Kasko",
+                baslangicTarihi = "2027-06-01",
+                bitisTarihi = "2026-01-01",
+                saglayici = "Kartal Sigorta"
+            });
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
+
+        [Fact]
+        public async Task AyniTurdeYeniEvrakEskisiniPasiflestirir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, TestPlaka.Uret());
+
+            await sahip.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId,
+                evrakTuru = "Kasko",
+                baslangicTarihi = "2024-01-01",
+                bitisTarihi = "2025-01-01",
+                saglayici = "Eski Sigorta"
+            });
+
+            await sahip.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId,
+                evrakTuru = "Kasko",
+                baslangicTarihi = "2026-01-01",
+                bitisTarihi = "2027-06-01",
+                saglayici = "Yeni Sigorta"
+            });
+
+            var liste = JsonDocument.Parse(await (await sahip.GetAsync($"/api/Evrak?vehicleId={aracId}")).Content.ReadAsStringAsync())
+                .RootElement.GetProperty("data").EnumerateArray()
+                .Where(e => e.GetProperty("evrakTuru").GetString() == "Kasko")
+                .ToList();
+
+            Assert.Equal(2, liste.Count);
+
+            var eski = liste.Single(e => e.GetProperty("saglayici").GetString() == "Eski Sigorta");
+            var yeni = liste.Single(e => e.GetProperty("saglayici").GetString() == "Yeni Sigorta");
+
+            Assert.False(eski.GetProperty("aktif").GetBoolean());
+            Assert.True(yeni.GetProperty("aktif").GetBoolean());
+        }
+
     }
 }

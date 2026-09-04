@@ -111,6 +111,11 @@ namespace Garajim.Business.Concrete
                 dto.BaslangicTarihi,
                 vehicle?.IlkTescilTarihi);
 
+            if (dto.BaslangicTarihi != null && dto.BaslangicTarihi.Value.Date > bitis.Date)
+                return new ErrorDataResult<EvrakDto>(Messages.EvrakTarihAraligiGecersiz);
+
+            await AyniTuruPasiflestirAsync(user.CompanyId, dto.VehicleId, dto.UserId, dto.EvrakTuru);
+
             var kayit = new EvrakKaydi
             {
                 CompanyId = user.CompanyId,
@@ -129,6 +134,20 @@ namespace Garajim.Business.Concrete
 
             await _evrakDal.AddAsync(kayit);
             return new SuccessDataResult<EvrakDto>(await MapAsync(kayit), Messages.EvrakAdded);
+        }
+
+        private async Task AyniTuruPasiflestirAsync(int companyId, int? vehicleId, int? kullaniciId, EvrakTuru tur)
+        {
+            var mevcutlar = await _evrakDal.GetListAsync(e => e.CompanyId == companyId
+                                                            && e.EvrakTuru == tur
+                                                            && e.Aktif
+                                                            && e.VehicleId == vehicleId
+                                                            && e.UserId == kullaniciId);
+
+            foreach (var mevcut in mevcutlar)
+            {
+                await _evrakDal.PasiflestirAsync(mevcut.Id);
+            }
         }
 
         public async Task<IDataResult<EvrakDto>> UpdateAsync(int userId, int id, EvrakUpdateDto dto)
