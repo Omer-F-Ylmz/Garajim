@@ -26,6 +26,7 @@ namespace Garajim.Business.Concrete
         private readonly IEvrakDal _evrakDal;
         private readonly IKmDuzeltmeLogDal _kmLogDal;
         private readonly IHasarDosyasiDal _hasarDosyasiDal;
+        private readonly IHasarFotoDal _hasarFotoDal;
         private readonly IDegerService _degerService;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IDocumentService _documentService;
@@ -42,6 +43,7 @@ namespace Garajim.Business.Concrete
             IEvrakDal evrakDal,
             IKmDuzeltmeLogDal kmLogDal,
             IHasarDosyasiDal hasarDosyasiDal,
+            IHasarFotoDal hasarFotoDal,
             IDegerService degerService,
             IVehicleAccessService vehicleAccess,
             IDocumentService documentService,
@@ -57,6 +59,7 @@ namespace Garajim.Business.Concrete
             _evrakDal = evrakDal;
             _kmLogDal = kmLogDal;
             _hasarDosyasiDal = hasarDosyasiDal;
+            _hasarFotoDal = hasarFotoDal;
             _degerService = degerService;
             _vehicleAccess = vehicleAccess;
             _documentService = documentService;
@@ -178,8 +181,10 @@ namespace Garajim.Business.Concrete
 
             if (paylasim.Belgeler)
             {
+                var fotoBelgeIdleri = await _hasarFotoDal.AracinFotoBelgeIdleriAsync(vehicle.Id);
                 var belgeler = await _documentDal.GetListAsync(d => d.VehicleId == vehicle.Id);
                 karne.Belgeler = belgeler
+                    .Where(d => !fotoBelgeIdleri.Contains(d.Id))
                     .OrderByDescending(d => d.CreatedAt)
                     .Select(d => new KarneBelgeDto { Id = d.Id, Ad = d.OriginalName, Tarih = d.CreatedAt })
                     .ToList();
@@ -217,6 +222,10 @@ namespace Garajim.Business.Concrete
 
             var belge = await _documentDal.GetAsync(d => d.Id == documentId);
             if (belge == null || belge.VehicleId != paylasim.VehicleId)
+                return new ErrorDataResult<DocumentContentDto>(Messages.KarneNotFound);
+
+            var fotoBelgeIdleri = await _hasarFotoDal.AracinFotoBelgeIdleriAsync(paylasim.VehicleId);
+            if (fotoBelgeIdleri.Contains(documentId))
                 return new ErrorDataResult<DocumentContentDto>(Messages.KarneNotFound);
 
             var tamYol = Path.Combine(DocumentManager.DepoYolunuCoz(_configuration["Documents:StoragePath"]), belge.StoredName);

@@ -127,6 +127,68 @@ namespace Garajim.Tests.Integration
             tutarGoster = true
         };
 
+        private static async Task<int> HasarFotografiEkleAsync(HttpClient client, int aracId)
+        {
+            var acilis = await client.PostAsJsonAsync("/api/Hasar", new
+            {
+                vehicleId = aracId,
+                olayTarihi = new DateTime(2026, 6, 1),
+                tur = "Kaza",
+                konum = "Kartal",
+                aciklama = "Sağ ön çamurluk çizildi",
+                tutanakTuru = "Yok"
+            });
+
+            var acilisGovde = await acilis.Content.ReadAsStringAsync();
+            Assert.True(acilis.IsSuccessStatusCode, "hasar acilis: " + acilisGovde);
+            var dosyaId = JsonDocument.Parse(acilisGovde).RootElement.GetProperty("data").GetProperty("id").GetInt32();
+
+            using var form = new MultipartFormDataContent();
+            var dosya = new ByteArrayContent(PngIcerik);
+            dosya.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            form.Add(dosya, "file", "hasar-foto.png");
+            form.Add(new StringContent("Genel"), "etiket");
+
+            var foto = await client.PostAsync($"/api/Hasar/{dosyaId}/foto", form);
+            var fotoGovde = await foto.Content.ReadAsStringAsync();
+            Assert.True(foto.IsSuccessStatusCode, "foto ekleme: " + fotoGovde);
+            return JsonDocument.Parse(fotoGovde).RootElement.GetProperty("data").GetProperty("documentId").GetInt32();
+        }
+
+        [Fact]
+        public async Task HasarFotografiKarneBelgelerindeListelenmez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN901");
+            var ruhsatId = await BelgeEkleAsync(sahip, aracId);
+            await HasarFotografiEkleAsync(sahip, aracId);
+
+            var karne = await KarneOlusturAsync(sahip, aracId, TamKapsam);
+            var token = TokenAl((await VeriAsync(karne)).GetProperty("url").GetString());
+
+            var govde = await VeriAsync(await _factory.CreateClient().GetAsync($"/api/karne/{token}"));
+            var belgeler = govde.GetProperty("belgeler").EnumerateArray().ToList();
+
+            Assert.Single(belgeler);
+            Assert.Equal(ruhsatId, belgeler[0].GetProperty("id").GetInt32());
+            Assert.DoesNotContain(belgeler, b => b.GetProperty("ad").GetString() == "hasar-foto.png");
+        }
+
+        [Fact]
+        public async Task HasarFotografiKarneTokeniyleIndirilemez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34KRN902");
+            var fotoBelgeId = await HasarFotografiEkleAsync(sahip, aracId);
+
+            var karne = await KarneOlusturAsync(sahip, aracId, TamKapsam);
+            var token = TokenAl((await VeriAsync(karne)).GetProperty("url").GetString());
+
+            var indirme = await _factory.CreateClient().GetAsync($"/api/karne/{token}/belge/{fotoBelgeId}");
+
+            Assert.Equal(HttpStatusCode.NotFound, indirme.StatusCode);
+        }
+
         [Fact]
         public async Task TokenYalnizKendiAracininKarnesiniVerir()
         {

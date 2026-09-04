@@ -53,6 +53,14 @@ namespace Garajim.Dal.Concrete
             return await Context.HasarFotograflari.CountAsync(f => f.HasarDosyasiId == hasarDosyasiId);
         }
 
+        public async Task<List<int>> AracinFotoBelgeIdleriAsync(int vehicleId)
+        {
+            return await (from foto in Context.HasarFotograflari
+                          join dosya in Context.HasarDosyalari on foto.HasarDosyasiId equals dosya.Id
+                          where dosya.VehicleId == vehicleId
+                          select foto.DocumentId).ToListAsync();
+        }
+
         public async Task<int> SonSiraAsync(int hasarDosyasiId)
         {
             return await Context.HasarFotograflari

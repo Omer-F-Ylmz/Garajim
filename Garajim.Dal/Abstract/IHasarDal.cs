@@ -14,5 +14,6 @@ namespace Garajim.Dal.Abstract
         Task<List<HasarFoto>> GetByDosyaAsync(int hasarDosyasiId);
         Task<int> SayiAsync(int hasarDosyasiId);
         Task<int> SonSiraAsync(int hasarDosyasiId);
+        Task<List<int>> AracinFotoBelgeIdleriAsync(int vehicleId);
     }
 }
