@@ -1406,3 +1406,69 @@ button.compact {
 .bos-satir {
     justify-content: center;
 }
+
+.ghost-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.ghost-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.yardim-sayfa {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.yardim-ust {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.yardim-ust .brand {
+    text-decoration: none;
+    color: var(--text);
+}
+
+.sss-kart {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+}
+
+.sss-kart summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.sss-kart p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.sss-capa {
+    opacity: 0.5;
+}
+
+.sss-capa:hover {
+    opacity: 1;
+}

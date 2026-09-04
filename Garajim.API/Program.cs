@@ -56,6 +56,7 @@ builder.Services.AddSingleton(sp => new Lazy<AracKatalogu>(
 builder.Services.AddTransient(sp => sp.GetRequiredService<Lazy<AracKatalogu>>().Value);
 builder.Services.AddScoped<IHesapService, HesapManager>();
 builder.Services.AddScoped<IKurulumService, KurulumManager>();
+builder.Services.AddSingleton(sp => YardimSss.Yukle(Path.Combine(AppContext.BaseDirectory, YardimSss.KlasorAdi)));
 builder.Services.AddScoped<IAiTokenDal, EfAiTokenDal>();
 builder.Services.AddScoped<IAiButcesi, AiButcesi>();
 builder.Services.AddScoped<HesapSilmeJob>();
@@ -129,7 +130,9 @@ else
 builder.Services.AddSingleton(sp =>
 {
     var taban = AppContext.BaseDirectory;
-    var kayitlar = new BilgiYukleyici().Yukle(Path.Combine(taban, BilgiYukleyici.KlasorAdi));
+    var kayitlar = new BilgiYukleyici().Yukle(Path.Combine(taban, BilgiYukleyici.KlasorAdi))
+        .Concat(YardimSss.BilgiKayitlari(YardimSss.Yukle(Path.Combine(taban, YardimSss.KlasorAdi))))
+        .ToList();
     var promptYolu = Path.Combine(taban, "Usta", "SistemPromptu.md");
     if (!File.Exists(promptYolu))
     {

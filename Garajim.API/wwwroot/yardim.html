@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yardım — Garajım</title>
+    <meta name="description" content="Garajım sıkça sorulan sorular: fiş okuma, tam dolum, karne paylaşımı, evrak uyarıları, zimmet ve hesap işlemleri.">
+    <link rel="icon" type="image/svg+xml" href="garajim-logo.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="garajim-icon-180.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="screen yardim-sayfa">
+        <header class="yardim-ust">
+            <a class="brand small" href="/">
+                <span class="brand-mark"></span>
+                <span class="brand-name">Garajım</span>
+            </a>
+            <a class="ghost-link" href="/">Uygulamaya dön</a>
+        </header>
+
+        <section class="panel">
+            <h1>Yardım</h1>
+            <p class="hint">Aradığın soruyu yazmaya başla; başlıklar anında süzülür. Bir başlığa tıklarsan bağlantısı adres çubuğuna yazılır, paylaşabilirsin.</p>
+
+            <label for="sss-ara">Ara</label>
+            <input id="sss-ara" type="search" autocomplete="off" placeholder="fiş, karne, tam dolum…">
+            <p id="sss-sayac" class="hint" role="status"></p>
+
+            <div id="sss-liste"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Aradığını bulamadın mı?</h2>
+            <p class="hint">Sorunu yaz, cevaplayalım.</p>
+            <p><a id="destek-baglanti" class="ghost-link" href="/">Destek ekibine yaz</a></p>
+            <p class="hint"><a href="/sartlar.html">Kullanım Şartları ve Aydınlatma Metni</a></p>
+        </section>
+    </div>
+
+    <script defer src="yardim.js"></script>
+</body>
+</html>
