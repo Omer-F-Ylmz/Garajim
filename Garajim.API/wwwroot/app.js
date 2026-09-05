@@ -2988,7 +2988,8 @@
 
     function hasarGovdesi() {
         var km = el("hasar-km").value;
-        var bedel = el("hasar-bedel").value;
+        var bedel = el("hasar-bedel").value.trim();
+        var bedelSayi = bedel === "" ? NaN : sayiOku(bedel);
 
         return {
             vehicleId: state.selectedVehicleId,
@@ -3002,7 +3003,7 @@
             karsiTarafSigorta: el("hasar-karsi-sigorta").value,
             karsiTarafPoliceNo: el("hasar-karsi-police").value,
             sigortaDosyaNo: el("hasar-sigorta-dosya").value,
-            hasarBedeli: bedel === "" ? null : Number(bedel),
+            hasarBedeli: isNaN(bedelSayi) ? null : bedelSayi,
             durum: el("hasar-durum").value
         };
     }
@@ -4799,6 +4800,7 @@
         var tur = document.createElement("select");
         fillSelect(tur, PART_TYPES);
         tur.className = "part-type";
+        tur.setAttribute("aria-label", "Parça türü");
         if (deger && deger.parcaTuru) {
             tur.value = deger.parcaTuru;
         }
@@ -4808,6 +4810,7 @@
         aciklama.type = "text";
         aciklama.className = "part-desc";
         aciklama.placeholder = "Açıklama";
+        aciklama.setAttribute("aria-label", "Parça açıklaması");
         aciklama.value = deger && deger.aciklama ? deger.aciklama : "";
         satir.appendChild(aciklama);
 
@@ -4815,15 +4818,17 @@
         adet.type = "number";
         adet.min = "1";
         adet.className = "part-qty";
+        adet.placeholder = "Adet";
+        adet.setAttribute("aria-label", "Parça adedi");
         adet.value = deger && deger.adet ? deger.adet : 1;
         satir.appendChild(adet);
 
         var tutar = document.createElement("input");
-        tutar.type = "number";
-        tutar.min = "0";
-        tutar.step = "0.01";
+        tutar.type = "text";
+        tutar.inputMode = "decimal";
         tutar.className = "part-cost";
         tutar.placeholder = "Tutar";
+        tutar.setAttribute("aria-label", "Parça tutarı (TL)");
         tutar.value = deger && deger.tutar !== null && deger.tutar !== undefined ? deger.tutar : "";
         satir.appendChild(tutar);
 
@@ -4837,16 +4842,27 @@
 
     function readPartRows(kutu) {
         var parcalar = [];
+
         Array.prototype.forEach.call(kutu.querySelectorAll(".part-row"), function (satir) {
-            var tutar = satir.querySelector(".part-cost").value;
+            var aciklama = satir.querySelector(".part-desc").value.trim();
+            var hamTutar = satir.querySelector(".part-cost").value.trim();
+            var sayi = hamTutar.length > 0 ? sayiOku(hamTutar) : NaN;
+            var tutar = isNaN(sayi) ? null : sayi;
+            var doluMu = aciklama.length > 0 || tutar !== null;
+
+            if (!doluMu) {
+                return;
+            }
+
             parcalar.push({
                 parcaTuru: satir.querySelector(".part-type").value,
-                aciklama: satir.querySelector(".part-desc").value,
+                aciklama: aciklama,
                 adet: Number(satir.querySelector(".part-qty").value) || 1,
-                tutar: tutar ? Number(tutar) : null,
+                tutar: tutar,
                 marka: null
             });
         });
+
         return parcalar;
     }
 
