@@ -2,6 +2,15 @@
 
 Garajım'ın sürüm geçmişi. En yeni sürüm en üstte.
 
+## Rehber — 5 Eylül 2026
+
+- Rehber açıldı: 393 sayfalık, girişsiz açılan bilgi bölümü — araç belirtileri, OBD arıza kodları, bakım aralıkları, TÜVTÜRK muayenesi ve Türkiye kuralları.
+- Rehberde anında arama; her sayfada ilgili konulara bağlantı ve aciliyet rozeti.
+- Tanıtım sayfasına Rehber bölümü, üst menüye ve yardım sayfasına Rehber bağlantısı eklendi.
+- Evrak, lastik ve parça hafızası sekmelerinden ilgili rehber sayfasına kısayol.
+- Hangi sayfadan kayıt olunduğu artık ölçülüyor.
+- Yönetim panelinde fiş doğruluğu yalnız gerçekten okunabilmiş fişlerden hesaplanıyor.
+
 ## Onboarding — 5 Eylül 2026
 
 - Yeni hesaplarda üç adımlı kurulum çubuğu: araç ekle, ilk kaydı gir, evrakı tanımla.

@@ -280,7 +280,22 @@ Belirsiz üç seri ilan çoğunluğuyla bağlandı: `Leon` → Seat (467'ye 13),
 
 Ölçülemeyen: Lighthouse erişilebilirlik skoru. Bu makinede Node ve Lighthouse CLI yok, DevTools dışından çalıştırılamıyor. Yerine denetimler betikle koşuldu (alt metin, etiket, düğme adı, başlık sırası, `lang`, viewport, dokunma hedefi); doğrulama ve sıfırlama kod kutularındaki on etiketsiz girdiye `aria-label` eklendi. Skor bir sonraki turda tarayıcıdan okunmalı.
 
+## Sprint REHBER — TAMAMLANDI
+
+AI Usta'nın bilgi tabanını herkese açık, taranabilir sayfalara çeviren tur. Beş madde, beş commit, test 1398 → 1453.
+
+- [x] **M1 Üretici** — `tools/Garajim.RehberUretici`, build'de `Exec` ile koşar; 387 konu + 6 hub = 393 sayfa, `index.json` (96 KB) ve `sitemap.xml`. Slug tekil, üretim fikir sabiti, bozuk kayıt sayfa açmadan uyarıya düşer
+- [x] **M2 Kayıt kaynağı** — `utm_source`/`utm_content` `sessionStorage` üzerinden kayıt formuna; `Company.KayitKaynagi` + `KayitKaynagiDetay` (eklemeli migration), yönetim özetinde kırılım ve günlük "Rehberden" sütunu
+- [x] **M3 Bağlantılar** — tanıtımda Rehber bölümü (altı kart) ve üst menü, yardım sayfasında bağlantı, evrak/lastik/parça sekmelerinde yeni sekmede açılan kısayollar
+- [x] **M4 Ölçüm düzeltmesi** — fiş doğruluğu yalnız gerçekten okunabilmiş taslaklardan (`GuvenSkoru > 0`, elle onaylanmış); yönetimde ölçülen fiş sayısı ve rehber sayfa sayısı
+- [x] **M5 Belgeler** — README, CLAUDE.md, DEPLOY, ROADMAP
+
+Not: `CikarimHatasi` veritabanına yazılmıyor, yalnız yanıt DTO'sunda dönüyor. M4'ün ölçütü bu yüzden güven skoruna dayandı; boş taslakları ayıran ayıraç zaten odur. Kalıcı hata nedeni istenirse ayrı bir kolon açılmalı.
+
+Sıradaki: Search Console kaydı ve sitemap gönderimi (Ömer'in listesinde), ilk üç ayın sonunda rehber sayfalarının hangi sorgularla geldiğine bakıp `anahtarlar` listelerini buna göre genişletmek.
+
 ## Gelir → Usta musluğu
+
 
 AI Usta değişken maliyetli tek özellik. Ücretsiz katmanda kota model başına günde 20 istek, yani tanıtım dışında taşımıyor. Sıra: önce ödeme akışı, sonra `Usta__Enabled` açılır ve `Ai__AylikTokenTavani` gelire göre ayarlanır. Bayrak bugün kapatılabilir durumda, kapatınca uygulamanın geri kalanı etkilenmiyor.
 
@@ -460,3 +475,5 @@ Ayrıntısı [#2 numaralı issue](https://github.com/Omer-F-Ylmz/Garajim/issues/
 - [ ] Token localStorage'da, süre yönetimi istemcide yok
 - [ ] Araç güncelleme ve silme arayüzde yok
 - [ ] Hangfire paneli için üretimde bilinçli yetkilendirme filtresi kararı
+- [ ] Google Search Console kaydı ve `sitemap.xml` gönderimi (Ömer)
+- [ ] Rehber sayfalarının arama performansına göre `anahtarlar` genişletmesi

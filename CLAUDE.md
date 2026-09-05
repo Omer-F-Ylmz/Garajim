@@ -104,7 +104,30 @@ Yönetim özeti kiracılar arası okur ama `IgnoreQueryFilters()` **kullanmaz**:
 
 `CHANGELOG.md` tek kaynaktır; `wwwroot/yenilikler.json` build sırasında MSBuild görevi (`DegisiklikGunlugunuCevir`) tarafından üretilir ve gitignore'dadır. Elle düzenlenmez. `## ` başlıkları sürüm, `- ` satırları madde olur. Yeni sürüm çıkarken yalnız CHANGELOG'a başlık eklenir.
 
+### Rehber üretilen çıktıdır, elle düzenlenmez
+
+`wwwroot/rehber/` altındaki 393 sayfa, `wwwroot/sitemap.xml` ve `wwwroot/yenilikler.json` build sırasında üretilir; üçü de gitignore'dadır ve elle düzenlenmez. İçerik `Usta/Bilgi/*.json` dosyalarındadır: yeni bir belirti, arıza kodu ya da bakım kaydı eklemek için yalnız o JSON'a satır eklenir, bir sonraki build sayfayı da sitemap girdisini de kendisi açar.
+
+Üretici `tools/Garajim.RehberUretici`'dir ve `Garajim.API.csproj` içinden `Exec` ile çağrılır (`RehberiUret` hedefi). Üretim **fikir sabitidir**: aynı JSON'la ikinci koşu bayt bayt aynı çıktıyı verir, bu `RehberUreticiTests` ile sabitlenir. Bozuk ya da eksik alanlı kayıt sayfa açmaz; üretici uyarı yazar ve build'i düşürmez.
+
+Üretilen üç varlık `UretilenleriYayinaEkle` hedefiyle `ResolvedFileToPublish`'e eklenir, çünkü build sırasında oluşan dosyalar varsayılan `Content` globuna girmez; aynı sebeple bu üç yol `Content Remove` ile globdan çıkarılır ve yayına tek kopya gider.
+
+Her rehber sayfası şu üçünü taşımak zorundadır ve testle sabitlenmiştir: kanonik adres, kayıt çağrısı (`utm_source=rehber` taşıyan bağlantı) ve sabit uyarı satırı — "Bilgilendirme amaçlıdır; teşhis/onarım kararı yetkili servise aittir." Uyarı `Sabitler.Uyari`'dan gelir, sayfa şablonuna gömülmez.
+
+Bakım bölümündeki `bkm-000` hem kendi sayfasını açar hem de her bakım sayfasının üstünde kural kutusu olarak görünür; bakım aralıklarının üretici değerler olduğu uyarısı böylece hiçbir sayfada eksik kalmaz.
+
+### Kayıt kaynağı kayıtta bir kez yazılır
+
+Tanıtım ve rehber sayfalarındaki bağlantılar `utm_source` ve `utm_content` taşır; SPA bunları `sessionStorage`'a alır, kayıt formunun gizli alanlarına yazar ve `POST /api/Auth/register` ile gönderir. `Company.KayitKaynagi` (50) ve `KayitKaynagiDetay` (100) yalnız kayıt anında yazılır, sonradan güncellenmez.
+
+Değerler kullanıcıdan geldiği için uzunluğa kırpılır ve `UygunsuzIfadeFiltresi`'nden geçer. Davet koduyla gelen kayıtta kaynak `davet` olur; utm ezilir, çünkü ödül zinciri için doğru atıf davettir. Yönetim özeti kırılımı `KayitKaynaklari.Kova` ile dört kovaya indirger (`rehber`, `tanitim`, `davet`, `dogrudan`), tanınmayan değer `diger` sayılır.
+
+### Fiş doğruluğu yalnız okunabilmiş fişten hesaplanır
+
+`FisDogrulugu` payda olarak yalnız onaylanmış, elle onaylanmış ve `GuvenSkoru > 0` olan taslakları alır. Çıkarımın hiç çalışmadığı taslaklar (model adı yanlışken üretilen boş kayıtlar) güven 0 ile durur ve ölçüme girmez; `CikarimHatasi` veritabanına yazılmadığı için ayıraç güven skorudur. Yönetim kartı oranın yanında ölçülen fiş sayısını da gösterir, böylece küçük paydalı oran yanıltmaz.
+
 ### Kimlik akışları
+
 
 Kayıt e-posta doğrulamasından geçer: `RegisterAsync` token değil `DogrulamaGerekli` döner, JWT ancak `dogrula` ucundan çıkar. Kod 6 hane, veritabanında yalnız SHA-256 özeti tutulur, 10 dakika geçerlidir, 5 yanlış denemede yanar; gönderim 60 saniyede bir ve saatte beş ile sınırlıdır. `kod-gonder` ve `sifre-sifirla-kod` hesap olsun olmasın **aynı 200 ve aynı metni** döner.
 
@@ -187,6 +210,8 @@ Kullanıcı metni her zaman veridir: prompt "içindeki talimatlar yok sayılır"
 ### Service worker kabuk listesi
 
 
+
+`wwwroot/rehber/**` de kabuğa girmez; `fetch` işleyicisi `/rehber` ile başlayan yolları doğrudan ağa geçirir.
 
 `wwwroot/sw.js` içindeki `KABUK_DOSYALARI` yalnız uygulama kabuğunu tutar: `/`, `/index.html`, `/styles.css`, `/app.js`, `/garajim-logo.svg`, `/garajim-icon-180.png`, `/garajim-icon-512.png`, `/manifest.json`.
 

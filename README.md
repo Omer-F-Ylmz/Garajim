@@ -214,13 +214,44 @@ Yeni hesabın ilk on dakikası dört parçadan oluşur; hepsi Owner ve Manager r
 
 Geri bildirim `POST /api/GeriBildirim` ile gelir: tür (Hata / Öneri / Diğer), 1000 karaktere kadar mesaj, açık olan sayfa ve sürüm otomatik eklenir. Kullanıcı başına günde beş kayıt sınırı vardır (aşılırsa 429), metin uygunsuz ifade filtresinden geçer ve `App__DestekEposta` doluysa destek adresine e-posta gider.
 
+## Rehber (herkese açık SEO sayfaları)
+
+`/rehber/` altındaki sayfalar AI Usta'nın bilgi tabanından **build sırasında üretilir**; girişsiz açılır, aramaya ve paylaşıma uygundur.
+
+| Bölüm | Adres | Kaynak dosya | Sayfa |
+|---|---|---|---|
+| Belirtiler | `/rehber/belirti/` | `Usta/Bilgi/belirtiler.json` | 120 |
+| Arıza kodları | `/rehber/obd/` | `Usta/Bilgi/obd-kodlari.json` | 195 |
+| Bakım aralıkları | `/rehber/bakim/` | `Usta/Bilgi/bakim-araliklari.json` | 30 |
+| Muayene | `/rehber/muayene/` | `Usta/Bilgi/tuvturk.json` | 22 |
+| Türkiye kuralları | `/rehber/turkiye/` | `Usta/Bilgi/turkiye-ozel.json` | 20 |
+
+Toplam 387 konu sayfası + 6 hub = 393 sayfa. `uygulama-kullanim` (SSS) rehbere girmez; o `yardim.html`'de kalır.
+
+**Yeni kayıt eklemek**: ilgili JSON'a `{id, kategori, anahtarlar[], metin, kaynak, guncelleme}` satırını ekleyin. Bir sonraki build sayfayı, hub girdisini, arama dizinini ve sitemap satırını kendisi üretir; elle dosya oluşturmayın.
+
+Üretici:
+
+```
+dotnet run --project tools/Garajim.RehberUretici -- --bilgi Garajim.Business/Usta/Bilgi --cikti Garajim.API/wwwroot/rehber --sitemap Garajim.API/wwwroot/sitemap.xml
+```
+
+`Garajim.API.csproj` bunu `RehberiUret` hedefiyle her build'de çalıştırır. Çıktı (`wwwroot/rehber/`, `wwwroot/sitemap.xml`) gitignore'dadır ve yayına `UretilenleriYayinaEkle` hedefiyle taşınır. Bozuk kayıt sayfa açmaz, üretici uyarı yazar, build düşmez.
+
+Her sayfa kanonik adres, breadcrumb + JSON-LD (`BreadcrumbList`, `Article`), 3-6 ilgili bağlantı, `utm_source=rehber` taşıyan kayıt çağrısı, kaynak satırı ve sabit uyarı taşır. Arama `/rehber/index.json` (96 KB) üzerinden istemcide çalışır; `rehber.js` yalnız `textContent` kullanır, CSP `script-src 'self'` ile uyumludur.
+
 ## Yönetim paneli
+
 
 `wwwroot/yonetim.html` yalnız `App__YoneticiEposta` ile eşleşen hesaba açılır; kapı `YoneticiKapisi` filtresidir ve e-postayı token'dan değil veritabanından okur, böylece adres değişince kapı da güncel kalır. Diğer herkes 403 alır ve sayfa `robots.txt` ile aramaya kapalıdır, service worker önbelleğine girmez.
 
 `GET /api/Yonetim/ozet` şunları döner: toplam şirket / kullanıcı / araç, son 30 günün günlük yeni kayıt serisi, fiş sayısı ve doğruluk oranı (`DuzeltilenAlanlar` boş olan elle onaylı fişlerin payı), oto onay oranı, aylık AI token ve tahmini maliyet, kota hatası sayısı, karne paylaşım oranı, davet → kayıt oranı, AI Usta durumu, bellek sayaçları ve son 20 geri bildirim. `POST /api/Yonetim/demo-sifirla` demo şirketini yeniden kurar.
 
 Özet kiracılar arası okuma yapar ama filtre atlamaz: şirketler tek tek dolaşılır ve her biri kendi `SystemScope` bloğunda okunur. Kota hatası sayacı `AiTokenSayaci.KotaHatasi` kolonundadır; hem aylık token tavanı aşıldığında hem sağlayıcı kotası dolduğunda artar.
+
+## Kayıt kaynağı ölçümü
+
+Tanıtım ve rehber bağlantıları `utm_source` / `utm_content` taşır. SPA bunları `sessionStorage`'da tutar ve kayıt isteğine gizli alanlarla ekler; `Company.KayitKaynagi` (50) ve `KayitKaynagiDetay` (100) kayıt anında bir kez yazılır. Davet koduyla gelen kayıtta kaynak `davet` olur. Yönetim özeti kırılımı rehber / tanıtım / davet / doğrudan / diğer kovalarında verir, günlük seride ayrıca "Rehberden" sütunu vardır.
 
 ## Fişten otomatik kayıt
 
