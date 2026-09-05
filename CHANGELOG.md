@@ -11,7 +11,7 @@ Garajım'ın sürüm geçmişi. En yeni sürüm en üstte.
 - Hangi sayfadan kayıt olunduğu artık ölçülüyor.
 - Yönetim panelinde fiş doğruluğu yalnız gerçekten okunabilmiş fişlerden hesaplanıyor.
 
-## Onboarding — 5 Eylül 2026
+## Kurulum turu — 5 Eylül 2026
 
 - Yeni hesaplarda üç adımlı kurulum çubuğu: araç ekle, ilk kaydı gir, evrakı tanımla.
 - İlk girişte altı adımlık ürün turu; Ayarlar'dan tekrar izlenebiliyor.

@@ -23,7 +23,7 @@ namespace Garajim.Tests.Unit
             var basliklar = metin.Split('\n').Count(s => s.StartsWith("## ", StringComparison.Ordinal));
 
             Assert.True(basliklar >= 5, "En az beş sürüm başlığı olmalı, şu an: " + basliklar);
-            Assert.Contains("Onboarding", metin);
+            Assert.Contains("Kurulum turu", metin);
         }
 
         [Fact]

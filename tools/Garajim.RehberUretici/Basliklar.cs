@@ -182,6 +182,12 @@ namespace Garajim.RehberUretici
             }
 
             var kesim = Math.Min(govde.Length, sinir) - 1;
+            var sonBosluk = govde.LastIndexOf(' ', Math.Min(kesim, govde.Length - 1));
+
+            if (sonBosluk >= sinir / 2)
+            {
+                kesim = sonBosluk;
+            }
 
             while (kesim > 0)
             {
