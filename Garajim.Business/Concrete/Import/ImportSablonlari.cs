@@ -30,7 +30,7 @@ namespace Garajim.Business.Concrete.Import
             }
             var drivvoIzi = basliklar.Count(b => Esanlamlar["km"].Contains(b) || Esanlamlar["litre"].Contains(b) || Esanlamlar["tutar"].Contains(b));
 
-            return drivvoIzi >= 2 ? "Drivvo" : "Genel";
+            return drivvoIzi >= 2 && basliklar.Any(b => Esanlamlar["birimfiyat"].Contains(b)) ? "Drivvo" : "Genel";
         }
 
         public static Dictionary<string, int> SutunOner(CsvTablo tablo, string kayitTuru)
