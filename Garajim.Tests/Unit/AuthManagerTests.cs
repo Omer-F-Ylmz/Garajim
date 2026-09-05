@@ -46,7 +46,7 @@ namespace Garajim.Tests.Unit
             });
 
             Assert.False(result.Success);
-            Assert.Equal(Messages.InvalidValue, result.Message);
+            Assert.Equal(Messages.SifreKuraliUymuyor, result.Message);
             _userDal.Verify(d => d.AddAsync(It.IsAny<AppUser>()), Times.Never);
         }
 

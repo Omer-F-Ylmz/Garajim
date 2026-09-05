@@ -46,9 +46,10 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<KayitSonucuDto>> RegisterAsync(RegisterDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.FullName) ||
-                !SifreKuraliUyuyorMu(dto.Password))
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.FullName))
                 return new ErrorDataResult<KayitSonucuDto>(Messages.InvalidValue);
+            if (!SifreKuraliUyuyorMu(dto.Password))
+                return new ErrorDataResult<KayitSonucuDto>(Messages.SifreKuraliUymuyor);
             var email = dto.Email.Trim().ToLowerInvariant();
             if (await _userDal.ExistsForRegistrationAsync(email))
                 return new ErrorDataResult<KayitSonucuDto>(Messages.EmailAlreadyExists);

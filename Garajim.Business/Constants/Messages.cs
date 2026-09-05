@@ -197,6 +197,9 @@ namespace Garajim.Business.Constants
         public const string OrnekAracKarnePaylasamaz = "Örnek araç için karne paylaşılamaz.";
         public const string KurulumGizlendi = "Kurulum çubuğu gizlendi.";
 
+        public const string GelecekTarihGirilemez = "Gelecek tarih girilemez.";
+        public const string TutarSinirDisi = "Tutar 0 ile 5.000.000 TL arasında olmalı.";
+        public const string SifreKuraliUymuyor = "Şifre en az 6 karakter olmalı.";
         public const string ImportTamamlandi = "İçe aktarma tamamlandı.";
     }
 }

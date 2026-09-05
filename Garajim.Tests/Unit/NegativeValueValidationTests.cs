@@ -125,7 +125,7 @@ namespace Garajim.Tests.Unit
             var result = await manager.AddAsync(UserId, dto);
 
             Assert.False(result.Success);
-            Assert.Equal(Messages.InvalidValue, result.Message);
+            Assert.Equal(Messages.TutarSinirDisi, result.Message);
             _expenseDal.Verify(d => d.AddAsync(It.IsAny<ExpenseRecord>()), Times.Never);
         }
 
