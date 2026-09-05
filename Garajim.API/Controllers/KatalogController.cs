@@ -19,7 +19,11 @@ namespace Garajim.API.Controllers
         [HttpGet("markalar")]
         public IActionResult Markalar()
         {
-            Onbellekle();
+            if (Degismedi("markalar"))
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
             return Ok(new SuccessDataResult<List<string>>(_katalog.MarkaAdlari.ToList(), _katalog.Surum));
         }
 
@@ -31,13 +35,22 @@ namespace Garajim.API.Controllers
                 return NotFound(new ErrorDataResult<List<string>>(Business.Constants.Messages.MarkaKatalogdaYok));
             }
 
-            Onbellekle();
+            if (Degismedi("seriler:" + marka))
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
             return Ok(new SuccessDataResult<List<string>>(_katalog.Seriler(marka).ToList(), _katalog.Surum));
         }
 
-        private void Onbellekle()
+        private bool Degismedi(string kapsam)
         {
+            var etiket = "\"" + _katalog.Surum + ":" + kapsam + "\"";
+
             Response.Headers.CacheControl = "private, max-age=" + OnbellekSaniye;
+            Response.Headers.ETag = etiket;
+
+            return Request.Headers.IfNoneMatch.Any(g => g == etiket);
         }
     }
 }

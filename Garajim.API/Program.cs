@@ -441,6 +441,7 @@ if (app.Configuration.GetValue("Swagger:Enabled", !app.Environment.IsProduction(
 
 app.UseResponseCompression();
 
+app.UseSurumluSayfa(app.Environment);
 app.UseDefaultFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -448,13 +449,20 @@ app.UseStaticFiles(new StaticFileOptions
     {
         var headers = context.Context.Response.GetTypedHeaders();
         var ad = context.File.Name;
-        var surumsuz = ad.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-            || ad.EndsWith(".js", StringComparison.OrdinalIgnoreCase)
-            || ad.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
+        var surumlu = context.Context.Request.Query.ContainsKey(SurumluSayfa.SurumAnahtari);
+        var surumsuz = !surumlu
+            && (ad.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+                || ad.EndsWith(".js", StringComparison.OrdinalIgnoreCase)
+                || ad.EndsWith(".css", StringComparison.OrdinalIgnoreCase));
 
         headers.CacheControl = surumsuz
             ? new CacheControlHeaderValue { NoCache = true, MustRevalidate = true }
-            : new CacheControlHeaderValue { Public = true, MaxAge = TimeSpan.FromHours(1) };
+            : new CacheControlHeaderValue
+            {
+                Public = true,
+                MaxAge = surumlu ? TimeSpan.FromDays(365) : TimeSpan.FromHours(1),
+                Extensions = { new Microsoft.Net.Http.Headers.NameValueHeaderValue("immutable") }
+            };
     }
 });
 

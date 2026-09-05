@@ -34,5 +34,17 @@ namespace Garajim.Tests.Integration
 
             return JsonDocument.Parse(dogrulaGovde).RootElement.GetProperty("data").GetProperty("token").GetString();
         }
+
+        public static async Task GirisYapAsync(HttpClient client, string on)
+        {
+            var eposta = $"{on}-{Guid.NewGuid():N}@garajim.local";
+            var kayit = await client.PostAsJsonAsync("/api/Auth/register",
+                new { email = eposta, fullName = "Test", password = "Test1234!" });
+
+            var token = await TokenAl(client, kayit);
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
     }
 }
+
