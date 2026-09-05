@@ -188,15 +188,22 @@
         });
     }
 
+    function panelleriGizle() {
+        el("yonetim-govde").classList.add("hidden");
+    }
+
     function yukle() {
         api("/api/Yonetim/ozet").then(function (sonuc) {
             var veri = (sonuc && sonuc.data) || {};
+
+            el("yonetim-govde").classList.remove("hidden");
 
             kartlariCiz(veri);
             kaynaklariCiz(veri.kayitKaynaklari);
             seriyiCiz(veri.gunlukKayitlar);
             geriBildirimleriCiz(veri.sonGeriBildirimler);
         }).catch(function (hata) {
+            panelleriGizle();
             el("yonetim-mesaj").textContent = hata.message === "İstek başarısız (401)."
                 ? "Önce uygulamadan yönetici hesabıyla giriş yapın."
                 : hata.message;
