@@ -4980,16 +4980,31 @@
             return;
         }
 
-        rows.forEach(function (item) {
+        rows.slice().sort(function (a, b) {
+            if (a.aktif !== b.aktif) {
+                return a.aktif ? -1 : 1;
+            }
+
+            return String(a.bitisTarihi).localeCompare(String(b.bitisTarihi));
+        }).forEach(function (item) {
             var tr = document.createElement("tr");
+
+            if (!item.aktif) {
+                tr.className = "evrak-pasif";
+            }
+
             tr.appendChild(make("td", item.evrakAdi));
             tr.appendChild(make("td", item.plaka || item.kullaniciAdi || "-"));
             tr.appendChild(make("td", formatDate(item.bitisTarihi)));
-            tr.appendChild(make("td", item.kalanGun + " gün"));
+            tr.appendChild(make("td", kalanGunMetni(item)));
             tr.appendChild(make("td", item.saglayici || "-"));
-            tr.appendChild(make("td", EVRAK_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase()));
 
-            var hucre = document.createElement("td");
+            tr.appendChild(item.aktif
+                ? make("td", EVRAK_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase())
+                : make("td", "Geçersiz", "durum-pasif"));
+
+            var hucre = make("td", "", "row-actions");
+
             if (item.aktif && canManage()) {
                 var yenile = make("button", "Yenile", "link-btn");
                 yenile.type = "button";
@@ -5001,10 +5016,22 @@
                 duzenle.addEventListener("click", function () { evrakiDuzenle(item); });
                 hucre.appendChild(duzenle);
             }
-            tr.appendChild(hucre);
 
+            tr.appendChild(hucre);
             tbody.appendChild(tr);
         });
+    }
+
+    function kalanGunMetni(item) {
+        if (!item.aktif) {
+            return "—";
+        }
+
+        if (item.kalanGun < 0) {
+            return Math.abs(item.kalanGun) + " gün geçti";
+        }
+
+        return item.kalanGun + " gün";
     }
 
     function evrakiDuzenle(kayit) {

@@ -1699,3 +1699,23 @@ button.compact {
     font-size: 13px;
     color: var(--accent);
 }
+
+.evrak-pasif {
+    opacity: 0.55;
+}
+
+.evrak-pasif td {
+    text-decoration: line-through;
+}
+
+.evrak-pasif .durum-pasif {
+    text-decoration: none;
+    color: var(--muted);
+}
+
+.row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
