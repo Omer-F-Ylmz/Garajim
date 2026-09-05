@@ -1749,11 +1749,28 @@
         return api("/api/Reports/fuel-stats?vehicleId=" + state.selectedVehicleId).then(function (result) {
             var data = (result && result.data) || {};
             clear(cards);
-            cards.appendChild(card("Ortalama tüketim", literFormat.format(Number(data.averageConsumptionPer100Km)) + " L/100km", true));
+
+            if (data.elektrikli) {
+                cards.appendChild(card("Ortalama tüketim",
+                    data.averageKwhPer100Km === null || data.averageKwhPer100Km === undefined
+                        ? "—"
+                        : literFormat.format(Number(data.averageKwhPer100Km)) + " kWh/100km", true));
+            } else {
+                cards.appendChild(card("Ortalama tüketim",
+                    literFormat.format(Number(data.averageConsumptionPer100Km)) + " L/100km", true));
+            }
+
             cards.appendChild(card("Km başına maliyet", money(data.costPerKm), true));
-            cards.appendChild(card("Toplam mesafe", km(data.totalKm)));
-            cards.appendChild(card("Toplam yakıt", literFormat.format(Number(data.totalLiters)) + " L"));
-            cards.appendChild(card("Toplam tutar", money(data.totalCost)));
+            cards.appendChild(card("Ölçülen mesafe", km(data.totalKm)));
+
+            cards.appendChild(data.elektrikli
+                ? card("Ölçülen şarj",
+                    data.totalKwh === null || data.totalKwh === undefined
+                        ? "—"
+                        : literFormat.format(Number(data.totalKwh)) + " kWh")
+                : card("Ölçülen yakıt", literFormat.format(Number(data.totalLiters)) + " L"));
+
+            cards.appendChild(card("Ölçülen tutar", money(data.totalCost)));
         }).catch(function (error) {
             clear(cards);
             cards.appendChild(card("Yakıt istatistiği", error && error.message ? error.message : "Hesaplanamadı."));

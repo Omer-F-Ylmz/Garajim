@@ -89,8 +89,8 @@ namespace Garajim.Tests.Unit
 
             Assert.True(result.Success);
             Assert.Equal(1000, result.Data.TotalKm);
-            Assert.Equal(105m, result.Data.TotalLiters, 2);
-            Assert.Equal(2950m, result.Data.TotalCost, 2);
+            Assert.Equal(65m, result.Data.TotalLiters, 2);
+            Assert.Equal(1950m, result.Data.TotalCost, 2);
             Assert.Equal(6.5m, result.Data.AverageConsumptionPer100Km, 2);
             Assert.Equal(1.95m, result.Data.CostPerKm, 2);
         }
@@ -108,7 +108,7 @@ namespace Garajim.Tests.Unit
 
             Assert.True(result.Success);
             Assert.Equal(1000, result.Data.TotalKm);
-            Assert.Equal(105m, result.Data.TotalLiters, 2);
+            Assert.Equal(65m, result.Data.TotalLiters, 2);
             Assert.Equal(6.5m, result.Data.AverageConsumptionPer100Km, 2);
         }
 

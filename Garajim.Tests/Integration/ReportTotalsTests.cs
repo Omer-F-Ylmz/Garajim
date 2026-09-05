@@ -109,8 +109,8 @@ namespace Garajim.Tests.Integration
 
             Assert.True(result.Success);
             Assert.Equal(1300, result.Data.TotalKm);
-            Assert.Equal(115m, result.Data.TotalLiters, 2);
-            Assert.Equal(5200m, result.Data.TotalCost, 2);
+            Assert.Equal(75m, result.Data.TotalLiters, 2);
+            Assert.Equal(3400m, result.Data.TotalCost, 2);
             Assert.Equal(5.77m, result.Data.AverageConsumptionPer100Km, 2);
             Assert.Equal(2.62m, result.Data.CostPerKm, 2);
         }

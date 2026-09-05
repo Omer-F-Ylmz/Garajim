@@ -106,13 +106,18 @@ namespace Garajim.Business.Concrete
             var tuketim = TuketimHesabi.Hesapla(records);
             if (tuketim.OlculenKm <= 0)
                 return new ErrorDataResult<FuelStatsDto>(Messages.NotEnoughFuelData);
+            var elektrikli = vehicle.FuelType == FuelType.Elektrik;
+
             var stats = new FuelStatsDto
             {
                 TotalKm = tuketim.OlculenKm,
-                TotalLiters = records.Sum(f => f.Liters),
-                TotalCost = records.Sum(f => f.TotalCost),
-                AverageConsumptionPer100Km = tuketim.Litre100Km ?? 0m,
-                CostPerKm = Math.Round(tuketim.OlculenTutar / tuketim.OlculenKm, 2)
+                TotalLiters = elektrikli ? 0m : tuketim.OlculenLitre,
+                TotalCost = tuketim.OlculenTutar,
+                AverageConsumptionPer100Km = elektrikli ? 0m : tuketim.Litre100Km ?? 0m,
+                CostPerKm = Math.Round(tuketim.OlculenTutar / tuketim.OlculenKm, 2),
+                Elektrikli = elektrikli,
+                TotalKwh = elektrikli ? tuketim.OlculenKwh : null,
+                AverageKwhPer100Km = elektrikli ? tuketim.Kwh100Km : null
             };
             return new SuccessDataResult<FuelStatsDto>(stats);
         }
@@ -186,7 +191,7 @@ namespace Garajim.Business.Concrete
 
             var rapor = new FiloMaliyetDto { Baslangic = bas, Bitis = bitis.Date };
 
-            var araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
+            var araclar = (await _vehicleAccess.GetAccessibleListAsync(userId)).Where(a => !a.Arsivli).ToList();
             if (araclar.Count == 0)
                 return new SuccessDataResult<FiloMaliyetDto>(rapor);
 

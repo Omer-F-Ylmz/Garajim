@@ -29,5 +29,8 @@ namespace Garajim.Entity.Dtos
         public decimal TotalCost { get; set; }
         public decimal AverageConsumptionPer100Km { get; set; }
         public decimal CostPerKm { get; set; }
+        public bool Elektrikli { get; set; }
+        public decimal? TotalKwh { get; set; }
+        public decimal? AverageKwhPer100Km { get; set; }
     }
 }
