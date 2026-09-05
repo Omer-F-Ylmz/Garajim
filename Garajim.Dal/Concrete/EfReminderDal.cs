@@ -51,6 +51,7 @@ namespace Garajim.Dal.Concrete
             var query = from r in Context.Reminders
                         join v in Context.Vehicles on r.VehicleId equals v.Id
                         where v.UserId == userId
+                              && !v.Arsivli
                               && !r.IsCompleted
                               && r.DueDate != null
                               && r.DueDate <= limit
