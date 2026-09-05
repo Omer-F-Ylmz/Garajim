@@ -25,6 +25,7 @@
         turGosterildi: false,
         sifirlanacakEposta: null,
         hasarAdim: 1,
+        hasarYeniKayit: false,
         hasarDosyaId: null,
         degerChart: null,
         documentRecordId: null,
@@ -2913,6 +2914,7 @@
         clear(el("hasar-foto-listesi"));
 
         state.hasarDosyaId = dosya ? dosya.id : null;
+        state.hasarYeniKayit = !dosya;
 
         el("hasar-tarih").value = dosya ? String(dosya.olayTarihi).slice(0, 10) : todayInput();
         el("hasar-tur").value = dosya ? dosya.tur : "Kaza";
@@ -2938,6 +2940,35 @@
         el("hasar-form").classList.add("hidden");
         el("hasar-yeni").classList.remove("hidden");
         state.hasarDosyaId = null;
+        state.hasarYeniKayit = false;
+
+        if (activeTab() === "hasar") {
+            loadHasar();
+        }
+    }
+
+    function hasarSihirbaziniIptalEt() {
+        var id = state.hasarDosyaId;
+
+        if (!id || !state.hasarYeniKayit) {
+            hasarSihirbaziniKapat();
+            return;
+        }
+
+        if (!window.confirm("Bu hasar dosyası kaydedilmişti. Vazgeçerseniz silinecek. Devam edilsin mi?")) {
+            return;
+        }
+
+        state.hasarDosyaId = null;
+        state.hasarYeniKayit = false;
+
+        api("/api/Hasar/" + id, { method: "DELETE" }).then(function () {
+            showMessage(el("app-message"), "Hasar dosyası silindi.", true);
+        }).catch(function (error) {
+            handleError(el("app-message"), error);
+        }).finally(function () {
+            hasarSihirbaziniKapat();
+        });
     }
 
     function hasarGovdesi() {
@@ -3113,7 +3144,7 @@
 
     function bindHasar() {
         el("hasar-yeni").addEventListener("click", function () { hasarSihirbaziniAc(null); });
-        el("hasar-vazgec").addEventListener("click", hasarSihirbaziniKapat);
+        el("hasar-vazgec").addEventListener("click", hasarSihirbaziniIptalEt);
 
         el("hasar-geri").addEventListener("click", function () {
             hasarAdimGoster(Math.max(1, state.hasarAdim - 1));
@@ -3148,11 +3179,14 @@
             var acKilit = formuKilitle(event.target);
             clearMessages();
 
-            hasarDosyasiniKaydet().then(function (result) {
-                showMessage(el("app-message"), (result && result.message) || "Hasar dosyası kaydedildi.", true);
+            var yeniMi = state.hasarYeniKayit;
+
+            hasarDosyasiniKaydet().then(function () {
+                showMessage(el("app-message"),
+                    yeniMi ? "Hasar dosyası oluşturuldu." : "Hasar dosyası güncellendi.", true);
                 hasarSihirbaziniKapat();
-                loadHasar();
-            }).catch(function (error) { handleError(el("app-message"), error); });
+            }).catch(function (error) { handleError(el("app-message"), error); })
+              .finally(function () { if (typeof acKilit === "function") { acKilit(); } });
         });
     }
 
