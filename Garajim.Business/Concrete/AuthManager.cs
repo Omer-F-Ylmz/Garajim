@@ -66,11 +66,28 @@ namespace Garajim.Business.Concrete
             if (!UygunsuzIfadeFiltresi.Varsayilan.Temiz(companyName))
                 return new ErrorDataResult<KayitSonucuDto>(Messages.UygunsuzIfade);
 
+            var kaynak = KayitKaynaklari.Normalize(dto.Kaynak, KayitKaynaklari.KaynakUzunluk);
+            var kaynakDetay = KayitKaynaklari.Normalize(dto.KaynakDetay, KayitKaynaklari.DetayUzunluk);
+
+            if (kaynak != null && !UygunsuzIfadeFiltresi.Varsayilan.Temiz(kaynak))
+                return new ErrorDataResult<KayitSonucuDto>(Messages.UygunsuzIfade);
+
+            if (kaynakDetay != null && !UygunsuzIfadeFiltresi.Varsayilan.Temiz(kaynakDetay))
+                return new ErrorDataResult<KayitSonucuDto>(Messages.UygunsuzIfade);
+
+            if (davetEden != null)
+            {
+                kaynak = KayitKaynaklari.Davet;
+                kaynakDetay = null;
+            }
+
             var company = new Company
             {
                 Name = Kirp(companyName, 150),
                 PlanType = PlanType.Bireysel,
                 DavetEdenCompanyId = davetEden?.Id,
+                KayitKaynagi = kaynak ?? KayitKaynaklari.Dogrudan,
+                KayitKaynagiDetay = kaynakDetay,
                 CreatedAt = DateTime.UtcNow
             };
             await using var islem = await _unitOfWork.BeginTransactionAsync();

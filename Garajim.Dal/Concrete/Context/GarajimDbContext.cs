@@ -271,6 +271,12 @@ namespace Garajim.Dal.Concrete.Context
                 entity.ToTable(t => t.HasCheckConstraint("CK_HasarFoto_Sira", "[Sira] > 0"));
             });
 
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.Property(c => c.KayitKaynagi).HasMaxLength(KayitKaynaklari.KaynakUzunluk);
+                entity.Property(c => c.KayitKaynagiDetay).HasMaxLength(KayitKaynaklari.DetayUzunluk);
+            });
+
             modelBuilder.Entity<AppUser>(entity =>
             {
                 entity.Property(u => u.DogrulamaKodHash).HasMaxLength(64);

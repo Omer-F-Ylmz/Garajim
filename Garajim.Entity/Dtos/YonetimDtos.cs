@@ -5,6 +5,14 @@ namespace Garajim.Entity.Dtos
         public string Gun { get; set; }
         public int Sirket { get; set; }
         public int Kullanici { get; set; }
+        public int Rehberden { get; set; }
+    }
+
+    public class KayitKaynagiDto
+    {
+        public string Kaynak { get; set; }
+        public int Sayi { get; set; }
+        public double Oran { get; set; }
     }
 
     public class YonetimOzetDto
@@ -22,6 +30,8 @@ namespace Garajim.Entity.Dtos
         public int KotaHatasi { get; set; }
         public double KarnePaylasimOrani { get; set; }
         public double DavetKayitOrani { get; set; }
+        public List<KayitKaynagiDto> KayitKaynaklari { get; set; } = new List<KayitKaynagiDto>();
+        public int RehberSayfaSayisi { get; set; }
         public bool UstaAcik { get; set; }
         public object Bellek { get; set; }
         public List<GeriBildirimDto> SonGeriBildirimler { get; set; } = new List<GeriBildirimDto>();

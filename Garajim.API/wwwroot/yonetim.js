@@ -92,13 +92,44 @@
             ["AI Usta", veri.ustaAcik ? "Açık" : "Kapalı"],
             ["Çalışma kümesi", sayi(veri.bellek ? veri.bellek.calismaKumesiMb : 0, 1) + " MB"],
             ["En yüksek bellek", sayi(veri.bellek ? veri.bellek.enYuksekCalismaKumesiMb : 0, 1) + " MB"],
+            ["Rehber sayfası", sayi(veri.rehberSayfaSayisi)],
             ["Sürüm", (veri.bellek && veri.bellek.surum) || "-"]
         ].forEach(function (satir) {
             kap.appendChild(kart(satir[0], satir[1]));
         });
     }
 
+    var KAYNAK_ADI = {
+        rehber: "Rehber",
+        tanitim: "Tanıtım",
+        davet: "Davet",
+        dogrudan: "Doğrudan",
+        diger: "Diğer"
+    };
+
+    function kaynaklariCiz(liste) {
+        var kap = el("kaynak-kartlar");
+
+        if (!kap) {
+            return;
+        }
+
+        clear(kap);
+
+        if (!liste || liste.length === 0) {
+            kap.appendChild(kart("Kayıt kaynağı", "-"));
+            return;
+        }
+
+        liste.forEach(function (satir) {
+            kap.appendChild(kart(
+                KAYNAK_ADI[satir.kaynak] || satir.kaynak,
+                sayi(satir.sayi) + " · %" + sayi(satir.oran, 1)));
+        });
+    }
+
     function seriyiCiz(seri) {
+
         var govde = el("seri-satirlar");
         clear(govde);
 
@@ -107,6 +138,7 @@
             satir.appendChild(make("td", gun.gun));
             satir.appendChild(make("td", sayi(gun.sirket)));
             satir.appendChild(make("td", sayi(gun.kullanici)));
+            satir.appendChild(make("td", sayi(gun.rehberden)));
             govde.appendChild(satir);
         });
     }
@@ -137,6 +169,7 @@
             var veri = (sonuc && sonuc.data) || {};
 
             kartlariCiz(veri);
+            kaynaklariCiz(veri.kayitKaynaklari);
             seriyiCiz(veri.gunlukKayitlar);
             geriBildirimleriCiz(veri.sonGeriBildirimler);
         }).catch(function (hata) {

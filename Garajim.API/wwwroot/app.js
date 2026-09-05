@@ -3871,7 +3871,48 @@
         });
     }
 
+    var KAYNAK_ANAHTARI = "garajim_kaynak";
+
+    function kaynakOku() {
+        try {
+            var ham = window.sessionStorage.getItem(KAYNAK_ANAHTARI);
+            return ham ? JSON.parse(ham) : null;
+        } catch (hata) {
+            return null;
+        }
+    }
+
+    function kaynagiUrldenYakala() {
+        var parametreler = new URLSearchParams(window.location.search);
+        var kaynak = parametreler.get("utm_source");
+
+        if (!kaynak) {
+            return;
+        }
+
+        try {
+            window.sessionStorage.setItem(KAYNAK_ANAHTARI, JSON.stringify({
+                kaynak: kaynak.slice(0, 50),
+                detay: (parametreler.get("utm_content") || "").slice(0, 100)
+            }));
+        } catch (hata) {
+            return;
+        }
+    }
+
+    function kaynagiAlanlaraYaz() {
+        var saklanan = kaynakOku();
+
+        if (!saklanan) {
+            return;
+        }
+
+        el("register-kaynak").value = saklanan.kaynak || "";
+        el("register-kaynak-detay").value = saklanan.detay || "";
+    }
+
     function davetKodunuUrldenOku() {
+
         var eslesme = /[?&]davet=([A-Za-z0-9]{1,12})/.exec(window.location.search);
         if (eslesme) {
             el("register-davet").value = eslesme[1].toUpperCase();
@@ -4395,7 +4436,9 @@
                     email: el("register-email").value,
                     password: el("register-password").value,
                     companyName: el("register-company").value,
-                    davetKodu: el("register-davet").value
+                    davetKodu: el("register-davet").value,
+                    kaynak: el("register-kaynak").value,
+                    kaynakDetay: el("register-kaynak-detay").value
                 }
             }).then(function (result) {
                 el("register-password").value = "";
@@ -6056,6 +6099,8 @@
         bindPlan();
         bindUsta();
         davetKodunuUrldenOku();
+        kaynagiUrldenYakala();
+        kaynagiAlanlaraYaz();
         kuyrukRozetiniTazele();
 
         if (readSession()) {

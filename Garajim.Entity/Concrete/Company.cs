@@ -12,6 +12,8 @@ namespace Garajim.Entity.Concrete
         public string DavetKodu { get; set; }
         public int? DavetEdenCompanyId { get; set; }
         public int OdulGun { get; set; }
+        public string KayitKaynagi { get; set; }
+        public string KayitKaynagiDetay { get; set; }
         public DateTime? SilinmePlanlanan { get; set; }
         public DateTime CreatedAt { get; set; }
     }

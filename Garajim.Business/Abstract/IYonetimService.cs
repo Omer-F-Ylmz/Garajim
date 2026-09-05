@@ -5,6 +5,6 @@ namespace Garajim.Business.Abstract
 {
     public interface IYonetimService
     {
-        Task<IDataResult<YonetimOzetDto>> OzetAsync(object bellek);
+        Task<IDataResult<YonetimOzetDto>> OzetAsync(object bellek, int rehberSayfaSayisi);
     }
 }

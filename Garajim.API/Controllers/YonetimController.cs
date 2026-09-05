@@ -12,17 +12,28 @@ namespace Garajim.API.Controllers
     {
         private readonly IYonetimService _yonetimService;
         private readonly DemoSifirlamaJob _demoJob;
+        private readonly IWebHostEnvironment _ortam;
 
-        public YonetimController(IYonetimService yonetimService, DemoSifirlamaJob demoJob)
+        public YonetimController(IYonetimService yonetimService, DemoSifirlamaJob demoJob, IWebHostEnvironment ortam)
         {
             _yonetimService = yonetimService;
             _demoJob = demoJob;
+            _ortam = ortam;
         }
 
         [HttpGet("ozet")]
         public async Task<IActionResult> Ozet()
         {
-            return Ok(await _yonetimService.OzetAsync(BellekDurumu.Oku()));
+            return Ok(await _yonetimService.OzetAsync(BellekDurumu.Oku(), RehberSayfaSayisi()));
+        }
+
+        private int RehberSayfaSayisi()
+        {
+            var klasor = Path.Combine(_ortam.WebRootPath ?? string.Empty, "rehber");
+
+            return Directory.Exists(klasor)
+                ? Directory.GetFiles(klasor, "*.html", SearchOption.AllDirectories).Length
+                : 0;
         }
 
         [HttpPost("demo-sifirla")]

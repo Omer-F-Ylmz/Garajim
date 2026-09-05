@@ -51,12 +51,13 @@ namespace Garajim.Business.Concrete
             _configuration = configuration;
         }
 
-        public async Task<IDataResult<YonetimOzetDto>> OzetAsync(object bellek)
+        public async Task<IDataResult<YonetimOzetDto>> OzetAsync(object bellek, int rehberSayfaSayisi)
         {
             var sirketler = await _companyDal.GetListAsync();
             var ozet = new YonetimOzetDto
             {
                 SirketSayisi = sirketler.Count,
+                RehberSayfaSayisi = rehberSayfaSayisi,
                 Bellek = bellek,
                 UstaAcik = _configuration.GetValue("Usta:Enabled", true)
             };
@@ -97,6 +98,7 @@ namespace Garajim.Business.Concrete
 
             ozet.KarnePaylasimOrani = Oran(karneliArac, aracToplam);
             ozet.DavetKayitOrani = Oran(sirketler.Count(s => s.DavetEdenCompanyId != null), sirketler.Count);
+            ozet.KayitKaynaklari = KaynakKirilimi(sirketler);
 
             var bugun = Saat.BugunTr();
             var sayac = await _tokenDal.AyiAlAsync(bugun.Year, bugun.Month);
@@ -124,7 +126,23 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<YonetimOzetDto>(ozet);
         }
 
+        private static List<KayitKaynagiDto> KaynakKirilimi(List<Company> sirketler)
+        {
+            return sirketler
+                .GroupBy(s => Entity.Concrete.KayitKaynaklari.Kova(s.KayitKaynagi))
+                .Select(g => new KayitKaynagiDto
+                {
+                    Kaynak = g.Key,
+                    Sayi = g.Count(),
+                    Oran = Oran(g.Count(), sirketler.Count)
+                })
+                .OrderByDescending(k => k.Sayi)
+                .ThenBy(k => k.Kaynak, StringComparer.Ordinal)
+                .ToList();
+        }
+
         private static List<YonetimGunDto> SeriUret(List<Company> sirketler, List<AppUser> kullanicilar)
+
         {
             var bugun = Saat.BugunTr();
             var seri = new List<YonetimGunDto>();
@@ -137,7 +155,9 @@ namespace Garajim.Business.Concrete
                 {
                     Gun = gun.ToString("yyyy-MM-dd"),
                     Sirket = sirketler.Count(s => Saat.Yerel(s.CreatedAt).Date == gun),
-                    Kullanici = kullanicilar.Count(u => Saat.Yerel(u.CreatedAt).Date == gun)
+                    Kullanici = kullanicilar.Count(u => Saat.Yerel(u.CreatedAt).Date == gun),
+                    Rehberden = sirketler.Count(s => Saat.Yerel(s.CreatedAt).Date == gun
+                        && Entity.Concrete.KayitKaynaklari.Kova(s.KayitKaynagi) == Entity.Concrete.KayitKaynaklari.Rehber)
                 });
             }
 
