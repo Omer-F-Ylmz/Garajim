@@ -992,6 +992,11 @@
 
         var kutu = el("tur-kutu");
         var isik = el("tur-isik");
+
+        if (typeof hedef.scrollIntoView === "function") {
+            hedef.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+
         var alan = hedef.getBoundingClientRect();
 
         el("tur-baslik").textContent = adim[1];
