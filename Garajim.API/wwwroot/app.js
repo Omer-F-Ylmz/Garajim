@@ -476,24 +476,37 @@
         return role === "Owner" || role === "Manager";
     }
 
+    function ustaSekmesiniGizle() {
+        var sekme = document.querySelector('.tab-btn[data-tab="usta"]');
+
+        if (sekme) {
+            sekme.classList.add("hidden");
+
+            if (sekme.classList.contains("active")) {
+                selectTab("bakim");
+            }
+        }
+
+        el("usta-onay-kutusu").classList.add("hidden");
+        el("usta-govde").classList.add("hidden");
+    }
+
     function ustaDurumunuUygula() {
-        return api("/api/Receipts/stats").then(function (result) {
-            var acik = !result || !result.data || result.data.ustaAcik !== false;
+        return api("/api/Saglik/ozellikler").then(function (result) {
+            var acik = !!(result && result.data && result.data.ustaAcik);
             var sekme = document.querySelector('.tab-btn[data-tab="usta"]');
 
-            if (sekme) {
-                sekme.classList.toggle("hidden", !acik);
-
-                if (!acik && sekme.classList.contains("active")) {
-                    selectTab("bakim");
-                }
-            }
-
             if (!acik) {
-                el("usta-onay-kutusu").classList.add("hidden");
-                el("usta-govde").classList.add("hidden");
+                ustaSekmesiniGizle();
+                return;
             }
-        }).catch(function () { });
+
+            if (sekme) {
+                sekme.classList.remove("hidden");
+            }
+        }).catch(function () {
+            ustaSekmesiniGizle();
+        });
     }
 
     function applyRole() {

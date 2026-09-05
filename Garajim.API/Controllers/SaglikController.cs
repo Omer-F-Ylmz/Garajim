@@ -12,6 +12,13 @@ namespace Garajim.API.Controllers
     [Route("api/[controller]")]
     public class SaglikController : SecureControllerBase
     {
+        private readonly IConfiguration _configuration;
+
+        public SaglikController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpGet("ping")]
         [AllowAnonymous]
         [EnableRateLimiting(KarneController.RateLimitPolicy)]
@@ -20,7 +27,17 @@ namespace Garajim.API.Controllers
             return Content("ok", "text/plain");
         }
 
+        [HttpGet("ozellikler")]
+        public IActionResult Ozellikler()
+        {
+            return Ok(new SuccessDataResult<object>(new
+            {
+                ustaAcik = UstaKapisi.Acik(_configuration)
+            }));
+        }
+
         [HttpGet]
+
         public IActionResult Durum()
         {
             if (CurrentRole == CompanyRole.Driver.ToString())
