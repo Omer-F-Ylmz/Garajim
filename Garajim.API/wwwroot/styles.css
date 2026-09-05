@@ -830,31 +830,52 @@ button.compact {
     flex: 1 1 320px;
 }
 
-.kaza-ani {
-    display: block;
-    width: 100%;
-    margin: 0 0 16px;
-    padding: 16px;
-    border: 1px solid var(--danger);
-    border-radius: var(--radius);
-    background: rgba(255, 90, 90, 0.12);
-    color: var(--text);
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    cursor: pointer;
+#app-screen {
+    padding-bottom: 96px;
 }
 
-@media (max-width: 767px) {
-    .kaza-ani {
-        position: sticky;
-        top: 8px;
-        z-index: 20;
-    }
+.yuzen-eylemler {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.yuzen-eylemler > * {
+    pointer-events: auto;
+}
+
+.kaza-ani {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 1px solid var(--danger);
+    border-radius: 50%;
+    background: var(--danger);
+    color: #1a0505;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .kaza-ani:hover {
-    background: rgba(255, 90, 90, 0.2);
+    filter: brightness(1.12);
+}
+
+.kaza-ani:focus-visible,
+.geri-bildirim-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .kaza-modal {
@@ -937,11 +958,6 @@ button.compact {
 }
 
 @media (max-width: 640px) {
-    .kaza-ani {
-        padding: 18px;
-        font-size: 18px;
-    }
-
     .kaza-kutu {
         padding: 14px;
     }
@@ -1598,10 +1614,6 @@ button.compact {
 }
 
 .geri-bildirim-btn {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 40;
     padding: 10px 16px;
     border: 1px solid var(--line);
     border-radius: 999px;
@@ -1618,10 +1630,20 @@ button.compact {
 }
 
 @media (max-width: 640px) {
-    .geri-bildirim-btn {
+    .yuzen-eylemler {
         right: 10px;
         bottom: 10px;
+        gap: 10px;
+    }
+
+    .geri-bildirim-btn {
         padding: 8px 12px;
+    }
+
+    .kaza-ani {
+        width: 52px;
+        height: 52px;
+        font-size: 24px;
     }
 }
 

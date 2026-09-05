@@ -120,19 +120,6 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public void KazaAniMobildeYapiskan()
-        {
-            var css = Oku("styles.css");
-            var mobilBlok = css.Split("@media").FirstOrDefault(b => b.Contains("max-width: 767px") && b.Contains(".kaza-ani"));
-
-            Assert.NotNull(mobilBlok);
-            Assert.Contains("position: sticky", mobilBlok);
-
-            var sonrakiEzme = css.Substring(css.IndexOf(mobilBlok, StringComparison.Ordinal) + mobilBlok.Length);
-            Assert.DoesNotContain("position: static", sonrakiEzme.Split(".kaza-ani").Skip(1).FirstOrDefault() ?? string.Empty);
-        }
-
-        [Fact]
         public void KarneHataSayfasindaYazdirGizlenir()
         {
             var js = Oku("karne.js");

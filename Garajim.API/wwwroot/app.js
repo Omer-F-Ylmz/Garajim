@@ -548,6 +548,7 @@
             renderEmptyState(hasVehicles);
             el("empty-state").classList.toggle("hidden", hasVehicles);
             el("workspace").classList.toggle("hidden", !hasVehicles);
+            el("kaza-ani").classList.toggle("hidden", !hasVehicles);
             select.classList.toggle("hidden", !hasVehicles);
 
             if (!hasVehicles) {
