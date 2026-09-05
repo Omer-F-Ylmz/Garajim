@@ -23,6 +23,7 @@ namespace Garajim.Entity.Dtos
         public List<YonetimGunDto> GunlukKayitlar { get; set; } = new List<YonetimGunDto>();
         public int FisSayisi { get; set; }
         public double FisDogrulukOrani { get; set; }
+        public int FisDogrulukOlculen { get; set; }
         public double OtoOnayOrani { get; set; }
         public long AiTokenKullanilan { get; set; }
         public long AiTokenTavani { get; set; }

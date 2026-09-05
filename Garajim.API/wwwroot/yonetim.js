@@ -82,7 +82,7 @@
             ["Kullanıcı", sayi(veri.kullaniciSayisi)],
             ["Araç", sayi(veri.aracSayisi)],
             ["Fiş", sayi(veri.fisSayisi)],
-            ["Fiş doğruluğu", sayi(veri.fisDogrulukOrani, 1) + " %"],
+            ["Fiş doğruluğu", sayi(veri.fisDogrulukOrani, 1) + " % (" + sayi(veri.fisDogrulukOlculen) + " fiş)"],
             ["Oto onay", sayi(veri.otoOnayOrani, 1) + " %"],
             ["Karne paylaşımı", sayi(veri.karnePaylasimOrani, 1) + " %"],
             ["Davet → kayıt", sayi(veri.davetKayitOrani, 1) + " %"],

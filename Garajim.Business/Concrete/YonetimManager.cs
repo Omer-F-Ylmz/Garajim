@@ -88,12 +88,10 @@ namespace Garajim.Business.Concrete
             ozet.GunlukKayitlar = SeriUret(sirketler, kullanicilar);
 
             var onaylananlar = fisler.Where(f => f.Durum == ReceiptDraftStatus.Onaylandi).ToList();
-            var elleOnaylananlar = onaylananlar.Where(f => !f.OtoOnaylandi).ToList();
 
             ozet.FisSayisi = fisler.Count;
-            ozet.FisDogrulukOrani = elleOnaylananlar.Count == 0
-                ? 0
-                : Oran(elleOnaylananlar.Count(f => string.IsNullOrWhiteSpace(f.DuzeltilenAlanlar)), elleOnaylananlar.Count);
+            ozet.FisDogrulukOrani = FisDogrulugu.Oran(fisler);
+            ozet.FisDogrulukOlculen = FisDogrulugu.OlculenSayisi(fisler);
             ozet.OtoOnayOrani = Oran(onaylananlar.Count(f => f.OtoOnaylandi), onaylananlar.Count);
 
             ozet.KarnePaylasimOrani = Oran(karneliArac, aracToplam);
