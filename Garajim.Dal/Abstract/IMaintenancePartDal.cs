@@ -5,6 +5,7 @@ namespace Garajim.Dal.Abstract
 {
     public interface IMaintenancePartDal : IEntityRepository<MaintenancePart>
     {
+        Task TopluEkleAsync(List<MaintenancePart> parcalar);
         Task<List<MaintenancePart>> GetByVehicleAsync(int vehicleId);
         Task DeleteByRecordAsync(int maintenanceRecordId);
     }

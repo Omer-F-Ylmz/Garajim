@@ -53,7 +53,22 @@ namespace Garajim.Dal.Concrete
             return await Context.HasarFotograflari.CountAsync(f => f.HasarDosyasiId == hasarDosyasiId);
         }
 
+        public async Task<Dictionary<int, int>> SayilarAsync(List<int> hasarDosyasiIdleri)
+        {
+            if (hasarDosyasiIdleri == null || hasarDosyasiIdleri.Count == 0)
+            {
+                return new Dictionary<int, int>();
+            }
+
+            return await Context.HasarFotograflari
+                .Where(f => hasarDosyasiIdleri.Contains(f.HasarDosyasiId))
+                .GroupBy(f => f.HasarDosyasiId)
+                .Select(g => new { g.Key, Sayi = g.Count() })
+                .ToDictionaryAsync(g => g.Key, g => g.Sayi);
+        }
+
         public async Task<List<int>> AracinFotoBelgeIdleriAsync(int vehicleId)
+
         {
             return await (from foto in Context.HasarFotograflari
                           join dosya in Context.HasarDosyalari on foto.HasarDosyasiId equals dosya.Id

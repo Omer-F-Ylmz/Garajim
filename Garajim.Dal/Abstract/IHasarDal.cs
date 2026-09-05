@@ -13,6 +13,7 @@ namespace Garajim.Dal.Abstract
     {
         Task<List<HasarFoto>> GetByDosyaAsync(int hasarDosyasiId);
         Task<int> SayiAsync(int hasarDosyasiId);
+        Task<Dictionary<int, int>> SayilarAsync(List<int> hasarDosyasiIdleri);
         Task<int> SonSiraAsync(int hasarDosyasiId);
         Task<List<int>> AracinFotoBelgeIdleriAsync(int vehicleId);
     }

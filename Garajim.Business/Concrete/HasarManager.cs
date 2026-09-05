@@ -61,11 +61,13 @@ namespace Garajim.Business.Concrete
             var plakalar = araclar.ToDictionary(a => a.Id, a => a.Plate);
             var dosyalar = await _dosyaDal.GetListeAsync(araclar.Select(a => a.Id).ToList(), QueryLimits.MaxListSize);
 
+            var sayilar = await _fotoDal.SayilarAsync(dosyalar.Select(d => d.Id).ToList());
             var liste = new List<HasarDto>();
+
             foreach (var dosya in dosyalar)
             {
                 var dto = MapToDto(dosya, plakalar);
-                dto.FotoSayisi = await _fotoDal.SayiAsync(dosya.Id);
+                dto.FotoSayisi = sayilar.TryGetValue(dosya.Id, out var sayi) ? sayi : 0;
                 liste.Add(dto);
             }
 

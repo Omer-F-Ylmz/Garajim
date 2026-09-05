@@ -20,6 +20,17 @@ namespace Garajim.Dal.Concrete
                 .ToListAsync();
         }
 
+        public async Task TopluEkleAsync(List<MaintenancePart> parcalar)
+        {
+            if (parcalar == null || parcalar.Count == 0)
+            {
+                return;
+            }
+
+            await Context.MaintenanceParts.AddRangeAsync(parcalar);
+            await Context.SaveChangesAsync();
+        }
+
         public async Task DeleteByRecordAsync(int maintenanceRecordId)
         {
             await Context.MaintenanceParts

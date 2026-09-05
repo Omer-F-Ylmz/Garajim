@@ -200,9 +200,8 @@ namespace Garajim.Business.Concrete
 
         private async Task ParcalariYazAsync(MaintenanceRecord record, List<MaintenancePartDto> parcalar)
         {
-            foreach (var parca in parcalar ?? new List<MaintenancePartDto>())
-            {
-                await _partDal.AddAsync(new MaintenancePart
+            var yazilacaklar = (parcalar ?? new List<MaintenancePartDto>())
+                .Select(parca => new MaintenancePart
                 {
                     CompanyId = record.CompanyId,
                     MaintenanceRecordId = record.Id,
@@ -212,8 +211,10 @@ namespace Garajim.Business.Concrete
                     Adet = parca.Adet,
                     Tutar = parca.Tutar,
                     Marka = MetinSinirlari.Kirp(parca.Marka, MetinSinirlari.ParcaMarka)
-                });
-            }
+                })
+                .ToList();
+
+            await _partDal.TopluEkleAsync(yazilacaklar);
         }
 
         private static MaintenanceDto MapToDto(MaintenanceRecord record, IEnumerable<MaintenancePart> parcalar = null)
