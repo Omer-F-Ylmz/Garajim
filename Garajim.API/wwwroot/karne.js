@@ -73,6 +73,21 @@
             .catch(function () { });
     }
 
+    function bosBolum(baslik, metin) {
+        var bolum = document.createElement("section");
+        bolum.className = "karne-bolum karne-bos";
+
+        var h = document.createElement("h2");
+        h.textContent = baslik;
+        bolum.appendChild(h);
+
+        var p = document.createElement("p");
+        p.textContent = metin;
+        bolum.appendChild(p);
+
+        el("kart").appendChild(bolum);
+    }
+
     function ciz(karne, token) {
         var arac = karne.arac;
 
@@ -82,6 +97,14 @@
         bilgiEkle(bilgi, "Yıl", arac.yil);
         bilgiEkle(bilgi, "Yakıt", arac.yakitTipi);
         bilgiEkle(bilgi, "Güncel kilometre", km(arac.guncelKm));
+
+        if (karne.kapsam && karne.kapsam.bakimGecmisi && (!karne.bakimlar || karne.bakimlar.length === 0)) {
+            bosBolum("Bakım geçmişi", "Bu araçta henüz bakım kaydı yok.");
+        }
+
+        if (karne.kapsam && karne.kapsam.parcaHafizasi && (!karne.parcalar || karne.parcalar.length === 0)) {
+            bosBolum("Parça hafizasi", "Bu araçta henüz parça değişimi kaydı yok.");
+        }
 
         if (karne.bakimlar && karne.bakimlar.length > 0) {
             el("bakim-bolumu").classList.remove("hidden");

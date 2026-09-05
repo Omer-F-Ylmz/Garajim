@@ -106,10 +106,13 @@
 
     function destegiBagla(eposta) {
         var baglanti = el("destek-baglanti");
+
         if (!eposta) {
-            baglanti.textContent = "Destek adresi tanımlı değil";
+            baglanti.classList.add("hidden");
             return;
         }
+
+        baglanti.classList.remove("hidden");
 
         baglanti.href = "mailto:" + eposta + "?subject=" + encodeURIComponent("Garajım yardım");
         baglanti.textContent = eposta;

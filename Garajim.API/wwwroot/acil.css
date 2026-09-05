@@ -184,3 +184,10 @@ h1 {
     font-weight: 700;
     text-decoration: none;
 }
+
+.acil-bos {
+    margin: 12px 0 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255, 122, 26, 0.14);
+}

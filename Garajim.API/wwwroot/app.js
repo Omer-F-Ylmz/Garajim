@@ -403,12 +403,34 @@
             form.querySelectorAll("button"),
             function (d) { return d.type !== "button"; });
 
-        dugmeler.forEach(function (d) { d.disabled = true; });
+        dugmeler.forEach(function (d) {
+            d.dataset.eskiMetin = d.textContent;
+            d.disabled = true;
+            d.setAttribute("aria-busy", "true");
+            d.textContent = "Kaydediliyor…";
+        });
 
-        var ac = function () { dugmeler.forEach(function (d) { d.disabled = false; }); };
+        var acildi = false;
+
+        var ac = function () {
+            if (acildi) {
+                return;
+            }
+
+            acildi = true;
+
+            dugmeler.forEach(function (d) {
+                d.disabled = false;
+                d.removeAttribute("aria-busy");
+
+                if (d.dataset.eskiMetin) {
+                    d.textContent = d.dataset.eskiMetin;
+                    delete d.dataset.eskiMetin;
+                }
+            });
+        };
 
         state.kilitAc = ac;
-        window.setTimeout(ac, 20000);
 
         return ac;
     }
@@ -559,6 +581,16 @@
 
         el("ornek-ekle").classList.toggle("hidden", !canManage());
         el("ornek-sil").classList.toggle("hidden", !canManage());
+        el("hesap-sil-aciklama").textContent = isOwner()
+            ? "Şirket sahibi hesabı silerse şirket, araçlar, kayıtlar ve belgeler 7 gün sonra kalıcı olarak silinir. Bu süre içinde iptal edebilirsiniz."
+            : "Hesabını silersen kişisel bilgilerin kaldırılır; şirketin kayıtları yerinde kalır.";
+
+        var ornekBolumu = el("ornek-bolumu");
+
+        if (ornekBolumu) {
+            ornekBolumu.classList.toggle("hidden", !canManage());
+        }
+
         el("hesap-sil-kod").classList.toggle("hidden", !isOwner());
         el("uye-hesap-sil").classList.toggle("hidden", isOwner());
 
@@ -1189,6 +1221,7 @@
             loadEvrak();
         } else if (tab === "tahmin") {
             fiyatFormunuHazirla();
+            tahminFormunuAractanDoldur();
         }
     }
 
@@ -2518,7 +2551,52 @@
         el("vehicle-model-ipucu").classList.toggle("hidden", !acik);
     }
 
+    var KASA_TAHMIN_ESLEME = {
+        Sedan: "Sedan",
+        Hatchback5: "Hatchback/5",
+        Hatchback3: "Hatchback/3",
+        StationWagon: "Station wagon",
+        Mpv: "MPV",
+        Coupe: "Coupe",
+        Suv: "SUV",
+        Cabrio: "Cabrio",
+        Roadster: "Roadster",
+        PickUp: "Pick-up"
+    };
+
+    var YAKIT_TAHMIN_ESLEME = {
+        Benzin: "Benzin",
+        Dizel: "Dizel",
+        Lpg: "LPG & Benzin",
+        Hibrit: "Hibrit",
+        Elektrik: "Elektrik"
+    };
+
+    function tahminFormunuAractanDoldur() {
+        var arac = seciliArac();
+
+        if (!arac) {
+            return;
+        }
+
+        markaSecenekleriniDoldur(el("price-marka"), arac.brand);
+        seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), arac.model);
+
+        el("price-yil").value = arac.year || new Date().getFullYear();
+        el("price-km").value = arac.currentKm || "";
+        el("price-yakit").value = YAKIT_TAHMIN_ESLEME[arac.fuelType] || "Benzin";
+
+        if (arac.vites) {
+            el("price-vites").value = arac.vites;
+        }
+
+        if (arac.kasaTipi && KASA_TAHMIN_ESLEME[arac.kasaTipi]) {
+            el("price-kasa").value = KASA_TAHMIN_ESLEME[arac.kasaTipi];
+        }
+    }
+
     function fiyatFormunuHazirla() {
+
         if (el("price-marka").options.length > 1) {
             return;
         }
@@ -4807,6 +4885,10 @@
             el("team-box").classList.add("hidden");
         });
 
+        el("team-sifre-kopyala").addEventListener("click", function () {
+            baglantiKopyala(el("team-credential-password").textContent);
+        });
+
         el("team-form").addEventListener("submit", function (event) {
             event.preventDefault();
             var acKilit = formuKilitle(event.target);
@@ -4824,6 +4906,7 @@
                 el("team-credential").classList.remove("hidden");
                 el("team-credential-email").textContent = result.data.email;
                 el("team-credential-password").textContent = result.data.temporaryPassword;
+                el("team-credential").scrollIntoView({ block: "nearest" });
                 loadTeam();
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);

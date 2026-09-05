@@ -56,6 +56,13 @@
         satir(bilgi, "Trafik sigortası", kart.sigortaSaglayici);
         satir(bilgi, "Poliçe no", kart.sigortaPoliceNo);
 
+        if (!kart.acilKisiAd && !kart.acilKisiTelefon) {
+            var uyari = document.createElement("p");
+            uyari.className = "acil-bos";
+            uyari.textContent = "Bu araç için acil durum kişisi tanımlanmamış. Acil durumda 112'yi arayın.";
+            el("bilgi").parentNode.insertBefore(uyari, el("bilgi").nextSibling);
+        }
+
         if (kart.acilNot) {
             el("not").classList.remove("hidden");
             el("not").textContent = kart.acilNot;

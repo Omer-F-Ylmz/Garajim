@@ -501,7 +501,7 @@
             <p id="sifre-degistir-mesaj" class="message" role="alert"></p>
 
             <h3>Hesabı sil</h3>
-            <p class="hint">Şirket sahibi hesabı silerse şirket, araçlar, kayıtlar ve belgeler 7 gün sonra kalıcı olarak silinir. Bu süre içinde iptal edebilirsiniz. Ekip üyesi kendi hesabını silerse kişisel bilgileri kaldırılır, şirketin kayıtları yerinde kalır.</p>
+            <p id="hesap-sil-aciklama" class="hint"></p>
             <div class="inline-form">
                 <button id="hesap-sil-kod" type="button" class="ghost">Silme kodu gönder</button>
                 <button id="uye-hesap-sil" type="button" class="ghost hidden">Hesabımı sil</button>
@@ -521,11 +521,13 @@
             </form>
             <p id="hesap-sil-mesaj" class="message" role="alert"></p>
 
+            <div id="ornek-bolumu">
             <h3>Örnek araç</h3>
             <p class="hint">Örnek araç plan limitine sayılmaz ve karnesi paylaşılamaz; denemen bitince kaldırabilirsin.</p>
             <div class="inline-form">
                 <button id="ornek-ekle" type="button" class="ghost">Örnek araç oluştur</button>
                 <button id="ornek-sil" type="button" class="ghost">Örnek aracı kaldır</button>
+            </div>
             </div>
 
             <h3>Ürün turu</h3>
@@ -702,6 +704,7 @@
             <div id="team-credential" class="panel-inline hidden">
                 <p class="hint">Geçici şifre yalnızca bir kez gösterilir; üyeye siz iletmelisiniz.</p>
                 <p><strong id="team-credential-email"></strong> &mdash; <code id="team-credential-password"></code></p>
+                <button id="team-sifre-kopyala" type="button" class="ghost compact">Şifreyi kopyala</button>
             </div>
             <div class="table-wrap">
                 <table>
