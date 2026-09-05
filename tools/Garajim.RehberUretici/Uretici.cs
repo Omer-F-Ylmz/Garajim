@@ -179,7 +179,7 @@ namespace Garajim.RehberUretici
                     sb.Append("    <h2>").Append(Sayfa.Kacis(parca.Baslik)).Append("</h2>\n");
                 }
 
-                sb.Append("    <p>").Append(Sayfa.Kacis(parca.Metin)).Append("</p>\n");
+                sb.Append("    <p>").Append(Sayfa.Kacis(MetinAyristirici.AciliyetleriCevir(parca.Metin))).Append("</p>\n");
                 sb.Append("</section>\n");
             }
 

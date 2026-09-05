@@ -45,8 +45,8 @@ namespace Garajim.Tests.Unit
         }
 
         [Theory]
-        [InlineData("Aciliyet: Bakimda.", "Bakimda")]
-        [InlineData("... aciliyet: BuHafta. | Sık: ...", "BuHafta")]
+        [InlineData("Aciliyet: Bakimda.", "Bakımda")]
+        [InlineData("... aciliyet: BuHafta. | Sık: ...", "Bu hafta")]
         [InlineData("hiç aciliyet yok", null)]
         public void AciliyetMetindenOkunur(string metin, string beklenen)
         {
@@ -75,5 +75,29 @@ namespace Garajim.Tests.Unit
             Assert.Equal("Fiat 1.3 Multijet zinciri bakım gerektirmez",
                 MetinAyristirici.IlkCumle("Fiat 1.3 Multijet zinciri bakım gerektirmez. Yağ+filtre 10.000 km."));
         }
+        [Theory]
+        [InlineData("BuHafta", "Bu hafta")]
+        [InlineData("Bugun", "Bugün")]
+        [InlineData("Bakimda", "Bakımda")]
+        [InlineData("Hemen", "Hemen")]
+        [InlineData("bilinmeyen", "bilinmeyen")]
+        public void AciliyetTurkceEtiketeCevrilir(string ham, string beklenen)
+        {
+            Assert.Equal(beklenen, MetinAyristirici.AciliyetEtiketi(ham));
+        }
+
+        [Fact]
+        public void AciliyetOkumaEtiketiDoner()
+        {
+            Assert.Equal("Bu hafta", MetinAyristirici.Aciliyet("... Aciliyet: BuHafta."));
+        }
+        [Fact]
+        public void GovdedekiAciliyetJetonlariDaCevrilir()
+        {
+            Assert.Equal("Sik nedenler: yag. Aciliyet: Bu hafta. Devam.",
+                MetinAyristirici.AciliyetleriCevir("Sik nedenler: yag. Aciliyet: BuHafta. Devam."));
+        }
     }
 }
+
+

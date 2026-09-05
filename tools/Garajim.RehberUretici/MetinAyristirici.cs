@@ -54,7 +54,39 @@ namespace Garajim.RehberUretici
             return bolumler;
         }
 
+        private static readonly Dictionary<string, string> AciliyetEtiketleri = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Hemen"] = "Hemen",
+            ["Bugun"] = "Bugün",
+            ["BuHafta"] = "Bu hafta",
+            ["Bakimda"] = "Bakımda",
+            ["Takip"] = "Takip"
+        };
+
+        public static string AciliyetEtiketi(string ham)
+        {
+            if (string.IsNullOrWhiteSpace(ham))
+            {
+                return null;
+            }
+
+            return AciliyetEtiketleri.TryGetValue(ham.Trim(), out var etiket) ? etiket : ham.Trim();
+        }
+
+        public static string AciliyetleriCevir(string metin)
+        {
+            if (string.IsNullOrWhiteSpace(metin))
+            {
+                return metin;
+            }
+
+            return AciliyetDeseni.Replace(metin, eslesme =>
+                eslesme.Value.Substring(0, eslesme.Value.Length - eslesme.Groups[1].Value.Length)
+                + AciliyetEtiketi(eslesme.Groups[1].Value));
+        }
+
         public static string Aciliyet(string metin)
+
         {
             if (string.IsNullOrWhiteSpace(metin))
             {
@@ -63,7 +95,7 @@ namespace Garajim.RehberUretici
 
             var eslesme = AciliyetDeseni.Match(metin);
 
-            return eslesme.Success ? eslesme.Groups[1].Value : null;
+            return eslesme.Success ? AciliyetEtiketi(eslesme.Groups[1].Value) : null;
         }
 
         public static string IlkCumle(string metin)
