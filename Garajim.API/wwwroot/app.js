@@ -4289,7 +4289,9 @@
     function loadDavet() {
         return api("/api/Davet").then(function (result) {
             var durum = (result && result.data) || {};
-            el("davet-kod").textContent = durum.paylasimBaglantisi\n                ? mutlakAdres(durum.paylasimBaglantisi)\n                : (durum.kod || "");
+            el("davet-kod").textContent = durum.paylasimBaglantisi
+                ? mutlakAdres(durum.paylasimBaglantisi)
+                : (durum.kod || "");
             el("davet-ozet").textContent = durum.davetSayisi + " davet · " + durum.kazanilanAracHakki + "/" + durum.ekAracUstSiniri
                 + " kazanılan araç hakkı · toplam limit " + durum.aracLimiti + " araç"
                 + (durum.davetEden ? " · sizi " + durum.davetEden + " davet etti" : "");
