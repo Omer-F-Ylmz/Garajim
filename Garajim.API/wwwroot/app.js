@@ -3125,19 +3125,36 @@
     }
 
     function hasarTutanagiAc(dosyaId) {
+        var pencere = window.open("", "_blank");
+
+        if (!pencere) {
+            showMessage(el("app-message"),
+                "Tarayıcı yeni sekmeyi engelledi. Bu site için açılır pencerelere izin verin.", false);
+            return;
+        }
+
+        pencere.document.write("<!DOCTYPE html><html lang=\"tr\"><head><meta charset=\"utf-8\">" +
+            "<title>Tutanak</title></head><body>Tutanak hazırlanıyor…</body></html>");
+
         fetch("/api/Hasar/" + dosyaId + "/tutanak.html", {
             headers: { Authorization: "Bearer " + state.token }
         }).then(function (response) {
+            if (!response.ok) {
+                throw new Error("Tutanak alınamadı.");
+            }
             return response.text();
         }).then(function (html) {
-            var pencere = window.open("", "_blank");
-            if (!pencere) {
-                showMessage(el("app-message"), "Tarayıcı yeni sekmeyi engelledi.", false);
-                return;
-            }
+            pencere.document.open();
             pencere.document.write(html);
             pencere.document.close();
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
+
+            var dugme = pencere.document.querySelector(".yazdir");
+
+            if (dugme) {
+                dugme.addEventListener("click", function () { pencere.print(); });
+            }
+        }).catch(function (error) {
+            pencere.close();
             handleError(el("app-message"), error);
         });
     }

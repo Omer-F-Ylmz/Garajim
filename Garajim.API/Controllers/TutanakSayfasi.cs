@@ -28,7 +28,7 @@ namespace Garajim.API.Controllers
             sb.AppendLine("@media print{ .yazdir{display:none;} }");
             sb.AppendLine("</style></head><body>");
 
-            sb.AppendLine("<button class=\"yazdir\" type=\"button\" onclick=\"window.print()\">Yazdır</button>");
+            sb.AppendLine("<button class=\"yazdir\" type=\"button\">Yazdır</button>");
             sb.AppendLine($"<h1>Hasar dosyası özeti — {Kacir(dosya.Plaka)}</h1>");
             sb.AppendLine($"<p>Dosya no: {dosya.Id} · Oluşturma: {Tarih(dosya.OlusturmaTarihi)}</p>");
 
