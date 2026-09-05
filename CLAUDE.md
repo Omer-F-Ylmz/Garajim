@@ -219,7 +219,9 @@ dotnet ef migrations add <Ad> -p Garajim.Dal -s Garajim.API
 Kalibrasyon (fiş çıkarım doğruluğu; kimlik yalnız ortam değişkeninden):
 
 ```
-dotnet run --project tools/Garajim.Calibration -- --dir <klasör>
+dotnet run --project tools/Garajim.Calibration -- --dir <klasör> [--bekle <ms>]
 ```
 
 Klasörde fiş görüntüleri ve `cevap-anahtari.csv` bulunur. `GARAJIM_URL`, `GARAJIM_EMAIL` ve `GARAJIM_PASS` ortam değişkenleri zorunludur; şifre argümanla verilmez, repoya yazılmaz. Rapor konsola ve `--dir` içine `kalibrasyon-<tarih>.md` olarak yazılır, bu dosya gitignore'dadır.
+
+`--bekle` fişler arasındaki beklemedir, varsayılan 7000 ms. Fiş başına iki istek (yükle + onayla) gider ve `PahaliUclar` hız sınırı dakikada 20 istektir; beklemesiz koşuda onuncu fişten sonra 429 gelir. Sunucu 429'u iki farklı sebeple döner, araç ikisini gövdeye bakarak ayırır: aylık plan limiti ile hız sınırı.

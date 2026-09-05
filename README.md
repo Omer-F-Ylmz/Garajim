@@ -378,10 +378,10 @@ $env:GARAJIM_URL="https://garajim.runasp.net"; $env:GARAJIM_EMAIL="demo@garajim.
 ```
 
 ```
-dotnet run --project tools/Garajim.Calibration -- --dir <klasör>
+dotnet run --project tools/Garajim.Calibration -- --dir <klasör> [--bekle <ms>]
 ```
 
-Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (tutar ve litre ±0,01, km tam, plaka boşluk ve büyük-küçük duyarsız), sonra doğru değerlerle onaylanır — böylece sunucudaki düzeltme oranı gerçek hatayı yansıtır. Aylık limite takılırsa durur ve o ana kadarki raporu üretir. Rapor konsola ve `--dir` içine `kalibrasyon-<tarih>.md` olarak yazılır; bu dosya gitignore'dadır.
+Her dosya yüklenir, taslak cevap anahtarıyla alan alan karşılaştırılır (tutar ve litre ±0,01, km tam, plaka boşluk ve büyük-küçük duyarsız), sonra doğru değerlerle onaylanır — böylece sunucudaki düzeltme oranı gerçek hatayı yansıtır. `--bekle` fişler arasında beklenecek süredir (varsayılan 7000 ms); fiş başına iki istek gittiği ve hız sınırı dakikada 20 istek olduğu için beklemesiz koşu onuncu fişte kesilir. 429 gelince araç gövdeye bakıp aylık limit mi hız sınırı mı olduğunu söyler, durur ve o ana kadarki raporu üretir. Rapor konsola ve `--dir` içine `kalibrasyon-<tarih>.md` olarak yazılır; bu dosya gitignore'dadır.
 
 ## Uç Noktalar
 

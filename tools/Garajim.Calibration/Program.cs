@@ -3,11 +3,13 @@ using Garajim.Calibration;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-var klasor = ArgumanOku(args, "--dir");
+var klasor = Ayarlar.ArgumanOku(args, "--dir");
+var bekleme = Ayarlar.BeklemeOku(args);
 if (string.IsNullOrWhiteSpace(klasor) || !Directory.Exists(klasor))
 {
-    Console.WriteLine("Kullanım: Garajim.Calibration --dir <klasör>");
+    Console.WriteLine("Kullanım: Garajim.Calibration --dir <klasör> [--bekle <ms>]");
     Console.WriteLine("Klasörde *.jpg dosyaları ve cevap-anahtari.csv bulunmalıdır.");
+    Console.WriteLine($"--bekle fişler arasında beklenecek süredir; varsayılan {Ayarlar.VarsayilanBeklemeMs} ms.");
     return 1;
 }
 
@@ -30,6 +32,7 @@ if (!File.Exists(anahtarYolu))
 
 var beklenenler = CevapAnahtari.Oku(anahtarYolu);
 Console.WriteLine($"{beklenenler.Count} satırlık cevap anahtarı okundu.");
+Console.WriteLine($"Fişler arasında {bekleme} ms beklenecek (hız sınırı: dakikada 20 istek, fiş başına 2 istek).");
 
 using var http = new HttpClient { BaseAddress = new Uri(adres), Timeout = TimeSpan.FromSeconds(120) };
 var istemci = new GarajimIstemci(http);
@@ -50,6 +53,11 @@ var sira = 0;
 
 foreach (var beklenen in beklenenler)
 {
+    if (sira > 0 && bekleme > 0)
+    {
+        await Task.Delay(bekleme);
+    }
+
     sira++;
     var dosyaYolu = Path.Combine(klasor, beklenen.Dosya);
     var sonuc = new DosyaSonucu { Dosya = beklenen.Dosya, Zorluk = beklenen.Zorluk, Tur = beklenen.Tur };
@@ -107,7 +115,7 @@ foreach (var beklenen in beklenenler)
     catch (LimitAsildiException ex)
     {
         Console.WriteLine();
-        Console.WriteLine("DURDURULDU: " + ex.Message);
+        Console.WriteLine((ex.AylikLimit ? "DURDURULDU (aylık limit): " : "DURDURULDU (hız sınırı): ") + ex.Message);
         Console.WriteLine($"{sira - 1} dosya işlendi, rapor bu kadarıyla üretiliyor.");
         break;
     }
@@ -184,17 +192,4 @@ static void Karsilastir(DosyaSonucu sonuc, string alan, bool esit, string beklen
     {
         sonuc.Farklar.Add($"{alan}: beklenen '{beklenen ?? "yok"}' → gelen '{gelen ?? "yok"}'");
     }
-}
-
-static string ArgumanOku(string[] args, string ad)
-{
-    for (var i = 0; i < args.Length - 1; i++)
-    {
-        if (args[i] == ad)
-        {
-            return args[i + 1];
-        }
-    }
-
-    return null;
 }

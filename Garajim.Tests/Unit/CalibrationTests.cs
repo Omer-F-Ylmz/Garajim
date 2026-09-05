@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Garajim.Business.Constants;
 using Garajim.Calibration;
 
 namespace Garajim.Tests.Unit
@@ -128,6 +129,7 @@ namespace Garajim.Tests.Unit
         {
             public List<string> Yollar { get; } = new List<string>();
             public HttpStatusCode YuklemeDurumu { get; set; } = HttpStatusCode.OK;
+            public string YuklemeHataGovdesi { get; set; } = "{\"data\":null,\"success\":false,\"message\":\"limit\"}";
 
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
@@ -146,7 +148,7 @@ namespace Garajim.Tests.Unit
                     durum = YuklemeDurumu;
                     govde = durum == HttpStatusCode.OK
                         ? "{\"data\":{\"taslakId\":7,\"durum\":\"Bekliyor\",\"taslak\":{\"id\":7,\"tarih\":\"2026-08-15T00:00:00\",\"toplamTutar\":1484.36,\"km\":123456,\"plaka\":\"34ABC123\",\"litre\":32.50,\"tahminiTur\":\"Yakit\",\"guvenSkoru\":0.9,\"sureMs\":120}},\"success\":true}"
-                        : "{\"data\":null,\"success\":false,\"message\":\"limit\"}";
+                        : YuklemeHataGovdesi;
                 }
                 else if (yol.EndsWith("/confirm"))
                 {
@@ -181,14 +183,94 @@ namespace Garajim.Tests.Unit
             Assert.Contains("POST /api/Receipts/7/confirm", handler.Yollar);
         }
 
-        [Fact]
-        public async Task LimitAsimindaIstisnaFirlatilir()
+        private static async Task<LimitAsildiException> YuzYirmiDokuzAsync(string govde)
         {
-            var handler = new SahteHandler { YuklemeDurumu = HttpStatusCode.TooManyRequests };
+            var handler = new SahteHandler
+            {
+                YuklemeDurumu = HttpStatusCode.TooManyRequests,
+                YuklemeHataGovdesi = govde
+            };
             var istemci = new GarajimIstemci(new HttpClient(handler) { BaseAddress = new Uri("http://sahte.local") });
             await istemci.GirisYapAsync("a@b.c", "sifre");
 
-            await Assert.ThrowsAsync<LimitAsildiException>(() => istemci.FisYukleAsync(new byte[] { 1 }, "fis.jpg"));
+            return await Assert.ThrowsAsync<LimitAsildiException>(
+                () => istemci.FisYukleAsync(new byte[] { 1 }, "fis.jpg"));
+        }
+
+        [Fact]
+        public async Task HizSiniriAylikLimitDiyeEtiketlenmez()
+        {
+            var hata = await YuzYirmiDokuzAsync(
+                "{\"data\":null,\"success\":false,\"message\":\"" + Messages.TooManyRequests + "\"}");
+
+            Assert.False(hata.AylikLimit);
+            Assert.Contains("Hız sınırı", hata.Message);
+            Assert.DoesNotContain("Aylık", hata.Message);
+        }
+
+        [Fact]
+        public async Task AylikLimitYalnizGovdeOyleDiyorsaEtiketlenir()
+        {
+            var hata = await YuzYirmiDokuzAsync(
+                "{\"data\":null,\"success\":false,\"message\":\"" + Messages.ReceiptMonthlyLimitExceeded + "\"}");
+
+            Assert.True(hata.AylikLimit);
+            Assert.Contains("Aylık", hata.Message);
+        }
+
+        [Fact]
+        public async Task GovdeOkunamazsaHizSinirinaDuser()
+        {
+            var hata = await YuzYirmiDokuzAsync(string.Empty);
+
+            Assert.False(hata.AylikLimit);
+        }
+
+        [Fact]
+        public void AylikLimitIziSunucudakiMesajlaAyniKalir()
+        {
+            Assert.Contains(GarajimIstemci.AylikLimitIzi, Messages.ReceiptMonthlyLimitExceeded);
+            Assert.DoesNotContain(GarajimIstemci.AylikLimitIzi, Messages.TooManyRequests);
+        }
+
+        [Fact]
+        public void BeklemeVarsayilaniYediSaniye()
+        {
+            Assert.Equal(7000, Ayarlar.VarsayilanBeklemeMs);
+            Assert.Equal(7000, Ayarlar.BeklemeOku(new string[0]));
+        }
+
+        [Theory]
+        [InlineData("1500", 1500)]
+        [InlineData("0", 0)]
+        public void BeklemeArgumanlaAyarlanir(string deger, int beklenen)
+        {
+            Assert.Equal(beklenen, Ayarlar.BeklemeOku(new[] { "--dir", "x", "--bekle", deger }));
+        }
+
+        [Theory]
+        [InlineData("abc")]
+        [InlineData("-5")]
+        [InlineData("")]
+        public void BozukBeklemeVarsayilanaDoner(string deger)
+        {
+            Assert.Equal(Ayarlar.VarsayilanBeklemeMs, Ayarlar.BeklemeOku(new[] { "--bekle", deger }));
+        }
+
+        [Fact]
+        public void ProgramBeklemeyiFisArasindaUygular()
+        {
+            var kok = new DirectoryInfo(AppContext.BaseDirectory);
+            while (kok != null && !File.Exists(Path.Combine(kok.FullName, "Garajim.sln")))
+            {
+                kok = kok.Parent;
+            }
+
+            Assert.NotNull(kok);
+            var kaynak = File.ReadAllText(Path.Combine(kok.FullName, "tools", "Garajim.Calibration", "Program.cs"));
+
+            Assert.Contains("Ayarlar.BeklemeOku(args)", kaynak);
+            Assert.Contains("Task.Delay(bekleme)", kaynak);
         }
     }
 }

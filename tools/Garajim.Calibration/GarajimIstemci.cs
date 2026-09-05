@@ -7,9 +7,12 @@ namespace Garajim.Calibration
 {
     public class LimitAsildiException : Exception
     {
-        public LimitAsildiException(string mesaj) : base(mesaj)
+        public LimitAsildiException(string mesaj, bool aylikLimit) : base(mesaj)
         {
+            AylikLimit = aylikLimit;
         }
+
+        public bool AylikLimit { get; }
     }
 
     public class TaslakOzeti
@@ -39,6 +42,13 @@ namespace Garajim.Calibration
         public GarajimIstemci(HttpClient client)
         {
             _client = client;
+        }
+
+        public const string AylikLimitIzi = "limitiniz doldu";
+
+        public static bool AylikLimitMi(string govde)
+        {
+            return govde != null && govde.Contains(AylikLimitIzi, StringComparison.OrdinalIgnoreCase);
         }
 
         public async Task GirisYapAsync(string eposta, string sifre)
@@ -77,7 +87,13 @@ namespace Garajim.Calibration
 
             if (cevap.StatusCode == HttpStatusCode.TooManyRequests)
             {
-                throw new LimitAsildiException("Aylık fiş okuma limiti aşıldı, kalibrasyon durduruldu.");
+                var aylik = AylikLimitMi(metin);
+
+                throw new LimitAsildiException(
+                    aylik
+                        ? "Aylık fiş okuma limiti doldu, kalibrasyon durduruldu."
+                        : "Hız sınırına takıldı; --bekle değerini artırıp kalan dosyalarla devam edin.",
+                    aylik);
             }
 
             if (!cevap.IsSuccessStatusCode)
