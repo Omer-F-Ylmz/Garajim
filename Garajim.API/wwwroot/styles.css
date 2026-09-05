@@ -1719,3 +1719,7 @@ button.compact {
     gap: 10px;
     align-items: center;
 }
+
+body.kaza-modal-acik {
+    overflow: hidden;
+}

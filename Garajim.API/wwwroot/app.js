@@ -11,6 +11,7 @@
         selectedVehicleId: null,
         kazaRehberi: null,
         kazaDosyaId: null,
+        kazaTetikleyici: null,
         dogrulanacakEposta: null,
         dogrulaSayac: null,
         duzenlenenAracId: null,
@@ -2750,7 +2751,11 @@
     }
 
     function kazaRehberiniAc() {
+        state.kazaTetikleyici = document.activeElement;
         el("kaza-modal").classList.remove("hidden");
+        document.body.classList.add("kaza-modal-acik");
+        document.addEventListener("keydown", kazaModaliKlavye);
+        el("kaza-kapat").focus();
         showMessage(el("kaza-durum"), "");
         state.kazaDosyaId = null;
         acilKartiCiz();
@@ -2778,7 +2783,66 @@
         });
     }
 
+    function kazaModaliKapat() {
+        el("kaza-modal").classList.add("hidden");
+        document.body.classList.remove("kaza-modal-acik");
+        document.removeEventListener("keydown", kazaModaliKlavye);
+
+        var tetikleyici = state.kazaTetikleyici;
+        state.kazaTetikleyici = null;
+
+        if (tetikleyici && typeof tetikleyici.focus === "function" && !tetikleyici.classList.contains("hidden")) {
+            tetikleyici.focus();
+            return;
+        }
+
+        var acilis = el("kaza-ani");
+
+        if (acilis) {
+            acilis.focus();
+        }
+    }
+
+    function kazaModaliKlavye(olay) {
+        if (el("kaza-modal").classList.contains("hidden")) {
+            return;
+        }
+
+        if (olay.key === "Escape") {
+            olay.preventDefault();
+            kazaModaliKapat();
+            return;
+        }
+
+        if (olay.key !== "Tab") {
+            return;
+        }
+
+        var odaklanabilir = Array.prototype.filter.call(
+            el("kaza-modal").querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), select, textarea"),
+            function (oge) { return oge.offsetParent !== null; });
+
+        if (odaklanabilir.length === 0) {
+            return;
+        }
+
+        var ilk = odaklanabilir[0];
+        var son = odaklanabilir[odaklanabilir.length - 1];
+
+        if (olay.shiftKey && document.activeElement === ilk) {
+            olay.preventDefault();
+            son.focus();
+            return;
+        }
+
+        if (!olay.shiftKey && document.activeElement === son) {
+            olay.preventDefault();
+            ilk.focus();
+        }
+    }
+
     function kazaDosyasiAc() {
+
         if (!state.selectedVehicleId) {
             showMessage(el("kaza-durum"), "Önce bir araç seçin.", false);
             return;
@@ -2862,9 +2926,7 @@
             });
         }
 
-        el("kaza-kapat").addEventListener("click", function () {
-            el("kaza-modal").classList.add("hidden");
-        });
+        el("kaza-kapat").addEventListener("click", kazaModaliKapat);
 
         el("kaza-modal").addEventListener("click", function (event) {
             if (event.target === el("kaza-modal")) {
