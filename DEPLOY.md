@@ -131,7 +131,18 @@ Yeni panel değişkeni **yok**. Dikkat edilecek iki nokta:
 - **Build çıktısı**: `wwwroot/rehber/` (393 sayfa + `index.json`) ve `wwwroot/sitemap.xml` artık üretilen dosyalardır ve repoda yoktur. Publish bunları `UretilenleriYayinaEkle` hedefiyle taşır; `SkipExtraFilesOnServer=true` ile yayınlarken sunucuda eski sayfa kalabilir, bu zararsızdır — kayıt silindiğinde sayfası sunucuda kalır ama sitemap'ten düşer. Kayıt silinip sayfası da kalkacaksa o publish'i `SkipExtraFilesOnServer` olmadan yapın.
 - Yayın sonrası `https://garajim.runasp.net/rehber/`, `/sitemap.xml` ve örnek bir konu sayfası 200 dönmelidir.
 
+### KUSURSUZ-1 ile gelen değişiklik
+
+**Yeni zorunlu panel değişkeni: `App__BaseUrl`.** Değer boşsa `ProductionConfigurationGuard` uygulamayı başlatmaz. Karne, davet ve takvim bağlantıları ile hatırlatma e-postaları mutlak adresi buradan üretir.
+
+```
+App__BaseUrl=https://garajim.runasp.net
+```
+
+Migration yok. Yayın sonrası bakılacaklar: karne bağlantısı `https://` ile başlıyor mu, `/rehber/` açılıyor mu, raporlarda elektrikli araç kWh gösteriyor mu.
+
 ## 3. Publish (IISProfile)
+
 
 
 Profil bugün `SkipExtraFilesOnServer=false` ile çalışıyor; yani **"hedefteki fazla dosyaları sil" açık**. Bu ayarla MSDeploy, pakette olmayan her şeyi sunucudan siler — yüklenmiş belgeler dahil.

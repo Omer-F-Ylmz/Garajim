@@ -2,6 +2,25 @@
 
 Garajım'ın sürüm geçmişi. En yeni sürüm en üstte.
 
+## Kusursuzlaştırma turu — 6 Eylül 2026
+
+- Kaza anı artık sağ altta yuvarlak düğme; üst çubukla çakışması bitti.
+- Karne, davet ve takvim bağlantıları ile QR kodu tam adres taşıyor.
+- Hasar dosyasında "Vazgeç" artık yarım kalan kaydı siliyor.
+- Tutanak çıktısındaki "Yazdır" düğmesi çalışıyor.
+- Fiş ve fotoğraf seçerken galeriden dosya ya da PDF seçilebiliyor.
+- İçe aktarmada tam dolum sütunu tanınıyor; kısmi dolumlar artık yanlış kaydedilmiyor.
+- Yakıt istatistiği kendi içinde tutarlı; elektrikli araçta kWh gösteriyor.
+- Süresi geçmiş evrak satırı aktif olandan ayırt ediliyor.
+- Arşivdeki araç filo karşılaştırmasında ve hatırlatmalarda görünmüyor.
+- Raporlar sekmesi açılınca ve araç değişince kendini yeniliyor.
+- Boş parça satırı artık kaydedilmiyor; parça ve hasar tutarında virgül kabul ediliyor.
+- Arşivleme, kalıcı silme ve lastik sökümü uygulama içi pencerede yapılıyor.
+- Yüzde, tarih ve litre biçimleri Türkçe kurallarına uyuyor.
+- Devre dışı düğmeler soluk görünüyor, kaydederken "Kaydediliyor…" yazıyor.
+- Sekmeler ok tuşlarıyla gezilebiliyor, ekran okuyucuya kendini doğru tanıtıyor.
+- Uygulama ilk açılışta 72 KB daha az indiriyor; grafik kitaplığı rapor açılınca yükleniyor.
+
 ## Rehber — 5 Eylül 2026
 
 - Rehber açıldı: 393 sayfalık, girişsiz açılan bilgi bölümü — araç belirtileri, OBD arıza kodları, bakım aralıkları, TÜVTÜRK muayenesi ve Türkiye kuralları.

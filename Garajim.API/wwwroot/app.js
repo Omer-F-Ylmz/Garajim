@@ -2996,7 +2996,7 @@
     }
 
     function kazaRehberiniAc() {
-        state.kazaTetikleyici = document.activeElement;
+        state.kazaTetikleyici = document.activeElement === document.body ? null : document.activeElement;
         el("kaza-modal").classList.remove("hidden");
         document.body.classList.add("kaza-modal-acik");
         document.addEventListener("keydown", kazaModaliKlavye);

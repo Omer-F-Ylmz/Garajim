@@ -14,7 +14,9 @@ Katmanlar: Core → Entity → Dal → Business → API. Entity'ler flat, naviga
 
 Kodda yorum satırı yazma. Her görevin sonunda dotnet build al, varsa testleri çalıştır, anlamlı Türkçe commit at. dotnet build almadan önce çalışan API sürecini durdur.
 
-SPA'da `innerHTML` kullanma; metin `textContent`, düğüm `document.createElement` ile kurulur.
+SPA'da `innerHTML` kullanma; metin `textContent`, düğüm `document.createElement` ile kurulur. `window.prompt`/`window.alert` de kullanılmaz; girdi gerekiyorsa `girdiSor` modali çağrılır.
+
+Paylaşılan her adres mutlak olmalıdır: sunucu `App:BaseUrl` ile üretir, SPA `mutlakAdres` ile `location.origin` yedeğini uygular. `App__BaseUrl` üretimde boşsa uygulama açılmaz.
 
 Yeni entity eklerken: `CompanyId` alanı, `HasQueryFilter`, `CompanyId` üzerinde indeks ve şirket izolasyonu testi zorunludur. Denormalize edilmiş alan (örn. `YolculukKaydi.MesafeKm`, `LastikSeti.ToplamKm`) varsa değişmezi hem veritabanı check constraint'i hem de test ile sabitlenir.
 
@@ -126,7 +128,20 @@ Değerler kullanıcıdan geldiği için uzunluğa kırpılır ve `UygunsuzIfadeF
 
 `FisDogrulugu` payda olarak yalnız onaylanmış, elle onaylanmış ve `GuvenSkoru > 0` olan taslakları alır. Çıkarımın hiç çalışmadığı taslaklar (model adı yanlışken üretilen boş kayıtlar) güven 0 ile durur ve ölçüme girmez; `CikarimHatasi` veritabanına yazılmadığı için ayıraç güven skorudur. Yönetim kartı oranın yanında ölçülen fiş sayısını da gösterir, böylece küçük paydalı oran yanıltmaz.
 
+### Betikler sözdizimi bekçisinden geçer
+
+`wwwroot/*.js` dosyalarının hepsi `BetikSozdizimiTests` ile taranır: dizge dışında kaçış karakteri, kapanmamış dizge, kapanmamış yorum ve dengesiz parantez testi düşürür. Tarayıcı dizge, şablon dizgesi, düzenli ifade ve yorumları ayırt eder.
+
+Bu bekçi bir kez gerçek bir kaza yaşandığı için var: betik üreten bir düzenleme `\n` kaçışını dosyaya düz metin yazdı, SPA tamamen açılmaz oldu ve **metin eşleyen testlerin hiçbiri bunu görmedi**. Metin arayan test (`Assert.Contains`) bozuk dosyada da geçer; sözdizimi ancak ayrıştırılarak doğrulanır.
+
+### Yakıt istatistiği ölçülen segmenti raporlar
+
+`fuel-stats` kartlarının beşi de aynı kümeden gelir: yalnız ardışık tam dolumlar arasındaki ölçülen segment. `TotalLiters` ve `TotalCost` bütün kayıtların toplamı **değildir**; km başına maliyet ölçülen segmentten hesaplandığı için toplamlarla karıştırılırsa üç sayı birbirini tutmaz. Arayüz de bunu "Ölçülen mesafe / Ölçülen yakıt / Ölçülen tutar" diye adlandırır.
+
+Elektrikli araçta `Elektrikli` bayrağı açılır, `TotalKwh` ve `AverageKwhPer100Km` dolar, litre alanları sıfır kalır; arayüz litre yerine kWh gösterir.
+
 ### Kimlik akışları
+
 
 
 Kayıt e-posta doğrulamasından geçer: `RegisterAsync` token değil `DogrulamaGerekli` döner, JWT ancak `dogrula` ucundan çıkar. Kod 6 hane, veritabanında yalnız SHA-256 özeti tutulur, 10 dakika geçerlidir, 5 yanlış denemede yanar; gönderim 60 saniyede bir ve saatte beş ile sınırlıdır. `kod-gonder` ve `sifre-sifirla-kod` hesap olsun olmasın **aynı 200 ve aynı metni** döner.
