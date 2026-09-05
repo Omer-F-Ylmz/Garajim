@@ -170,3 +170,17 @@ h1 {
         display: none;
     }
 }
+
+.acil-tel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: var(--accent, #ff7a1a);
+    color: #1a1005;
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+}

@@ -29,6 +29,7 @@
         var dd = document.createElement("dd");
         var link = document.createElement("a");
         link.href = "tel:" + numara.replace(/\s/g, "");
+        link.className = "acil-tel";
         link.textContent = numara;
         dd.appendChild(link);
         liste.appendChild(dd);
