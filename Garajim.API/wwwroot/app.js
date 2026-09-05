@@ -3310,7 +3310,58 @@
     ];
 
 
+    var REHBER_KARTLARI = [
+        ["Motor arıza lambası yanıyor", "/rehber/belirti/sari-motor-ariza-lambasi-sabit-yaniyor-arac-normal-gidiyor.html"],
+        ["P0420 arıza kodu", "/rehber/obd/p0420-ariza-kodu-nedir-anlami-nedenleri-aciliyet.html"],
+        ["Fiat Egea 1.4 bakım aralıkları", "/rehber/bakim/"],
+        ["Muayeneden kalma nedenleri", "/rehber/muayene/"],
+        ["Kış lastiği zorunluluğu", "/rehber/turkiye/"],
+        ["TÜVTÜRK kontrol listesi", "/rehber/muayene/"]
+    ];
+
+    function rehberKartlariniCiz() {
+        var liste = el("tanitim-rehber-kartlar");
+
+        if (!liste) {
+            return;
+        }
+
+        clear(liste);
+
+        REHBER_KARTLARI.forEach(function (kart) {
+            var madde = document.createElement("li");
+            var baglanti = document.createElement("a");
+
+            baglanti.className = "tanitim-kart tanitim-rehber-kart";
+            baglanti.href = kart[1];
+            baglanti.appendChild(make("h3", kart[0]));
+
+            madde.appendChild(baglanti);
+            liste.appendChild(madde);
+        });
+    }
+
+    function rehberBaglantisi(kap, metin, adres) {
+        if (!kap || kap.querySelector(".rehber-link")) {
+            return;
+        }
+
+        var baglanti = make("a", metin, "rehber-link");
+        baglanti.href = adres;
+        baglanti.target = "_blank";
+        baglanti.rel = "noopener";
+
+        kap.appendChild(baglanti);
+    }
+
+    function rehberBaglantilariniKur() {
+        rehberBaglantisi(el("evrak-form"), "Rehber: muayene kuralları", "/rehber/muayene/");
+        rehberBaglantisi(el("panel-lastik"), "Rehber: kış lastiği zorunluluğu", "/rehber/turkiye/");
+        rehberBaglantisi(el("panel-parca"), "Rehber: bakım aralıkları", "/rehber/bakim/");
+    }
+
     function tanitimKartlariniCiz() {
+
         var liste = el("tanitim-kartlar");
         if (!liste) {
             return;
@@ -6083,6 +6134,8 @@
         bindLastik();
         bindKaza();
         bindTanitim();
+        rehberKartlariniCiz();
+        rehberBaglantilariniKur();
         turBagla();
         bindGeriBildirim();
         bindProfil();
