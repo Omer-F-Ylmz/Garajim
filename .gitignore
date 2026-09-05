@@ -42,3 +42,6 @@ Garajim.API/wwwroot/yenilikler.json
 ## Kalibrasyon ciktilari (repoya girmez)
 kalibrasyon-*.md
 cevap-anahtari.csv
+
+Garajim.API/wwwroot/rehber/
+Garajim.API/wwwroot/sitemap.xml

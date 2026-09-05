@@ -7,6 +7,7 @@ COPY Garajim.Dal/Garajim.Dal.csproj Garajim.Dal/
 COPY Garajim.Business/Garajim.Business.csproj Garajim.Business/
 COPY Garajim.ML/Garajim.ML.csproj Garajim.ML/
 COPY Garajim.API/Garajim.API.csproj Garajim.API/
+COPY tools/Garajim.RehberUretici/Garajim.RehberUretici.csproj tools/Garajim.RehberUretici/
 COPY CHANGELOG.md ./
 RUN dotnet restore Garajim.API/Garajim.API.csproj -r linux-x64
 
@@ -16,6 +17,7 @@ COPY Garajim.Dal/ Garajim.Dal/
 COPY Garajim.Business/ Garajim.Business/
 COPY Garajim.ML/ Garajim.ML/
 COPY Garajim.API/ Garajim.API/
+COPY tools/Garajim.RehberUretici/ tools/Garajim.RehberUretici/
 RUN dotnet publish Garajim.API/Garajim.API.csproj -c Release -r linux-x64 --no-restore -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime

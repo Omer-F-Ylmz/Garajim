@@ -28,6 +28,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\tools\Garajim.RehberUretici\Garajim.RehberUretici.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>RehberUreticiCikti</OutputItemType>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\rehber\**" />
+    <Content Remove="wwwroot\sitemap.xml" />
+    <Content Remove="wwwroot\yenilikler.json" />
+    <None Remove="wwwroot\rehber\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Garajim.Business\Garajim.Business.csproj" />
     <ProjectReference Include="..\Garajim.ML\Garajim.ML.csproj" />
   </ItemGroup>
@@ -116,4 +130,21 @@
     <YenilikleriUret Kaynak="$(MSBuildProjectDirectory)/../CHANGELOG.md" Hedef="$(MSBuildProjectDirectory)/wwwroot/yenilikler.json" />
   </Target>
 
+  <Target Name="RehberiUret" AfterTargets="Build">
+    <Exec Command="dotnet &quot;%(RehberUreticiCikti.FullPath)&quot; --bilgi &quot;$(MSBuildProjectDirectory)/../Garajim.Business/Usta/Bilgi&quot; --cikti &quot;$(MSBuildProjectDirectory)/wwwroot/rehber&quot; --sitemap &quot;$(MSBuildProjectDirectory)/wwwroot/sitemap.xml&quot;" />
+  </Target>
+
+  <Target Name="UretilenleriYayinaEkle" AfterTargets="ComputeFilesToPublish" DependsOnTargets="RehberiUret">
+    <ItemGroup>
+      <UretilenVarlik Include="$(MSBuildProjectDirectory)/wwwroot/rehber/**/*" />
+      <UretilenVarlik Include="$(MSBuildProjectDirectory)/wwwroot/sitemap.xml" />
+      <UretilenVarlik Include="$(MSBuildProjectDirectory)/wwwroot/yenilikler.json" />
+      <ResolvedFileToPublish Include="@(UretilenVarlik)">
+        <RelativePath>wwwroot/$([MSBuild]::MakeRelative('$(MSBuildProjectDirectory)/wwwroot/', '%(FullPath)'))</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>
+
