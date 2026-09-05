@@ -5104,14 +5104,15 @@
         { key: "birimfiyat", label: "Birim fiyat" },
         { key: "kategori", label: "Kategori" },
         { key: "aciklama", label: "Açıklama" },
-        { key: "servis", label: "Servis" }
+        { key: "servis", label: "Servis" },
+        { key: "tamdolum", label: "Tam dolum" }
     ];
 
     var importDurum = { onizleme: null, hatalar: [] };
 
     function importAlanlari(kayitTuru) {
         if (kayitTuru === "Yakit") {
-            return ["tarih", "km", "litre", "tutar", "birimfiyat"];
+            return ["tarih", "km", "litre", "tutar", "birimfiyat", "tamdolum"];
         }
         if (kayitTuru === "Bakim") {
             return ["tarih", "km", "tutar", "servis", "aciklama"];
