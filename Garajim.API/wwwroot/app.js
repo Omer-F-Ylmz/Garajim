@@ -6227,10 +6227,41 @@
         }
     }
 
+    function sekmeKlavye(olay) {
+        if (olay.key !== "ArrowRight" && olay.key !== "ArrowLeft") {
+            return;
+        }
+
+        var gorunur = Array.prototype.filter.call(
+            document.querySelectorAll(".tab-btn"),
+            function (d) { return !d.classList.contains("hidden"); });
+
+        var simdiki = gorunur.indexOf(document.activeElement);
+
+        if (simdiki < 0) {
+            return;
+        }
+
+        olay.preventDefault();
+
+        var sonraki = olay.key === "ArrowRight"
+            ? (simdiki + 1) % gorunur.length
+            : (simdiki - 1 + gorunur.length) % gorunur.length;
+
+        gorunur[sonraki].focus();
+        selectTab(gorunur[sonraki].getAttribute("data-tab"));
+    }
+
     function selectTab(tab) {
         var buttons = document.querySelectorAll(".tab-btn");
         Array.prototype.forEach.call(buttons, function (button) {
-            button.classList.toggle("active", button.getAttribute("data-tab") === tab);
+            var secili = button.getAttribute("data-tab") === tab;
+            button.classList.toggle("active", secili);
+            button.setAttribute("aria-selected", secili ? "true" : "false");
+
+            if (secili && typeof button.scrollIntoView === "function") {
+                button.scrollIntoView({ block: "nearest", inline: "nearest" });
+            }
         });
         var panels = document.querySelectorAll(".tab-panel");
         Array.prototype.forEach.call(panels, function (panel) {
@@ -6242,6 +6273,12 @@
     }
 
     function bindTabs() {
+        var serit = document.querySelector(".tabs");
+
+        if (serit) {
+            serit.addEventListener("keydown", sekmeKlavye);
+        }
+
         var buttons = document.querySelectorAll(".tab-btn");
         Array.prototype.forEach.call(buttons, function (button) {
             button.addEventListener("click", function () {
