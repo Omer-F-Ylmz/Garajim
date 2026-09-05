@@ -1804,3 +1804,11 @@ input[type="checkbox"] {
 #karne-form .onay-alan {
     min-height: 40px;
 }
+
+.girdi-kutu {
+    max-width: 420px;
+}
+
+.girdi-kutu .form-actions {
+    margin-bottom: 0;
+}

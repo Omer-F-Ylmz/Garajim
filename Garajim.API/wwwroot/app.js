@@ -311,9 +311,24 @@
         }
     }
 
+    var mesajSayaclari = {};
+
     function showMessage(node, text, isOk) {
         node.textContent = text || "";
         node.className = isOk ? "message ok" : "message";
+
+        if (node.id) {
+            window.clearTimeout(mesajSayaclari[node.id]);
+
+            if (text) {
+                mesajSayaclari[node.id] = window.setTimeout(function () {
+                    if (node.textContent === text) {
+                        node.textContent = "";
+                        node.className = "message";
+                    }
+                }, isOk ? 6000 : 12000);
+            }
+        }
 
         if (text && node.id === "app-message" && typeof node.scrollIntoView === "function") {
             node.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -707,7 +722,11 @@
     }
 
     function iosMu() {
-        return /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+            return true;
+        }
+
+        return /macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
     }
 
     function iosSeridiniDegerlendir() {
@@ -746,7 +765,7 @@
             }
 
             state.pwaIstemi = olay;
-            pwaSeridiniAc("Garajım'ı telefonuna kurabilirsin.", true);
+            pwaSeridiniAc("Garajım'ı cihazına uygulama olarak kurabilirsin.", true);
         });
 
         window.addEventListener("appinstalled", function () {
@@ -1334,7 +1353,7 @@
     function openDocuments(recordId) {
         state.documentRecordId = recordId;
         el("document-box").classList.remove("hidden");
-        el("document-title").textContent = "Bakım kaydı #" + recordId + " belgeleri";
+        el("document-title").textContent = "Bakım kaydı belgeleri";
         el("document-form").reset();
         loadDocuments();
     }
@@ -1553,7 +1572,10 @@
                 var tarihHucre = make("td", formatDate(item.date));
                 if (item.supheliKm) {
                     var rozet = make("span", "şüpheli", "rozet-supheli");
-                    rozet.title = "Bu aralıkta hesaplanan tüketim beklenen sınırların dışında; ortalamaya katılmıyor.";
+                    var supheliAciklama = "Bu aralıkta hesaplanan tüketim beklenen sınırların dışında; ortalamaya katılmıyor.";
+                    rozet.title = supheliAciklama;
+                    rozet.setAttribute("aria-label", supheliAciklama);
+                    rozet.tabIndex = 0;
                     tarihHucre.appendChild(rozet);
                 }
                 if (!item.tamDolum) {
@@ -2227,9 +2249,71 @@
         });
     }
 
+    function girdiSor(baslik, aciklama, alan) {
+        return new Promise(function (cozumle) {
+            var katman = el("girdi-modal");
+            var form = el("girdi-form");
+            var kutu = el("girdi-deger");
+            var secim = el("girdi-secim");
+
+            el("girdi-baslik").textContent = baslik;
+            el("girdi-aciklama").textContent = aciklama || "";
+
+            var secenekliMi = !!(alan && alan.secenekler);
+
+            secim.classList.toggle("hidden", !secenekliMi);
+            kutu.classList.toggle("hidden", secenekliMi);
+
+            if (secenekliMi) {
+                fillSelect(secim, alan.secenekler);
+                secim.value = alan.varsayilan || alan.secenekler[0][0];
+            } else {
+                kutu.type = "text";
+                kutu.inputMode = alan && alan.sayisal ? "decimal" : "text";
+                kutu.value = (alan && alan.varsayilan) || "";
+                kutu.placeholder = (alan && alan.ipucu) || "";
+            }
+
+            katman.classList.remove("hidden");
+            document.body.classList.add("kaza-modal-acik");
+            (secenekliMi ? secim : kutu).focus();
+
+            function kapat(sonuc) {
+                katman.classList.add("hidden");
+                document.body.classList.remove("kaza-modal-acik");
+                form.removeEventListener("submit", gonder);
+                el("girdi-vazgec").removeEventListener("click", vazgec);
+                document.removeEventListener("keydown", klavye);
+                cozumle(sonuc);
+            }
+
+            function gonder(olay) {
+                olay.preventDefault();
+                kapat(secenekliMi ? secim.value : kutu.value);
+            }
+
+            function vazgec() {
+                kapat(null);
+            }
+
+            function klavye(olay) {
+                if (olay.key === "Escape") {
+                    olay.preventDefault();
+                    kapat(null);
+                }
+            }
+
+            form.addEventListener("submit", gonder);
+            el("girdi-vazgec").addEventListener("click", vazgec);
+            document.addEventListener("keydown", klavye);
+        });
+    }
+
     function araciKaliciSil(arac) {
-        var yazilan = window.prompt(
-            "Bu araç ve tüm kayıtları kalıcı olarak silinecek. Onaylamak için plakayı yazın: " + arac.plate);
+
+        girdiSor("Aracı kalıcı sil",
+            "Bu araç ve tüm kayıtları kalıcı olarak silinecek. Onaylamak için plakayı yazın: " + arac.plate,
+            { ipucu: arac.plate }).then(function (yazilan) {
 
         if (yazilan === null) {
             return;
@@ -2247,6 +2331,8 @@
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("arsiv-mesaj"), error);
         });
+
+        });
     }
 
     function arsivSecenegiIleArsivle() {
@@ -2255,22 +2341,21 @@
             return;
         }
 
-        var neden = window.prompt(
-            arac.plate + " arşive alınacak. Neden? (satildi / hurda / diger)", "satildi");
+        girdiSor(arac.plate + " arşive alınacak", "Arşivleme nedenini seçin.", {
+            secenekler: [["Satildi", "Satıldı"], ["Hurda", "Hurda"], ["Diger", "Diğer"]],
+            varsayilan: "Satildi"
+        }).then(function (secilen) {
+            if (secilen === null) {
+                return;
+            }
 
-        if (neden === null) {
-            return;
-        }
-
-        var esleme = { satildi: "Satildi", hurda: "Hurda", diger: "Diger" };
-        var secilen = esleme[neden.trim().toLowerCase()] || "Diger";
-
-        api("/api/Vehicles/" + arac.id + "/arsiv", { method: "POST", body: { neden: secilen } })
-            .then(function () {
-                showMessage(el("app-message"), arac.plate + " arşive alındı.", true);
-                loadVehicles();
-            })
-            .catch(function (error) { handleError(el("app-message"), error); });
+            api("/api/Vehicles/" + arac.id + "/arsiv", { method: "POST", body: { neden: secilen } })
+                .then(function () {
+                    showMessage(el("app-message"), arac.plate + " arşive alındı.", true);
+                    loadVehicles();
+                })
+                .catch(function (error) { handleError(el("app-message"), error); });
+        });
     }
 
     var KM_BAYATLIK_GUNU = 60;
@@ -2533,23 +2618,33 @@
     function lastikSok(set) {
         var arac = seciliArac();
         var varsayilanKm = arac ? arac.currentKm : set.takilmaKm;
-        var girilen = window.prompt("Sökülme kilometresi", String(varsayilanKm));
-        if (girilen === null) {
-            return;
-        }
+        girdiSor("Lastik setini sök", "Sökülme kilometresini girin.",
+            { sayisal: true, varsayilan: String(varsayilanKm) }).then(function (girilen) {
 
-        clearMessages();
-        api("/api/Lastik/" + set.id + "/sok", {
-            method: "PUT",
-            body: {
-                sokulmeTarihi: todayInput(),
-                sokulmeKm: Number(girilen)
+            if (girilen === null) {
+                return;
             }
-        }).then(function (result) {
-            showMessage(el("app-message"), (result && result.message) || "Set söküldü.", true);
-            loadLastik();
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
+
+            var kmDegeri = sayiOku(girilen);
+
+            if (isNaN(kmDegeri)) {
+                showMessage(el("app-message"), "Kilometre sayı olmalı.", false);
+                return;
+            }
+
+            clearMessages();
+            api("/api/Lastik/" + set.id + "/sok", {
+                method: "PUT",
+                body: {
+                    sokulmeTarihi: todayInput(),
+                    sokulmeKm: Math.round(kmDegeri)
+                }
+            }).then(function (result) {
+                showMessage(el("app-message"), (result && result.message) || "Set söküldü.", true);
+                loadLastik();
+            }).catch(function (error) {
+                handleError(el("app-message"), error);
+            });
         });
     }
 
@@ -2936,7 +3031,7 @@
     function bindKaza() {
         el("kaza-ani").addEventListener("click", kazaRehberiniAc);
 
-        window.addEventListener("online", function () { kuyrugoBosalt(); });
+        window.addEventListener("online", function () { kuyrugoBosalt().then(kuyrukRozetiniGuncelle); });
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.addEventListener("message", function (event) {
@@ -3858,6 +3953,18 @@
                 if (event.key === "Backspace" && !kutu.value && sira > 0) {
                     kutular[sira - 1].focus();
                 }
+            });
+
+            kutu.addEventListener("paste", function (event) {
+                event.preventDefault();
+
+                var metin = String((event.clipboardData || window.clipboardData).getData("text") || "")
+                    .replace(/\D/g, "").slice(0, 6);
+
+                kutular.forEach(function (hedef, i) { hedef.value = metin.charAt(i) || ""; });
+
+                var sonrakiBos = metin.length < 6 ? metin.length : 5;
+                kutular[sonrakiBos].focus();
             });
         });
 
@@ -5891,7 +5998,7 @@
             }
             clearMessages();
             api("/api/Receipts/" + state.receiptDraft.id + "/reject", { method: "POST" }).then(function (result) {
-                showMessage(el("app-message"), (result && result.message) || "Taslak silindi.", true);
+                showMessage(el("app-message"), (result && result.message) || "Fiş taslağı reddedildi.", true);
                 hideReceiptReview();
                 loadPendingReceipts();
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {

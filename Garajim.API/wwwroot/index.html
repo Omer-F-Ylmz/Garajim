@@ -198,7 +198,7 @@
                 <label for="register-email">E-posta</label>
                 <input id="register-email" type="email" autocomplete="username" required>
                 <label for="register-password">Şifre</label>
-                <input id="register-password" type="password" autocomplete="new-password" required>
+                <input id="register-password" type="password" autocomplete="new-password" minlength="6" required>
                 <small class="hint">En az 6 karakter.</small>
                 <label for="register-company">Şirket adı</label>
                 <input id="register-company" type="text" autocomplete="organization">
@@ -352,7 +352,7 @@
             <p class="hint">Birden fazla fişi bir kerede seçin; sırayla okunur.</p>
             <form id="bulk-form" class="inline-form">
                 <input id="bulk-files" type="file" accept="image/*,.pdf" multiple required>
-                <label class="switch-label"><input id="bulk-auto" type="checkbox" checked> Otomatik onayla</label>
+                <label class="switch-label"><input id="bulk-auto" type="checkbox"> Otomatik onayla</label>
                 <button type="submit" class="primary">Toplu oku</button>
             </form>
             <p id="bulk-progress" class="hint hidden"></p>
@@ -491,7 +491,8 @@
                 </div>
                 <div>
                     <label for="sifre-yeni">Yeni şifre</label>
-                    <input id="sifre-yeni" type="password" autocomplete="new-password" required>
+                    <input id="sifre-yeni" type="password" autocomplete="new-password" minlength="6" required>
+                    <small class="hint">En az 6 karakter.</small>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="primary">Şifreyi değiştir</button>
@@ -1523,7 +1524,23 @@
         </div>
     </div>
 
+    <div id="girdi-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="girdi-baslik">
+        <div class="kaza-kutu girdi-kutu">
+            <h2 id="girdi-baslik"></h2>
+            <p id="girdi-aciklama" class="hint"></p>
+            <form id="girdi-form">
+                <input id="girdi-deger" type="text" autocomplete="off">
+                <select id="girdi-secim" class="hidden"></select>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Tamam</button>
+                    <button id="girdi-vazgec" type="button" class="ghost">Vazgeç</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="kaza-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="kaza-baslik">
+
         <div class="kaza-kutu">
             <div class="kaza-ust">
                 <h2 id="kaza-baslik">Kaza anı</h2>
