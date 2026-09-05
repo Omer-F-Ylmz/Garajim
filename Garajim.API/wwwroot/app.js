@@ -145,7 +145,22 @@
     var wholeFormat = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
     var literFormat = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+    function mutlakAdres(adres) {
+        var deger = String(adres || "").trim();
+
+        if (deger.length === 0) {
+            return "";
+        }
+
+        if (/^https?:\/\//i.test(deger)) {
+            return deger;
+        }
+
+        return window.location.origin + (deger.charAt(0) === "/" ? deger : "/" + deger);
+    }
+
     function el(id) {
+
         return document.getElementById(id);
     }
 
@@ -3940,7 +3955,7 @@
     function loadDavet() {
         return api("/api/Davet").then(function (result) {
             var durum = (result && result.data) || {};
-            el("davet-kod").textContent = durum.paylasimBaglantisi || durum.kod || "";
+            el("davet-kod").textContent = durum.paylasimBaglantisi\n                ? mutlakAdres(durum.paylasimBaglantisi)\n                : (durum.kod || "");
             el("davet-ozet").textContent = durum.davetSayisi + " davet · " + durum.kazanilanAracHakki + "/" + durum.ekAracUstSiniri
                 + " kazanılan araç hakkı · toplam limit " + durum.aracLimiti + " araç"
                 + (durum.davetEden ? " · sizi " + durum.davetEden + " davet etti" : "");
@@ -5394,7 +5409,7 @@
             api("/api/Takvim/abonelik", { method: "POST" }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Abonelik oluşturuldu.", true);
                 el("takvim-sonuc").classList.remove("hidden");
-                el("takvim-url").textContent = result.data.url;
+                el("takvim-url").textContent = mutlakAdres(result.data.url);
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
             });
@@ -5450,7 +5465,7 @@
         clear(el("karne-bos"));
 
         el("karne-sonuc").classList.remove("hidden");
-        el("karne-url").textContent = veri.url;
+        el("karne-url").textContent = mutlakAdres(veri.url);
         el("karne-goruntulenme").textContent = "Görüntülenme: " + (veri.goruntulenmeSayisi || 0);
 
         var acilKutu = el("karne-acil-sonuc");
@@ -5467,7 +5482,7 @@
         }
 
         try {
-            window.GarajimQR.canvasaCiz(el("karne-qr"), veri.url, 4, 2);
+            window.GarajimQR.canvasaCiz(el("karne-qr"), mutlakAdres(veri.url), 4, 2);
         } catch (hata) {
             el("karne-qr").classList.add("hidden");
         }

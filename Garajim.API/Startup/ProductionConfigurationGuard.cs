@@ -35,7 +35,13 @@ namespace Garajim.API.Startup
             var connectionString = configuration.GetConnectionString("Default");
             var jwtKey = configuration["Jwt:Key"];
 
+            if (Eksik(configuration["App:BaseUrl"]))
+            {
+                hatalar.Add("App:BaseUrl tanımlı değil. Karne, davet ve takvim bağlantıları ile hatırlatma e-postaları mutlak adres üretemez; App__BaseUrl ortam değişkenini sitenin adresiyle tanımlayın.");
+            }
+
             if (Eksik(connectionString))
+
             {
                 hatalar.Add("ConnectionStrings:Default tanımlı değil. Sunucuda ConnectionStrings__Default ortam değişkenini uzak MSSQL bağlantı cümlesiyle tanımlayın.");
             }

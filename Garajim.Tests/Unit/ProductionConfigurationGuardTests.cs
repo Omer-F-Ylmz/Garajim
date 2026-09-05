@@ -22,7 +22,8 @@ namespace Garajim.Tests.Unit
             var degerler = new Dictionary<string, string>
             {
                 ["ConnectionStrings:Default"] = baglanti,
-                ["Jwt:Key"] = anahtar
+                ["Jwt:Key"] = anahtar,
+                ["App:BaseUrl"] = "https://garajim.runasp.net"
             };
 
             if (smtp)
