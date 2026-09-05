@@ -1818,13 +1818,41 @@
     function loadMonthly() {
         return api("/api/Reports/monthly?vehicleId=" + state.selectedVehicleId).then(function (result) {
             var rows = (result && result.data) || [];
-            drawChart(rows);
+            grafikKitapligi().then(function () { drawChart(rows); }).catch(function () { });
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
         });
     }
 
+    var grafikSozu = null;
+
+    function grafikKitapligi() {
+        if (window.Chart) {
+            return Promise.resolve(window.Chart);
+        }
+
+        if (grafikSozu) {
+            return grafikSozu;
+        }
+
+        grafikSozu = new Promise(function (cozumle, reddet) {
+            var etiket = document.createElement("script");
+            etiket.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+            etiket.defer = true;
+            etiket.addEventListener("load", function () { cozumle(window.Chart); });
+            etiket.addEventListener("error", function () {
+                grafikSozu = null;
+                reddet(new Error("Grafik kitaplığı yüklenemedi."));
+            });
+
+            document.head.appendChild(etiket);
+        });
+
+        return grafikSozu;
+    }
+
     function drawChart(rows) {
+
         var fallback = el("chart-fallback");
         var canvas = el("monthly-chart");
 
@@ -1897,8 +1925,10 @@
                 cards.appendChild(card("Sahiplik maliyeti", money(data.sahiplikMaliyeti), true));
             }
 
-            drawMaliyetChart(data.aylikSeri || []);
-            drawTuketimChart(data.tuketimSeri || []);
+            grafikKitapligi().then(function () {
+                drawMaliyetChart(data.aylikSeri || []);
+                drawTuketimChart(data.tuketimSeri || []);
+            }).catch(function () { });
         }).catch(function (error) {
             clear(cards);
             cards.appendChild(card("Maliyet", error && error.message ? error.message : "Hesaplanamadı."));
@@ -3549,7 +3579,7 @@
                 });
             }
 
-            drawDegerChart(kayitlar);
+            grafikKitapligi().then(function () { drawDegerChart(kayitlar); }).catch(function () { });
         }).catch(function (error) {
             clear(cards);
             cards.appendChild(card("Değer", error && error.message ? error.message : "Alınamadı."));
