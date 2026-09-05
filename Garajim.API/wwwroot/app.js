@@ -1113,6 +1113,7 @@
         } else if (tab === "hatirlatma") {
             loadReminders();
         } else if (tab === "rapor") {
+            loadSummary();
             loadFuelStats();
             loadMonthly();
             loadMaliyet();
