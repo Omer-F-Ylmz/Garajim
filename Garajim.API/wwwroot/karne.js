@@ -12,6 +12,7 @@
 
     var moneyFormat = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     var wholeFormat = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
+    var literFormat = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     function el(id) {
         return document.getElementById(id);
@@ -124,7 +125,7 @@
             el("yakit-bolumu").classList.remove("hidden");
             var yakit = el("yakit-bilgi");
             bilgiEkle(yakit, "Dolum sayısı", karne.yakitOzeti.kayitSayisi);
-            bilgiEkle(yakit, "Toplam litre", wholeFormat.format(karne.yakitOzeti.toplamLitre) + " L");
+            bilgiEkle(yakit, "Toplam litre", literFormat.format(karne.yakitOzeti.toplamLitre) + " L");
             if (karne.yakitOzeti.toplamTutar !== null && karne.yakitOzeti.toplamTutar !== undefined) {
                 bilgiEkle(yakit, "Toplam tutar", money(karne.yakitOzeti.toplamTutar));
             }

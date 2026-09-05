@@ -66,7 +66,31 @@
         return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: basamak || 0 }).format(deger || 0);
     }
 
+    var TUR_ADI = {
+        Hata: "Hata",
+        Oneri: "Öneri",
+        Diger: "Diğer"
+    };
+
+    function yuzde(deger, basamak) {
+        return "%" + new Intl.NumberFormat("tr-TR", {
+            minimumFractionDigits: basamak || 0,
+            maximumFractionDigits: basamak || 0
+        }).format(Number(deger) || 0);
+    }
+
+    function tarihMetni(gun) {
+        var parcalar = String(gun || "").split("-");
+
+        if (parcalar.length !== 3) {
+            return String(gun || "-");
+        }
+
+        return parcalar[2] + "." + parcalar[1] + "." + parcalar[0];
+    }
+
     function kart(etiket, deger) {
+
         var kutu = make("div", null, "card");
         kutu.appendChild(make("span", etiket, "card-label"));
         kutu.appendChild(make("strong", deger, "card-value"));
@@ -82,10 +106,10 @@
             ["Kullanıcı", sayi(veri.kullaniciSayisi)],
             ["Araç", sayi(veri.aracSayisi)],
             ["Fiş", sayi(veri.fisSayisi)],
-            ["Fiş doğruluğu", sayi(veri.fisDogrulukOrani, 1) + " % (" + sayi(veri.fisDogrulukOlculen) + " fiş)"],
-            ["Oto onay", sayi(veri.otoOnayOrani, 1) + " %"],
-            ["Karne paylaşımı", sayi(veri.karnePaylasimOrani, 1) + " %"],
-            ["Davet → kayıt", sayi(veri.davetKayitOrani, 1) + " %"],
+            ["Fiş doğruluğu", yuzde(veri.fisDogrulukOrani, 1) + " (" + sayi(veri.fisDogrulukOlculen) + " fiş)"],
+            ["Oto onay", yuzde(veri.otoOnayOrani, 1)],
+            ["Karne paylaşımı", yuzde(veri.karnePaylasimOrani, 1)],
+            ["Davet → kayıt", yuzde(veri.davetKayitOrani, 1)],
             ["AI token (ay)", sayi(veri.aiTokenKullanilan)],
             ["AI maliyet", "$" + sayi(veri.aiTahminiMaliyetUsd, 4)],
             ["Kota hatası", sayi(veri.kotaHatasi)],
@@ -124,7 +148,7 @@
         liste.forEach(function (satir) {
             kap.appendChild(kart(
                 KAYNAK_ADI[satir.kaynak] || satir.kaynak,
-                sayi(satir.sayi) + " · %" + sayi(satir.oran, 1)));
+                sayi(satir.sayi) + " · " + yuzde(satir.oran, 1)));
         });
     }
 
@@ -135,7 +159,7 @@
 
         (seri || []).slice().reverse().forEach(function (gun) {
             var satir = document.createElement("tr");
-            satir.appendChild(make("td", gun.gun));
+            satir.appendChild(make("td", tarihMetni(gun.gun)));
             satir.appendChild(make("td", sayi(gun.sirket)));
             satir.appendChild(make("td", sayi(gun.kullanici)));
             satir.appendChild(make("td", sayi(gun.rehberden)));
@@ -156,7 +180,7 @@
             var satir = document.createElement("li");
             var tarih = new Date(kayit.tarih).toLocaleDateString("tr-TR");
 
-            satir.appendChild(make("span", tarih + " · " + kayit.tur + " · " + (kayit.kullaniciAdi || "-") +
+            satir.appendChild(make("span", tarih + " · " + (TUR_ADI[kayit.tur] || kayit.tur) + " · " + (kayit.kullaniciAdi || "-") +
                 " · " + (kayit.sayfa || "-") + " · " + (kayit.surum || "-")));
             satir.appendChild(make("p", kayit.mesaj));
 

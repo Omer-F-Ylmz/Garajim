@@ -235,7 +235,27 @@
         return sayiOku(el(id).value);
     }
 
+    function yuzde(deger, basamak) {
+        var sayi = Number(deger);
+
+        if (!isFinite(sayi)) {
+            sayi = 0;
+        }
+
+        return "%" + new Intl.NumberFormat("tr-TR", {
+            minimumFractionDigits: basamak || 0,
+            maximumFractionDigits: basamak || 0
+        }).format(sayi);
+    }
+
+    var ARSIV_NEDENLERI = {
+        Satildi: "Satıldı",
+        Hurda: "Hurda",
+        Diger: "Diğer"
+    };
+
     function money(value) {
+
         var number = Number(value);
         if (!isFinite(number)) {
             return "-";
@@ -2013,7 +2033,7 @@
             cards.appendChild(card("Toplam mesafe", km(ozet.toplamKm), true));
             cards.appendChild(card("İş", km(ozet.isKm)));
             cards.appendChild(card("Özel", km(ozet.ozelKm)));
-            cards.appendChild(card("İş oranı", (Number(ozet.isOrani) || 0) + " %", true));
+            cards.appendChild(card("İş oranı", yuzde(ozet.isOrani, 1), true));
             cards.appendChild(card("Yolculuk", String(ozet.yolculukSayisi || 0)));
         }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);
@@ -2178,7 +2198,7 @@
                 var tr = document.createElement("tr");
                 tr.appendChild(make("td", arac.plate));
                 tr.appendChild(make("td", arac.brand + " " + arac.model));
-                tr.appendChild(make("td", arac.arsivNedeni || "-"));
+                tr.appendChild(make("td", ARSIV_NEDENLERI[arac.arsivNedeni] || arac.arsivNedeni || "-"));
                 tr.appendChild(make("td", formatDate(arac.arsivTarihi)));
 
                 var islem = document.createElement("td");
