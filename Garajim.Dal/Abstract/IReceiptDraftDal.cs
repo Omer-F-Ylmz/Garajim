@@ -1,5 +1,7 @@
 using Garajim.Core.DataAccess;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
+using Garajim.Entity.Enums;
 
 namespace Garajim.Dal.Abstract
 {
@@ -7,5 +9,6 @@ namespace Garajim.Dal.Abstract
     {
         Task<int> GetMonthlyCountAsync(DateTime ayBasi);
         Task<int> BekleyenSayisiAsync();
+        Task<SayfaliSonuc<ReceiptDraft>> SayfaAsync(ReceiptDraftStatus? durum, int? surucuKullaniciId, List<int> erisilebilirAracIdler, ListeSorgusu sorgu, SiralamaSonucu siralama);
     }
 }

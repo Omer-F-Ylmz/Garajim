@@ -22,8 +22,18 @@ namespace Garajim.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetList([FromQuery] ReceiptDraftStatus? durum)
+        public async Task<IActionResult> GetList([FromQuery] ReceiptDraftStatus? durum, [FromQuery] ListeSorgusu sorgu)
         {
+            if (sorgu != null && sorgu.ZarfIster)
+            {
+                var sayfali = await _receiptService.GetSayfaAsync(CurrentUserId, durum, sorgu);
+
+                if (!sayfali.Success)
+                    return sayfali.Message == Messages.SiralamaGecersiz ? BadRequest(sayfali) : NotFound(sayfali);
+
+                return Ok(sayfali);
+            }
+
             var result = await _receiptService.GetListAsync(CurrentUserId, durum);
             if (!result.Success)
                 return NotFound(result);

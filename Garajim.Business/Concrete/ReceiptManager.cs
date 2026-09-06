@@ -73,6 +73,30 @@ namespace Garajim.Business.Concrete
             _logger = logger;
         }
 
+        public static readonly string[] SiralamaAlanlari = { "tarih", "tutar", "guven" };
+
+        public async Task<IDataResult<SayfaliSonuc<ReceiptDraftDto>>> GetSayfaAsync(int userId, ReceiptDraftStatus? durum, ListeSorgusu sorgu)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<SayfaliSonuc<ReceiptDraftDto>>(Messages.UserNotFound);
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<ReceiptDraftDto>>(Messages.SiralamaGecersiz);
+
+            var surucu = user.Role == CompanyRole.Driver;
+            var erisilebilir = surucu
+                ? (await _vehicleAccess.GetAccessibleListAsync(userId)).Select(v => v.Id).ToList()
+                : new List<int>();
+
+            var sayfa = await _draftDal.SayfaAsync(durum, surucu ? userId : null, erisilebilir, sorgu, siralama);
+            var liste = sayfa.Kayitlar.Select(MapToDto).ToList();
+
+            return new SuccessDataResult<SayfaliSonuc<ReceiptDraftDto>>(
+                new SayfaliSonuc<ReceiptDraftDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<List<ReceiptDraftDto>>> GetListAsync(int userId, ReceiptDraftStatus? durum)
         {
             var user = await _userDal.GetAsync(u => u.Id == userId);

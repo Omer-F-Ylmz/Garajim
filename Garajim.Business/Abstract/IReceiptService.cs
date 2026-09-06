@@ -7,6 +7,7 @@ namespace Garajim.Business.Abstract
     public interface IReceiptService
     {
         Task<IDataResult<List<ReceiptDraftDto>>> GetListAsync(int userId, ReceiptDraftStatus? durum);
+        Task<IDataResult<SayfaliSonuc<ReceiptDraftDto>>> GetSayfaAsync(int userId, ReceiptDraftStatus? durum, ListeSorgusu sorgu);
         Task<IDataResult<ReceiptDraftDto>> GetByIdAsync(int userId, int id);
         Task<IDataResult<ReceiptUploadResultDto>> UploadAsync(int userId, ReceiptUploadDto dto, bool otoOnay);
         Task<IDataResult<ReceiptDraftDto>> ConfirmAsync(int userId, int id, ReceiptConfirmDto dto);
