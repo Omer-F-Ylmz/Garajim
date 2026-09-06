@@ -1535,6 +1535,24 @@
         </div>
     </div>
 
+    <div id="oturum-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="oturum-baslik">
+        <div class="kaza-kutu girdi-kutu">
+            <h2 id="oturum-baslik">Oturumunuz doldu</h2>
+            <p class="hint">Girdikleriniz duruyor. Şifrenizi yazın, kaldığınız yerden devam edin.</p>
+            <form id="oturum-form">
+                <label for="oturum-eposta">E-posta</label>
+                <input id="oturum-eposta" type="email" autocomplete="username" readonly>
+                <label for="oturum-sifre">Şifre</label>
+                <input id="oturum-sifre" type="password" autocomplete="current-password" required>
+                <p id="oturum-mesaj" class="hint"></p>
+                <div class="form-actions">
+                    <button id="oturum-giris" type="submit" class="primary">Giriş yap</button>
+                    <button id="oturum-cikis" type="button" class="ghost">Çıkış yap</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="girdi-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="girdi-baslik">
         <div class="kaza-kutu girdi-kutu">
             <h2 id="girdi-baslik"></h2>

@@ -437,6 +437,231 @@
         return ac;
     }
 
+    var OTURUM_KUYRUK_SINIRI = 3;
+    var TASLAK_ONEKI = "garajim-taslak-";
+    var TASLAK_FORMLARI = ["maintenance-form", "fuel-form", "expense-form", "reminder-form", "evrak-form", "yolculuk-form"];
+
+    var oturumKuyrugu = [];
+    var oturumModaliAcik = false;
+
+    function oturumKuyruguna(path, options) {
+        taslaklariKaydet();
+
+        var yontem = ((options && options.method) || "GET").toUpperCase();
+
+        if (yontem === "GET") {
+            oturumModaliAc();
+            return Promise.reject(new Error("Oturum gerekli."));
+        }
+
+        return new Promise(function (coz, reddet) {
+            while (oturumKuyrugu.length >= OTURUM_KUYRUK_SINIRI) {
+                var dusen = oturumKuyrugu.shift();
+                dusen.reddet(new Error("Oturum gerekli."));
+            }
+
+            oturumKuyrugu.push({ path: path, options: options, coz: coz, reddet: reddet });
+            oturumModaliAc();
+        });
+    }
+
+    function oturumModaliAc() {
+        if (oturumModaliAcik) {
+            return;
+        }
+
+        oturumModaliAcik = true;
+
+        var kutu = el("oturum-modal");
+        if (!kutu) {
+            return;
+        }
+
+        el("oturum-eposta").value = (state.user && state.user.email) || "";
+        el("oturum-sifre").value = "";
+        el("oturum-mesaj").textContent = "";
+
+        kutu.classList.remove("hidden");
+        document.addEventListener("keydown", oturumModaliKlavye);
+        el("oturum-sifre").focus();
+    }
+
+    function oturumModaliKlavye(olay) {
+        if (olay.key === "Escape") {
+            oturumModaliKapat();
+        }
+    }
+
+    function oturumKuyrugunuOynat() {
+        var bekleyen = oturumKuyrugu.slice();
+        oturumKuyrugu = [];
+
+        bekleyen.forEach(function (istek) {
+            api(istek.path, istek.options).then(istek.coz).catch(istek.reddet);
+        });
+    }
+
+    function oturumKuyrugunuBosalt() {
+        var bekleyen = oturumKuyrugu.slice();
+        oturumKuyrugu = [];
+
+        bekleyen.forEach(function (istek) {
+            istek.reddet(new Error("Oturum gerekli."));
+        });
+    }
+
+    function oturumModaliKapat() {
+        var kutu = el("oturum-modal");
+
+        oturumModaliAcik = false;
+        oturumKuyrugunuBosalt();
+
+        if (kutu) {
+            kutu.classList.add("hidden");
+        }
+
+        document.removeEventListener("keydown", oturumModaliKlavye);
+    }
+
+    function taslakAnahtari(formId) {
+        return TASLAK_ONEKI + formId;
+    }
+
+    function taslaklariKaydet() {
+        TASLAK_FORMLARI.forEach(function (formId) {
+            var form = el(formId);
+            if (!form) {
+                return;
+            }
+
+            var degerler = {};
+            var doluMu = false;
+
+            [].forEach.call(form.querySelectorAll("input, select, textarea"), function (alan) {
+                if (!alan.id || alan.type === "password" || alan.type === "file") {
+                    return;
+                }
+
+                var deger = alan.type === "checkbox" ? alan.checked : alan.value;
+
+                if (deger !== "" && deger !== false) {
+                    doluMu = true;
+                }
+
+                degerler[alan.id] = deger;
+            });
+
+            try {
+                if (doluMu) {
+                    sessionStorage.setItem(taslakAnahtari(formId), JSON.stringify(degerler));
+                } else {
+                    sessionStorage.removeItem(taslakAnahtari(formId));
+                }
+            } catch (hata) {
+                return;
+            }
+        });
+    }
+
+    function taslaklariGeriYukle() {
+        TASLAK_FORMLARI.forEach(function (formId) {
+            var form = el(formId);
+            if (!form) {
+                return;
+            }
+
+            var ham = null;
+
+            try {
+                ham = sessionStorage.getItem(taslakAnahtari(formId));
+            } catch (hata) {
+                return;
+            }
+
+            if (!ham) {
+                return;
+            }
+
+            var degerler = null;
+
+            try {
+                degerler = JSON.parse(ham);
+            } catch (hata) {
+                return;
+            }
+
+            Object.keys(degerler || {}).forEach(function (alanId) {
+                var alan = el(alanId);
+                if (!alan) {
+                    return;
+                }
+
+                if (alan.type === "checkbox") {
+                    alan.checked = degerler[alanId] === true;
+                    return;
+                }
+
+                alan.value = degerler[alanId];
+            });
+        });
+    }
+
+    function taslaklariTemizle() {
+        TASLAK_FORMLARI.forEach(function (formId) {
+            try {
+                sessionStorage.removeItem(taslakAnahtari(formId));
+            } catch (hata) {
+                return;
+            }
+        });
+    }
+
+    function bindOturumModali() {
+        var form = el("oturum-form");
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener("submit", function (olay) {
+            olay.preventDefault();
+
+            var eposta = el("oturum-eposta").value;
+            var sifre = el("oturum-sifre").value;
+
+            el("oturum-mesaj").textContent = "Giriş yapılıyor…";
+
+            api("/api/Auth/login", { method: "POST", body: { email: eposta, password: sifre } })
+                .then(function (sonuc) {
+                    var veri = sonuc && sonuc.data;
+
+                    if (!veri || !veri.token) {
+                        el("oturum-mesaj").textContent = "Giriş yapılamadı.";
+                        return;
+                    }
+
+                    saveSession(veri.token, veri);
+
+                    oturumModaliAcik = false;
+                    el("oturum-modal").classList.add("hidden");
+                    document.removeEventListener("keydown", oturumModaliKlavye);
+                    el("oturum-sifre").value = "";
+                    el("oturum-mesaj").textContent = "";
+
+                    taslaklariGeriYukle();
+                    oturumKuyrugunuOynat();
+                })
+                .catch(function (hata) {
+                    el("oturum-mesaj").textContent = (hata && hata.message) || "Giriş yapılamadı.";
+                });
+        });
+
+        el("oturum-cikis").addEventListener("click", function () {
+            oturumModaliKapat();
+            taslaklariTemizle();
+            goToLogin("Oturum süreniz doldu, lütfen tekrar giriş yapın.");
+        });
+    }
+
     function api(path, options) {
         var settings = options || {};
         var headers = { "Accept": "application/json" };
@@ -457,8 +682,7 @@
 
         return fetch(path, init).then(function (response) {
             if (response.status === 401 && !isAuthCall) {
-                goToLogin("Oturum süreniz doldu, lütfen tekrar giriş yapın.");
-                throw new Error("Oturum gerekli.");
+                return oturumKuyruguna(path, options);
             }
             return response.text().then(function (text) {
                 var payload = null;
@@ -7140,6 +7364,7 @@
         bindTabs();
         bindRecordForms();
         bindTeam();
+        bindOturumModali();
         bindAssignment();
         bindDocuments();
         bindReceipts();
