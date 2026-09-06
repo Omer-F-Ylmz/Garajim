@@ -1,6 +1,7 @@
 using Garajim.Core.DataAccess.EntityFramework;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete.Context;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -87,5 +88,29 @@ namespace Garajim.Dal.Concrete
                 .Take(limit)
                 .ToListAsync();
         }
+        public Task<SayfaliSonuc<Reminder>> SayfaAsync(int vehicleId, ListeSorgusu sorgu, SiralamaSonucu siralama)
+        {
+            var sorgulama = Context.Reminders.AsNoTracking().Where(r => r.VehicleId == vehicleId);
+            var metin = TurkceArama.Iceren<Reminder>(sorgu.GecerliQ(), r => r.Note);
+
+            return Sayfalayici.UygulaAsync(sorgulama, sorgu, siralama, r => r.DueDate, metin, Sirala);
+        }
+
+        private static IQueryable<Reminder> Sirala(IQueryable<Reminder> sorgulama, SiralamaSonucu siralama)
+        {
+            return siralama.Alan switch
+            {
+                "km" => siralama.Artan
+                    ? sorgulama.OrderBy(r => r.DueKm).ThenBy(r => r.Id)
+                    : sorgulama.OrderByDescending(r => r.DueKm).ThenByDescending(r => r.Id),
+                "durum" => siralama.Artan
+                    ? sorgulama.OrderBy(r => r.IsCompleted).ThenBy(r => r.Id)
+                    : sorgulama.OrderByDescending(r => r.IsCompleted).ThenByDescending(r => r.Id),
+                _ => siralama.Artan
+                    ? sorgulama.OrderBy(r => r.DueDate).ThenBy(r => r.Id)
+                    : sorgulama.OrderByDescending(r => r.DueDate).ThenByDescending(r => r.Id)
+            };
+        }
     }
 }
+

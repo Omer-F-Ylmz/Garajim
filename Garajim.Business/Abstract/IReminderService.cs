@@ -6,6 +6,7 @@ namespace Garajim.Business.Abstract
     public interface IReminderService
     {
         Task<IDataResult<List<ReminderDto>>> GetListAsync(int userId, int vehicleId);
+        Task<IDataResult<SayfaliSonuc<ReminderDto>>> GetSayfaAsync(int userId, int vehicleId, ListeSorgusu sorgu);
         Task<IDataResult<List<UpcomingReminderDto>>> GetUpcomingAsync(int userId, int days);
         Task<IDataResult<ReminderDto>> AddAsync(int userId, ReminderCreateDto dto);
         Task<IResult> CompleteAsync(int userId, int id);

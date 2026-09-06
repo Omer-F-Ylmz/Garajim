@@ -311,5 +311,64 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task HatirlatmaEkleAsync(HttpClient client, int aracId, int gunSonra, string not)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Reminders", new
+            {
+                vehicleId = aracId,
+                type = "PeriyodikBakim",
+                dueDate = DateTime.UtcNow.Date.AddDays(gunSonra),
+                note = not
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task HatirlatmaParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("hatduz", "34LS1019");
+            await HatirlatmaEkleAsync(client, aracId, 30, "muayene");
+
+            var veri = await VeriAsync(client, "/api/Reminders?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task HatirlatmaAramaVeSayfalamaCalisir()
+        {
+            var (client, aracId) = await HazirlaAsync("hatara", "34LS1020");
+            await HatirlatmaEkleAsync(client, aracId, 10, "Yağ değişimi");
+            await HatirlatmaEkleAsync(client, aracId, 20, "lastik çevirme");
+
+            var veri = await VeriAsync(client, $"/api/Reminders?vehicleId={aracId}&q=YAG");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task HatirlatmaTarihineGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("hatsira", "34LS1021");
+            await HatirlatmaEkleAsync(client, aracId, 40, "uzak");
+            await HatirlatmaEkleAsync(client, aracId, 5, "yakin");
+
+            var veri = await VeriAsync(client, $"/api/Reminders?vehicleId={aracId}&sirala=tarih:asc");
+
+            Assert.Equal("yakin", veri.GetProperty("kayitlar")[0].GetProperty("note").GetString());
+        }
+
+        [Fact]
+        public async Task HatirlatmaGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("hatkotu", "34LS1022");
+
+            var cevap = await client.GetAsync($"/api/Reminders?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }
