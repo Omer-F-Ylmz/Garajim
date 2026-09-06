@@ -102,6 +102,32 @@ Yönetim özeti kiracılar arası okur ama `IgnoreQueryFilters()` **kullanmaz**:
 
 Örnek aracın alt kayıtları DAL'a doğrudan yazılmaz, ilgili servislerden geçer — tüketim bayrağı, evrak durumu ve parça hafızası gerçek kayıtlarla aynı yoldan hesaplansın diye.
 
+### Liste uçları zarfı yalnız istendiğinde döner
+
+Liste uçları (`Maintenance`, `Fuel`, `Expenses`, `Reminders`, `Evrak`, `Hasar`, `Yolculuk`, `Documents`, `Receipts`) iki biçim döndürür. `sayfa`, `boyut`, `q` ya da `sirala` parametrelerinden **biri** geldiğinde `SayfaliSonuc` zarfı (`toplam`, `sayfa`, `boyut`, `kayitlar`) döner; parametresiz istek eski düz `data: []` dizisini korur. Ayıraç `ListeSorgusu.ZarfIster`'dır ve **tarih aralığını içermez**: `baslangic`/`bitis` tek başına zarf açmaz, çünkü yolculuk ucu bu iki parametreyi zaten kullanıyordu ve mevcut SPA çağrısı kırılırdı.
+
+Sıralama alanı her manager'ın `SiralamaAlanlari` dizisinden doğrulanır; listede olmayan alan `Messages.SiralamaGecersiz` ile **400** döner (404 değil). Sayfa boyutu `ListeSorgusu.EnBuyukBoyut` (100) ile sınırlanır.
+
+Arama `TurkceArama.Iceren` ile kurulur: hem aranan terim hem kolon 19 harf çifti üzerinden sadeleştirilip küçültülür, böylece SQL Server ve SQLite'ta aynı sonucu verir ve ifade EF tarafından çevrilebilir kalır. Yeni bir liste ucu eklenirken sayfalama `Sayfalayici.UygulaAsync` üzerinden geçer; sıralama switch'i çağıran DAL'da kalır çünkü kolon tipleri farklıdır.
+
+Sürücü rolünün gördüğü alt küme (evrak, fiş taslağı) **SQL tarafında** süzülür; bellekte süzülürse `toplam` yanlış çıkar.
+
+### Yakıt düzenlemede kilometre komşuluğu
+
+`PUT /api/Fuel/{id}` kilometreyi komşu dolumların arasına hapseder. Komşuluk `(Tarih, Id)` sırasına göre hesaplanır: aynı güne birden çok dolum girildiğinde kaydın kendi sırası esas alınır, yoksa kayıt kendi kendisinin komşusu sayılıp değişmeyen kilometre bile reddedilir. Güncelleme sonrası `SupheliKm` bayrakları yeniden hesaplanır.
+
+### Hatırlatma tekrarı fikir sabitidir
+
+`Reminder.TekrarAy` / `TekrarKm` doluyken hatırlatma tamamlanınca bir sonrakini açar. Üretilen kayıt kaynağını `TekrardanUretenId` ile taşır ve `TekrardanUretilmisMiAsync` bu alana bakar; aynı hatırlatma ikinci kez tamamlansa da ikinci kopya açılmaz.
+
+### Oturum dolunca istek kuyruğu
+
+401 alan **değiştiren** istekler (POST/PUT/DELETE) en fazla üçlük kuyruğa girer, kuyruk dolduğunda en eski düşer; GET istekleri kuyruğa girmez çünkü arayüz onları zaten yeniden çağırır. Modalden giriş yapılınca kuyruk sırayla tekrar oynatılır. Form içerikleri 401 anında `sessionStorage`'a yazılır ve girişten sonra geri yüklenir.
+
+### Belge önizlemesi CSP'yi zorlamaz
+
+`GET /api/Documents/{id}/onizleme` dosyayı `Content-Disposition: inline` ile döner. Arayüz görseli **`data:` URI** olarak gösterir; `blob:` kullanılmaz çünkü `img-src 'self' data:` blob'a izin vermez. PDF gömülmez: `object-src 'none'` ve `X-Frame-Options: DENY` iframe/object yolunu kapatır, modal bunun yerine indirme sunar. CSP'yi gevşetmeden PDF gömmek isteniyorsa karne/takvim gibi imzalı anonim uç tasarlanmalıdır.
+
 ### Sürüm listesi CHANGELOG'dan üretilir
 
 `CHANGELOG.md` tek kaynaktır; `wwwroot/yenilikler.json` build sırasında MSBuild görevi (`DegisiklikGunlugunuCevir`) tarafından üretilir ve gitignore'dadır. Elle düzenlenmez. `## ` başlıkları sürüm, `- ` satırları madde olur. Yeni sürüm çıkarken yalnız CHANGELOG'a başlık eklenir.

@@ -271,6 +271,42 @@ Bakım kaydına parça satırları eklenebilir (tür, açıklama, adet, tutar, m
 
 `GET /api/vehicles/{id}/parca-hafizasi` tür başına son değişim tarihi ve kilometresi, değişim sayısı, toplam tutar ve bir sonraki tahmini değişimi döner. Durum Türkiye servis pratiğine göre tanımlı aralık kataloğundan hesaplanır: **Iyi**, **Yaklasiyor** (kalan ≤ aralığın %10'u ya da ≤ 30 gün), **Gecti**. `POST /api/vehicles/{id}/parca-hafizasi/{parcaTuru}/hatirlatma` tahminden hatırlatma açar.
 
+## Liste uçları: arama, sıralama, sayfalama
+
+Bakım, yakıt, masraf, hatırlatma, evrak, hasar, yolculuk, belge ve fiş taslağı listeleri aynı sorgu sözleşmesini paylaşır:
+
+| Parametre | Anlamı |
+|---|---|
+| `q` | Serbest metin araması (Türkçe karakter ve büyük/küçük harf ayırmaz) |
+| `sirala` | `alan:asc` / `alan:desc`; geçersiz alan **400** döner |
+| `sayfa` | 1'den başlar |
+| `boyut` | Varsayılan 25, en çok 100 |
+| `baslangic` / `bitis` | Tarih aralığı (tek başına biçimi değiştirmez) |
+
+`sayfa`, `boyut`, `q` ya da `sirala` parametrelerinden biri geldiğinde yanıt zarflıdır:
+
+```json
+{ "data": { "toplam": 36, "sayfa": 2, "boyut": 25, "kayitlar": [ ... ] }, "success": true }
+```
+
+Parametresiz istek **eski düz biçimi** (`data: []`) korur; mevcut istemciler ve kalibrasyon aracı kırılmaz.
+
+Sıralama alanları uca göre değişir: bakım `tarih/km/tutar/servis`, yakıt `tarih/km/tutar/litre`, masraf `tarih/tutar/kategori`, hatırlatma `tarih/km/durum`, evrak `tarih/tur/saglayici/durum`, hasar `tarih/durum/bedel`, yolculuk `tarih/mesafe/amac`, belge `tarih/ad/boyut`, fiş taslağı `tarih/tutar/guven`.
+
+## Kayıt düzenleme ve oturum kurtarma
+
+- `PUT /api/Fuel/{id}` ve `PUT /api/Expenses/{id}` kayıtları düzenler. Yakıtta yeni kilometre komşu dolumların arasında kalmalıdır; kural `(tarih, id)` sırasına bakar, güncelleme sonrası şüpheli kilometre bayrakları yeniden hesaplanır.
+- Oturum dolduğunda arayüz çıkış yapmaz: şifre penceresi açılır, yarım kalan **değiştiren** istek (en fazla üç) kuyruğa alınır ve giriş sonrası kendiliğinden tekrar gönderilir. Form içerikleri `sessionStorage`'da saklanıp geri yüklenir.
+- Üst çubuktaki kilometre rozeti güncel km ile tazeliğini gösterir; 30 günden eskiyse vurgulanır, tek tıkla güncellenir (`PUT /api/Vehicles/{id}/km`).
+
+## Tekrarlayan hatırlatma
+
+Hatırlatmaya `tekrarAy` (1-120) ya da `tekrarKm` (1-200.000) verilirse tamamlandığında bir sonraki kendiliğinden açılır: tarih ay eklenerek, kilometre eklenerek hesaplanır. Üretim fikir sabitidir — aynı hatırlatma ikinci kez tamamlansa da ikinci kopya açılmaz.
+
+## Belge önizleme
+
+`GET /api/Documents/{id}/onizleme` görsel ve PDF'i `Content-Disposition: inline` ile döner. Arayüz görselleri pencerede `data:` URI olarak gösterir ve aynı kayda bağlı görseller arasında ileri/geri gezinir. PDF gömülmez (`object-src 'none'`, `X-Frame-Options: DENY`); pencere indirme sunar. `PUT /api/Documents/{id}/bagla` araca yüklenmiş bir belgeyi bakım kaydına bağlar ya da bağı kaldırır.
+
 ## Araç karnesi
 
 Aracın belgeli geçmişi tek bağlantıyla paylaşılır — satışta alıcıya gösterilecek karne.

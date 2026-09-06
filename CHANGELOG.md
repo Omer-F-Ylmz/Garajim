@@ -2,6 +2,19 @@
 
 Garajım'ın sürüm geçmişi. En yeni sürüm en üstte.
 
+## Kullanım turu 1 — 6 Eylül 2026
+
+- Bakım, yakıt, masraf, hatırlatma, evrak ve yolculuk listelerinde arama, tarih aralığı, sıralanabilir başlık ve sayfalama var.
+- Arama Türkçe karakter ayırmıyor: "sisli" yazınca "Şişli" de bulunuyor.
+- Dar ekranda "Daha fazla yükle", geniş ekranda sayfa numarası geliyor; süzgeç seçimleri sekme değişince korunuyor.
+- Yakıt ve masraf kayıtları artık düzenlenebiliyor; yakıtta kilometre komşu dolumların arasında kalmak zorunda.
+- Yakıt düzenlenince şüpheli kilometre işaretleri yeniden hesaplanıyor.
+- Oturum dolduğunda sayfa kaybolmuyor: şifre penceresi açılıyor, giriş yapınca yarım kalan kayıt kendiliğinden tamamlanıyor.
+- Form içerikleri oturum dolarken saklanıyor, girişten sonra geri geliyor.
+- Üst çubukta kilometre rozeti var; tek tıkla güncelleniyor, 30 günden eskiyse vurgulanıyor.
+- Hatırlatmaya tekrar aralığı verilebiliyor; tamamlandığında bir sonraki kendiliğinden açılıyor.
+- Bakım belgeleri pencerede önizlenebiliyor; araca yüklenmiş belge kayda bağlanabiliyor.
+
 ## Kusursuzlaştırma turu — 6 Eylül 2026
 
 - Kaza anı artık sağ altta yuvarlak düğme; üst çubukla çakışması bitti.

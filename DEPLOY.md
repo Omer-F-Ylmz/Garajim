@@ -53,7 +53,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **45** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
+Repoda bugün **48** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -140,6 +140,21 @@ App__BaseUrl=https://garajim.runasp.net
 ```
 
 Migration yok. Yayın sonrası bakılacaklar: karne bağlantısı `https://` ile başlıyor mu, `/rehber/` açılıyor mu, raporlarda elektrikli araç kWh gösteriyor mu.
+
+### KULLANIM-1 ile gelen değişiklik
+
+**Yeni panel değişkeni yok.** Bu turda iki eklemeli migration var:
+
+| Migration | İçerik |
+|---|---|
+| `ListeIndeksleri` | `Documents(VehicleId, CreatedAt)`, `Documents(MaintenanceRecordId)`, `EvrakKayitlari(VehicleId, BitisTarihi)` |
+| `HatirlatmaTekrari` | `Reminders.TekrarAy`, `TekrarKm`, `TekrardanUretenId` + indeks |
+
+İkisi de yalnız `AddColumn` / `CreateIndex` içerir; veri taşımaz.
+
+Yayın sonrası bakılacaklar: bakım listesinde arama kutusu ve sayfa numarası çıkıyor mu, üst çubukta kilometre rozeti görünüyor mu, bakım belgelerinde "Önizle" görseli açıyor mu, hatırlatmaya tekrar aralığı girilebiliyor mu.
+
+**Geriye uyumluluk notu:** liste uçları parametresiz çağrıldığında eski düz `data: []` biçimini korur. Kalibrasyon aracı ve dış istemciler bu yüzden etkilenmez; zarf yalnız `sayfa`/`boyut`/`q`/`sirala` gönderildiğinde döner.
 
 ## 3. Publish (IISProfile)
 
