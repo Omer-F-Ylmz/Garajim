@@ -7,6 +7,7 @@ namespace Garajim.Dal.Abstract
     public interface IYolculukDal : IEntityRepository<YolculukKaydi>
     {
         Task<List<YolculukKaydi>> GetListeAsync(List<int> vehicleIds, DateTime baslangic, DateTime bitis, int limit);
+        Task<SayfaliSonuc<YolculukKaydi>> SayfaAsync(List<int> vehicleIds, ListeSorgusu sorgu, SiralamaSonucu siralama);
         Task<List<AmacToplamDto>> AmacToplamlariAsync(List<int> vehicleIds, DateTime baslangic, DateTime bitis);
     }
 }

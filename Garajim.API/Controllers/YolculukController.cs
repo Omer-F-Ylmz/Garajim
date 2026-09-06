@@ -16,8 +16,18 @@ namespace Garajim.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetList([FromQuery] int? vehicleId, [FromQuery] DateTime? baslangic, [FromQuery] DateTime? bitis)
+        public async Task<IActionResult> GetList([FromQuery] int? vehicleId, [FromQuery] DateTime? baslangic, [FromQuery] DateTime? bitis, [FromQuery] ListeSorgusu sorgu)
         {
+            if (sorgu != null && sorgu.ZarfIster)
+            {
+                var sayfali = await _yolculukService.GetSayfaAsync(CurrentUserId, vehicleId, sorgu);
+
+                if (!sayfali.Success)
+                    return sayfali.Message == Messages.SiralamaGecersiz ? BadRequest(sayfali) : NotFound(sayfali);
+
+                return Ok(sayfali);
+            }
+
             return Sonuc(await _yolculukService.GetListAsync(CurrentUserId, vehicleId, baslangic, bitis));
         }
 

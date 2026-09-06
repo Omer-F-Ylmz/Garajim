@@ -490,5 +490,81 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task YolculukEkleAsync(HttpClient client, int aracId, int gunOnce, int baslangicKm, int bitisKm, string nereye)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Yolculuk", new
+            {
+                vehicleId = aracId,
+                tarih = DateTime.UtcNow.Date.AddDays(-gunOnce),
+                baslangicKm,
+                bitisKm,
+                amac = "Is",
+                nereden = "Kadıköy",
+                nereye
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task YolculukParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("yolduz", "34LS1031");
+            await YolculukEkleAsync(client, aracId, 3, 40000, 40120, "Ankara");
+
+            var veri = await VeriAsync(client, "/api/Yolculuk?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task YolculukTarihAraligiZarfsizCalismayaDevamEder()
+        {
+            var (client, aracId) = await HazirlaAsync("yoltarih", "34LS1032");
+            await YolculukEkleAsync(client, aracId, 40, 40000, 40120, "Eski");
+            await YolculukEkleAsync(client, aracId, 2, 40200, 40260, "Yeni");
+
+            var bas = DateTime.UtcNow.Date.AddDays(-10).ToString("yyyy-MM-dd");
+            var veri = await VeriAsync(client, $"/api/Yolculuk?vehicleId={aracId}&baslangic={bas}");
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task YolculukVarisNoktasindaAranir()
+        {
+            var (client, aracId) = await HazirlaAsync("yolara", "34LS1033");
+            await YolculukEkleAsync(client, aracId, 5, 40000, 40120, "Şişli");
+            await YolculukEkleAsync(client, aracId, 4, 40200, 40260, "Bursa");
+
+            var veri = await VeriAsync(client, $"/api/Yolculuk?vehicleId={aracId}&q=sisli");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task YolculukMesafeyeGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("yolsira", "34LS1034");
+            await YolculukEkleAsync(client, aracId, 5, 40000, 40120, "Uzun");
+            await YolculukEkleAsync(client, aracId, 4, 40200, 40230, "Kisa");
+
+            var veri = await VeriAsync(client, $"/api/Yolculuk?vehicleId={aracId}&sirala=mesafe:asc");
+
+            Assert.Equal("Kisa", veri.GetProperty("kayitlar")[0].GetProperty("nereye").GetString());
+        }
+
+        [Fact]
+        public async Task YolculukGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("yolkotu", "34LS1035");
+
+            var cevap = await client.GetAsync($"/api/Yolculuk?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }

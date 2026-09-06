@@ -43,6 +43,32 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<YolculukDto>>(liste);
         }
 
+        public static readonly string[] SiralamaAlanlari = { "tarih", "mesafe", "amac" };
+
+        public async Task<IDataResult<SayfaliSonuc<YolculukDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu)
+        {
+            var kapsam = await KapsamAsync(userId, vehicleId);
+            if (kapsam.Hata != null)
+                return new ErrorDataResult<SayfaliSonuc<YolculukDto>>(kapsam.Hata);
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<YolculukDto>>(Messages.SiralamaGecersiz);
+
+            if (kapsam.Araclar.Count == 0)
+                return new SuccessDataResult<SayfaliSonuc<YolculukDto>>(
+                    new SayfaliSonuc<YolculukDto>(new List<YolculukDto>(), 0, sorgu.GecerliSayfa(), sorgu.GecerliBoyut()));
+
+            var sayfa = await _yolculukDal.SayfaAsync(kapsam.Araclar.Select(a => a.Id).ToList(), sorgu, siralama);
+            var kullanicilar = await KullanicilarAsync(sayfa.Kayitlar.Select(k => k.UserId));
+            var plakalar = kapsam.Araclar.ToDictionary(a => a.Id, a => a.Plate);
+
+            var liste = sayfa.Kayitlar.Select(k => MapToDto(k, plakalar, kullanicilar)).ToList();
+
+            return new SuccessDataResult<SayfaliSonuc<YolculukDto>>(
+                new SayfaliSonuc<YolculukDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<YolculukOzetDto>> GetOzetAsync(int userId, int? vehicleId, DateTime? baslangic, DateTime? bitis)
         {
             var kapsam = await KapsamAsync(userId, vehicleId);

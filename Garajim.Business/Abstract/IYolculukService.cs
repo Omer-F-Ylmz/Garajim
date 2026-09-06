@@ -6,6 +6,7 @@ namespace Garajim.Business.Abstract
     public interface IYolculukService
     {
         Task<IDataResult<List<YolculukDto>>> GetListAsync(int userId, int? vehicleId, DateTime? baslangic, DateTime? bitis);
+        Task<IDataResult<SayfaliSonuc<YolculukDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu);
         Task<IDataResult<YolculukOzetDto>> GetOzetAsync(int userId, int? vehicleId, DateTime? baslangic, DateTime? bitis);
         Task<IDataResult<YolculukDto>> AddAsync(int userId, YolculukCreateDto dto);
         Task<IResult> UpdateAsync(int userId, int id, YolculukUpdateDto dto);
