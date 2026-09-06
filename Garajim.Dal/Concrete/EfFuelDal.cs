@@ -1,6 +1,7 @@
 using Garajim.Core.DataAccess.EntityFramework;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete.Context;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -106,6 +107,32 @@ namespace Garajim.Dal.Concrete
                 .ThenByDescending(f => f.Id)
                 .Take(limit)
                 .ToListAsync();
+        }
+
+        public Task<SayfaliSonuc<FuelRecord>> SayfaAsync(int vehicleId, ListeSorgusu sorgu, SiralamaSonucu siralama)
+        {
+            var sorgulama = Context.FuelRecords.AsNoTracking().Where(f => f.VehicleId == vehicleId);
+
+            return Sayfalayici.UygulaAsync(sorgulama, sorgu, siralama, f => f.Date, null, Sirala);
+        }
+
+        private static IQueryable<FuelRecord> Sirala(IQueryable<FuelRecord> sorgulama, SiralamaSonucu siralama)
+        {
+            return siralama.Alan switch
+            {
+                "km" => siralama.Artan
+                    ? sorgulama.OrderBy(f => f.Km).ThenBy(f => f.Id)
+                    : sorgulama.OrderByDescending(f => f.Km).ThenByDescending(f => f.Id),
+                "tutar" => siralama.Artan
+                    ? sorgulama.OrderBy(f => f.TotalCost).ThenBy(f => f.Id)
+                    : sorgulama.OrderByDescending(f => f.TotalCost).ThenByDescending(f => f.Id),
+                "litre" => siralama.Artan
+                    ? sorgulama.OrderBy(f => f.Liters).ThenBy(f => f.Id)
+                    : sorgulama.OrderByDescending(f => f.Liters).ThenByDescending(f => f.Id),
+                _ => siralama.Artan
+                    ? sorgulama.OrderBy(f => f.Date).ThenBy(f => f.Id)
+                    : sorgulama.OrderByDescending(f => f.Date).ThenByDescending(f => f.Id)
+            };
         }
     }
 }

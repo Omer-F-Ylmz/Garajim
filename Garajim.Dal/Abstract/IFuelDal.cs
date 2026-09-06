@@ -14,5 +14,6 @@ namespace Garajim.Dal.Abstract
         Task<List<AracYakitOlcumDto>> GetOlcumlerAsync(List<int> vehicleIds, DateTime start, DateTime end);
         Task<List<AracToplamDto>> GetTotalsByVehicleAsync(List<int> vehicleIds, DateTime start, DateTime end);
         Task<List<FuelRecord>> GetRecentAsync(int vehicleId, int limit);
+        Task<SayfaliSonuc<FuelRecord>> SayfaAsync(int vehicleId, ListeSorgusu sorgu, SiralamaSonucu siralama);
     }
 }

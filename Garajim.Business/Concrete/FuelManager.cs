@@ -31,6 +31,25 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<FuelDto>>(list);
         }
 
+        public static readonly string[] SiralamaAlanlari = { "tarih", "km", "tutar", "litre" };
+
+        public async Task<IDataResult<SayfaliSonuc<FuelDto>>> GetSayfaAsync(int userId, int vehicleId, ListeSorgusu sorgu)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<SayfaliSonuc<FuelDto>>(Messages.VehicleNotFound);
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<FuelDto>>(Messages.SiralamaGecersiz);
+
+            var sayfa = await _fuelDal.SayfaAsync(vehicleId, sorgu, siralama);
+            var liste = sayfa.Kayitlar.Select(MapToDto).ToList();
+
+            return new SuccessDataResult<SayfaliSonuc<FuelDto>>(
+                new SayfaliSonuc<FuelDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<FuelDto>> AddAsync(int userId, FuelCreateDto dto)
         {
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);

@@ -183,5 +183,72 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.NotFound, cevap.StatusCode);
         }
+
+        private static async Task YakitEkleAsync(HttpClient client, int aracId, int gunOnce, int km, decimal litre)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Fuel", new
+            {
+                vehicleId = aracId,
+                date = DateTime.UtcNow.Date.AddDays(-gunOnce),
+                liters = litre,
+                totalCost = litre * 45m,
+                km,
+                tamDolum = true
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task YakitParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("yakitduz", "34LS1011");
+            await YakitEkleAsync(client, aracId, 3, 41000, 40m);
+
+            var veri = await VeriAsync(client, "/api/Fuel?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task YakitSayfalamaVeSiralamaCalisir()
+        {
+            var (client, aracId) = await HazirlaAsync("yakitzarf", "34LS1012");
+
+            for (var i = 0; i < 5; i++)
+            {
+                await YakitEkleAsync(client, aracId, 20 - i, 41000 + i * 500, 30m + i);
+            }
+
+            var veri = await VeriAsync(client, $"/api/Fuel?vehicleId={aracId}&sayfa=1&boyut=2&sirala=km:asc");
+
+            Assert.Equal(5, veri.GetProperty("toplam").GetInt32());
+            Assert.Equal(2, veri.GetProperty("kayitlar").GetArrayLength());
+            Assert.Equal(41000, veri.GetProperty("kayitlar")[0].GetProperty("km").GetInt32());
+        }
+
+        [Fact]
+        public async Task YakitTarihAraligiSuzer()
+        {
+            var (client, aracId) = await HazirlaAsync("yakittarih", "34LS1013");
+            await YakitEkleAsync(client, aracId, 40, 41000, 30m);
+            await YakitEkleAsync(client, aracId, 2, 42000, 35m);
+
+            var bas = DateTime.UtcNow.Date.AddDays(-10).ToString("yyyy-MM-dd");
+            var veri = await VeriAsync(client, $"/api/Fuel?vehicleId={aracId}&baslangic={bas}");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task YakitGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("yakitkotu", "34LS1014");
+
+            var cevap = await client.GetAsync($"/api/Fuel?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }
