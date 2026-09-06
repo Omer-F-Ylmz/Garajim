@@ -138,6 +138,8 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(d => d.StoredName).HasMaxLength(100).IsRequired();
                 entity.Property(d => d.ContentType).HasMaxLength(120).IsRequired();
                 entity.HasIndex(d => d.CompanyId);
+                entity.HasIndex(d => new { d.VehicleId, d.CreatedAt });
+                entity.HasIndex(d => d.MaintenanceRecordId);
                 entity.HasIndex(d => d.StoredName).IsUnique();
                 entity.HasOne<Company>().WithMany().HasForeignKey(d => d.CompanyId).OnDelete(DeleteBehavior.Restrict);
             });
@@ -316,6 +318,7 @@ namespace Garajim.Dal.Concrete.Context
                 entity.Property(e => e.Not).HasMaxLength(300);
                 entity.HasIndex(e => new { e.CompanyId, e.BitisTarihi });
                 entity.HasIndex(e => new { e.VehicleId, e.Aktif });
+                entity.HasIndex(e => new { e.VehicleId, e.BitisTarihi });
                 entity.HasIndex(e => new { e.UserId, e.Aktif });
                 entity.HasOne<Company>().WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(e => e.VehicleId).OnDelete(DeleteBehavior.Cascade);
