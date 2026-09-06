@@ -322,6 +322,7 @@
             </div>
             <div class="topbar-right">
                 <select id="vehicle-select" aria-label="Araç seç"></select>
+                <button id="km-rozet" class="km-rozet hidden" type="button" aria-label="Kilometreyi güncelle"></button>
                 <button id="receipt-btn" class="primary compact" type="button">Fiş Yükle <span id="receipt-badge" class="badge-count hidden"></span></button>
                 <button id="add-vehicle-btn" class="ghost hidden" type="button">+ Araç</button>
                 <button id="edit-vehicle-btn" class="ghost hidden" type="button">Düzenle</button>
@@ -1532,6 +1533,22 @@
         <div id="yuzen-eylemler" class="yuzen-eylemler">
             <button id="kaza-ani" class="kaza-ani hidden" type="button" aria-label="Kaza anı — ne yapmalıyım?" title="Kaza anı — ne yapmalıyım?"><span aria-hidden="true">!</span></button>
             <button id="geri-bildirim-btn" class="geri-bildirim-btn" type="button" aria-label="Geri bildirim"><span aria-hidden="true">✉</span><span class="geri-bildirim-metin">Geri bildirim</span></button>
+        </div>
+    </div>
+
+    <div id="km-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="km-modal-baslik">
+        <div class="kaza-kutu girdi-kutu">
+            <h2 id="km-modal-baslik">Kilometreyi güncelle</h2>
+            <p id="km-modal-aciklama" class="hint"></p>
+            <form id="km-modal-form">
+                <label for="km-modal-deger">Güncel kilometre</label>
+                <input id="km-modal-deger" type="number" min="0" inputmode="numeric" required>
+                <p id="km-modal-mesaj" class="hint"></p>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Kaydet</button>
+                    <button id="km-modal-vazgec" type="button" class="ghost">Vazgeç</button>
+                </div>
+            </form>
         </div>
     </div>
 

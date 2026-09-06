@@ -352,6 +352,28 @@ button {
     margin: 0;
 }
 
+.km-rozet {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    min-height: 34px;
+    white-space: nowrap;
+}
+
+.km-rozet.bayat {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.km-rozet[disabled] {
+    cursor: default;
+    opacity: 0.75;
+}
+
 .liste-araclar {
     display: flex;
     flex-wrap: wrap;

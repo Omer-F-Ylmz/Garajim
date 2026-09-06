@@ -662,6 +662,123 @@
         });
     }
 
+    function kmTazelikMetni(sonGuncelleme) {
+        if (!sonGuncelleme) {
+            return "hiç güncellenmedi";
+        }
+
+        var gun = Math.floor((Date.now() - new Date(sonGuncelleme).getTime()) / 86400000);
+
+        if (gun <= 0) {
+            return "bugün";
+        }
+
+        if (gun === 1) {
+            return "dün";
+        }
+
+        return gun + " gün önce";
+    }
+
+    function kmBayatMi(sonGuncelleme) {
+        if (!sonGuncelleme) {
+            return true;
+        }
+
+        return (Date.now() - new Date(sonGuncelleme).getTime()) / 86400000 >= 30;
+    }
+
+    function kmRozetiniTazele() {
+        var rozet = el("km-rozet");
+        if (!rozet) {
+            return;
+        }
+
+        var arac = seciliArac();
+
+        if (!arac) {
+            rozet.classList.add("hidden");
+            return;
+        }
+
+        rozet.classList.remove("hidden");
+        rozet.textContent = km(arac.currentKm) + " · " + kmTazelikMetni(arac.sonKmGuncelleme);
+        rozet.classList.toggle("bayat", kmBayatMi(arac.sonKmGuncelleme));
+
+        var duzenlenebilir = canManage() && !arac.arsivli;
+
+        rozet.disabled = !duzenlenebilir;
+        rozet.title = duzenlenebilir ? "Kilometreyi güncelle" : "Kilometre bilgisi";
+    }
+
+    function kmModaliAc() {
+        var arac = seciliArac();
+        if (!arac || !canManage()) {
+            return;
+        }
+
+        el("km-modal-aciklama").textContent = arac.plate + " · kayıtlı kilometre " + km(arac.currentKm)
+            + " (" + kmTazelikMetni(arac.sonKmGuncelleme) + ")";
+        el("km-modal-deger").value = arac.currentKm;
+        el("km-modal-mesaj").textContent = "";
+
+        el("km-modal").classList.remove("hidden");
+        document.addEventListener("keydown", kmModaliKlavye);
+        el("km-modal-deger").focus();
+    }
+
+    function kmModaliKapat() {
+        el("km-modal").classList.add("hidden");
+        document.removeEventListener("keydown", kmModaliKlavye);
+    }
+
+    function kmModaliKlavye(olay) {
+        if (olay.key === "Escape") {
+            kmModaliKapat();
+        }
+    }
+
+    function kmModaliKaydet() {
+        var arac = seciliArac();
+        if (!arac) {
+            return;
+        }
+
+        var yeni = Number(el("km-modal-deger").value);
+
+        if (!yeni || yeni < arac.currentKm) {
+            el("km-modal-mesaj").textContent = "Kilometre azaltılamaz; kayıtlı değer " + km(arac.currentKm) + ".";
+            return;
+        }
+
+        el("km-modal-mesaj").textContent = "Kaydediliyor…";
+
+        api("/api/Vehicles/" + arac.id + "/km", { method: "PUT", body: { currentKm: yeni } })
+            .then(function (sonuc) {
+                kmModaliKapat();
+                showMessage(el("app-message"), (sonuc && sonuc.message) || "Kilometre güncellendi.", true);
+                return loadVehicles();
+            })
+            .catch(function (hata) {
+                el("km-modal-mesaj").textContent = (hata && hata.message) || "Kilometre güncellenemedi.";
+            });
+    }
+
+    function bindKmRozeti() {
+        var rozet = el("km-rozet");
+        if (!rozet) {
+            return;
+        }
+
+        rozet.addEventListener("click", kmModaliAc);
+        el("km-modal-vazgec").addEventListener("click", kmModaliKapat);
+
+        el("km-modal-form").addEventListener("submit", function (olay) {
+            olay.preventDefault();
+            kmModaliKaydet();
+        });
+    }
+
     function api(path, options) {
         var settings = options || {};
         var headers = { "Accept": "application/json" };
@@ -876,6 +993,7 @@
 
             if (!hasVehicles) {
                 state.selectedVehicleId = null;
+                kmRozetiniTazele();
                 return;
             }
 
@@ -887,6 +1005,7 @@
             }
             select.value = String(state.selectedVehicleId);
             ustaDurumunuUygula();
+            kmRozetiniTazele();
             kmSeridiniGuncelle();
             katalogUyarisiniGuncelle();
             tescilUyarisiniGuncelle();
@@ -6951,6 +7070,7 @@
 
         el("vehicle-select").addEventListener("change", function (event) {
             state.selectedVehicleId = Number(event.target.value);
+            kmRozetiniTazele();
             acilKartiSakla();
             clearMessages();
             closeDocuments();
@@ -7365,6 +7485,7 @@
         bindRecordForms();
         bindTeam();
         bindOturumModali();
+        bindKmRozeti();
         bindAssignment();
         bindDocuments();
         bindReceipts();
