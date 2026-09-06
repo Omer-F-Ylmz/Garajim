@@ -1312,30 +1312,392 @@
         return cell;
     }
 
-    function loadMaintenance() {
-        var tbody = el("maintenance-rows");
-        api("/api/Maintenance?vehicleId=" + state.selectedVehicleId).then(function (result) {
-            var rows = (result && result.data) || [];
-            clear(tbody);
-            if (rows.length === 0) {
-                bosSatir(tbody, 8, "bakim");
+    var LISTE_TARIH_ARALIKLARI = [
+        { anahtar: "tum", etiket: "Tümü", gun: 0 },
+        { anahtar: "30", etiket: "Son 30 gün", gun: 30 },
+        { anahtar: "90", etiket: "Son 90 gün", gun: 90 },
+        { anahtar: "365", etiket: "Son 1 yıl", gun: 365 }
+    ];
+
+    function listeDurumuOku(anahtar) {
+        try {
+            var ham = sessionStorage.getItem("garajim-liste-" + anahtar);
+            if (ham) {
+                return JSON.parse(ham);
+            }
+        } catch (hata) {
+            return {};
+        }
+        return {};
+    }
+
+    function listeDurumuYaz(anahtar, durum) {
+        try {
+            sessionStorage.setItem("garajim-liste-" + anahtar, JSON.stringify(durum));
+        } catch (hata) {
+            return;
+        }
+    }
+
+    function darEkran() {
+        return typeof window.matchMedia === "function" && window.matchMedia("(max-width: 767px)").matches;
+    }
+
+    function listeDenetimi(ayar) {
+        var kaydedilen = listeDurumuOku(ayar.anahtar);
+        var durum = {
+            q: kaydedilen.q || "",
+            alan: kaydedilen.alan || ayar.varsayilanAlan,
+            artan: kaydedilen.artan === true,
+            aralik: kaydedilen.aralik || "tum",
+            sayfa: 1,
+            boyut: ayar.boyut || 25
+        };
+
+        var zamanlayici = null;
+        var toplam = 0;
+        var yukleniyor = false;
+        var kap = null;
+        var sayacMetni = null;
+        var aramaKutusu = null;
+        var sayfaCubugu = null;
+
+        function tarihAraligi() {
+            var secili = null;
+
+            LISTE_TARIH_ARALIKLARI.forEach(function (aralik) {
+                if (aralik.anahtar === durum.aralik) {
+                    secili = aralik;
+                }
+            });
+
+            if (!secili || secili.gun === 0) {
+                return "";
+            }
+
+            var bas = new Date();
+            bas.setDate(bas.getDate() - secili.gun);
+
+            return "&baslangic=" + bas.toISOString().slice(0, 10);
+        }
+
+        function sorgu() {
+            var parcalar = "sayfa=" + durum.sayfa + "&boyut=" + durum.boyut;
+
+            if (durum.q) {
+                parcalar += "&q=" + encodeURIComponent(durum.q);
+            }
+
+            if (durum.alan) {
+                parcalar += "&sirala=" + encodeURIComponent(durum.alan + ":" + (durum.artan ? "asc" : "desc"));
+            }
+
+            return parcalar + tarihAraligi();
+        }
+
+        function durumuKaydet() {
+            listeDurumuYaz(ayar.anahtar, { q: durum.q, alan: durum.alan, artan: durum.artan, aralik: durum.aralik });
+        }
+
+        function aramaAlani() {
+            var sarmal = make("div", null, "liste-arama");
+            var kimlik = ayar.anahtar + "-liste-arama";
+            var etiket = make("label", ayar.aramaEtiketi || "Ara");
+
+            etiket.setAttribute("for", kimlik);
+
+            aramaKutusu = document.createElement("input");
+            aramaKutusu.id = kimlik;
+            aramaKutusu.type = "search";
+            aramaKutusu.value = durum.q;
+            aramaKutusu.placeholder = ayar.aramaIpucu || "Ara";
+
+            aramaKutusu.addEventListener("input", function () {
+                if (zamanlayici) {
+                    clearTimeout(zamanlayici);
+                }
+
+                zamanlayici = setTimeout(function () {
+                    durum.q = aramaKutusu.value.trim();
+                    durum.sayfa = 1;
+                    durumuKaydet();
+                    yukle();
+                }, 300);
+            });
+
+            sarmal.appendChild(etiket);
+            sarmal.appendChild(aramaKutusu);
+
+            return sarmal;
+        }
+
+        function aralikDugmeleri() {
+            var sarmal = make("div", null, "liste-aralik");
+
+            sarmal.setAttribute("role", "group");
+            sarmal.setAttribute("aria-label", "Tarih aralığı");
+
+            LISTE_TARIH_ARALIKLARI.forEach(function (aralik) {
+                var dugme = make("button", aralik.etiket, "chip");
+
+                dugme.type = "button";
+                dugme.setAttribute("aria-pressed", aralik.anahtar === durum.aralik ? "true" : "false");
+
+                dugme.addEventListener("click", function () {
+                    durum.aralik = aralik.anahtar;
+                    durum.sayfa = 1;
+                    durumuKaydet();
+                    cubuguTazele();
+                    yukle();
+                });
+
+                sarmal.appendChild(dugme);
+            });
+
+            return sarmal;
+        }
+
+        function cubuguTazele() {
+            if (!kap) {
                 return;
             }
-            rows.forEach(function (item) {
-                var tr = document.createElement("tr");
-                tr.appendChild(make("td", formatDate(item.date)));
-                tr.appendChild(make("td", labelOf(MAINTENANCE_TYPES, item.type)));
-                tr.appendChild(make("td", km(item.km)));
-                tr.appendChild(make("td", money(item.cost)));
-                tr.appendChild(make("td", item.serviceName || "-"));
-                tr.appendChild(documentButton(item.id));
-                tr.appendChild(duzenleButonu(function () { bakimiDuzenle(item); }));
-                tr.appendChild(deleteButton(function () { removeRecord("/api/Maintenance/" + item.id, loadMaintenance); }));
-                tbody.appendChild(tr);
+
+            var dugmeler = kap.querySelectorAll(".liste-aralik button");
+
+            for (var i = 0; i < dugmeler.length; i++) {
+                dugmeler[i].setAttribute("aria-pressed", LISTE_TARIH_ARALIKLARI[i].anahtar === durum.aralik ? "true" : "false");
+            }
+
+            basliklariTazele();
+        }
+
+        function basliklariTazele() {
+            (ayar.siralamalar || []).forEach(function (sutun) {
+                var baslik = el(sutun.baslikId);
+
+                if (!baslik) {
+                    return;
+                }
+
+                baslik.setAttribute("aria-sort", sutun.alan !== durum.alan
+                    ? "none"
+                    : (durum.artan ? "ascending" : "descending"));
             });
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
-        });
+        }
+
+        function basliklariBagla() {
+            (ayar.siralamalar || []).forEach(function (sutun) {
+                var baslik = el(sutun.baslikId);
+
+                if (!baslik || baslik.dataset.siralamaBagli === "1") {
+                    return;
+                }
+
+                baslik.dataset.siralamaBagli = "1";
+                baslik.classList.add("siralanabilir");
+
+                var dugme = make("button", baslik.textContent, "liste-baslik");
+                dugme.type = "button";
+
+                dugme.addEventListener("click", function () {
+                    durum.artan = durum.alan === sutun.alan ? !durum.artan : true;
+                    durum.alan = sutun.alan;
+                    durum.sayfa = 1;
+                    durumuKaydet();
+                    basliklariTazele();
+                    yukle();
+                });
+
+                clear(baslik);
+                baslik.appendChild(dugme);
+            });
+
+            basliklariTazele();
+        }
+
+        function sayfaCubuguCiz() {
+            if (!sayfaCubugu) {
+                return;
+            }
+
+            clear(sayfaCubugu);
+
+            var sonSayfa = Math.max(1, Math.ceil(toplam / durum.boyut));
+
+            if (sonSayfa <= 1) {
+                return;
+            }
+
+            if (darEkran()) {
+                if (durum.sayfa >= sonSayfa) {
+                    return;
+                }
+
+                var dahaFazla = make("button", "Daha fazla yükle", "ghost compact");
+                dahaFazla.type = "button";
+
+                dahaFazla.addEventListener("click", function () {
+                    durum.sayfa += 1;
+                    yukle(true);
+                });
+
+                sayfaCubugu.appendChild(dahaFazla);
+                return;
+            }
+
+            var onceki = make("button", "Önceki", "ghost compact");
+            onceki.type = "button";
+            onceki.disabled = durum.sayfa <= 1;
+            onceki.addEventListener("click", function () {
+                durum.sayfa -= 1;
+                yukle();
+            });
+
+            var bilgi = make("span", "Sayfa " + durum.sayfa + " / " + sonSayfa, "liste-sayfa-bilgi");
+
+            var sonraki = make("button", "Sonraki", "ghost compact");
+            sonraki.type = "button";
+            sonraki.disabled = durum.sayfa >= sonSayfa;
+            sonraki.addEventListener("click", function () {
+                durum.sayfa += 1;
+                yukle();
+            });
+
+            sayfaCubugu.appendChild(onceki);
+            sayfaCubugu.appendChild(bilgi);
+            sayfaCubugu.appendChild(sonraki);
+        }
+
+        function sayaciTazele() {
+            if (!sayacMetni) {
+                return;
+            }
+
+            sayacMetni.textContent = toplam === 0 ? "Kayıt yok" : "Toplam " + toplam + " kayıt";
+        }
+
+        function kur() {
+            kap = el(ayar.cubukId);
+
+            if (!kap) {
+                return;
+            }
+
+            if (kap.dataset.kuruldu === "1") {
+                basliklariBagla();
+                return;
+            }
+
+            kap.dataset.kuruldu = "1";
+            kap.appendChild(aramaAlani());
+
+            if (ayar.tarihSuzgeci !== false) {
+                kap.appendChild(aralikDugmeleri());
+            }
+
+            sayacMetni = make("span", "", "liste-sayac");
+            sayacMetni.setAttribute("aria-live", "polite");
+            kap.appendChild(sayacMetni);
+
+            sayfaCubugu = make("div", null, "liste-sayfalar");
+            kap.appendChild(sayfaCubugu);
+
+            basliklariBagla();
+        }
+
+        function yukle(ekle) {
+            if (yukleniyor) {
+                return Promise.resolve();
+            }
+
+            yukleniyor = true;
+
+            var govde = el(ayar.govdeId);
+            var adres = ayar.uc();
+
+            return api(adres + (adres.indexOf("?") >= 0 ? "&" : "?") + sorgu()).then(function (sonuc) {
+                var veri = (sonuc && sonuc.data) || {};
+                var kayitlar = veri.kayitlar || [];
+
+                toplam = veri.toplam || 0;
+
+                if (!ekle) {
+                    clear(govde);
+                }
+
+                if (kayitlar.length === 0 && !ekle) {
+                    if (durum.q || durum.aralik !== "tum") {
+                        var satir = document.createElement("tr");
+                        var hucre = make("td", "Sonuç bulunamadı. Aramayı ya da tarih aralığını değiştirin.");
+
+                        hucre.colSpan = ayar.sutunSayisi;
+                        satir.className = "empty-row";
+                        satir.appendChild(hucre);
+                        govde.appendChild(satir);
+                    } else {
+                        bosSatir(govde, ayar.sutunSayisi, ayar.bosAnahtar);
+                    }
+                }
+
+                kayitlar.forEach(function (kayit) {
+                    govde.appendChild(ayar.satir(kayit));
+                });
+
+                sayaciTazele();
+                sayfaCubuguCiz();
+            }).catch(function (hata) {
+                handleError(el("app-message"), hata);
+            }).finally(function () {
+                yukleniyor = false;
+                if (typeof acKilit === "function") { acKilit(); }
+            });
+        }
+
+        function tazele() {
+            durum.sayfa = 1;
+            return yukle();
+        }
+
+        return { kur: kur, yukle: yukle, tazele: tazele };
+    }
+
+    function listeDenetimiKur(denetim) {
+        denetim.kur();
+        return denetim.tazele();
+    }
+
+    var bakimDenetimi = listeDenetimi({
+        anahtar: "bakim",
+        cubukId: "maintenance-liste-araclar",
+        govdeId: "maintenance-rows",
+        bosAnahtar: "bakim",
+        sutunSayisi: 8,
+        varsayilanAlan: "tarih",
+        aramaEtiketi: "Bakımlarda ara",
+        aramaIpucu: "Servis, not ya da parça",
+        siralamalar: [
+            { baslikId: "maintenance-bas-tarih", alan: "tarih" },
+            { baslikId: "maintenance-bas-km", alan: "km" },
+            { baslikId: "maintenance-bas-tutar", alan: "tutar" },
+            { baslikId: "maintenance-bas-servis", alan: "servis" }
+        ],
+        uc: function () { return "/api/Maintenance?vehicleId=" + state.selectedVehicleId; },
+        satir: function (item) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", formatDate(item.date)));
+            tr.appendChild(make("td", labelOf(MAINTENANCE_TYPES, item.type)));
+            tr.appendChild(make("td", km(item.km)));
+            tr.appendChild(make("td", money(item.cost)));
+            tr.appendChild(make("td", item.serviceName || "-"));
+            tr.appendChild(documentButton(item.id));
+            tr.appendChild(duzenleButonu(function () { bakimiDuzenle(item); }));
+            tr.appendChild(deleteButton(function () { removeRecord("/api/Maintenance/" + item.id, loadMaintenance); }));
+            return tr;
+        }
+    });
+
+    function loadMaintenance() {
+        return listeDenetimiKur(bakimDenetimi);
     }
 
     function duzenleButonu(islev) {

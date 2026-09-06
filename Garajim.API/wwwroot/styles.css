@@ -352,6 +352,117 @@ button {
     margin: 0;
 }
 
+.liste-araclar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.liste-arama {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.liste-arama label {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0;
+}
+
+.liste-arama input {
+    min-width: 180px;
+    padding: 7px 10px;
+}
+
+.liste-aralik {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.liste-aralik .chip {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    min-height: 32px;
+}
+
+.liste-aralik .chip[aria-pressed="true"] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.liste-sayac {
+    color: var(--muted);
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.liste-sayfalar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.liste-sayfa-bilgi {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+th.siralanabilir {
+    padding: 0;
+}
+
+.liste-baslik {
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    padding: 10px 8px;
+    cursor: pointer;
+    min-height: 34px;
+}
+
+th[aria-sort="ascending"] .liste-baslik::after {
+    content: " ↑";
+    color: var(--accent);
+}
+
+th[aria-sort="descending"] .liste-baslik::after {
+    content: " ↓";
+    color: var(--accent);
+}
+
+@media (max-width: 767px) {
+    .liste-sayac {
+        margin-left: 0;
+    }
+
+    .liste-arama input {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .liste-arama {
+        width: 100%;
+    }
+
+    .liste-sayfalar .ghost {
+        width: 100%;
+    }
+}
+
 .table-wrap {
     overflow-x: auto;
 }
