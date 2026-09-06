@@ -14,6 +14,17 @@ namespace Garajim.Entity.Dtos
         public bool? TamDolum { get; set; }
     }
 
+    public class FuelUpdateDto
+    {
+        public DateTime Date { get; set; }
+        public decimal Liters { get; set; }
+        public decimal TotalCost { get; set; }
+        public int Km { get; set; }
+        public decimal? Kwh { get; set; }
+        public SarjTuru? SarjTuru { get; set; }
+        public bool? TamDolum { get; set; }
+    }
+
     public class FuelDto
     {
         public int Id { get; set; }

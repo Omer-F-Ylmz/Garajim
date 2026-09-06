@@ -83,6 +83,56 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<FuelDto>(MapToDto(record), Messages.RecordAdded);
         }
 
+        public async Task<IDataResult<FuelDto>> UpdateAsync(int userId, int id, FuelUpdateDto dto)
+        {
+            var record = await _fuelDal.GetAsync(f => f.Id == id);
+            if (record == null)
+                return new ErrorDataResult<FuelDto>(Messages.RecordNotFound);
+
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<FuelDto>(Messages.RecordNotFound);
+
+            if (vehicle.Arsivli)
+                return new ErrorDataResult<FuelDto>(Messages.AracArsivli);
+
+            var hata = Dogrula(vehicle.FuelType, new FuelCreateDto
+            {
+                VehicleId = record.VehicleId,
+                Date = dto.Date,
+                Liters = dto.Liters,
+                TotalCost = dto.TotalCost,
+                Km = dto.Km,
+                Kwh = dto.Kwh,
+                SarjTuru = dto.SarjTuru,
+                TamDolum = dto.TamDolum
+            });
+
+            if (hata != null)
+                return new ErrorDataResult<FuelDto>(hata);
+
+            var komsu = await _fuelDal.KomsuKilometrelerAsync(record.VehicleId, record.Id, dto.Date);
+
+            if ((komsu.Onceki != null && dto.Km < komsu.Onceki.Value)
+                || (komsu.Sonraki != null && dto.Km > komsu.Sonraki.Value))
+                return new ErrorDataResult<FuelDto>(Messages.YakitKmKomsuluk);
+
+            record.Date = dto.Date;
+            record.Liters = dto.Liters;
+            record.TotalCost = dto.TotalCost;
+            record.Km = dto.Km;
+            record.Kwh = dto.Kwh;
+            record.SarjTuru = dto.SarjTuru;
+            record.TamDolum = dto.TamDolum ?? record.TamDolum;
+
+            await _fuelDal.UpdateAsync(record);
+            await SupheliBayraklariniGuncelleAsync(record.VehicleId);
+
+            var guncel = await _fuelDal.GetAsync(f => f.Id == record.Id);
+
+            return new SuccessDataResult<FuelDto>(MapToDto(guncel ?? record), Messages.RecordUpdated);
+        }
+
         public async Task<IResult> DeleteAsync(int userId, int id)
         {
             var record = await _fuelDal.GetAsync(f => f.Id == id);

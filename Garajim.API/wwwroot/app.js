@@ -16,6 +16,8 @@
         dogrulaSayac: null,
         duzenlenenAracId: null,
         duzenlenenBakimId: null,
+        duzenlenenYakitId: null,
+        duzenlenenMasrafId: null,
         duzenlenenEvrakId: null,
         duzenlenenYolculukId: null,
         kilitAc: null,
@@ -1997,10 +1999,97 @@
             tr.appendChild(make("td", Number(item.liters) > 0 ? literFormat.format(Number(item.liters)) + " L" : "-"));
             tr.appendChild(make("td", item.kwh === null ? "-" : literFormat.format(Number(item.kwh)) + " kWh" + (item.sarjTuru ? " (" + labelOf(SARJ_TURU, item.sarjTuru) + ")" : "")));
             tr.appendChild(make("td", money(item.totalCost)));
-            tr.appendChild(deleteButton(function () { removeRecord("/api/Fuel/" + item.id, loadFuel); }));
+            tr.appendChild(yakitIslemHucresi(item));
             return tr;
         }
     });
+
+    function yakitIslemHucresi(item) {
+        var hucre = make("td", "", "row-actions");
+
+        var duzenle = make("button", "Düzenle", "link-btn");
+        duzenle.type = "button";
+        duzenle.addEventListener("click", function () { yakitiDuzenle(item); });
+        hucre.appendChild(duzenle);
+
+        var sil = make("button", "Sil", "link-btn");
+        sil.type = "button";
+        sil.addEventListener("click", function () { removeRecord("/api/Fuel/" + item.id, loadFuel); });
+        hucre.appendChild(sil);
+
+        return hucre;
+    }
+
+    function yakitiDuzenle(kayit) {
+        state.duzenlenenYakitId = kayit.id;
+
+        el("fuel-date").value = String(kayit.date).slice(0, 10);
+        el("fuel-km").value = kayit.km;
+        el("fuel-liters").value = Number(kayit.liters) > 0 ? kayit.liters : "";
+        el("fuel-kwh").value = kayit.kwh === null || kayit.kwh === undefined ? "" : kayit.kwh;
+        el("fuel-sarj").value = kayit.sarjTuru || "";
+        el("fuel-cost").value = kayit.totalCost;
+        el("fuel-tam-dolum").checked = kayit.tamDolum !== false;
+
+        yakitFormModu();
+        el("fuel-form").scrollIntoView({ block: "start" });
+    }
+
+    function yakitFormModu() {
+        var duzenleme = state.duzenlenenYakitId !== null;
+
+        el("fuel-submit").textContent = duzenleme ? "Yakıtı güncelle" : "Yakıt ekle";
+        el("fuel-vazgec").classList.toggle("hidden", !duzenleme);
+    }
+
+    function yakitFormunuSifirla() {
+        state.duzenlenenYakitId = null;
+        el("fuel-form").reset();
+        el("fuel-date").value = todayInput();
+        yakitFormModu();
+    }
+
+    function masrafIslemHucresi(item) {
+        var hucre = make("td", "", "row-actions");
+
+        var duzenle = make("button", "Düzenle", "link-btn");
+        duzenle.type = "button";
+        duzenle.addEventListener("click", function () { masrafiDuzenle(item); });
+        hucre.appendChild(duzenle);
+
+        var sil = make("button", "Sil", "link-btn");
+        sil.type = "button";
+        sil.addEventListener("click", function () { removeRecord("/api/Expenses/" + item.id, loadExpenses); });
+        hucre.appendChild(sil);
+
+        return hucre;
+    }
+
+    function masrafiDuzenle(kayit) {
+        state.duzenlenenMasrafId = kayit.id;
+
+        el("expense-category").value = kayit.category;
+        el("expense-date").value = String(kayit.date).slice(0, 10);
+        el("expense-amount").value = kayit.amount;
+        el("expense-note").value = kayit.note || "";
+
+        masrafFormModu();
+        el("expense-form").scrollIntoView({ block: "start" });
+    }
+
+    function masrafFormModu() {
+        var duzenleme = state.duzenlenenMasrafId !== null;
+
+        el("expense-submit").textContent = duzenleme ? "Masrafı güncelle" : "Masraf ekle";
+        el("expense-vazgec").classList.toggle("hidden", !duzenleme);
+    }
+
+    function masrafFormunuSifirla() {
+        state.duzenlenenMasrafId = null;
+        el("expense-form").reset();
+        el("expense-date").value = todayInput();
+        masrafFormModu();
+    }
 
     function loadFuel() {
         return listeDenetimiKur(yakitDenetimi);
@@ -2027,7 +2116,7 @@
             tr.appendChild(make("td", labelOf(EXPENSE_CATEGORIES, item.category)));
             tr.appendChild(make("td", money(item.amount)));
             tr.appendChild(make("td", item.note || "-"));
-            tr.appendChild(deleteButton(function () { removeRecord("/api/Expenses/" + item.id, loadExpenses); }));
+            tr.appendChild(masrafIslemHucresi(item));
             return tr;
         }
     });
@@ -6876,12 +6965,17 @@
             });
         });
 
+        el("fuel-vazgec").addEventListener("click", yakitFormunuSifirla);
+        el("expense-vazgec").addEventListener("click", masrafFormunuSifirla);
+
         el("fuel-form").addEventListener("submit", function (event) {
             event.preventDefault();
             var acKilit = formuKilitle(event.target);
             clearMessages();
-            api("/api/Fuel", {
-                method: "POST",
+            var yakitDuzenleme = state.duzenlenenYakitId !== null;
+
+            api(yakitDuzenleme ? "/api/Fuel/" + state.duzenlenenYakitId : "/api/Fuel", {
+                method: yakitDuzenleme ? "PUT" : "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
                     date: el("fuel-date").value,
@@ -6894,8 +6988,7 @@
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);
-                el("fuel-form").reset();
-                el("fuel-date").value = todayInput();
+                yakitFormunuSifirla();
                 loadFuel();
                 loadVehicles();
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
@@ -6907,8 +7000,10 @@
             event.preventDefault();
             var acKilit = formuKilitle(event.target);
             clearMessages();
-            api("/api/Expenses", {
-                method: "POST",
+            var masrafDuzenleme = state.duzenlenenMasrafId !== null;
+
+            api(masrafDuzenleme ? "/api/Expenses/" + state.duzenlenenMasrafId : "/api/Expenses", {
+                method: masrafDuzenleme ? "PUT" : "POST",
                 body: {
                     vehicleId: state.selectedVehicleId,
                     category: el("expense-category").value,
@@ -6918,8 +7013,7 @@
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Kayıt eklendi.", true);
-                el("expense-form").reset();
-                el("expense-date").value = todayInput();
+                masrafFormunuSifirla();
                 loadExpenses();
             }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
             handleError(el("app-message"), error);

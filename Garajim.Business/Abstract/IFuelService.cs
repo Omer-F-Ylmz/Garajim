@@ -7,6 +7,7 @@ namespace Garajim.Business.Abstract
     {
         Task<IDataResult<List<FuelDto>>> GetListAsync(int userId, int vehicleId);
         Task<IDataResult<SayfaliSonuc<FuelDto>>> GetSayfaAsync(int userId, int vehicleId, ListeSorgusu sorgu);
+        Task<IDataResult<FuelDto>> UpdateAsync(int userId, int id, FuelUpdateDto dto);
         Task<IDataResult<FuelDto>> AddAsync(int userId, FuelCreateDto dto);
         Task<IResult> DeleteAsync(int userId, int id);
     }

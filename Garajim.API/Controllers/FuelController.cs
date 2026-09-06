@@ -45,6 +45,15 @@ namespace Garajim.API.Controllers
             return Ok(result);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, FuelUpdateDto dto)
+        {
+            var result = await _fuelService.UpdateAsync(CurrentUserId, id, dto);
+            if (!result.Success)
+                return result.Message == Messages.RecordNotFound ? NotFound(result) : BadRequest(result);
+            return Ok(result);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

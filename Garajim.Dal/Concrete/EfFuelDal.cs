@@ -134,5 +134,30 @@ namespace Garajim.Dal.Concrete
                     : sorgulama.OrderByDescending(f => f.Date).ThenByDescending(f => f.Id)
             };
         }
+        public async Task<(int? Onceki, int? Sonraki)> KomsuKilometrelerAsync(int vehicleId, int haricId, DateTime tarih)
+        {
+            var gun = tarih.Date;
+
+            var onceki = await Context.FuelRecords
+                .AsNoTracking()
+                .Where(f => f.VehicleId == vehicleId
+                    && (f.Date < gun || (f.Date == gun && f.Id < haricId)))
+                .OrderByDescending(f => f.Date)
+                .ThenByDescending(f => f.Id)
+                .Select(f => (int?)f.Km)
+                .FirstOrDefaultAsync();
+
+            var sonraki = await Context.FuelRecords
+                .AsNoTracking()
+                .Where(f => f.VehicleId == vehicleId
+                    && (f.Date > gun || (f.Date == gun && f.Id > haricId)))
+                .OrderBy(f => f.Date)
+                .ThenBy(f => f.Id)
+                .Select(f => (int?)f.Km)
+                .FirstOrDefaultAsync();
+
+            return (onceki, sonraki);
+        }
     }
 }
+

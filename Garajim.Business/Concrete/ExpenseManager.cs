@@ -73,6 +73,38 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<ExpenseDto>(MapToDto(record), Messages.RecordAdded);
         }
 
+        public async Task<IDataResult<ExpenseDto>> UpdateAsync(int userId, int id, ExpenseUpdateDto dto)
+        {
+            var record = await _expenseDal.GetAsync(e => e.Id == id);
+            if (record == null)
+                return new ErrorDataResult<ExpenseDto>(Messages.RecordNotFound);
+
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, record.VehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<ExpenseDto>(Messages.RecordNotFound);
+
+            if (vehicle.Arsivli)
+                return new ErrorDataResult<ExpenseDto>(Messages.AracArsivli);
+
+            if (!DegerSinirlari.GecmisTarih(dto.Date))
+                return new ErrorDataResult<ExpenseDto>(Messages.GelecekTarihGirilemez);
+
+            if (!DegerSinirlari.TutarGecerli(dto.Amount) || dto.Amount <= 0)
+                return new ErrorDataResult<ExpenseDto>(Messages.TutarSinirDisi);
+
+            if (!Enum.IsDefined(dto.Category))
+                return new ErrorDataResult<ExpenseDto>(Messages.InvalidValue);
+
+            record.Category = dto.Category;
+            record.Date = dto.Date;
+            record.Amount = dto.Amount;
+            record.Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not);
+
+            await _expenseDal.UpdateAsync(record);
+
+            return new SuccessDataResult<ExpenseDto>(MapToDto(record), Messages.RecordUpdated);
+        }
+
         public async Task<IResult> DeleteAsync(int userId, int id)
         {
             var record = await _expenseDal.GetAsync(e => e.Id == id);

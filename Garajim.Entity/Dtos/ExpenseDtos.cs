@@ -11,6 +11,14 @@ namespace Garajim.Entity.Dtos
         public string Note { get; set; }
     }
 
+    public class ExpenseUpdateDto
+    {
+        public ExpenseCategory Category { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Amount { get; set; }
+        public string Note { get; set; }
+    }
+
     public class ExpenseDto
     {
         public int Id { get; set; }
