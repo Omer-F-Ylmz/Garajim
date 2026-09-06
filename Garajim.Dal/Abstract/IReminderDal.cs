@@ -11,6 +11,7 @@ namespace Garajim.Dal.Abstract
         Task<List<UpcomingReminderDto>> GetUpcomingForUserAsync(int userId, DateTime limit);
         Task<List<Reminder>> GetListForVehicleAsync(int vehicleId, int limit);
         Task<SayfaliSonuc<Reminder>> SayfaAsync(int vehicleId, ListeSorgusu sorgu, SiralamaSonucu siralama);
+        Task<bool> TekrardanUretilmisMiAsync(int kaynakId);
         Task<int> YaklasanSayisiAsync(List<int> vehicleIds, DateTime limit);
     }
 }

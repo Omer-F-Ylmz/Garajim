@@ -127,6 +127,7 @@ namespace Garajim.Dal.Concrete.Context
             {
                 entity.Property(r => r.Note).HasMaxLength(500);
                 entity.HasIndex(r => new { r.VehicleId, r.IsCompleted, r.DueDate });
+                entity.HasIndex(r => r.TekrardanUretenId);
                 entity.HasIndex(r => r.CompanyId);
                 entity.HasOne<Company>().WithMany().HasForeignKey(r => r.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<Vehicle>().WithMany().HasForeignKey(r => r.VehicleId).OnDelete(DeleteBehavior.Cascade);

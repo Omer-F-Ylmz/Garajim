@@ -2468,12 +2468,26 @@
         return listeDenetimiKur(masrafDenetimi);
     }
 
+    function tekrarMetni(kayit) {
+        var parcalar = [];
+
+        if (kayit.tekrarAy) {
+            parcalar.push(kayit.tekrarAy + " ayda bir");
+        }
+
+        if (kayit.tekrarKm) {
+            parcalar.push(km(kayit.tekrarKm) + "'de bir");
+        }
+
+        return parcalar.length === 0 ? "-" : parcalar.join(" · ");
+    }
+
     var hatirlatmaDenetimi = listeDenetimi({
         anahtar: "hatirlatma",
         cubukId: "reminder-liste-araclar",
         govdeId: "reminder-rows",
         bosMetin: "Hatırlatma yok.",
-        sutunSayisi: 5,
+        sutunSayisi: 6,
         varsayilanAlan: "tarih",
         artanVarsayilan: true,
         tarihSuzgeci: false,
@@ -2490,6 +2504,7 @@
             tr.appendChild(make("td", labelOf(REMINDER_TYPES, item.type)));
             tr.appendChild(make("td", item.dueDate ? formatDate(item.dueDate) : "-"));
             tr.appendChild(make("td", item.dueKm ? km(item.dueKm) : "-"));
+            tr.appendChild(make("td", tekrarMetni(item)));
 
             var statusCell = document.createElement("td");
             statusCell.appendChild(make("span", item.isCompleted ? "Tamamlandı" : "Bekliyor", item.isCompleted ? "badge done" : "badge"));
@@ -7377,7 +7392,9 @@
                     type: el("reminder-type").value,
                     dueDate: dateValue ? dateValue : null,
                     dueKm: kmValue ? Number(kmValue) : null,
-                    note: el("reminder-note").value
+                    note: el("reminder-note").value,
+                    tekrarAy: el("reminder-tekrar-ay").value ? Number(el("reminder-tekrar-ay").value) : null,
+                    tekrarKm: el("reminder-tekrar-km").value ? Number(el("reminder-tekrar-km").value) : null
                 }
             }).then(function (result) {
                 showMessage(el("app-message"), (result && result.message) || "Hatırlatma eklendi.", true);

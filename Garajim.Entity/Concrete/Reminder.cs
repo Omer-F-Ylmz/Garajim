@@ -13,6 +13,9 @@ namespace Garajim.Entity.Concrete
         public int? DueKm { get; set; }
         public string Note { get; set; }
         public bool IsCompleted { get; set; }
+        public int? TekrarAy { get; set; }
+        public int? TekrarKm { get; set; }
+        public int? TekrardanUretenId { get; set; }
         public DateTime? LastNotifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }
     }

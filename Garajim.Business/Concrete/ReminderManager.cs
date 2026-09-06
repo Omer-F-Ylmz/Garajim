@@ -69,6 +69,8 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<ReminderDto>(Messages.InvalidValue);
             if (dto.DueDate == null && dto.DueKm == null)
                 return new ErrorDataResult<ReminderDto>(Messages.ReminderDateOrKmRequired);
+            if (!TekrarGecerliMi(dto.TekrarAy, dto.TekrarKm))
+                return new ErrorDataResult<ReminderDto>(Messages.TekrarDegeriGecersiz);
             var reminder = new Reminder
             {
                 CompanyId = vehicle.CompanyId,
@@ -77,11 +79,26 @@ namespace Garajim.Business.Concrete
                 DueDate = dto.DueDate,
                 DueKm = dto.DueKm,
                 Note = MetinSinirlari.Kirp(dto.Note, MetinSinirlari.Not),
+                TekrarAy = dto.TekrarAy,
+                TekrarKm = dto.TekrarKm,
                 IsCompleted = false,
                 CreatedAt = DateTime.UtcNow
             };
             await _reminderDal.AddAsync(reminder);
             return new SuccessDataResult<ReminderDto>(MapToDto(reminder), Messages.ReminderAdded);
+        }
+
+        public static readonly int EnCokTekrarAy = 120;
+        public static readonly int EnCokTekrarKm = 200000;
+
+        private static bool TekrarGecerliMi(int? ay, int? km)
+        {
+            if (ay != null && (ay.Value < 1 || ay.Value > EnCokTekrarAy))
+            {
+                return false;
+            }
+
+            return km == null || (km.Value >= 1 && km.Value <= EnCokTekrarKm);
         }
 
         public async Task<IResult> CompleteAsync(int userId, int id)
@@ -92,9 +109,52 @@ namespace Garajim.Business.Concrete
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, reminder.VehicleId);
             if (vehicle == null)
                 return new ErrorResult(Messages.ReminderNotFound);
+
             reminder.IsCompleted = true;
             await _reminderDal.UpdateAsync(reminder);
+
+            await TekrariAcAsync(reminder);
+
             return new SuccessResult(Messages.ReminderCompleted);
+        }
+
+        private async Task TekrariAcAsync(Reminder kaynak)
+        {
+            if (kaynak.TekrarAy == null && kaynak.TekrarKm == null)
+            {
+                return;
+            }
+
+            if (await _reminderDal.TekrardanUretilmisMiAsync(kaynak.Id))
+            {
+                return;
+            }
+
+            var yeni = new Reminder
+            {
+                CompanyId = kaynak.CompanyId,
+                VehicleId = kaynak.VehicleId,
+                Type = kaynak.Type,
+                DueDate = kaynak.TekrarAy != null && kaynak.DueDate != null
+                    ? kaynak.DueDate.Value.AddMonths(kaynak.TekrarAy.Value)
+                    : null,
+                DueKm = kaynak.TekrarKm != null && kaynak.DueKm != null
+                    ? kaynak.DueKm.Value + kaynak.TekrarKm.Value
+                    : null,
+                Note = kaynak.Note,
+                TekrarAy = kaynak.TekrarAy,
+                TekrarKm = kaynak.TekrarKm,
+                TekrardanUretenId = kaynak.Id,
+                IsCompleted = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            if (yeni.DueDate == null && yeni.DueKm == null)
+            {
+                return;
+            }
+
+            await _reminderDal.AddAsync(yeni);
         }
 
         public async Task<IResult> DeleteAsync(int userId, int id)
@@ -120,7 +180,9 @@ namespace Garajim.Business.Concrete
                 DueKm = reminder.DueKm,
                 Note = reminder.Note,
                 IsCompleted = reminder.IsCompleted,
-                LastNotifiedAt = reminder.LastNotifiedAt
+                LastNotifiedAt = reminder.LastNotifiedAt,
+                TekrarAy = reminder.TekrarAy,
+                TekrarKm = reminder.TekrarKm
             };
         }
     }

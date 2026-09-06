@@ -111,6 +111,11 @@ namespace Garajim.Dal.Concrete
                     : sorgulama.OrderByDescending(r => r.DueDate).ThenByDescending(r => r.Id)
             };
         }
+        public Task<bool> TekrardanUretilmisMiAsync(int kaynakId)
+        {
+            return Context.Reminders.AsNoTracking().AnyAsync(r => r.TekrardanUretenId == kaynakId);
+        }
     }
 }
+
 

@@ -9,6 +9,8 @@ namespace Garajim.Entity.Dtos
         public DateTime? DueDate { get; set; }
         public int? DueKm { get; set; }
         public string Note { get; set; }
+        public int? TekrarAy { get; set; }
+        public int? TekrarKm { get; set; }
     }
 
     public class ReminderDto
@@ -21,6 +23,8 @@ namespace Garajim.Entity.Dtos
         public string Note { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime? LastNotifiedAt { get; set; }
+        public int? TekrarAy { get; set; }
+        public int? TekrarKm { get; set; }
     }
 
     public class UpcomingReminderDto

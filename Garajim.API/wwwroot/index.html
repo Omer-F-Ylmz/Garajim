@@ -1023,9 +1023,17 @@
                         <label for="reminder-note">Not</label>
                         <input id="reminder-note" type="text">
                     </div>
+                    <div>
+                        <label for="reminder-tekrar-ay">Tekrar (ay)</label>
+                        <input id="reminder-tekrar-ay" type="number" min="1" max="120" placeholder="örn. 12">
+                    </div>
+                    <div>
+                        <label for="reminder-tekrar-km">Tekrar (km)</label>
+                        <input id="reminder-tekrar-km" type="number" min="1" max="200000" placeholder="örn. 15000">
+                    </div>
                     <div class="form-actions">
                         <button type="submit" class="primary">Hatırlatma ekle</button>
-                        <small class="hint">Tarih veya kilometreden en az biri gerekli.</small>
+                        <small class="hint">Tarih veya kilometreden en az biri gerekli. Tekrar girilirse tamamlandığında yenisi açılır.</small>
                     </div>
                 </form>
 
@@ -1037,7 +1045,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Tür</th><th id="reminder-bas-tarih">Tarih</th><th id="reminder-bas-km">Km</th><th id="reminder-bas-durum">Durum</th><th></th></tr>
+                            <tr><th>Tür</th><th id="reminder-bas-tarih">Tarih</th><th id="reminder-bas-km">Km</th><th>Tekrar</th><th id="reminder-bas-durum">Durum</th><th></th></tr>
                         </thead>
                         <tbody id="reminder-rows"></tbody>
                     </table>
