@@ -912,6 +912,7 @@
                     <form id="document-form" class="inline-form">
                         <input id="document-file" type="file" accept=".jpg,.jpeg,.png,.pdf" required>
                         <button type="submit" class="primary">Yükle</button>
+                        <button id="document-bagla" type="button" class="ghost">Araçtaki belgeyi bağla</button>
                         <button id="document-close" type="button" class="ghost">Kapat</button>
                     </form>
                     <small class="hint">jpg, jpeg, png veya pdf; en fazla 5 MB.</small>
@@ -1541,6 +1542,19 @@
         <div id="yuzen-eylemler" class="yuzen-eylemler">
             <button id="kaza-ani" class="kaza-ani hidden" type="button" aria-label="Kaza anı — ne yapmalıyım?" title="Kaza anı — ne yapmalıyım?"><span aria-hidden="true">!</span></button>
             <button id="geri-bildirim-btn" class="geri-bildirim-btn" type="button" aria-label="Geri bildirim"><span aria-hidden="true">✉</span><span class="geri-bildirim-metin">Geri bildirim</span></button>
+        </div>
+    </div>
+
+    <div id="onizleme-modal" class="kaza-modal hidden" role="dialog" aria-modal="true" aria-labelledby="onizleme-baslik">
+        <div class="kaza-kutu onizleme-kutu">
+            <h2 id="onizleme-baslik">Belge önizleme</h2>
+            <p id="onizleme-bilgi" class="hint"></p>
+            <div id="onizleme-govde" class="onizleme-govde"></div>
+            <div class="form-actions">
+                <button id="onizleme-onceki" type="button" class="ghost compact">‹ Önceki</button>
+                <button id="onizleme-sonraki" type="button" class="ghost compact">Sonraki ›</button>
+                <button id="onizleme-kapat" type="button" class="ghost">Kapat</button>
+            </div>
         </div>
     </div>
 

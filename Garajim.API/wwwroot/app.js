@@ -2113,6 +2113,184 @@
         el("document-box").classList.add("hidden");
     }
 
+    var onizlemeSirasi = [];
+    var onizlemeIndeks = 0;
+
+    function onizlenebilirMi(item) {
+        var tip = (item.contentType || "").toLowerCase();
+
+        return tip.indexOf("image/") === 0 || tip === "application/pdf";
+    }
+
+    function onizlemeAc(item, liste) {
+        onizlemeSirasi = (liste || []).filter(onizlenebilirMi);
+        onizlemeIndeks = 0;
+
+        onizlemeSirasi.forEach(function (kayit, sira) {
+            if (kayit.id === item.id) {
+                onizlemeIndeks = sira;
+            }
+        });
+
+        if (onizlemeSirasi.length === 0) {
+            onizlemeSirasi = [item];
+            onizlemeIndeks = 0;
+        }
+
+        el("onizleme-modal").classList.remove("hidden");
+        document.addEventListener("keydown", onizlemeKlavye);
+
+        onizlemeGoster();
+    }
+
+    function onizlemeKlavye(olay) {
+        if (olay.key === "Escape") {
+            onizlemeModaliKapat();
+            return;
+        }
+
+        if (olay.key === "ArrowLeft") {
+            onizlemeKaydir(-1);
+        }
+
+        if (olay.key === "ArrowRight") {
+            onizlemeKaydir(1);
+        }
+    }
+
+    function onizlemeKaydir(yon) {
+        if (onizlemeSirasi.length < 2) {
+            return;
+        }
+
+        onizlemeIndeks = (onizlemeIndeks + yon + onizlemeSirasi.length) % onizlemeSirasi.length;
+        onizlemeGoster();
+    }
+
+    function onizlemeGoster() {
+        var item = onizlemeSirasi[onizlemeIndeks];
+        var govde = el("onizleme-govde");
+
+        clear(govde);
+
+        el("onizleme-bilgi").textContent = item.originalName + " · " + fileSize(item.sizeBytes)
+            + (onizlemeSirasi.length > 1 ? " · " + (onizlemeIndeks + 1) + "/" + onizlemeSirasi.length : "");
+
+        el("onizleme-onceki").classList.toggle("hidden", onizlemeSirasi.length < 2);
+        el("onizleme-sonraki").classList.toggle("hidden", onizlemeSirasi.length < 2);
+
+        var tip = (item.contentType || "").toLowerCase();
+
+        if (tip === "application/pdf") {
+            govde.appendChild(make("p", "PDF belgeler tarayıcı içinde açılmaz; indirerek görüntüleyin.", "hint"));
+
+            var indir = make("button", "İndir", "primary compact");
+            indir.type = "button";
+            indir.addEventListener("click", function () { downloadDocument(item); });
+            govde.appendChild(indir);
+
+            return;
+        }
+
+        govde.appendChild(make("p", "Yükleniyor…", "hint"));
+
+        var headers = state.token ? { Authorization: "Bearer " + state.token } : {};
+
+        fetch("/api/Documents/" + item.id + "/onizleme", { headers: headers }).then(function (cevap) {
+            if (!cevap.ok) {
+                throw new Error("Önizleme açılamadı.");
+            }
+
+            return cevap.blob();
+        }).then(function (blob) {
+            return new Promise(function (coz, reddet) {
+                var okuyucu = new FileReader();
+
+                okuyucu.onload = function () { coz(okuyucu.result); };
+                okuyucu.onerror = function () { reddet(new Error("Önizleme açılamadı.")); };
+                okuyucu.readAsDataURL(blob);
+            });
+        }).then(function (adres) {
+            if (onizlemeSirasi[onizlemeIndeks].id !== item.id) {
+                return;
+            }
+
+            clear(govde);
+
+            var gorsel = document.createElement("img");
+            gorsel.src = adres;
+            gorsel.alt = item.originalName;
+
+            govde.appendChild(gorsel);
+        }).catch(function (hata) {
+            clear(govde);
+            govde.appendChild(make("p", (hata && hata.message) || "Önizleme açılamadı.", "hint"));
+        });
+    }
+
+    function onizlemeModaliKapat() {
+        el("onizleme-modal").classList.add("hidden");
+        clear(el("onizleme-govde"));
+        document.removeEventListener("keydown", onizlemeKlavye);
+    }
+
+    function belgeyiKaydaBagla(belgeId, kayitId) {
+        return api("/api/Documents/" + belgeId + "/bagla", {
+            method: "PUT",
+            body: { maintenanceRecordId: kayitId }
+        }).then(function (sonuc) {
+            showMessage(el("app-message"), (sonuc && sonuc.message) || "Belge kayda bağlandı.", true);
+            loadDocuments();
+        }).catch(function (hata) {
+            handleError(el("app-message"), hata);
+        });
+    }
+
+    function bagsizAracBelgeleriniSor() {
+        if (!state.documentRecordId || !state.selectedVehicleId) {
+            return Promise.resolve();
+        }
+
+        return api("/api/Documents?vehicleId=" + state.selectedVehicleId).then(function (sonuc) {
+            var bagsiz = ((sonuc && sonuc.data) || []).filter(function (belge) {
+                return !belge.maintenanceRecordId;
+            });
+
+            if (bagsiz.length === 0) {
+                showMessage(el("app-message"), "Bu araçta bağlanmamış belge yok.");
+                return null;
+            }
+
+            var secenekler = bagsiz.map(function (belge) {
+                return [String(belge.id), belge.originalName + " · " + fileSize(belge.sizeBytes)];
+            });
+
+            return girdiSor("Belgeyi kayda bağla", "Araca yüklenmiş belgelerden birini bu bakım kaydına bağlayın.", {
+                secenekler: secenekler
+            });
+        }).then(function (secilen) {
+            if (!secilen) {
+                return null;
+            }
+
+            return belgeyiKaydaBagla(Number(secilen), state.documentRecordId);
+        }).catch(function (hata) {
+            handleError(el("app-message"), hata);
+        });
+    }
+
+    function bindOnizleme() {
+        var kapat = el("onizleme-kapat");
+        if (!kapat) {
+            return;
+        }
+
+        kapat.addEventListener("click", onizlemeModaliKapat);
+        el("document-bagla").addEventListener("click", bagsizAracBelgeleriniSor);
+        el("onizleme-onceki").addEventListener("click", function () { onizlemeKaydir(-1); });
+        el("onizleme-sonraki").addEventListener("click", function () { onizlemeKaydir(1); });
+    }
+
     function loadDocuments() {
         var list = el("document-list");
         if (!state.documentRecordId) {
@@ -2131,6 +2309,14 @@
                 li.appendChild(make("span", item.originalName + " · " + fileSize(item.sizeBytes)));
 
                 var actions = make("span", "", "row-actions");
+
+                if (onizlenebilirMi(item)) {
+                    var onizle = make("button", "Önizle", "link-btn");
+                    onizle.type = "button";
+                    onizle.addEventListener("click", function () { onizlemeAc(item, rows); });
+                    actions.appendChild(onizle);
+                }
+
                 var download = make("button", "İndir", "link-btn");
                 download.type = "button";
                 download.addEventListener("click", function () { downloadDocument(item); });
@@ -7503,6 +7689,7 @@
         bindTeam();
         bindOturumModali();
         bindKmRozeti();
+        bindOnizleme();
         bindAssignment();
         bindDocuments();
         bindReceipts();

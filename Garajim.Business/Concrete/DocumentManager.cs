@@ -157,6 +157,62 @@ namespace Garajim.Business.Concrete
             }
         }
 
+        public static readonly string[] OnizlenebilirTipler =
+        {
+            "image/png", "image/jpeg", "image/webp", "image/gif", "application/pdf"
+        };
+
+        public async Task<IDataResult<DocumentContentDto>> OnizlemeAsync(int userId, int documentId)
+        {
+            var sonuc = await DownloadAsync(userId, documentId);
+
+            if (!sonuc.Success)
+            {
+                return sonuc;
+            }
+
+            var tip = (sonuc.Data.ContentType ?? string.Empty).ToLowerInvariant();
+
+            if (Array.IndexOf(OnizlenebilirTipler, tip) < 0)
+            {
+                return new ErrorDataResult<DocumentContentDto>(Messages.OnizlemeDesteklenmiyor);
+            }
+
+            return sonuc;
+        }
+
+        public async Task<IDataResult<DocumentDto>> BaglaAsync(int userId, int documentId, int? maintenanceRecordId)
+        {
+            var document = await ErisilebilirBelgeAsync(userId, documentId);
+            if (document == null)
+                return new ErrorDataResult<DocumentDto>(Messages.DocumentNotFound);
+
+            if (maintenanceRecordId == null)
+            {
+                document.MaintenanceRecordId = null;
+                await _documentDal.UpdateAsync(document);
+                return new SuccessDataResult<DocumentDto>(MapToDto(document), Messages.BelgeBaglandi);
+            }
+
+            var kayit = await _maintenanceDal.GetAsync(m => m.Id == maintenanceRecordId);
+            if (kayit == null)
+                return new ErrorDataResult<DocumentDto>(Messages.DocumentNotFound);
+
+            var arac = await _vehicleAccess.GetAccessibleAsync(userId, kayit.VehicleId);
+            if (arac == null)
+                return new ErrorDataResult<DocumentDto>(Messages.DocumentNotFound);
+
+            if (document.VehicleId != null && document.VehicleId != kayit.VehicleId)
+                return new ErrorDataResult<DocumentDto>(Messages.DocumentNotFound);
+
+            document.MaintenanceRecordId = maintenanceRecordId;
+            document.VehicleId = kayit.VehicleId;
+
+            await _documentDal.UpdateAsync(document);
+
+            return new SuccessDataResult<DocumentDto>(MapToDto(document), Messages.BelgeBaglandi);
+        }
+
         private async Task<Document> ErisilebilirBelgeAsync(int userId, int documentId)
         {
             var document = await _documentDal.GetAsync(d => d.Id == documentId);

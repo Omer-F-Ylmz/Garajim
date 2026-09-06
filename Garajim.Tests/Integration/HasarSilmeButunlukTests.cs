@@ -37,6 +37,10 @@ namespace Garajim.Tests.Integration
             public Task<IDataResult<SayfaliSonuc<DocumentDto>>> GetSayfaAsync(int userId, int? vehicleId, int? maintenanceRecordId, ListeSorgusu sorgu)
                 => _ic.GetSayfaAsync(userId, vehicleId, maintenanceRecordId, sorgu);
 
+            public Task<IDataResult<DocumentContentDto>> OnizlemeAsync(int userId, int documentId) => _ic.OnizlemeAsync(userId, documentId);
+
+            public Task<IDataResult<DocumentDto>> BaglaAsync(int userId, int documentId, int? maintenanceRecordId) => _ic.BaglaAsync(userId, documentId, maintenanceRecordId);
+
             public Task<IDataResult<DocumentContentDto>> DownloadAsync(int userId, int documentId) => _ic.DownloadAsync(userId, documentId);
 
             public Task<IResult> DeleteAsync(int userId, int documentId)

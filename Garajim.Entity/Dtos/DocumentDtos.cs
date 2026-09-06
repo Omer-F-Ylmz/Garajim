@@ -20,6 +20,11 @@ namespace Garajim.Entity.Dtos
         public byte[] Content { get; set; }
     }
 
+    public class DocumentBaglaDto
+    {
+        public int? MaintenanceRecordId { get; set; }
+    }
+
     public class DocumentContentDto
     {
         public string OriginalName { get; set; }

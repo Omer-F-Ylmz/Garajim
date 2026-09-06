@@ -67,6 +67,35 @@ namespace Garajim.API.Controllers
             return File(result.Data.Content, result.Data.ContentType, result.Data.OriginalName);
         }
 
+        [HttpGet("{id}/onizleme")]
+        public async Task<IActionResult> Onizleme(int id)
+        {
+            var result = await _documentService.OnizlemeAsync(CurrentUserId, id);
+
+            if (!result.Success)
+                return result.Message == Messages.OnizlemeDesteklenmiyor ? BadRequest(result) : NotFound(result);
+
+            Response.Headers["Content-Disposition"] = "inline; filename=\"" + OnizlemeAdi(result.Data.OriginalName) + "\"";
+
+            return File(result.Data.Content, result.Data.ContentType);
+        }
+
+        private static string OnizlemeAdi(string ad)
+        {
+            var temiz = new string((ad ?? "belge").Where(k => char.IsLetterOrDigit(k) || k == '.' || k == '-' || k == '_').ToArray());
+
+            return string.IsNullOrWhiteSpace(temiz) ? "belge" : temiz;
+        }
+
+        [HttpPut("{id}/bagla")]
+        public async Task<IActionResult> Bagla(int id, DocumentBaglaDto dto)
+        {
+            var result = await _documentService.BaglaAsync(CurrentUserId, id, dto?.MaintenanceRecordId);
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

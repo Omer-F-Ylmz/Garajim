@@ -352,6 +352,30 @@ button {
     margin: 0;
 }
 
+.onizleme-kutu {
+    max-width: 720px;
+    width: 100%;
+}
+
+.onizleme-govde {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    max-height: 60vh;
+    overflow: auto;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.onizleme-govde img {
+    max-width: 100%;
+    max-height: 55vh;
+}
+
 .km-rozet {
     background: var(--panel-2);
     border: 1px solid var(--line);

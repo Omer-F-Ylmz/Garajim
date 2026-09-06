@@ -17,6 +17,12 @@ namespace Garajim.Tests.Integration
         public Task<IDataResult<DocumentDto>> UploadAsync(int userId, DocumentUploadDto dto)
             => Task.FromResult<IDataResult<DocumentDto>>(new ErrorDataResult<DocumentDto>("test"));
 
+        public Task<IDataResult<DocumentContentDto>> OnizlemeAsync(int userId, int documentId)
+            => Task.FromResult<IDataResult<DocumentContentDto>>(new ErrorDataResult<DocumentContentDto>("test"));
+
+        public Task<IDataResult<DocumentDto>> BaglaAsync(int userId, int documentId, int? maintenanceRecordId)
+            => Task.FromResult<IDataResult<DocumentDto>>(new ErrorDataResult<DocumentDto>("test"));
+
         public Task<IDataResult<DocumentContentDto>> DownloadAsync(int userId, int documentId)
             => Task.FromResult<IDataResult<DocumentContentDto>>(new ErrorDataResult<DocumentContentDto>("test"));
 
