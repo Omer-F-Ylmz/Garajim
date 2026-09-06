@@ -45,7 +45,7 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<EvrakDto>>(await ErisilebilirleriHazirlaAsync(user, kayitlar));
         }
 
-        public static readonly string[] SiralamaAlanlari = { "tarih", "tur", "saglayici" };
+        public static readonly string[] SiralamaAlanlari = { "tarih", "tur", "saglayici", "durum" };
 
         public async Task<IDataResult<SayfaliSonuc<EvrakDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu)
         {

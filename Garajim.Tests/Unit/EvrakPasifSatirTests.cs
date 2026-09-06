@@ -17,7 +17,7 @@ namespace Garajim.Tests.Unit
         private static string Govde()
         {
             var app = Oku("app.js");
-            var bas = app.IndexOf("function renderEvrakRows(", StringComparison.Ordinal);
+            var bas = app.IndexOf("function evrakSatiri(", StringComparison.Ordinal);
             var son = app.IndexOf("function evrakiDuzenle(", bas, StringComparison.Ordinal);
 
             Assert.True(bas > 0 && son > bas);

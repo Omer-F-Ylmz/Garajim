@@ -625,5 +625,18 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        [Fact]
+        public async Task EvrakDurumSiralamasiAktifleriOneAlir()
+        {
+            var (client, aracId) = await HazirlaAsync("evrakdurum", "34LS1040");
+            await EvrakEkleAsync(client, aracId, "Muayene", 300, "Aktif Uzak");
+            await EvrakEkleAsync(client, aracId, "Kasko", 20, "Aktif Yakin");
+
+            var liste = await VeriAsync(client, $"/api/Evrak?vehicleId={aracId}&sirala=durum:desc");
+
+            Assert.Equal("Aktif Yakin", liste.GetProperty("kayitlar")[0].GetProperty("saglayici").GetString());
+            Assert.Equal("Aktif Uzak", liste.GetProperty("kayitlar")[1].GetProperty("saglayici").GetString());
+        }
     }
 }

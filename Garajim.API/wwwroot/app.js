@@ -2451,6 +2451,24 @@
         return parcalar.join("&");
     }
 
+    function yolculukSatiri(kayit) {
+        var tr = document.createElement("tr");
+        tr.appendChild(make("td", formatDate(kayit.tarih)));
+        tr.appendChild(make("td", labelOf(YOLCULUK_AMAC, kayit.amac)));
+        tr.appendChild(make("td", km(kayit.baslangicKm)));
+        tr.appendChild(make("td", km(kayit.bitisKm)));
+        tr.appendChild(make("td", km(kayit.mesafeKm)));
+
+        var guzergah = [kayit.nereden, kayit.nereye].filter(Boolean).join(" → ");
+        tr.appendChild(make("td", guzergah || "-"));
+        tr.appendChild(make("td", kayit.surucuAdi || "-"));
+
+        tr.appendChild(duzenleButonu(function () { yolculugoDuzenle(kayit); }));
+        tr.appendChild(deleteButton(function () { yolculukSil(kayit.id); }));
+
+        return tr;
+    }
+
     function renderYolculukRows(kayitlar) {
         var tbody = el("yolculuk-rows");
         clear(tbody);
@@ -2461,23 +2479,32 @@
         }
 
         kayitlar.forEach(function (kayit) {
-            var tr = document.createElement("tr");
-            tr.appendChild(make("td", formatDate(kayit.tarih)));
-            tr.appendChild(make("td", labelOf(YOLCULUK_AMAC, kayit.amac)));
-            tr.appendChild(make("td", km(kayit.baslangicKm)));
-            tr.appendChild(make("td", km(kayit.bitisKm)));
-            tr.appendChild(make("td", km(kayit.mesafeKm)));
-
-            var guzergah = [kayit.nereden, kayit.nereye].filter(Boolean).join(" → ");
-            tr.appendChild(make("td", guzergah || "-"));
-            tr.appendChild(make("td", kayit.surucuAdi || "-"));
-
-            tr.appendChild(duzenleButonu(function () { yolculugoDuzenle(kayit); }));
-            tr.appendChild(deleteButton(function () { yolculukSil(kayit.id); }));
-
-            tbody.appendChild(tr);
+            tbody.appendChild(yolculukSatiri(kayit));
         });
     }
+
+    var yolculukDenetimi = listeDenetimi({
+        anahtar: "yolculuk",
+        cubukId: "yolculuk-liste-araclar",
+        govdeId: "yolculuk-rows",
+        bosAnahtar: "yolculuk",
+        sutunSayisi: 9,
+        varsayilanAlan: "tarih",
+        tarihSuzgeci: false,
+        aramaEtiketi: "Yolculuklarda ara",
+        aramaIpucu: "Nereden, nereye ya da not",
+        siralamalar: [
+            { baslikId: "yolculuk-bas-tarih", alan: "tarih" },
+            { baslikId: "yolculuk-bas-amac", alan: "amac" },
+            { baslikId: "yolculuk-bas-mesafe", alan: "mesafe" }
+        ],
+        uc: function () {
+            var yol = "/api/Yolculuk?vehicleId=" + state.selectedVehicleId;
+            var aralik = yolculukAraligi();
+            return aralik ? yol + "&" + aralik : yol;
+        },
+        satir: yolculukSatiri
+    });
 
     function yolculugoDuzenle(kayit) {
         state.duzenlenenYolculukId = kayit.id;
@@ -2520,8 +2547,7 @@
             sorgu += "&" + aralik;
         }
 
-        return api("/api/Yolculuk?" + sorgu).then(function (result) {
-            renderYolculukRows((result && result.data) || []);
+        return listeDenetimiKur(yolculukDenetimi).then(function () {
             return api("/api/Yolculuk/ozet?" + sorgu);
         }).then(function (result) {
             var ozet = (result && result.data) || {};
@@ -5701,6 +5727,42 @@
         Gecti: "Geçti"
     };
 
+    function evrakSatiri(item) {
+        var tr = document.createElement("tr");
+
+        if (!item.aktif) {
+            tr.className = "evrak-pasif";
+        }
+
+        tr.appendChild(make("td", item.evrakAdi));
+        tr.appendChild(make("td", item.plaka || item.kullaniciAdi || "-"));
+        tr.appendChild(make("td", formatDate(item.bitisTarihi)));
+        tr.appendChild(make("td", kalanGunMetni(item)));
+        tr.appendChild(make("td", item.saglayici || "-"));
+
+        tr.appendChild(item.aktif
+            ? make("td", EVRAK_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase())
+            : make("td", "Geçersiz", "durum-pasif"));
+
+        var hucre = make("td", "", "row-actions");
+
+        if (item.aktif && canManage()) {
+            var yenile = make("button", "Yenile", "link-btn");
+            yenile.type = "button";
+            yenile.addEventListener("click", function () { evrakYenile(item.id); });
+            hucre.appendChild(yenile);
+
+            var duzenle = make("button", "Düzenle", "link-btn");
+            duzenle.type = "button";
+            duzenle.addEventListener("click", function () { evrakiDuzenle(item); });
+            hucre.appendChild(duzenle);
+        }
+
+        tr.appendChild(hucre);
+
+        return tr;
+    }
+
     function renderEvrakRows(rows) {
         var tbody = el("evrak-rows");
         clear(tbody);
@@ -5717,40 +5779,31 @@
 
             return String(a.bitisTarihi).localeCompare(String(b.bitisTarihi));
         }).forEach(function (item) {
-            var tr = document.createElement("tr");
-
-            if (!item.aktif) {
-                tr.className = "evrak-pasif";
-            }
-
-            tr.appendChild(make("td", item.evrakAdi));
-            tr.appendChild(make("td", item.plaka || item.kullaniciAdi || "-"));
-            tr.appendChild(make("td", formatDate(item.bitisTarihi)));
-            tr.appendChild(make("td", kalanGunMetni(item)));
-            tr.appendChild(make("td", item.saglayici || "-"));
-
-            tr.appendChild(item.aktif
-                ? make("td", EVRAK_STATUS[item.durum] || item.durum, "durum-" + item.durum.toLowerCase())
-                : make("td", "Geçersiz", "durum-pasif"));
-
-            var hucre = make("td", "", "row-actions");
-
-            if (item.aktif && canManage()) {
-                var yenile = make("button", "Yenile", "link-btn");
-                yenile.type = "button";
-                yenile.addEventListener("click", function () { evrakYenile(item.id); });
-                hucre.appendChild(yenile);
-
-                var duzenle = make("button", "Düzenle", "link-btn");
-                duzenle.type = "button";
-                duzenle.addEventListener("click", function () { evrakiDuzenle(item); });
-                hucre.appendChild(duzenle);
-            }
-
-            tr.appendChild(hucre);
-            tbody.appendChild(tr);
+            tbody.appendChild(evrakSatiri(item));
         });
     }
+
+    var evrakDenetimi = listeDenetimi({
+        anahtar: "evrak",
+        cubukId: "evrak-liste-araclar",
+        govdeId: "evrak-rows",
+        bosAnahtar: "evrak",
+        sutunSayisi: 7,
+        varsayilanAlan: "durum",
+        tarihSuzgeci: false,
+        aramaEtiketi: "Evraklarda ara",
+        aramaIpucu: "Sağlayıcı, poliçe ya da not",
+        siralamalar: [
+            { baslikId: "evrak-bas-tur", alan: "tur" },
+            { baslikId: "evrak-bas-tarih", alan: "tarih" },
+            { baslikId: "evrak-bas-saglayici", alan: "saglayici" },
+            { baslikId: "evrak-bas-durum", alan: "durum" }
+        ],
+        uc: function () {
+            return state.selectedVehicleId ? "/api/Evrak?vehicleId=" + state.selectedVehicleId : "/api/Evrak";
+        },
+        satir: evrakSatiri
+    });
 
     function kalanGunMetni(item) {
         if (!item.aktif) {
@@ -5792,12 +5845,7 @@
     }
 
     function loadEvrak() {
-        var yol = state.selectedVehicleId ? "/api/Evrak?vehicleId=" + state.selectedVehicleId : "/api/Evrak";
-        api(yol).then(function (result) {
-            renderEvrakRows((result && result.data) || []);
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
-        });
+        return listeDenetimiKur(evrakDenetimi);
     }
 
     function loadEvrakAy() {

@@ -97,6 +97,9 @@ namespace Garajim.Dal.Concrete
                 "tur" => siralama.Artan
                     ? sorgulama.OrderBy(e => e.EvrakTuru).ThenBy(e => e.Id)
                     : sorgulama.OrderByDescending(e => e.EvrakTuru).ThenByDescending(e => e.Id),
+                "durum" => siralama.Artan
+                    ? sorgulama.OrderBy(e => e.Aktif).ThenBy(e => e.BitisTarihi).ThenBy(e => e.Id)
+                    : sorgulama.OrderByDescending(e => e.Aktif).ThenBy(e => e.BitisTarihi).ThenBy(e => e.Id),
                 "saglayici" => siralama.Artan
                     ? sorgulama.OrderBy(e => e.Saglayici).ThenBy(e => e.Id)
                     : sorgulama.OrderByDescending(e => e.Saglayici).ThenByDescending(e => e.Id),
