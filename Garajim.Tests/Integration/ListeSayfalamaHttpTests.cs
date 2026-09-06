@@ -566,5 +566,64 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task BelgeEkleAsync(HttpClient client, int aracId, string dosyaAdi)
+        {
+            using var icerik = new MultipartFormDataContent();
+            var dosya = new ByteArrayContent(new byte[] { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34 });
+            dosya.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            icerik.Add(dosya, "file", dosyaAdi);
+            icerik.Add(new StringContent(aracId.ToString()), "vehicleId");
+
+            var cevap = await client.PostAsync("/api/Documents", icerik);
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task BelgeParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("belgeduz", "34LS1036");
+            await BelgeEkleAsync(client, aracId, "ruhsat.pdf");
+
+            var veri = await VeriAsync(client, "/api/Documents?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task BelgeDosyaAdindaAranir()
+        {
+            var (client, aracId) = await HazirlaAsync("belgeara", "34LS1037");
+            await BelgeEkleAsync(client, aracId, "muayene-raporu.pdf");
+            await BelgeEkleAsync(client, aracId, "kasko-police.pdf");
+
+            var veri = await VeriAsync(client, $"/api/Documents?vehicleId={aracId}&q=KASKO");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task BelgeAdaGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("belgesira", "34LS1038");
+            await BelgeEkleAsync(client, aracId, "zeytin.pdf");
+            await BelgeEkleAsync(client, aracId, "ada.pdf");
+
+            var veri = await VeriAsync(client, $"/api/Documents?vehicleId={aracId}&sirala=ad:asc");
+
+            Assert.Equal("ada.pdf", veri.GetProperty("kayitlar")[0].GetProperty("originalName").GetString());
+        }
+
+        [Fact]
+        public async Task BelgeGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("belgekotu", "34LS1039");
+
+            var cevap = await client.GetAsync($"/api/Documents?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }

@@ -11,6 +11,9 @@ namespace Garajim.Tests.Integration
         public Task<IDataResult<List<DocumentDto>>> GetListAsync(int userId, int? vehicleId, int? maintenanceRecordId)
             => Task.FromResult<IDataResult<List<DocumentDto>>>(new SuccessDataResult<List<DocumentDto>>(new List<DocumentDto>()));
 
+        public Task<IDataResult<SayfaliSonuc<DocumentDto>>> GetSayfaAsync(int userId, int? vehicleId, int? maintenanceRecordId, ListeSorgusu sorgu)
+            => Task.FromResult<IDataResult<SayfaliSonuc<DocumentDto>>>(new SuccessDataResult<SayfaliSonuc<DocumentDto>>(new SayfaliSonuc<DocumentDto>(new List<DocumentDto>(), 0, 1, 25)));
+
         public Task<IDataResult<DocumentDto>> UploadAsync(int userId, DocumentUploadDto dto)
             => Task.FromResult<IDataResult<DocumentDto>>(new ErrorDataResult<DocumentDto>("test"));
 
