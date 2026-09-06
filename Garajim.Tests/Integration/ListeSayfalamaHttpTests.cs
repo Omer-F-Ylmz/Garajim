@@ -250,5 +250,66 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task MasrafEkleAsync(HttpClient client, int aracId, int gunOnce, decimal tutar, string not)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Expenses", new
+            {
+                vehicleId = aracId,
+                category = "Otopark",
+                date = DateTime.UtcNow.Date.AddDays(-gunOnce),
+                amount = tutar,
+                note = not
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task MasrafParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("masrafduz", "34LS1015");
+            await MasrafEkleAsync(client, aracId, 3, 250m, "otopark");
+
+            var veri = await VeriAsync(client, "/api/Expenses?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task MasrafAramaVeSayfalamaCalisir()
+        {
+            var (client, aracId) = await HazirlaAsync("masrafara", "34LS1016");
+            await MasrafEkleAsync(client, aracId, 5, 250m, "Şişli otoparkı");
+            await MasrafEkleAsync(client, aracId, 4, 120m, "köprü geçişi");
+
+            var veri = await VeriAsync(client, $"/api/Expenses?vehicleId={aracId}&q=SISLI");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+            Assert.Equal(1, veri.GetProperty("kayitlar").GetArrayLength());
+        }
+
+        [Fact]
+        public async Task MasrafTutaraGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("masrafsira", "34LS1017");
+            await MasrafEkleAsync(client, aracId, 5, 250m, "a");
+            await MasrafEkleAsync(client, aracId, 4, 120m, "b");
+
+            var veri = await VeriAsync(client, $"/api/Expenses?vehicleId={aracId}&sirala=tutar:asc");
+
+            Assert.Equal(120m, veri.GetProperty("kayitlar")[0].GetProperty("amount").GetDecimal());
+        }
+
+        [Fact]
+        public async Task MasrafGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("masrafkotu", "34LS1018");
+
+            var cevap = await client.GetAsync($"/api/Expenses?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }

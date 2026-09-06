@@ -6,6 +6,7 @@ namespace Garajim.Business.Abstract
     public interface IExpenseService
     {
         Task<IDataResult<List<ExpenseDto>>> GetListAsync(int userId, int vehicleId);
+        Task<IDataResult<SayfaliSonuc<ExpenseDto>>> GetSayfaAsync(int userId, int vehicleId, ListeSorgusu sorgu);
         Task<IDataResult<ExpenseDto>> AddAsync(int userId, ExpenseCreateDto dto);
         Task<IResult> DeleteAsync(int userId, int id);
     }
