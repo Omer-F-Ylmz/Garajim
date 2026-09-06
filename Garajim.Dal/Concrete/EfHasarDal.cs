@@ -1,7 +1,9 @@
 using Garajim.Core.DataAccess.EntityFramework;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete.Context;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +31,30 @@ namespace Garajim.Dal.Concrete
             return await Context.HasarDosyalari
                 .AsNoTracking()
                 .CountAsync(h => vehicleIds.Contains(h.VehicleId) && h.Durum != HasarDurumu.Kapandi);
+        }
+        public Task<SayfaliSonuc<HasarDosyasi>> SayfaAsync(List<int> vehicleIds, ListeSorgusu sorgu, SiralamaSonucu siralama)
+        {
+            var sorgulama = Context.HasarDosyalari.AsNoTracking().Where(h => vehicleIds.Contains(h.VehicleId));
+            var metin = TurkceArama.Iceren<HasarDosyasi>(sorgu.GecerliQ(),
+                h => h.Aciklama, h => h.Konum, h => h.KarsiTarafPlaka, h => h.SigortaDosyaNo);
+
+            return Sayfalayici.UygulaAsync(sorgulama, sorgu, siralama, h => h.OlayTarihi, metin, Sirala);
+        }
+
+        private static IQueryable<HasarDosyasi> Sirala(IQueryable<HasarDosyasi> sorgulama, SiralamaSonucu siralama)
+        {
+            return siralama.Alan switch
+            {
+                "durum" => siralama.Artan
+                    ? sorgulama.OrderBy(h => h.Durum).ThenBy(h => h.Id)
+                    : sorgulama.OrderByDescending(h => h.Durum).ThenByDescending(h => h.Id),
+                "bedel" => siralama.Artan
+                    ? sorgulama.OrderBy(h => h.HasarBedeli).ThenBy(h => h.Id)
+                    : sorgulama.OrderByDescending(h => h.HasarBedeli).ThenByDescending(h => h.Id),
+                _ => siralama.Artan
+                    ? sorgulama.OrderBy(h => h.OlayTarihi).ThenBy(h => h.Id)
+                    : sorgulama.OrderByDescending(h => h.OlayTarihi).ThenByDescending(h => h.Id)
+            };
         }
     }
 

@@ -7,6 +7,7 @@ namespace Garajim.Business.Abstract
     public interface IHasarService
     {
         Task<IDataResult<List<HasarDto>>> GetListAsync(int userId, int? vehicleId);
+        Task<IDataResult<SayfaliSonuc<HasarDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu);
         Task<IDataResult<HasarDto>> GetAsync(int userId, int id);
         Task<IDataResult<HasarDto>> OlusturAsync(int userId, HasarOlusturDto dto);
         Task<IResult> GuncelleAsync(int userId, int id, HasarGuncelleDto dto);

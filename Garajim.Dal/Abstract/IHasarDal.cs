@@ -1,5 +1,6 @@
 using Garajim.Core.DataAccess;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
 
 namespace Garajim.Dal.Abstract
 {
@@ -7,6 +8,7 @@ namespace Garajim.Dal.Abstract
     {
         Task<List<HasarDosyasi>> GetListeAsync(List<int> vehicleIds, int limit);
         Task<int> AcikSayisiAsync(List<int> vehicleIds);
+        Task<SayfaliSonuc<HasarDosyasi>> SayfaAsync(List<int> vehicleIds, ListeSorgusu sorgu, SiralamaSonucu siralama);
     }
 
     public interface IHasarFotoDal : IEntityRepository<HasarFoto>

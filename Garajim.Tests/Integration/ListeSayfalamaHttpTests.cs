@@ -429,5 +429,66 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task HasarEkleAsync(HttpClient client, int aracId, int gunOnce, string aciklama)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Hasar", new
+            {
+                vehicleId = aracId,
+                olayTarihi = DateTime.UtcNow.Date.AddDays(-gunOnce),
+                tur = "Kaza",
+                konum = "Ön tampon",
+                aciklama,
+                tutanakTuru = "Anlasmali"
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task HasarParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("hasarduz", "34LS1027");
+            await HasarEkleAsync(client, aracId, 5, "park halinde çizik");
+
+            var veri = await VeriAsync(client, "/api/Hasar?aracId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task HasarAciklamadaAranir()
+        {
+            var (client, aracId) = await HazirlaAsync("hasarara", "34LS1028");
+            await HasarEkleAsync(client, aracId, 5, "Şişli'de çarpma");
+            await HasarEkleAsync(client, aracId, 4, "dolu hasarı");
+
+            var veri = await VeriAsync(client, $"/api/Hasar?aracId={aracId}&q=sisli");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task HasarTarihineGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("hasarsira", "34LS1029");
+            await HasarEkleAsync(client, aracId, 40, "eski olay");
+            await HasarEkleAsync(client, aracId, 2, "yeni olay");
+
+            var veri = await VeriAsync(client, $"/api/Hasar?aracId={aracId}&sirala=tarih:asc");
+
+            Assert.Equal("eski olay", veri.GetProperty("kayitlar")[0].GetProperty("aciklama").GetString());
+        }
+
+        [Fact]
+        public async Task HasarGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("hasarkotu", "34LS1030");
+
+            var cevap = await client.GetAsync($"/api/Hasar?aracId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }

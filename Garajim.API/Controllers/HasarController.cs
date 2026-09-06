@@ -34,8 +34,18 @@ namespace Garajim.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetList([FromQuery] int? aracId)
+        public async Task<IActionResult> GetList([FromQuery] int? aracId, [FromQuery] ListeSorgusu sorgu)
         {
+            if (sorgu != null && sorgu.ZarfIster)
+            {
+                var sayfali = await _hasarService.GetSayfaAsync(CurrentUserId, aracId, sorgu);
+
+                if (!sayfali.Success)
+                    return sayfali.Message == Messages.SiralamaGecersiz ? BadRequest(sayfali) : NotFound(sayfali);
+
+                return Ok(sayfali);
+            }
+
             return Sonuc(await _hasarService.GetListAsync(CurrentUserId, aracId));
         }
 

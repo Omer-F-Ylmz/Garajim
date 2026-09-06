@@ -74,6 +74,48 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<HasarDto>>(liste);
         }
 
+        public static readonly string[] SiralamaAlanlari = { "tarih", "durum", "bedel" };
+
+        public async Task<IDataResult<SayfaliSonuc<HasarDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu)
+        {
+            List<Vehicle> araclar;
+
+            if (vehicleId != null)
+            {
+                var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId.Value);
+                if (vehicle == null)
+                    return new ErrorDataResult<SayfaliSonuc<HasarDto>>(Messages.VehicleNotFound);
+                araclar = new List<Vehicle> { vehicle };
+            }
+            else
+            {
+                araclar = await _vehicleAccess.GetAccessibleListAsync(userId);
+            }
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<HasarDto>>(Messages.SiralamaGecersiz);
+
+            if (araclar.Count == 0)
+                return new SuccessDataResult<SayfaliSonuc<HasarDto>>(
+                    new SayfaliSonuc<HasarDto>(new List<HasarDto>(), 0, sorgu.GecerliSayfa(), sorgu.GecerliBoyut()));
+
+            var plakalar = araclar.ToDictionary(a => a.Id, a => a.Plate);
+            var sayfa = await _dosyaDal.SayfaAsync(araclar.Select(a => a.Id).ToList(), sorgu, siralama);
+            var sayilar = await _fotoDal.SayilarAsync(sayfa.Kayitlar.Select(d => d.Id).ToList());
+            var liste = new List<HasarDto>();
+
+            foreach (var dosya in sayfa.Kayitlar)
+            {
+                var dto = MapToDto(dosya, plakalar);
+                dto.FotoSayisi = sayilar.TryGetValue(dosya.Id, out var sayi) ? sayi : 0;
+                liste.Add(dto);
+            }
+
+            return new SuccessDataResult<SayfaliSonuc<HasarDto>>(
+                new SayfaliSonuc<HasarDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<HasarDto>> GetAsync(int userId, int id)
         {
             var erisim = await ErisimAsync(userId, id);
