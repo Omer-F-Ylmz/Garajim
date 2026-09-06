@@ -44,9 +44,7 @@ namespace Garajim.Entity.Dtos
             !string.IsNullOrWhiteSpace(Q)
             || !string.IsNullOrWhiteSpace(Sirala)
             || Sayfa != null
-            || Boyut != null
-            || Baslangic != null
-            || Bitis != null;
+            || Boyut != null;
 
         public int GecerliBoyut()
         {

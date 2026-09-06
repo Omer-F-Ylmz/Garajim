@@ -26,9 +26,16 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public void TarihAraligiDaZarfIster()
+        public void YalnizTarihAraligiZarfIstemez()
         {
-            Assert.True(new ListeSorgusu { Baslangic = new DateTime(2026, 1, 1) }.ZarfIster);
+            Assert.False(new ListeSorgusu { Baslangic = new DateTime(2026, 1, 1) }.ZarfIster);
+            Assert.False(new ListeSorgusu { Bitis = new DateTime(2026, 1, 1) }.ZarfIster);
+        }
+
+        [Fact]
+        public void TarihAraligiSayfaylaBirlikteZarfIster()
+        {
+            Assert.True(new ListeSorgusu { Baslangic = new DateTime(2026, 1, 1), Sayfa = 1 }.ZarfIster);
         }
 
         [Theory]

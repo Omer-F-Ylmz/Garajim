@@ -167,7 +167,7 @@ namespace Garajim.Tests.Integration
             await BakimEkleAsync(client, aracId, 2, 42000, "Yeni", "b");
 
             var bas = DateTime.UtcNow.Date.AddDays(-10).ToString("yyyy-MM-dd");
-            var veri = await VeriAsync(client, $"/api/Maintenance?vehicleId={aracId}&baslangic={bas}");
+            var veri = await VeriAsync(client, $"/api/Maintenance?vehicleId={aracId}&baslangic={bas}&sayfa=1");
 
             Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
             Assert.Equal("Yeni", veri.GetProperty("kayitlar")[0].GetProperty("serviceName").GetString());
@@ -236,7 +236,7 @@ namespace Garajim.Tests.Integration
             await YakitEkleAsync(client, aracId, 2, 42000, 35m);
 
             var bas = DateTime.UtcNow.Date.AddDays(-10).ToString("yyyy-MM-dd");
-            var veri = await VeriAsync(client, $"/api/Fuel?vehicleId={aracId}&baslangic={bas}");
+            var veri = await VeriAsync(client, $"/api/Fuel?vehicleId={aracId}&baslangic={bas}&sayfa=1");
 
             Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
         }
