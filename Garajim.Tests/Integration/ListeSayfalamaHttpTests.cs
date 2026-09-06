@@ -370,5 +370,64 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
         }
+
+        private static async Task EvrakEkleAsync(HttpClient client, int aracId, string tur, int gunSonra, string saglayici)
+        {
+            var cevap = await client.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId,
+                evrakTuru = tur,
+                bitisTarihi = DateTime.UtcNow.Date.AddDays(gunSonra),
+                saglayici
+            });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task EvrakParametresizIstekEskiDuzBicimiKorur()
+        {
+            var (client, aracId) = await HazirlaAsync("evrakduz", "34LS1023");
+            await EvrakEkleAsync(client, aracId, "Muayene", 200, "TÜVTÜRK");
+
+            var veri = await VeriAsync(client, "/api/Evrak?vehicleId=" + aracId);
+
+            Assert.Equal(JsonValueKind.Array, veri.ValueKind);
+            Assert.Equal(1, veri.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task EvrakSaglayiciyaGoreAranir()
+        {
+            var (client, aracId) = await HazirlaAsync("evrakara", "34LS1024");
+            await EvrakEkleAsync(client, aracId, "Muayene", 200, "TÜVTÜRK");
+            await EvrakEkleAsync(client, aracId, "Kasko", 150, "Anadolu Sigorta");
+
+            var veri = await VeriAsync(client, $"/api/Evrak?vehicleId={aracId}&q=tuvturk");
+
+            Assert.Equal(1, veri.GetProperty("toplam").GetInt32());
+        }
+
+        [Fact]
+        public async Task EvrakBitisTarihineGoreSiralanir()
+        {
+            var (client, aracId) = await HazirlaAsync("evraksira", "34LS1025");
+            await EvrakEkleAsync(client, aracId, "Muayene", 300, "Uzak");
+            await EvrakEkleAsync(client, aracId, "Kasko", 20, "Yakin");
+
+            var veri = await VeriAsync(client, $"/api/Evrak?vehicleId={aracId}&sirala=tarih:asc");
+
+            Assert.Equal("Yakin", veri.GetProperty("kayitlar")[0].GetProperty("saglayici").GetString());
+        }
+
+        [Fact]
+        public async Task EvrakGecersizSiralamaAlaniDortYuzDoner()
+        {
+            var (client, aracId) = await HazirlaAsync("evrakkotu", "34LS1026");
+
+            var cevap = await client.GetAsync($"/api/Evrak?vehicleId={aracId}&sirala=plaka:desc");
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
     }
 }

@@ -1,7 +1,9 @@
 using Garajim.Core.DataAccess.EntityFramework;
 using Garajim.Dal.Abstract;
 using Garajim.Dal.Concrete.Context;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
+using Garajim.Entity.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garajim.Dal.Concrete
@@ -67,5 +69,42 @@ namespace Garajim.Dal.Concrete
                 .Where(e => e.Id == id)
                 .ExecuteUpdateAsync(setters => setters.SetProperty(e => e.Aktif, false));
         }
+        public Task<SayfaliSonuc<EvrakKaydi>> SayfaAsync(int? vehicleId, int? surucuKullaniciId, List<int> erisilebilirAracIdler, ListeSorgusu sorgu, SiralamaSonucu siralama)
+        {
+            var sorgulama = Context.EvrakKayitlari.AsNoTracking().AsQueryable();
+
+            if (vehicleId != null)
+            {
+                sorgulama = sorgulama.Where(e => e.VehicleId == vehicleId);
+            }
+
+            if (surucuKullaniciId != null)
+            {
+                var idler = erisilebilirAracIdler ?? new List<int>();
+                sorgulama = sorgulama.Where(e => e.UserId == surucuKullaniciId
+                    || (e.UserId == null && e.VehicleId != null && idler.Contains(e.VehicleId.Value)));
+            }
+
+            var metin = TurkceArama.Iceren<EvrakKaydi>(sorgu.GecerliQ(), e => e.Saglayici, e => e.PoliceNo, e => e.Not);
+
+            return Sayfalayici.UygulaAsync(sorgulama, sorgu, siralama, e => e.BitisTarihi, metin, Sirala);
+        }
+
+        private static IQueryable<EvrakKaydi> Sirala(IQueryable<EvrakKaydi> sorgulama, SiralamaSonucu siralama)
+        {
+            return siralama.Alan switch
+            {
+                "tur" => siralama.Artan
+                    ? sorgulama.OrderBy(e => e.EvrakTuru).ThenBy(e => e.Id)
+                    : sorgulama.OrderByDescending(e => e.EvrakTuru).ThenByDescending(e => e.Id),
+                "saglayici" => siralama.Artan
+                    ? sorgulama.OrderBy(e => e.Saglayici).ThenBy(e => e.Id)
+                    : sorgulama.OrderByDescending(e => e.Saglayici).ThenByDescending(e => e.Id),
+                _ => siralama.Artan
+                    ? sorgulama.OrderBy(e => e.BitisTarihi).ThenBy(e => e.Id)
+                    : sorgulama.OrderByDescending(e => e.BitisTarihi).ThenByDescending(e => e.Id)
+            };
+        }
     }
 }
+

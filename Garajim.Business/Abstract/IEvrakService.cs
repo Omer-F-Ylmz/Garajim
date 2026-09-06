@@ -6,6 +6,7 @@ namespace Garajim.Business.Abstract
     public interface IEvrakService
     {
         Task<IDataResult<List<EvrakDto>>> GetListAsync(int userId, int? vehicleId);
+        Task<IDataResult<SayfaliSonuc<EvrakDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu);
         Task<IDataResult<List<EvrakDto>>> GetTakvimAsync(int userId, string ay);
         Task<IDataResult<EvrakDto>> GetByIdAsync(int userId, int id);
         Task<IDataResult<EvrakDto>> AddAsync(int userId, EvrakCreateDto dto);

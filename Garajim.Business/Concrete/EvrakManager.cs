@@ -45,6 +45,38 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<EvrakDto>>(await ErisilebilirleriHazirlaAsync(user, kayitlar));
         }
 
+        public static readonly string[] SiralamaAlanlari = { "tarih", "tur", "saglayici" };
+
+        public async Task<IDataResult<SayfaliSonuc<EvrakDto>>> GetSayfaAsync(int userId, int? vehicleId, ListeSorgusu sorgu)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+            if (user == null)
+                return new ErrorDataResult<SayfaliSonuc<EvrakDto>>(Messages.UserNotFound);
+
+            if (vehicleId != null && await _vehicleAccess.GetAccessibleAsync(userId, vehicleId.Value) == null)
+                return new ErrorDataResult<SayfaliSonuc<EvrakDto>>(Messages.VehicleNotFound);
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<EvrakDto>>(Messages.SiralamaGecersiz);
+
+            var surucu = user.Role == CompanyRole.Driver;
+            var erisilebilir = surucu
+                ? (await _vehicleAccess.GetAccessibleListAsync(userId)).Select(v => v.Id).ToList()
+                : new List<int>();
+
+            var sayfa = await _evrakDal.SayfaAsync(vehicleId, surucu ? userId : null, erisilebilir, sorgu, siralama);
+
+            var liste = new List<EvrakDto>();
+            foreach (var kayit in sayfa.Kayitlar)
+            {
+                liste.Add(await MapAsync(kayit));
+            }
+
+            return new SuccessDataResult<SayfaliSonuc<EvrakDto>>(
+                new SayfaliSonuc<EvrakDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<List<EvrakDto>>> GetTakvimAsync(int userId, string ay)
         {
             var user = await _userDal.GetAsync(u => u.Id == userId);
