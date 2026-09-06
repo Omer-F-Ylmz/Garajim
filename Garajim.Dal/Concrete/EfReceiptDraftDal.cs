@@ -5,7 +5,6 @@ using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
-using Garajim.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garajim.Dal.Concrete

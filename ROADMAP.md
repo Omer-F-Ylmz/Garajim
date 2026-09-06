@@ -319,6 +319,16 @@ Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklard
 | DÜZELTME-3b (kış lastiği penceresi 15 Kas–15 Nis, dört mevsim M+S sayılır) | `1b9788d` |
 | DENETİM-2 bulguları | `ea3e7e0` `75423f6` `7d9a7b0` `5d4d993` `6f819b7` `5281b7b` `1964557` |
 
+## KULLANIM-1 ertelenenleri
+
+Sprint KULLANIM-1'de bilinçli olarak açılmadan bırakılanlar; sebebiyle birlikte duruyor ki yeniden keşfedilmesin.
+
+- [ ] **Dışa aktarım uçlarına `q` parametresi** — liste uçları arama alıyor, `ExportController` almıyor. Kullanıcı listede süzdüğünü aynı süzgeçle indiremiyor; `ExportManager` sorgularının `TurkceArama` ile beslenmesi gerekiyor.
+- [ ] **`app.js` içindeki çift `seciliArac` tanımı** — aynı işi yapan iki tanım var (bugün ikisi de aynı sonucu döndürüyor, davranış etkilenmiyor). JS'te son tanım kazandığı için sessiz; biri silinmeli.
+- [ ] **Hasar, belge kutusu ve fiş taslağı listelerinde zarf arayüzü** — API zarfı üçünde de hazır, SPA düz yolu kullanmaya devam ediyor. Bu listeler bugün kısa olduğu için ertelendi; hasar tarafı ayrıca `/api/Vehicles/{id}/hasar` ucunu kullanıyor, zarf `/api/Hasar`'da.
+- [ ] **PDF'in tarayıcı içinde önizlenmesi** — `object-src 'none'` ve `X-Frame-Options: DENY` gömmeyi kapatıyor, `img-src 'self' data:` de `blob:`e izin vermiyor. CSP gevşetilmeden çözmek için karne/takvim gibi imzalı anonim önizleme ucu tasarlanmalı.
+- [ ] **Lastik durumu ucunda sayfalama** — `GET /api/Lastik` bir liste değil, içinde `Setler` taşıyan durum nesnesi; zarf sözleşmesi doğrudan oturmuyor.
+
 ## Sonraki (planlanmamış)
 
 - [ ] Abonelik ve ödeme sağlayıcı entegrasyonu — bugün plan yükseltme talebi destek kutusuna e-posta olarak düşer, faturalandırma yok
