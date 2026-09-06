@@ -1348,7 +1348,7 @@
         var durum = {
             q: kaydedilen.q || "",
             alan: kaydedilen.alan || ayar.varsayilanAlan,
-            artan: kaydedilen.artan === true,
+            artan: kaydedilen.artan === undefined ? ayar.artanVarsayilan === true : kaydedilen.artan === true,
             aralik: kaydedilen.aralik || "tum",
             sayfa: 1,
             boyut: ayar.boyut || 25
@@ -1589,7 +1589,10 @@
             }
 
             kap.dataset.kuruldu = "1";
-            kap.appendChild(aramaAlani());
+
+            if (ayar.aramaKapali !== true) {
+                kap.appendChild(aramaAlani());
+            }
 
             if (ayar.tarihSuzgeci !== false) {
                 kap.appendChild(aralikDugmeleri());
@@ -1634,8 +1637,10 @@
                         satir.className = "empty-row";
                         satir.appendChild(hucre);
                         govde.appendChild(satir);
-                    } else {
+                    } else if (ayar.bosAnahtar) {
                         bosSatir(govde, ayar.sutunSayisi, ayar.bosAnahtar);
+                    } else {
+                        emptyRow(govde, ayar.sutunSayisi, ayar.bosMetin || "Kayıt yok.");
                     }
                 }
 
@@ -1958,104 +1963,127 @@
         });
     }
 
-    function loadFuel() {
-        var tbody = el("fuel-rows");
-        api("/api/Fuel?vehicleId=" + state.selectedVehicleId).then(function (result) {
-            var rows = (result && result.data) || [];
-            clear(tbody);
-            if (rows.length === 0) {
-                bosSatir(tbody, 6, "yakit");
-                return;
+    var yakitDenetimi = listeDenetimi({
+        anahtar: "yakit",
+        cubukId: "fuel-liste-araclar",
+        govdeId: "fuel-rows",
+        bosAnahtar: "yakit",
+        sutunSayisi: 6,
+        varsayilanAlan: "tarih",
+        aramaKapali: true,
+        siralamalar: [
+            { baslikId: "fuel-bas-tarih", alan: "tarih" },
+            { baslikId: "fuel-bas-km", alan: "km" },
+            { baslikId: "fuel-bas-litre", alan: "litre" },
+            { baslikId: "fuel-bas-tutar", alan: "tutar" }
+        ],
+        uc: function () { return "/api/Fuel?vehicleId=" + state.selectedVehicleId; },
+        satir: function (item) {
+            var tr = document.createElement("tr");
+            var tarihHucre = make("td", formatDate(item.date));
+            if (item.supheliKm) {
+                var rozet = make("span", "şüpheli", "rozet-supheli");
+                var supheliAciklama = "Bu aralıkta hesaplanan tüketim beklenen sınırların dışında; ortalamaya katılmıyor.";
+                rozet.title = supheliAciklama;
+                rozet.setAttribute("aria-label", supheliAciklama);
+                rozet.tabIndex = 0;
+                tarihHucre.appendChild(rozet);
             }
-            rows.forEach(function (item) {
-                var tr = document.createElement("tr");
-                var tarihHucre = make("td", formatDate(item.date));
-                if (item.supheliKm) {
-                    var rozet = make("span", "şüpheli", "rozet-supheli");
-                    var supheliAciklama = "Bu aralıkta hesaplanan tüketim beklenen sınırların dışında; ortalamaya katılmıyor.";
-                    rozet.title = supheliAciklama;
-                    rozet.setAttribute("aria-label", supheliAciklama);
-                    rozet.tabIndex = 0;
-                    tarihHucre.appendChild(rozet);
-                }
-                if (!item.tamDolum) {
-                    tarihHucre.appendChild(make("span", "kısmi", "rozet-kismi"));
-                }
-                tr.appendChild(tarihHucre);
-                tr.appendChild(make("td", km(item.km)));
-                tr.appendChild(make("td", Number(item.liters) > 0 ? literFormat.format(Number(item.liters)) + " L" : "-"));
-                tr.appendChild(make("td", item.kwh === null ? "-" : literFormat.format(Number(item.kwh)) + " kWh" + (item.sarjTuru ? " (" + labelOf(SARJ_TURU, item.sarjTuru) + ")" : "")));
-                tr.appendChild(make("td", money(item.totalCost)));
-                tr.appendChild(deleteButton(function () { removeRecord("/api/Fuel/" + item.id, loadFuel); }));
-                tbody.appendChild(tr);
-            });
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
-        });
+            if (!item.tamDolum) {
+                tarihHucre.appendChild(make("span", "kısmi", "rozet-kismi"));
+            }
+            tr.appendChild(tarihHucre);
+            tr.appendChild(make("td", km(item.km)));
+            tr.appendChild(make("td", Number(item.liters) > 0 ? literFormat.format(Number(item.liters)) + " L" : "-"));
+            tr.appendChild(make("td", item.kwh === null ? "-" : literFormat.format(Number(item.kwh)) + " kWh" + (item.sarjTuru ? " (" + labelOf(SARJ_TURU, item.sarjTuru) + ")" : "")));
+            tr.appendChild(make("td", money(item.totalCost)));
+            tr.appendChild(deleteButton(function () { removeRecord("/api/Fuel/" + item.id, loadFuel); }));
+            return tr;
+        }
+    });
+
+    function loadFuel() {
+        return listeDenetimiKur(yakitDenetimi);
     }
+
+    var masrafDenetimi = listeDenetimi({
+        anahtar: "masraf",
+        cubukId: "expense-liste-araclar",
+        govdeId: "expense-rows",
+        bosAnahtar: "masraf",
+        sutunSayisi: 5,
+        varsayilanAlan: "tarih",
+        aramaEtiketi: "Masraflarda ara",
+        aramaIpucu: "Not",
+        siralamalar: [
+            { baslikId: "expense-bas-tarih", alan: "tarih" },
+            { baslikId: "expense-bas-kategori", alan: "kategori" },
+            { baslikId: "expense-bas-tutar", alan: "tutar" }
+        ],
+        uc: function () { return "/api/Expenses?vehicleId=" + state.selectedVehicleId; },
+        satir: function (item) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", formatDate(item.date)));
+            tr.appendChild(make("td", labelOf(EXPENSE_CATEGORIES, item.category)));
+            tr.appendChild(make("td", money(item.amount)));
+            tr.appendChild(make("td", item.note || "-"));
+            tr.appendChild(deleteButton(function () { removeRecord("/api/Expenses/" + item.id, loadExpenses); }));
+            return tr;
+        }
+    });
 
     function loadExpenses() {
-        var tbody = el("expense-rows");
-        api("/api/Expenses?vehicleId=" + state.selectedVehicleId).then(function (result) {
-            var rows = (result && result.data) || [];
-            clear(tbody);
-            if (rows.length === 0) {
-                bosSatir(tbody, 5, "masraf");
-                return;
-            }
-            rows.forEach(function (item) {
-                var tr = document.createElement("tr");
-                tr.appendChild(make("td", formatDate(item.date)));
-                tr.appendChild(make("td", labelOf(EXPENSE_CATEGORIES, item.category)));
-                tr.appendChild(make("td", money(item.amount)));
-                tr.appendChild(make("td", item.note || "-"));
-                tr.appendChild(deleteButton(function () { removeRecord("/api/Expenses/" + item.id, loadExpenses); }));
-                tbody.appendChild(tr);
-            });
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
-        });
+        return listeDenetimiKur(masrafDenetimi);
     }
 
-    function loadReminders() {
-        var tbody = el("reminder-rows");
-        api("/api/Reminders?vehicleId=" + state.selectedVehicleId).then(function (result) {
-            var rows = (result && result.data) || [];
-            clear(tbody);
-            if (rows.length === 0) {
-                emptyRow(tbody, 5, "Hatırlatma yok.");
-                return;
+    var hatirlatmaDenetimi = listeDenetimi({
+        anahtar: "hatirlatma",
+        cubukId: "reminder-liste-araclar",
+        govdeId: "reminder-rows",
+        bosMetin: "Hatırlatma yok.",
+        sutunSayisi: 5,
+        varsayilanAlan: "tarih",
+        artanVarsayilan: true,
+        tarihSuzgeci: false,
+        aramaEtiketi: "Hatırlatmalarda ara",
+        aramaIpucu: "Not",
+        siralamalar: [
+            { baslikId: "reminder-bas-tarih", alan: "tarih" },
+            { baslikId: "reminder-bas-km", alan: "km" },
+            { baslikId: "reminder-bas-durum", alan: "durum" }
+        ],
+        uc: function () { return "/api/Reminders?vehicleId=" + state.selectedVehicleId; },
+        satir: function (item) {
+            var tr = document.createElement("tr");
+            tr.appendChild(make("td", labelOf(REMINDER_TYPES, item.type)));
+            tr.appendChild(make("td", item.dueDate ? formatDate(item.dueDate) : "-"));
+            tr.appendChild(make("td", item.dueKm ? km(item.dueKm) : "-"));
+
+            var statusCell = document.createElement("td");
+            statusCell.appendChild(make("span", item.isCompleted ? "Tamamlandı" : "Bekliyor", item.isCompleted ? "badge done" : "badge"));
+            tr.appendChild(statusCell);
+
+            var actionCell = document.createElement("td");
+            if (!item.isCompleted) {
+                var completeButton = make("button", "Tamamla", "link-btn");
+                completeButton.type = "button";
+                completeButton.addEventListener("click", function () { completeReminder(item.id); });
+                actionCell.appendChild(completeButton);
             }
-            rows.forEach(function (item) {
-                var tr = document.createElement("tr");
-                tr.appendChild(make("td", labelOf(REMINDER_TYPES, item.type)));
-                tr.appendChild(make("td", item.dueDate ? formatDate(item.dueDate) : "-"));
-                tr.appendChild(make("td", item.dueKm ? km(item.dueKm) : "-"));
+            var deleteLink = make("button", "Sil", "link-btn");
+            deleteLink.type = "button";
+            deleteLink.addEventListener("click", function () { removeRecord("/api/Reminders/" + item.id, loadReminders); });
+            actionCell.appendChild(deleteLink);
+            tr.appendChild(actionCell);
 
-                var statusCell = document.createElement("td");
-                statusCell.appendChild(make("span", item.isCompleted ? "Tamamlandı" : "Bekliyor", item.isCompleted ? "badge done" : "badge"));
-                tr.appendChild(statusCell);
+            return tr;
+        }
+    });
 
-                var actionCell = document.createElement("td");
-                if (!item.isCompleted) {
-                    var completeButton = make("button", "Tamamla", "link-btn");
-                    completeButton.type = "button";
-                    completeButton.addEventListener("click", function () { completeReminder(item.id); });
-                    actionCell.appendChild(completeButton);
-                }
-                var deleteLink = make("button", "Sil", "link-btn");
-                deleteLink.type = "button";
-                deleteLink.addEventListener("click", function () { removeRecord("/api/Reminders/" + item.id, loadReminders); });
-                actionCell.appendChild(deleteLink);
-                tr.appendChild(actionCell);
-
-                tbody.appendChild(tr);
-            });
-        }).finally(function () { if (typeof acKilit === "function") { acKilit(); } }).catch(function (error) {
-            handleError(el("app-message"), error);
-        });
-
+    function loadReminders() {
+        var sonuc = listeDenetimiKur(hatirlatmaDenetimi);
         loadUpcoming();
+        return sonuc;
     }
 
     function loadUpcoming() {
