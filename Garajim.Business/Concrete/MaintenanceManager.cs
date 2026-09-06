@@ -47,7 +47,38 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<List<MaintenanceDto>>(list);
         }
 
+
+        public static readonly string[] SiralamaAlanlari = { "tarih", "km", "tutar", "servis" };
+
+        public async Task<IDataResult<SayfaliSonuc<MaintenanceDto>>> GetSayfaAsync(int userId, int vehicleId, ListeSorgusu sorgu)
+        {
+            var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, vehicleId);
+            if (vehicle == null)
+                return new ErrorDataResult<SayfaliSonuc<MaintenanceDto>>(Messages.VehicleNotFound);
+
+            var siralama = sorgu.SiralamaCoz(SiralamaAlanlari, "tarih");
+            if (!siralama.Gecerli)
+                return new ErrorDataResult<SayfaliSonuc<MaintenanceDto>>(Messages.SiralamaGecersiz);
+
+            var terim = sorgu.GecerliQ();
+            var parcaIdler = terim == null
+                ? new List<int>()
+                : await _partDal.AciklamaEslesenBakimIdleriAsync(vehicleId, terim);
+
+            var sayfa = await _maintenanceDal.SayfaAsync(vehicleId, sorgu, siralama, parcaIdler);
+            var kayitIdler = sayfa.Kayitlar.Select(k => k.Id).ToList();
+            var parcalar = (await _partDal.GetByVehicleAsync(vehicleId)).Where(p => kayitIdler.Contains(p.MaintenanceRecordId)).ToList();
+
+            var liste = sayfa.Kayitlar
+                .Select(r => MapToDto(r, parcalar.Where(p => p.MaintenanceRecordId == r.Id)))
+                .ToList();
+
+            return new SuccessDataResult<SayfaliSonuc<MaintenanceDto>>(
+                new SayfaliSonuc<MaintenanceDto>(liste, sayfa.Toplam, sayfa.Sayfa, sayfa.Boyut));
+        }
+
         public async Task<IDataResult<MaintenanceDto>> AddAsync(int userId, MaintenanceCreateDto dto)
+
         {
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, dto.VehicleId);
             if (vehicle == null)
