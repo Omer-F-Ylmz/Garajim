@@ -5238,10 +5238,11 @@
 
             if (yazilan.toLocaleLowerCase("tr") !== sirket.trim().toLocaleLowerCase("tr")) {
                 showMessage(el("hesap-sil-mesaj"), "Şirket adı eşleşmedi, hesap silinmedi.", false);
+                if (typeof acKilit === "function") { acKilit(); }
                 return;
             }
 
-            api("/api/Account/sil", { method: "POST", body: { kod: el("hesap-sil-kodu").value.trim() } })
+            api("/api/Account/sil", { method: "POST", body: { kod: el("hesap-sil-kodu").value.trim(), sirketAdi: yazilan } })
                 .then(function (result) {
                     el("hesap-sil-form").classList.add("hidden");
                     el("hesap-sil-kodu").value = "";

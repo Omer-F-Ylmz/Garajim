@@ -3,6 +3,7 @@ using Garajim.Business.Constants;
 using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 using Garajim.Entity.Enums;
@@ -254,6 +255,12 @@ namespace Garajim.Business.Concrete
             var sirket = await _companyDal.GetAsync(c => c.Id == user.CompanyId);
             if (sirket == null)
                 return new ErrorResult(Messages.InvalidValue);
+
+            var yazilanAd = TurkceArama.Sadelestir((dto?.SirketAdi ?? string.Empty).Trim());
+            var gercekAd = TurkceArama.Sadelestir((sirket.Name ?? string.Empty).Trim());
+
+            if (yazilanAd.Length == 0 || !string.Equals(yazilanAd, gercekAd, StringComparison.Ordinal))
+                return new ErrorResult(Messages.SirketAdiEslesmedi);
 
             sirket.SilinmePlanlanan = DateTime.UtcNow.AddDays(HesapSilme.BeklemeGunu);
             await _companyDal.UpdateAsync(sirket);

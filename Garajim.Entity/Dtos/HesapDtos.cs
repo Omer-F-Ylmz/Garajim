@@ -3,6 +3,8 @@ namespace Garajim.Entity.Dtos
     public class HesapSilDto
     {
         public string Kod { get; set; }
+
+        public string SirketAdi { get; set; }
     }
 
     public class ProfilDto

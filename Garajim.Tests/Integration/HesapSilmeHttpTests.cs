@@ -124,6 +124,56 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task YanlisSirketAdiSilmeyiPlanlamaz()
+        {
+            var (client, eposta, _) = await SirketAsync("yanlisad");
+            var kod = await KodAlAsync(client, eposta);
+
+            var cevap = await client.PostAsJsonAsync("/api/Account/sil", new { kod, sirketAdi = "Baska Sirket" });
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+
+            Assert.Null(Oku(c => c.Companies.IgnoreQueryFilters()
+                .Single(x => x.Id == c.Users.IgnoreQueryFilters().Single(u => u.Email == eposta).CompanyId)
+                .SilinmePlanlanan));
+        }
+
+        [Fact]
+        public async Task SirketAdiVerilmezseSilmeyiPlanlamaz()
+        {
+            var (client, eposta, _) = await SirketAsync("adsiz");
+            var kod = await KodAlAsync(client, eposta);
+
+            var cevap = await client.PostAsJsonAsync("/api/Account/sil", new { kod });
+
+            Assert.Equal(HttpStatusCode.BadRequest, cevap.StatusCode);
+        }
+
+        [Fact]
+        public async Task YanlisSirketAdiKoduYakmaz()
+        {
+            var (client, eposta, _) = await SirketAsync("adkod");
+            var kod = await KodAlAsync(client, eposta);
+
+            await client.PostAsJsonAsync("/api/Account/sil", new { kod, sirketAdi = "Yanlis" });
+
+            var ikinci = await client.PostAsJsonAsync("/api/Account/sil", new { kod, sirketAdi = "Silinecek Sahip" });
+
+            Assert.True(ikinci.IsSuccessStatusCode, await ikinci.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task SirketAdiBuyukKucukVeBoslukFarkiniYokSayar()
+        {
+            var (client, eposta, _) = await SirketAsync("adbicim");
+            var kod = await KodAlAsync(client, eposta);
+
+            var cevap = await client.PostAsJsonAsync("/api/Account/sil", new { kod, sirketAdi = "  silinecek sahip  " });
+
+            Assert.True(cevap.IsSuccessStatusCode, await cevap.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
         public async Task KodsuzSilmeIstegiReddedilir()
         {
             var (client, _, _) = await SirketAsync("kodsuz");
@@ -139,7 +189,7 @@ namespace Garajim.Tests.Integration
             var (client, eposta, _) = await SirketAsync("plan");
             var kod = await KodAlAsync(client, eposta);
 
-            var sil = await client.PostAsJsonAsync("/api/Account/sil", new { kod });
+            var sil = await client.PostAsJsonAsync("/api/Account/sil", new { kod, sirketAdi = "Silinecek Sahip" });
             Assert.True(sil.IsSuccessStatusCode, await sil.Content.ReadAsStringAsync());
 
             var planlanan = Oku(c => c.Companies.IgnoreQueryFilters()
