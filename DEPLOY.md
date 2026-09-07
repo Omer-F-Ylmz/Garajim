@@ -53,7 +53,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **48** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
+Repoda bugün **49** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -155,6 +155,34 @@ Migration yok. Yayın sonrası bakılacaklar: karne bağlantısı `https://` ile
 Yayın sonrası bakılacaklar: bakım listesinde arama kutusu ve sayfa numarası çıkıyor mu, üst çubukta kilometre rozeti görünüyor mu, bakım belgelerinde "Önizle" görseli açıyor mu, hatırlatmaya tekrar aralığı girilebiliyor mu.
 
 **Geriye uyumluluk notu:** liste uçları parametresiz çağrıldığında eski düz `data: []` biçimini korur. Kalibrasyon aracı ve dış istemciler bu yüzden etkilenmez; zarf yalnız `sayfa`/`boyut`/`q`/`sirala` gönderildiğinde döner.
+
+### KATALOG-GLOBAL + ERTELENENLER turu ile gelen değişiklik
+
+**Yeni panel değişkeni yok.** Bu turda tek eklemeli migration var:
+
+| Migration | İçerik |
+|---|---|
+| `DavetEdenIndeksi` | `Companies(DavetEdenCompanyId)` indeksi |
+
+Yalnız `CreateIndex` içerir, veri taşımaz.
+
+**Uygulanmadan bırakılan iki şema işi (canlı veri ön kontrolü istiyor, migration'a girmedi):**
+
+1. `Companies.DavetEdenCompanyId` üzerinde **yabancı anahtar**. Eklemeden önce öksüz satır olmadığı doğrulanmalı:
+   ```sql
+   SELECT COUNT(*) FROM Companies c
+   WHERE c.DavetEdenCompanyId IS NOT NULL
+     AND NOT EXISTS (SELECT 1 FROM Companies p WHERE p.Id = c.DavetEdenCompanyId);
+   ```
+   Sonuç 0 değilse FK migration'ı **başarısız olur ve yayın yarıda kalır**; önce o satırlar `NULL`'a çekilmeli.
+2. `UstaCozumOzetleri` doğal anahtarında **tekil indeks** (`Marka, Model, Motor, BelirtiKategori, ParcaTuru`). Bugün tekil indeks yok ve job iki kez koşarsa çift satır oluşabiliyor. Tekil indeks eklemeden önce yinelenen satır olmadığı doğrulanmalı:
+   ```sql
+   SELECT Marka, Model, Motor, BelirtiKategori, ParcaTuru, COUNT(*)
+   FROM UstaCozumOzetleri
+   GROUP BY Marka, Model, Motor, BelirtiKategori, ParcaTuru
+   HAVING COUNT(*) > 1;
+   ```
+   Satır dönerse önce birleştirme (sayıları toplayıp tek satıra indirme) gerekir; bu veri işlemi olduğu için `Up()` içine girmez, ayrı bir bakım adımıdır.
 
 ## 3. Publish (IISProfile)
 

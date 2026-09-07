@@ -71,5 +71,15 @@ namespace Garajim.Tests.Integration
             Assert.NotNull(tur.FindProperty("CompanyId"));
             Assert.NotNull(tur.GetQueryFilter());
         }
+
+        [Fact]
+        public void DavetEdenCompanyIdIndeksTasir()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var tur = Baglam(scope).Model.FindEntityType(typeof(Garajim.Entity.Concrete.Company));
+
+            Assert.NotNull(tur);
+            Assert.Contains(tur.GetIndexes(), i => i.Properties.Any(p => p.Name == "DavetEdenCompanyId"));
+        }
     }
 }
