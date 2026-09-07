@@ -586,7 +586,7 @@ namespace Garajim.Business.Concrete
 
         public async Task<IDataResult<ReceiptStatsDto>> GetStatsAsync(int userId)
         {
-            var drafts = await _draftDal.GetListAsync();
+            var sayilar = await _draftDal.IstatistikAsync();
 
             var butce = await _aiButcesi.DurumAsync();
 
@@ -597,37 +597,37 @@ namespace Garajim.Business.Concrete
                 AiTokenKullanilan = butce.Kullanilan,
                 AiTokenKalan = butce.Kalan,
                 AiButcesiAsildi = butce.Asildi,
-                ToplamCagri = drafts.Count,
-                Onaylanan = drafts.Count(d => d.Durum == ReceiptDraftStatus.Onaylandi),
-                OtoOnaylanan = drafts.Count(d => d.OtoOnaylandi),
-                Reddedilen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Reddedildi),
-                Bekleyen = drafts.Count(d => d.Durum == ReceiptDraftStatus.Bekliyor)
+                ToplamCagri = sayilar.Toplam,
+                Onaylanan = sayilar.Onaylanan,
+                OtoOnaylanan = sayilar.OtoOnaylanan,
+                Reddedilen = sayilar.Reddedilen,
+                Bekleyen = sayilar.Bekleyen
             };
 
-            if (drafts.Count > 0)
+            if (sayilar.Toplam > 0)
             {
-                istatistik.OnayOrani = Yuzde(istatistik.Onaylanan, drafts.Count);
-                istatistik.RedOrani = Yuzde(istatistik.Reddedilen, drafts.Count);
-                istatistik.OrtalamaGuven = Math.Round(drafts.Average(d => d.GuvenSkoru), 3);
-                istatistik.OrtalamaSureMs = Math.Round(drafts.Average(d => (double)d.SureMs), 1);
+                istatistik.OnayOrani = Yuzde(sayilar.Onaylanan, sayilar.Toplam);
+                istatistik.RedOrani = Yuzde(sayilar.Reddedilen, sayilar.Toplam);
+                istatistik.OrtalamaGuven = Math.Round(sayilar.GuvenToplami / sayilar.Toplam, 3);
+                istatistik.OrtalamaSureMs = Math.Round((double)sayilar.SureToplami / sayilar.Toplam, 1);
 
-                istatistik.AlanDoluluk["tarih"] = Yuzde(drafts.Count(d => d.Tarih != null), drafts.Count);
-                istatistik.AlanDoluluk["toplamTutar"] = Yuzde(drafts.Count(d => d.ToplamTutar != null), drafts.Count);
-                istatistik.AlanDoluluk["kdvTutari"] = Yuzde(drafts.Count(d => d.KdvTutari != null), drafts.Count);
-                istatistik.AlanDoluluk["litre"] = Yuzde(drafts.Count(d => d.Litre != null), drafts.Count);
-                istatistik.AlanDoluluk["birimFiyat"] = Yuzde(drafts.Count(d => d.BirimFiyat != null), drafts.Count);
-                istatistik.AlanDoluluk["plaka"] = Yuzde(drafts.Count(d => d.Plaka != null), drafts.Count);
-                istatistik.AlanDoluluk["km"] = Yuzde(drafts.Count(d => d.Km != null), drafts.Count);
-                istatistik.AlanDoluluk["tur"] = Yuzde(drafts.Count(d => d.TahminiTur != ReceiptType.Bilinmiyor), drafts.Count);
+                istatistik.AlanDoluluk["tarih"] = Yuzde(sayilar.TarihDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["toplamTutar"] = Yuzde(sayilar.ToplamTutarDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["kdvTutari"] = Yuzde(sayilar.KdvDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["litre"] = Yuzde(sayilar.LitreDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["birimFiyat"] = Yuzde(sayilar.BirimFiyatDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["plaka"] = Yuzde(sayilar.PlakaDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["km"] = Yuzde(sayilar.KmDolu, sayilar.Toplam);
+                istatistik.AlanDoluluk["tur"] = Yuzde(sayilar.TurDolu, sayilar.Toplam);
             }
 
-            var onaylananlar = drafts.Where(d => d.Durum == ReceiptDraftStatus.Onaylandi && !d.OtoOnaylandi).ToList();
-            if (onaylananlar.Count > 0)
+            var duzeltmeAlanlari = await _draftDal.ElleOnaylananDuzeltmeAlanlariAsync();
+            if (duzeltmeAlanlari.Count > 0)
             {
                 foreach (var alan in new[] { "Tarih", "Tutar", "Km", "Litre", "BirimFiyat", "Tur", "Arac" })
                 {
-                    var duzeltilen = onaylananlar.Count(d => DuzeltilenIceriyorMu(d.DuzeltilenAlanlar, alan));
-                    istatistik.AlanDuzeltmeOrani[alan.ToLowerInvariant()] = Yuzde(duzeltilen, onaylananlar.Count);
+                    var duzeltilen = duzeltmeAlanlari.Count(d => DuzeltilenIceriyorMu(d, alan));
+                    istatistik.AlanDuzeltmeOrani[alan.ToLowerInvariant()] = Yuzde(duzeltilen, duzeltmeAlanlari.Count);
                 }
             }
 

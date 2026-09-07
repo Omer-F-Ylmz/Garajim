@@ -64,6 +64,39 @@ namespace Garajim.Dal.Concrete
                     : sorgulama.OrderByDescending(d => d.OlusturmaTarihi).ThenByDescending(d => d.Id)
             };
         }
+        public async Task<FisIstatistikSayilari> IstatistikAsync()
+        {
+            var sorgu = Context.ReceiptDrafts.AsNoTracking();
+
+            return new FisIstatistikSayilari
+            {
+                Toplam = await sorgu.CountAsync(),
+                Onaylanan = await sorgu.CountAsync(d => d.Durum == ReceiptDraftStatus.Onaylandi),
+                OtoOnaylanan = await sorgu.CountAsync(d => d.OtoOnaylandi),
+                Reddedilen = await sorgu.CountAsync(d => d.Durum == ReceiptDraftStatus.Reddedildi),
+                Bekleyen = await sorgu.CountAsync(d => d.Durum == ReceiptDraftStatus.Bekliyor),
+                GuvenToplami = await sorgu.SumAsync(d => (double?)d.GuvenSkoru) ?? 0,
+                SureToplami = await sorgu.SumAsync(d => (long?)d.SureMs) ?? 0,
+                TarihDolu = await sorgu.CountAsync(d => d.Tarih != null),
+                ToplamTutarDolu = await sorgu.CountAsync(d => d.ToplamTutar != null),
+                KdvDolu = await sorgu.CountAsync(d => d.KdvTutari != null),
+                LitreDolu = await sorgu.CountAsync(d => d.Litre != null),
+                BirimFiyatDolu = await sorgu.CountAsync(d => d.BirimFiyat != null),
+                PlakaDolu = await sorgu.CountAsync(d => d.Plaka != null),
+                KmDolu = await sorgu.CountAsync(d => d.Km != null),
+                TurDolu = await sorgu.CountAsync(d => d.TahminiTur != ReceiptType.Bilinmiyor),
+            };
+        }
+
+        public Task<List<string>> ElleOnaylananDuzeltmeAlanlariAsync()
+        {
+            return Context.ReceiptDrafts
+                .AsNoTracking()
+                .Where(d => d.Durum == ReceiptDraftStatus.Onaylandi && !d.OtoOnaylandi)
+                .Select(d => d.DuzeltilenAlanlar)
+                .ToListAsync();
+        }
     }
 }
+
 

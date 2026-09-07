@@ -10,5 +10,7 @@ namespace Garajim.Dal.Abstract
         Task<int> GetMonthlyCountAsync(DateTime ayBasi);
         Task<int> BekleyenSayisiAsync();
         Task<SayfaliSonuc<ReceiptDraft>> SayfaAsync(ReceiptDraftStatus? durum, int? surucuKullaniciId, List<int> erisilebilirAracIdler, ListeSorgusu sorgu, SiralamaSonucu siralama);
+        Task<FisIstatistikSayilari> IstatistikAsync();
+        Task<List<string>> ElleOnaylananDuzeltmeAlanlariAsync();
     }
 }
