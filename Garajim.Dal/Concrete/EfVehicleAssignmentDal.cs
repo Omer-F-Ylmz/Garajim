@@ -24,6 +24,7 @@ namespace Garajim.Dal.Concrete
         public async Task<VehicleAssignment> GetActiveByVehicleAsync(int vehicleId)
         {
             return await Context.VehicleAssignments
+                .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.VehicleId == vehicleId && a.EndDate == null);
         }
 
