@@ -115,8 +115,9 @@ namespace Garajim.Business.Jobs
                     {
                         await _emailSender.SendAsync(alici.Email, subject, body);
                     }
-                    catch
+                    catch (Exception hata)
                     {
+                        _logger.LogError(hata, "Evrak bildirimi gönderilemedi. EvrakId {EvrakId}, KullaniciId {KullaniciId}.", item.EvrakId, alici.Id);
                     }
                 }
             }
@@ -201,8 +202,9 @@ namespace Garajim.Business.Jobs
                 {
                     await _emailSender.SendAsync(item.Email, subject, body);
                 }
-                catch
+                catch (Exception hata)
                 {
+                    _logger.LogError(hata, "Hatırlatma bildirimi gönderilemedi. ReminderId {ReminderId}.", item.ReminderId);
                 }
             }
         }
