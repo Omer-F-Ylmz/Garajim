@@ -178,7 +178,7 @@ namespace Garajim.Business.Constants
         public const string ExportTuruBulunamadi = "Bilinmeyen dışa aktarma türü.";
         public const string ExportHazir = "Dosya hazırlandı.";
 
-        public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin veya bir aracı silin.";
+        public const string AracLimitiAsildi = "Planınızın araç limitine ulaştınız; planı yükseltin, bir aracı arşivleyin ya da silin. Arşivlenen aracın geçmişi ve paylaşılan karne bağlantısı korunur.";
 
         public const string TurTamamlandi = "Ürün turu tamamlandı.";
         public const string ProfilGuncellendi = "Profil güncellendi.";

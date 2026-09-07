@@ -141,5 +141,22 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.OK, (await AracEkleAsync(sahip, TestPlaka.Uret())).StatusCode);
         }
+
+        [Fact]
+        public async Task LimitMesajiArsivlemeyiOnerir()
+        {
+            var sahip = await SahipOlusturAsync();
+
+            for (var i = 1; i <= 3; i++)
+            {
+                await AracEkleAsync(sahip, TestPlaka.Uret());
+            }
+
+            var asan = await AracEkleAsync(sahip, TestPlaka.Uret());
+            var govde = JsonDocument.Parse(await asan.Content.ReadAsStringAsync()).RootElement;
+
+            Assert.Equal(HttpStatusCode.PaymentRequired, asan.StatusCode);
+            Assert.Contains("arşiv", govde.GetProperty("message").GetString());
+        }
     }
 }
