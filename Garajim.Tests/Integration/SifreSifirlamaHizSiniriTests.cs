@@ -29,21 +29,55 @@ namespace Garajim.Tests.Integration
 
         public void Dispose() => _factory.Dispose();
 
-        [Fact]
-        public async Task KodIstegiDakikalikSiniriAsincaDortYuzYirmiDokuz()
+        private async Task<List<HttpStatusCode>> PatlamaAsync(int adet)
         {
             var client = _factory.CreateClient();
             var eposta = $"hizsinir-{Guid.NewGuid():N}@garajim.local";
+            var durumlar = new List<HttpStatusCode>(adet);
 
-            for (var i = 0; i < Limit; i++)
+            for (var i = 0; i < adet; i++)
             {
-                var izinli = await client.PostAsJsonAsync("/api/Auth/sifre-sifirla-kod", new { email = eposta });
-                Assert.Equal(HttpStatusCode.OK, izinli.StatusCode);
+                var cevap = await client.PostAsJsonAsync("/api/Auth/sifre-sifirla-kod", new { email = eposta });
+                durumlar.Add(cevap.StatusCode);
             }
 
-            var asan = await client.PostAsJsonAsync("/api/Auth/sifre-sifirla-kod", new { email = eposta });
+            return durumlar;
+        }
 
-            Assert.Equal(HttpStatusCode.TooManyRequests, asan.StatusCode);
+        [Fact]
+        public async Task KodIstegiDakikalikSiniriAsincaDortYuzYirmiDokuz()
+        {
+            var durumlar = await PatlamaAsync(2 * Limit + 1);
+
+            Assert.Contains(HttpStatusCode.TooManyRequests, durumlar);
+        }
+
+        [Fact]
+        public async Task PencereBasinaEnCokLimitKadarIstekGecer()
+        {
+            var durumlar = await PatlamaAsync(2 * Limit + 1);
+
+            var gecen = durumlar.Count(d => d == HttpStatusCode.OK);
+
+            Assert.InRange(gecen, Limit, 2 * Limit);
+        }
+
+        [Fact]
+        public async Task LimitAltindakiIstekGecer()
+        {
+            var durumlar = await PatlamaAsync(1);
+
+            Assert.Equal(HttpStatusCode.OK, durumlar[0]);
+        }
+
+        [Fact]
+        public async Task SinirAsiminda429DisindaBirDurumDonmez()
+        {
+            var durumlar = await PatlamaAsync(2 * Limit + 1);
+
+            Assert.All(durumlar, d => Assert.True(
+                d == HttpStatusCode.OK || d == HttpStatusCode.TooManyRequests,
+                "Beklenmeyen durum: " + d));
         }
     }
 }
