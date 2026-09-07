@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Garajim.ML\Garajim.ML.csproj" />
     <ProjectReference Include="..\tools\Garajim.Calibration\Garajim.Calibration.csproj" />
     <ProjectReference Include="..\tools\Garajim.RehberUretici\Garajim.RehberUretici.csproj" />
+    <ProjectReference Include="..\tools\Garajim.KatalogUretici\Garajim.KatalogUretici.csproj" />
   </ItemGroup>
 
 </Project>

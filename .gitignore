@@ -45,3 +45,6 @@ cevap-anahtari.csv
 
 Garajim.API/wwwroot/rehber/
 Garajim.API/wwwroot/sitemap.xml
+
+# Katalog üreticisinin ara çıktı önbelleği
+.katalog-onbellek/
