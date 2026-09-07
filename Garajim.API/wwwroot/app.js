@@ -3714,15 +3714,6 @@
         return state.vehicles.filter(function (v) { return v.id === state.duzenlenenAracId; })[0] || null;
     }
 
-    function seciliArac() {
-        for (var i = 0; i < state.vehicles.length; i++) {
-            if (state.vehicles[i].id === state.selectedVehicleId) {
-                return state.vehicles[i];
-            }
-        }
-        return null;
-    }
-
     function yakitAlanlariniAyarla() {
         var arac = seciliArac();
         var tur = arac ? arac.fuelType : null;
