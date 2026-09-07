@@ -74,6 +74,19 @@ namespace Garajim.Tests.Integration
             return url.Substring(basla, url.Length - basla - ".ics".Length);
         }
 
+        private async Task<(HttpClient Client, string Token)> AbonelikAcAsync(string on, string plaka)
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, plaka);
+
+            await sahip.PostAsJsonAsync("/api/Evrak", new { vehicleId = aracId, evrakTuru = "Muayene", bitisTarihi = "2027-05-20" });
+            await sahip.PostAsJsonAsync("/api/Reminders", new { vehicleId = aracId, type = "Kasko", dueDate = "2027-06-15", note = "kasko yenile" });
+
+            var token = await TokenAlAsync(sahip);
+
+            return (_factory.CreateClient(), token);
+        }
+
         [Fact]
         public async Task IcsEvrakVeHatirlatmaOlaylariniIcerir()
         {
@@ -209,6 +222,59 @@ namespace Garajim.Tests.Integration
         public void Dispose()
         {
             _factory.Dispose();
+        }
+
+        [Fact]
+        public async Task DtstampUretimAniniTasir()
+        {
+            var (client, token) = await AbonelikAcAsync("dtstamp", "34TS9001");
+
+            var ics = await client.GetStringAsync("/api/takvim/" + token + ".ics");
+
+            var damgalar = System.Text.RegularExpressions.Regex
+                .Matches(ics, @"DTSTAMP:(\d{8})T(\d{6})Z")
+                .Select(e => e.Groups[1].Value + "T" + e.Groups[2].Value)
+                .ToList();
+
+            Assert.NotEmpty(damgalar);
+
+            var bugun = DateTime.UtcNow.ToString("yyyyMMdd");
+            var dun = DateTime.UtcNow.AddDays(-1).ToString("yyyyMMdd");
+
+            Assert.All(damgalar, d =>
+            {
+                var gun = d.Substring(0, 8);
+                Assert.True(gun == bugun || gun == dun, "DTSTAMP üretim anı değil: " + d);
+            });
+
+            Assert.DoesNotContain("T000000Z", ics);
+        }
+
+        [Fact]
+        public async Task DtstampTekBirDegerdir()
+        {
+            var (client, token) = await AbonelikAcAsync("dtstamptek", "34TS9002");
+
+            var ics = await client.GetStringAsync("/api/takvim/" + token + ".ics");
+
+            var damgalar = System.Text.RegularExpressions.Regex
+                .Matches(ics, @"DTSTAMP:[^\r\n]+")
+                .Select(e => e.Value)
+                .Distinct()
+                .ToList();
+
+            Assert.Single(damgalar);
+        }
+
+        [Fact]
+        public async Task DtstartOlayTarihiniTasimayaDevamEder()
+        {
+            var (client, token) = await AbonelikAcAsync("dtstart", "34TS9003");
+
+            var ics = await client.GetStringAsync("/api/takvim/" + token + ".ics");
+
+            Assert.Contains("DTSTART;VALUE=DATE:", ics);
+            Assert.Matches(@"DTSTART;VALUE=DATE:\d{8}", ics);
         }
     }
 }

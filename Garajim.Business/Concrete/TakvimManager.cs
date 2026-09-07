@@ -97,6 +97,8 @@ namespace Garajim.Business.Concrete
             var hatirlatmalar = await _reminderDal.GetListAsync(r => !r.IsCompleted && r.DueDate != null);
 
             var sb = new StringBuilder();
+            var damga = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
+
             sb.Append("BEGIN:VCALENDAR\r\n");
             sb.Append("VERSION:2.0\r\n");
             sb.Append("PRODID:-//Garajim//Arac Takvimi//TR\r\n");
@@ -120,7 +122,7 @@ namespace Garajim.Business.Concrete
                 var ad = EvrakAdlari.Ad(evrak.EvrakTuru);
                 var ozet = plaka == null ? Buyuk(ad) : $"{plaka} · {Buyuk(ad)}";
 
-                Olay(sb, $"evrak-{evrak.Id}@garajim", evrak.BitisTarihi, ozet, $"{Buyuk(ad)} bitiş tarihi.");
+                Olay(sb, damga, $"evrak-{evrak.Id}@garajim", evrak.BitisTarihi, ozet, $"{Buyuk(ad)} bitiş tarihi.");
             }
 
             foreach (var hatirlatma in hatirlatmalar.OrderBy(r => r.DueDate))
@@ -134,7 +136,7 @@ namespace Garajim.Business.Concrete
                 var ad = HatirlatmaAdi(hatirlatma.Type);
                 var ozet = plaka == null ? Buyuk(ad) : $"{plaka} · {Buyuk(ad)}";
 
-                Olay(sb, $"hatirlatma-{hatirlatma.Id}@garajim", hatirlatma.DueDate.Value, ozet, hatirlatma.Note ?? Buyuk(ad));
+                Olay(sb, damga, $"hatirlatma-{hatirlatma.Id}@garajim", hatirlatma.DueDate.Value, ozet, hatirlatma.Note ?? Buyuk(ad));
             }
 
             sb.Append("END:VCALENDAR\r\n");
@@ -142,11 +144,11 @@ namespace Garajim.Business.Concrete
             return new SuccessDataResult<string>(sb.ToString());
         }
 
-        private static void Olay(StringBuilder sb, string uid, DateTime tarih, string ozet, string aciklama)
+        private static void Olay(StringBuilder sb, string damga, string uid, DateTime tarih, string ozet, string aciklama)
         {
             sb.Append("BEGIN:VEVENT\r\n");
             sb.Append($"UID:{uid}\r\n");
-            sb.Append($"DTSTAMP:{tarih:yyyyMMdd}T000000Z\r\n");
+            sb.Append($"DTSTAMP:{damga}\r\n");
             sb.Append($"DTSTART;VALUE=DATE:{tarih:yyyyMMdd}\r\n");
             sb.Append($"DTEND;VALUE=DATE:{tarih.AddDays(1):yyyyMMdd}\r\n");
             sb.Append($"SUMMARY:{Kacir(ozet)}\r\n");
