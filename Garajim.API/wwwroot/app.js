@@ -2908,7 +2908,7 @@
         var canvas = el("monthly-chart");
 
         if (typeof Chart === "undefined") {
-            fallback.textContent = "Grafik kütüphanesi yüklenemedi (CDN erişimi yok). Aylık toplamlar tabloda görünmeye devam eder.";
+            fallback.textContent = "Grafik kitaplığı yüklenemedi (CDN erişimi yok). Aylık toplamlar tabloda görünmeye devam eder.";
             return;
         }
 
@@ -3032,7 +3032,7 @@
         var fallback = el("maliyet-fallback");
 
         if (typeof Chart === "undefined") {
-            fallback.textContent = "Grafik kütüphanesi yüklenemedi (CDN erişimi yok). Maliyet kartları görünmeye devam eder.";
+            fallback.textContent = "Grafik kitaplığı yüklenemedi (CDN erişimi yok). Maliyet kartları görünmeye devam eder.";
             return;
         }
 

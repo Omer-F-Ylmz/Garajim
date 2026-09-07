@@ -61,7 +61,7 @@ namespace Garajim.Business.Constants
         public const string UserRoleChanged = "Kullanıcının rolü güncellendi.";
         public const string UserDeactivated = "Kullanıcı pasifleştirildi.";
         public const string CannotManageSelf = "Kendi hesabınız üzerinde bu işlemi yapamazsınız.";
-        public const string LastOwnerRequired = "Şirkette en az bir Owner kalmalıdır.";
+        public const string LastOwnerRequired = "Şirkette en az bir Sahip kalmalıdır.";
         public const string AssignmentAlreadyActive = "Bu araçta zaten aktif bir zimmet var; önce devredin veya sonlandırın.";
         public const string AssignmentNotFound = "Araçta aktif zimmet bulunamadı.";
         public const string AssignmentSameDriver = "Araç zaten bu sürücüye zimmetli.";
@@ -161,7 +161,7 @@ namespace Garajim.Business.Constants
         public const string LastikZatenSokulmus = "Bu set zaten sökülmüş.";
         public const string LastikKmHatali = "Sökülme kilometresi ve tarihi takılmadan önce olamaz.";
         public const string LastikSetiYok = "Araçta takılı lastik seti kayıtlı değil.";
-        public const string KisLastigiUyarisi = "Kış lastigi dönemindesiniz ama araçta yaz lastiği takılı.";
+        public const string KisLastigiUyarisi = "Kış lastiği dönemindesiniz ama araçta yaz lastiği takılı.";
         public const string LastikDisDerinligiUyarisi = "Diş derinliği yasal sınıra indi; seti değiştirin.";
 
         public const string ElektrikliAracaYakit = "Elektrikli araçta litre girilemez; şarj miktarını kWh olarak girin.";
