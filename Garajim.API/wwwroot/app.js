@@ -952,6 +952,24 @@
         }
     }
 
+    function fisDugmesiniTazele() {
+        var dugme = el("receipt-btn");
+
+        if (!dugme) {
+            return;
+        }
+
+        var aracVar = (state.vehicles || []).length > 0;
+        var bekleyenVar = (state.bekleyenFisSayisi || 0) > 0;
+        var gorunur = aracVar || bekleyenVar;
+
+        dugme.classList.toggle("hidden", !gorunur);
+
+        if (!gorunur) {
+            el("receipt-box").classList.add("hidden");
+        }
+    }
+
     function ustSeritEtiketi(user) {
         var ad = ((user && user.fullName) || "").trim();
         var sirket = ((user && user.companyName) || "").trim();
@@ -1009,6 +1027,7 @@
             if (!hasVehicles) {
                 state.selectedVehicleId = null;
                 kmRozetiniTazele();
+                fisDugmesiniTazele();
                 return;
             }
 
@@ -1021,6 +1040,7 @@
             select.value = String(state.selectedVehicleId);
             ustaDurumunuUygula();
             kmRozetiniTazele();
+            fisDugmesiniTazele();
             kmSeridiniGuncelle();
             katalogUyarisiniGuncelle();
             tescilUyarisiniGuncelle();
@@ -6113,6 +6133,9 @@
             var liste = el("receipt-pending");
             clear(liste);
 
+            state.bekleyenFisSayisi = rows.length;
+            fisDugmesiniTazele();
+
             var rozet = el("receipt-badge");
             rozet.textContent = rows.length ? String(rows.length) : "";
             rozet.classList.toggle("hidden", rows.length === 0);
@@ -7116,6 +7139,11 @@
 
     function bindReceipts() {
         el("receipt-btn").addEventListener("click", function () {
+            if ((state.vehicles || []).length === 0 && (state.bekleyenFisSayisi || 0) === 0) {
+                showMessage(el("app-message"), "Fiş yükleyebilmek için önce size bir araç zimmetlenmeli.");
+                return;
+            }
+
             var box = el("receipt-box");
             var acilacak = box.classList.contains("hidden");
             box.classList.toggle("hidden", !acilacak);
