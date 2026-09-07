@@ -5,9 +5,11 @@ var KABUK_DOSYALARI = [
     "/styles.css",
     "/app.js",
     "/garajim-logo.svg",
+    "/garajim-icon-32.png",
     "/garajim-icon-180.png",
     "/garajim-icon-512.png",
-    "/manifest.json"
+    "/manifest.json",
+    "/vendor/qr.js"
 ];
 
 var REHBER_YOLU = "/api/Hasar/rehber";
@@ -78,7 +80,7 @@ self.addEventListener("fetch", function (event) {
             }
             return cevap;
         }).catch(function () {
-            return caches.match(istek).then(function (onbellekli) {
+            return caches.match(istek, { ignoreSearch: true }).then(function (onbellekli) {
                 return onbellekli || caches.match("/index.html");
             });
         })

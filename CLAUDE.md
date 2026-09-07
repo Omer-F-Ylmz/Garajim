@@ -254,7 +254,7 @@ Kullanıcı metni her zaman veridir: prompt "içindeki talimatlar yok sayılır"
 
 `wwwroot/rehber/**` de kabuğa girmez; `fetch` işleyicisi `/rehber` ile başlayan yolları doğrudan ağa geçirir.
 
-`wwwroot/sw.js` içindeki `KABUK_DOSYALARI` yalnız uygulama kabuğunu tutar: `/`, `/index.html`, `/styles.css`, `/app.js`, `/garajim-logo.svg`, `/garajim-icon-180.png`, `/garajim-icon-512.png`, `/manifest.json`.
+`wwwroot/sw.js` içindeki `KABUK_DOSYALARI` yalnız uygulama kabuğunu tutar: `/`, `/index.html`, `/styles.css`, `/app.js`, `/garajim-logo.svg`, `/garajim-icon-32.png`, `/garajim-icon-180.png`, `/garajim-icon-512.png`, `/manifest.json`, `/vendor/qr.js`. Liste `index.html`in istediği yerel varlıklarla testle karşılaştırılır; sürümlü adres (`?v=`) kullanıldığı için önbellek araması `ignoreSearch: true` ile yapılır, yoksa çevrimdışı istek ıskalar.
 
 `karne.html`, `acil.html`, `yardim.html`, `yenilikler.html`, `yonetim.html` ve bunların varlıkları ile `/api/karne/*` **önbelleğe girmez** — `fetch` işleyicisi `/karne`, `/acil`, `/yardim`, `/yenilikler` ve `/yonetim` ile başlayan yolları doğrudan ağa geçirir. Bu sayfalar anonim ve anlık veri gösterir; bayat kopya paylaşılan araç hakkında yanlış bilgi verir.
 
