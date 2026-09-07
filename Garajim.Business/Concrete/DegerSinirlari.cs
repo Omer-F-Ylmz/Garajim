@@ -10,7 +10,7 @@ namespace Garajim.Business.Concrete
 
         public static int EnYeniYil()
         {
-            return DateTime.UtcNow.Year + 1;
+            return Saat.BugunTr().Year + 1;
         }
 
         public static bool YilGecerli(int yil)

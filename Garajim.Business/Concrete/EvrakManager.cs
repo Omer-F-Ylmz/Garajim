@@ -348,7 +348,8 @@ namespace Garajim.Business.Concrete
 
             if (string.IsNullOrWhiteSpace(ay))
             {
-                baslangic = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+                var bugun = Saat.BugunTr();
+                baslangic = new DateTime(bugun.Year, bugun.Month, 1);
                 return true;
             }
 

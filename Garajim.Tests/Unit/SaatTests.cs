@@ -110,5 +110,46 @@ namespace Garajim.Tests.Unit
             Assert.True(bulgular.Count == 0,
                 "Yerel saat kullanımı bulundu (UTC ya da Saat kullanın): " + string.Join(", ", bulgular));
         }
+
+        [Fact]
+        public void UrunKodundaUtcGunParcasiKullanilmaz()
+        {
+            var kok = DepoKoku();
+            var bulgular = new List<string>();
+
+            foreach (var proje in new[] { "Garajim.API", "Garajim.Business", "Garajim.Dal", "Garajim.Core" })
+            {
+                var klasor = Path.Combine(kok, proje);
+                if (!Directory.Exists(klasor))
+                {
+                    continue;
+                }
+
+                foreach (var dosya in Directory.GetFiles(klasor, "*.cs", SearchOption.AllDirectories))
+                {
+                    if (dosya.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}")
+                        || dosya.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                        || dosya.Contains($"{Path.DirectorySeparatorChar}Migrations{Path.DirectorySeparatorChar}")
+                        || dosya.Contains($"{Path.DirectorySeparatorChar}Seed{Path.DirectorySeparatorChar}"))
+                    {
+                        continue;
+                    }
+
+                    if (Regex.IsMatch(File.ReadAllText(dosya), @"DateTime\.UtcNow\.(Year|Month|Day|Date|DayOfYear)\b"))
+                    {
+                        bulgular.Add(Path.GetFileName(dosya));
+                    }
+                }
+            }
+
+            Assert.True(bulgular.Count == 0,
+                "Gün sınırı UTC'den okunuyor (Saat kullanın): " + string.Join(", ", bulgular));
+        }
+
+        [Fact]
+        public void EnYeniYilTurkiyeYilindanUretilir()
+        {
+            Assert.Equal(Saat.BugunTr().Year + 1, DegerSinirlari.EnYeniYil());
+        }
     }
 }
