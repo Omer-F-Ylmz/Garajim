@@ -952,15 +952,30 @@
         }
     }
 
+    function ustSeritEtiketi(user) {
+        var ad = ((user && user.fullName) || "").trim();
+        var sirket = ((user && user.companyName) || "").trim();
+
+        if (!sirket) {
+            return ad;
+        }
+
+        if (!ad) {
+            return sirket;
+        }
+
+        if (ad.toLocaleLowerCase("tr") === sirket.toLocaleLowerCase("tr")) {
+            return ad;
+        }
+
+        return ad + " · " + sirket;
+    }
+
     function enterApp() {
         el("auth-screen").classList.add("hidden");
         el("app-screen").classList.remove("hidden");
         var user = state.user || {};
-        var label = user.fullName || "";
-        if (user.companyName) {
-            label = label ? label + " · " + user.companyName : user.companyName;
-        }
-        el("user-label").textContent = label;
+        el("user-label").textContent = ustSeritEtiketi(user);
         geciciSifreUyarisi(user);
         hesapDurumunuYukle();
         applyRole();
@@ -1190,14 +1205,7 @@
     }
 
     function enterAppEtiketiTazele() {
-        var user = state.user || {};
-        var etiket = user.fullName || "";
-
-        if (user.companyName) {
-            etiket = etiket ? etiket + " · " + user.companyName : user.companyName;
-        }
-
-        el("user-label").textContent = etiket;
+        el("user-label").textContent = ustSeritEtiketi(state.user || {});
     }
 
     function epostaKoduIste(event) {
