@@ -108,6 +108,17 @@ namespace Garajim.Dal.Concrete
                     : sorgulama.OrderByDescending(e => e.BitisTarihi).ThenByDescending(e => e.Id)
             };
         }
+        public Task<List<EvrakKaydi>> AktifListeAsync(int vehicleId, int limit)
+        {
+            return Context.EvrakKayitlari
+                .AsNoTracking()
+                .Where(e => e.Aktif && e.VehicleId == vehicleId)
+                .OrderBy(e => e.BitisTarihi)
+                .ThenBy(e => e.Id)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }
+
 

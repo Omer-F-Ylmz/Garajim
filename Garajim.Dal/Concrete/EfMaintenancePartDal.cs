@@ -55,6 +55,19 @@ namespace Garajim.Dal.Concrete
                 .Distinct()
                 .ToListAsync();
         }
+        public Task<List<MaintenancePart>> KayitlaraGoreAsync(int vehicleId, List<int> kayitIdleri)
+        {
+            if (kayitIdleri == null || kayitIdleri.Count == 0)
+            {
+                return Task.FromResult(new List<MaintenancePart>());
+            }
+
+            return Context.MaintenanceParts
+                .AsNoTracking()
+                .Where(p => p.VehicleId == vehicleId && kayitIdleri.Contains(p.MaintenanceRecordId))
+                .ToListAsync();
+        }
     }
 }
+
 

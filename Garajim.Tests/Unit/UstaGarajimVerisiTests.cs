@@ -50,12 +50,16 @@ namespace Garajim.Tests.Unit
             _mesajDal.Setup(d => d.GetSohbetMesajlariAsync(It.IsAny<int>())).ReturnsAsync(new List<UstaMesaj>());
             _mesajDal.Setup(d => d.AddAsync(It.IsAny<UstaMesaj>())).Returns(Task.CompletedTask);
             _maintenanceDal.Setup(d => d.GetListAsync(It.IsAny<Expression<Func<MaintenanceRecord, bool>>>())).ReturnsAsync(new List<MaintenanceRecord>());
+            _maintenanceDal.Setup(d => d.GetRecentAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<MaintenanceRecord>());
             _partDal.Setup(d => d.GetByVehicleAsync(It.IsAny<int>())).ReturnsAsync(new List<MaintenancePart>());
+            _partDal.Setup(d => d.KayitlaraGoreAsync(It.IsAny<int>(), It.IsAny<List<int>>())).ReturnsAsync(new List<MaintenancePart>());
             _partMemory.Setup(d => d.GetAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Garajim.Core.Utilities.Results.SuccessDataResult<List<ParcaHafizasiDto>>(new List<ParcaHafizasiDto>()));
             _evrakDal.Setup(d => d.GetListAsync(It.IsAny<Expression<Func<EvrakKaydi, bool>>>())).ReturnsAsync(new List<EvrakKaydi>());
+            _evrakDal.Setup(d => d.AktifListeAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<EvrakKaydi>());
             _fuelDal.Setup(d => d.GetOlcumlerAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new List<YakitOlcumDto>());
             _reminderDal.Setup(d => d.GetListAsync(It.IsAny<Expression<Func<Reminder, bool>>>())).ReturnsAsync(new List<Reminder>());
+            _reminderDal.Setup(d => d.AcikListeAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<Reminder>());
             _ozetDal.Setup(d => d.GetTumuAsync()).ReturnsAsync(ozetler);
 
             var yapilandirma = new ConfigurationBuilder()

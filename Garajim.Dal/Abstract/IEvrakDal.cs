@@ -9,6 +9,7 @@ namespace Garajim.Dal.Abstract
         Task<List<EvrakDueDto>> GetDueListAsync(DateTime dueLimit, DateTime notifyBefore);
         Task<bool> TryClaimNotificationAsync(int evrakId, DateTime now, DateTime notifyBefore);
         Task PasiflestirAsync(int id);
+        Task<List<EvrakKaydi>> AktifListeAsync(int vehicleId, int limit);
         Task<SayfaliSonuc<EvrakKaydi>> SayfaAsync(int? vehicleId, int? surucuKullaniciId, List<int> erisilebilirAracIdler, ListeSorgusu sorgu, SiralamaSonucu siralama);
         Task<(int Gecti, int Yaklasiyor)> DurumSayilariAsync(List<int> vehicleIds, int? userId, DateTime bugun, int yaklasiyorGun);
     }

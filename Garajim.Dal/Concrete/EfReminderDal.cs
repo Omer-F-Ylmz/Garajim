@@ -115,7 +115,19 @@ namespace Garajim.Dal.Concrete
         {
             return Context.Reminders.AsNoTracking().AnyAsync(r => r.TekrardanUretenId == kaynakId);
         }
+        public Task<List<Reminder>> AcikListeAsync(int vehicleId, int limit)
+        {
+            return Context.Reminders
+                .AsNoTracking()
+                .Where(r => r.VehicleId == vehicleId && !r.IsCompleted)
+                .OrderBy(r => r.DueDate == null)
+                .ThenBy(r => r.DueDate)
+                .ThenBy(r => r.Id)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }
+
 
 

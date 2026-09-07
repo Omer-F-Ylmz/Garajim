@@ -511,6 +511,10 @@ namespace Garajim.Business.Concrete
                 .ToList();
         }
 
+        public const int BaglamBakimSayisi = 5;
+        public const int BaglamEvrakSayisi = 10;
+        public const int BaglamHatirlatmaSayisi = 8;
+
         private async Task<string> AracBaglamiAsync(int userId, Vehicle vehicle)
         {
             var sb = new StringBuilder();
@@ -519,10 +523,7 @@ namespace Garajim.Business.Concrete
             sb.AppendLine($"Motor: {Deger(vehicle.Motor)}, Yakıt: {vehicle.FuelType}, Vites: {Deger(vehicle.Vites)}");
             sb.AppendLine($"Güncel kilometre: {vehicle.CurrentKm}, Kullanım: {vehicle.KullanimTuru}");
 
-            var bakimlar = (await _maintenanceDal.GetListAsync(b => b.VehicleId == vehicle.Id))
-                .OrderByDescending(b => b.Date)
-                .Take(5)
-                .ToList();
+            var bakimlar = await _maintenanceDal.GetRecentAsync(vehicle.Id, BaglamBakimSayisi);
 
             sb.AppendLine();
             sb.AppendLine("SON BAKIMLAR");
@@ -532,7 +533,7 @@ namespace Garajim.Business.Concrete
             }
             else
             {
-                var parcalar = await _partDal.GetByVehicleAsync(vehicle.Id);
+                var parcalar = await _partDal.KayitlaraGoreAsync(vehicle.Id, bakimlar.Select(b => b.Id).ToList());
                 foreach (var bakim in bakimlar)
                 {
                     var bakimParcalari = parcalar
@@ -565,7 +566,7 @@ namespace Garajim.Business.Concrete
             }
 
             var bugun = Saat.BugunTr();
-            var evraklar = await _evrakDal.GetListAsync(e => e.Aktif && e.VehicleId == vehicle.Id);
+            var evraklar = await _evrakDal.AktifListeAsync(vehicle.Id, BaglamEvrakSayisi);
             sb.AppendLine();
             sb.AppendLine("AKTIF EVRAK");
             if (evraklar.Count == 0)
@@ -574,7 +575,7 @@ namespace Garajim.Business.Concrete
             }
             else
             {
-                foreach (var evrak in evraklar.OrderBy(e => e.BitisTarihi))
+                foreach (var evrak in evraklar)
                 {
                     sb.AppendLine($"- {evrak.EvrakTuru}: {evrak.BitisTarihi:dd.MM.yyyy} ({EvrakKurallari.Durum(evrak.BitisTarihi, bugun)})");
                 }
@@ -584,7 +585,7 @@ namespace Garajim.Business.Concrete
             sb.AppendLine("YAKIT TUKETIMI");
             sb.AppendLine(await TuketimMetniAsync(vehicle.Id, bugun));
 
-            var hatirlatmalar = await _reminderDal.GetListAsync(r => r.VehicleId == vehicle.Id && !r.IsCompleted);
+            var hatirlatmalar = await _reminderDal.AcikListeAsync(vehicle.Id, BaglamHatirlatmaSayisi);
             sb.AppendLine();
             sb.AppendLine("ACIK HATIRLATMALAR");
             if (hatirlatmalar.Count == 0)
@@ -593,7 +594,7 @@ namespace Garajim.Business.Concrete
             }
             else
             {
-                foreach (var hatirlatma in hatirlatmalar.OrderBy(r => r.DueDate ?? DateTime.MaxValue).Take(8))
+                foreach (var hatirlatma in hatirlatmalar)
                 {
                     var vade = hatirlatma.DueDate != null ? hatirlatma.DueDate.Value.ToString("dd.MM.yyyy") : "-";
                     var km = hatirlatma.DueKm != null ? hatirlatma.DueKm.Value + " km" : "-";
