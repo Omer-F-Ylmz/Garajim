@@ -180,6 +180,9 @@ namespace Garajim.Business.Concrete
             if (vehicle == null)
                 return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaSohbetBulunamadi);
 
+            if (await SohbetSahibiDegilMiAsync(userId, sohbet))
+                return new ErrorDataResult<UstaMesajSonucDto>(Messages.UstaSohbetBulunamadi);
+
             var gunlukLimit = GunlukLimit(kapi.Sirket.PlanType);
             var bugunkuSayi = await _mesajDal.KullaniciGunlukSayisiAsync(userId, Saat.GunBasiUtc());
             if (bugunkuSayi >= gunlukLimit)
@@ -327,6 +330,13 @@ namespace Garajim.Business.Concrete
             return new SuccessResult(Messages.UstaSohbetSilindi);
         }
 
+        private async Task<bool> SohbetSahibiDegilMiAsync(int userId, UstaSohbet sohbet)
+        {
+            var user = await _userDal.GetAsync(u => u.Id == userId);
+
+            return user != null && user.Role == CompanyRole.Driver && sohbet.UserId != userId;
+        }
+
         public async Task<IResult> GeriBildirimAsync(int userId, int mesajId, UstaGeriBildirimDto dto)
         {
             if (!Enum.IsDefined(dto.GeriBildirim))
@@ -342,6 +352,9 @@ namespace Garajim.Business.Concrete
 
             var vehicle = await _vehicleAccess.GetAccessibleAsync(userId, sohbet.VehicleId);
             if (vehicle == null)
+                return new ErrorResult(Messages.UstaMesajBulunamadi);
+
+            if (await SohbetSahibiDegilMiAsync(userId, sohbet))
                 return new ErrorResult(Messages.UstaMesajBulunamadi);
 
             if (dto.CozumBakimId != null)
@@ -368,6 +381,9 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<List<UstaBakimSecenegiDto>>(Messages.UstaSohbetBulunamadi);
 
             if (await _vehicleAccess.GetAccessibleAsync(userId, sohbet.VehicleId) == null)
+                return new ErrorDataResult<List<UstaBakimSecenegiDto>>(Messages.UstaSohbetBulunamadi);
+
+            if (await SohbetSahibiDegilMiAsync(userId, sohbet))
                 return new ErrorDataResult<List<UstaBakimSecenegiDto>>(Messages.UstaSohbetBulunamadi);
 
             var sinir = Saat.BugunTr().AddDays(-CozumBakimGunu);

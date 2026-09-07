@@ -549,10 +549,77 @@ namespace Garajim.Tests.Integration
 
             Assert.Equal(HttpStatusCode.Forbidden, cevap.StatusCode);
         }
+
+        [Fact]
+        public async Task DriverBaskasininMesajinaGeriBildirimVeremez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
+            await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId = surucuId });
+
+            var sahipSohbeti = await SohbetAcAsync(sahip, aracId);
+            var veri = await VeriAsync(await SorAsync(sahip, sahipSohbeti, "Fren yaparken önden ses geliyor"));
+            var mesajId = veri.GetProperty("mesaj").GetProperty("id").GetInt32();
+
+            var cevap = await surucu.PostAsJsonAsync($"/api/Usta/mesaj/{mesajId}/geri-bildirim",
+                new { geriBildirim = "Olumlu" });
+
+            Assert.Equal(HttpStatusCode.NotFound, cevap.StatusCode);
+        }
+
+        [Fact]
+        public async Task DriverKendiMesajinaGeriBildirimVerebilir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
+            await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId = surucuId });
+
+            var sohbet = await SohbetAcAsync(surucu, aracId);
+            var veri = await VeriAsync(await SorAsync(surucu, sohbet, "Motor yağı ne zaman değişmeli?"));
+            var mesajId = veri.GetProperty("mesaj").GetProperty("id").GetInt32();
+
+            var cevap = await surucu.PostAsJsonAsync($"/api/Usta/mesaj/{mesajId}/geri-bildirim",
+                new { geriBildirim = "Olumlu" });
+
+            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
+        }
+
+        [Fact]
+        public async Task DriverBaskasininSohbetininBakimSecenekleriniGoremez()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
+            await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId = surucuId });
+
+            var sahipSohbeti = await SohbetAcAsync(sahip, aracId);
+
+            var cevap = await surucu.GetAsync($"/api/Usta/sohbet/{sahipSohbeti}/bakimlar");
+
+            Assert.Equal(HttpStatusCode.NotFound, cevap.StatusCode);
+        }
+
+        [Fact]
+        public async Task DriverBaskasininSohbetineMesajYazamaz()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip);
+            var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
+            await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = aracId, userId = surucuId });
+
+            var sahipSohbeti = await SohbetAcAsync(sahip, aracId);
+
+            var cevap = await SorAsync(surucu, sahipSohbeti, "Ben de sorayım");
+
+            Assert.Equal(HttpStatusCode.NotFound, cevap.StatusCode);
+        }
     }
 
     public static class UstaManagerSabitleri
     {
         public const int SohbetLimiti = 12;
+
     }
 }
