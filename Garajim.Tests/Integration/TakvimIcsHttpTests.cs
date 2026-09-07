@@ -276,5 +276,44 @@ namespace Garajim.Tests.Integration
             Assert.Contains("DTSTART;VALUE=DATE:", ics);
             Assert.Matches(@"DTSTART;VALUE=DATE:\d{8}", ics);
         }
+
+        [Fact]
+        public async Task IcsYalnizErisilebilirAracinKayitlariniIcerir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var zimmetli = await AracEkleAsync(sahip, "34ICS900");
+            var digeri = await AracEkleAsync(sahip, "34ICS901");
+
+            await sahip.PostAsJsonAsync("/api/Evrak", new { vehicleId = zimmetli, evrakTuru = "Muayene", bitisTarihi = "2027-05-20" });
+            await sahip.PostAsJsonAsync("/api/Evrak", new { vehicleId = digeri, evrakTuru = "Kasko", bitisTarihi = "2027-05-21" });
+            await sahip.PostAsJsonAsync("/api/Reminders", new { vehicleId = zimmetli, type = "Kasko", dueDate = "2027-06-15", note = "zimmetli" });
+            await sahip.PostAsJsonAsync("/api/Reminders", new { vehicleId = digeri, type = "Mtv", dueDate = "2027-06-16", note = "digeri" });
+
+            var (surucu, surucuId) = await SurucuOlusturAsync(sahip);
+            await sahip.PostAsJsonAsync("/api/Assignments", new { vehicleId = zimmetli, userId = surucuId });
+
+            var token = await TokenAlAsync(surucu);
+            var ics = await _factory.CreateClient().GetStringAsync($"/api/takvim/{token}.ics");
+
+            Assert.Contains("34ICS900", ics);
+            Assert.DoesNotContain("34ICS901", ics);
+            Assert.DoesNotContain("digeri", ics);
+            Assert.Equal(2, ics.Split("BEGIN:VEVENT").Length - 1);
+        }
+
+        [Fact]
+        public async Task IcsAraciOlmayanKullaniciEvrakiniTasir()
+        {
+            var sahip = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(sahip, "34ICS902");
+
+            await sahip.PostAsJsonAsync("/api/Evrak", new { vehicleId = aracId, evrakTuru = "Muayene", bitisTarihi = "2027-05-20" });
+
+            var token = await TokenAlAsync(sahip);
+            var ics = await _factory.CreateClient().GetStringAsync($"/api/takvim/{token}.ics");
+
+            Assert.Contains("34ICS902", ics);
+            Assert.Equal(1, ics.Split("BEGIN:VEVENT").Length - 1);
+        }
     }
 }

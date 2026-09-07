@@ -90,11 +90,17 @@ namespace Garajim.Business.Concrete
             using var kapsam = SystemScope.For(_tenantContext, abonelik.CompanyId);
 
             var araclar = await _vehicleAccess.GetAccessibleListAsync(abonelik.UserId);
-            var aracIdleri = araclar.Select(a => a.Id).ToHashSet();
+            var aracIdleri = araclar.Select(a => a.Id).ToList();
             var plakalar = araclar.ToDictionary(a => a.Id, a => a.Plate);
+            var kullaniciId = abonelik.UserId;
 
-            var evraklar = await _evrakDal.GetListAsync(e => e.Aktif);
-            var hatirlatmalar = await _reminderDal.GetListAsync(r => !r.IsCompleted && r.DueDate != null);
+            var evraklar = await _evrakDal.GetListAsync(e => e.Aktif
+                && (e.VehicleId == null || aracIdleri.Contains(e.VehicleId.Value))
+                && (e.UserId == null || e.UserId == kullaniciId));
+
+            var hatirlatmalar = await _reminderDal.GetListAsync(r => !r.IsCompleted
+                && r.DueDate != null
+                && aracIdleri.Contains(r.VehicleId));
 
             var sb = new StringBuilder();
             var damga = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
