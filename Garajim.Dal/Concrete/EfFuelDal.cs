@@ -158,6 +158,24 @@ namespace Garajim.Dal.Concrete
 
             return (onceki, sonraki);
         }
+        public async Task<(int Sayi, decimal Litre, decimal Tutar, DateTime? SonTarih)> KarneOzetiAsync(int vehicleId)
+        {
+            var sorgu = Context.FuelRecords.AsNoTracking().Where(f => f.VehicleId == vehicleId);
+
+            var sayi = await sorgu.CountAsync();
+
+            if (sayi == 0)
+            {
+                return (0, 0m, 0m, null);
+            }
+
+            var litre = await sorgu.SumAsync(f => (decimal?)f.Liters) ?? 0m;
+            var tutar = await sorgu.SumAsync(f => (decimal?)f.TotalCost) ?? 0m;
+            var sonTarih = await sorgu.MaxAsync(f => (DateTime?)f.Date);
+
+            return (sayi, litre, tutar, sonTarih);
+        }
     }
 }
+
 

@@ -52,6 +52,18 @@ namespace Garajim.Dal.Concrete
                     : sorgulama.OrderByDescending(d => d.CreatedAt).ThenByDescending(d => d.Id)
             };
         }
+        public Task<List<Document>> KarneBelgeleriAsync(int vehicleId, int limit)
+        {
+            return Context.Documents
+                .AsNoTracking()
+                .Where(d => d.VehicleId == vehicleId)
+                .Where(d => !Context.HasarFotograflari.Any(f => f.DocumentId == d.Id))
+                .OrderByDescending(d => d.CreatedAt)
+                .ThenByDescending(d => d.Id)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }
+
 

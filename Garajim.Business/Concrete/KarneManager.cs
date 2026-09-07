@@ -151,9 +151,8 @@ namespace Garajim.Business.Concrete
 
             if (paylasim.BakimGecmisi)
             {
-                var bakimlar = await _maintenanceDal.GetListAsync(m => m.VehicleId == vehicle.Id);
+                var bakimlar = await _maintenanceDal.GetRecentAsync(vehicle.Id, QueryLimits.MaxListSize);
                 karne.Bakimlar = bakimlar
-                    .OrderByDescending(m => m.Date)
                     .Select(m => new KarneBakimDto
                     {
                         Tarih = m.Date,
@@ -163,7 +162,9 @@ namespace Garajim.Business.Concrete
                         ServisAdi = m.ServiceName
                     }).ToList();
 
-                karne.BakimToplami = paylasim.TutarGoster ? bakimlar.Sum(m => m.Cost) : null;
+                karne.BakimToplami = paylasim.TutarGoster
+                    ? await _maintenanceDal.GetTotalCostAsync(vehicle.Id, DateTime.MinValue, DateTime.MaxValue)
+                    : null;
             }
 
             if (paylasim.ParcaHafizasi)
@@ -173,23 +174,20 @@ namespace Garajim.Business.Concrete
 
             if (paylasim.YakitOzeti)
             {
-                var yakitlar = await _fuelDal.GetListAsync(f => f.VehicleId == vehicle.Id);
+                var ozet = await _fuelDal.KarneOzetiAsync(vehicle.Id);
                 karne.YakitOzeti = new KarneYakitOzetiDto
                 {
-                    KayitSayisi = yakitlar.Count,
-                    ToplamLitre = yakitlar.Sum(f => f.Liters),
-                    ToplamTutar = paylasim.TutarGoster ? yakitlar.Sum(f => f.TotalCost) : null,
-                    SonDolumTarihi = yakitlar.Count == 0 ? null : yakitlar.Max(f => f.Date)
+                    KayitSayisi = ozet.Sayi,
+                    ToplamLitre = ozet.Litre,
+                    ToplamTutar = paylasim.TutarGoster ? ozet.Tutar : null,
+                    SonDolumTarihi = ozet.SonTarih
                 };
             }
 
             if (paylasim.Belgeler)
             {
-                var fotoBelgeIdleri = await _hasarFotoDal.AracinFotoBelgeIdleriAsync(vehicle.Id);
-                var belgeler = await _documentDal.GetListAsync(d => d.VehicleId == vehicle.Id);
+                var belgeler = await _documentDal.KarneBelgeleriAsync(vehicle.Id, QueryLimits.MaxListSize);
                 karne.Belgeler = belgeler
-                    .Where(d => !fotoBelgeIdleri.Contains(d.Id))
-                    .OrderByDescending(d => d.CreatedAt)
                     .Select(d => new KarneBelgeDto { Id = d.Id, Ad = d.OriginalName, Tarih = d.CreatedAt })
                     .ToList();
             }

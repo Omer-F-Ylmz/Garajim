@@ -8,5 +8,6 @@ namespace Garajim.Dal.Abstract
     {
         Task<long> GetCompanyTotalSizeAsync();
         Task<SayfaliSonuc<Document>> SayfaAsync(int? vehicleId, int? maintenanceRecordId, ListeSorgusu sorgu, SiralamaSonucu siralama);
+        Task<List<Document>> KarneBelgeleriAsync(int vehicleId, int limit);
     }
 }
