@@ -201,6 +201,8 @@ button {
 }
 
 .katalog-daha {
+    display: block;
+    width: fit-content;
     margin-top: 4px;
     align-self: flex-start;
 }
