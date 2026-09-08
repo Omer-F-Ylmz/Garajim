@@ -23,6 +23,10 @@ namespace Garajim.Entity.Concrete
         public int SifirlamaDenemeSayisi { get; set; }
         public DateTime? SonSifirlamaGonderim { get; set; }
         public DateTime? SifreDegisimTarihi { get; set; }
+
+        public int GirisDenemeSayisi { get; set; }
+
+        public DateTime? GirisKilitBitis { get; set; }
         public bool GeciciSifre { get; set; }
         public bool KurulumGizlendi { get; set; }
         public bool TurTamamlandi { get; set; }

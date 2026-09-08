@@ -16,7 +16,7 @@ namespace Garajim.Business.Concrete
 {
     public class AuthManager : IAuthService
     {
-        public const int MinimumSifreUzunlugu = 6;
+        public const int MinimumSifreUzunlugu = 8;
 
         private readonly IUserDal _userDal;
         private readonly ICompanyDal _companyDal;
@@ -363,15 +363,49 @@ namespace Garajim.Business.Concrete
 
         public static bool SifreKuraliUyuyorMu(string sifre)
         {
-            return !string.IsNullOrWhiteSpace(sifre) && sifre.Length >= MinimumSifreUzunlugu;
+            if (string.IsNullOrWhiteSpace(sifre) || sifre.Length < MinimumSifreUzunlugu)
+            {
+                return false;
+            }
+
+            return sifre.Any(char.IsLetter) && sifre.Any(char.IsDigit);
         }
 
         public async Task<IDataResult<TokenDto>> LoginAsync(LoginDto dto)
         {
             var email = (dto.Email ?? string.Empty).Trim().ToLowerInvariant();
             var user = await _userDal.GetForAuthenticationAsync(email);
-            if (user == null || !HashingHelper.VerifyPasswordHash(dto.Password ?? string.Empty, user.PasswordHash, user.PasswordSalt))
+            if (user == null)
                 return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
+
+            if (user.GirisKilitBitis != null && user.GirisKilitBitis > DateTime.UtcNow)
+            {
+                _logger.LogWarning("Kilitli hesapta giriş denendi: {KullaniciId}", user.Id);
+                return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
+            }
+
+            if (!HashingHelper.VerifyPasswordHash(dto.Password ?? string.Empty, user.PasswordHash, user.PasswordSalt))
+            {
+                user.GirisDenemeSayisi++;
+
+                if (user.GirisDenemeSayisi >= GirisKilidi.MaxDeneme)
+                {
+                    user.GirisDenemeSayisi = 0;
+                    user.GirisKilitBitis = DateTime.UtcNow.AddMinutes(GirisKilidi.KilitDakika);
+                    _logger.LogWarning("Hesap art arda yanlış şifre nedeniyle kilitlendi: {KullaniciId}", user.Id);
+                }
+
+                await _userDal.UpdateAsync(user);
+                return new ErrorDataResult<TokenDto>(Messages.InvalidCredentials);
+            }
+
+            if (user.GirisDenemeSayisi != 0 || user.GirisKilitBitis != null)
+            {
+                user.GirisDenemeSayisi = 0;
+                user.GirisKilitBitis = null;
+                await _userDal.UpdateAsync(user);
+            }
+
             if (!user.IsActive)
                 return new ErrorDataResult<TokenDto>(Messages.UserInactive);
             if (!user.EmailDogrulandi)

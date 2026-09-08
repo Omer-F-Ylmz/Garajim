@@ -200,7 +200,7 @@ namespace Garajim.Business.Constants
 
         public const string GelecekTarihGirilemez = "Gelecek tarih girilemez.";
         public const string TutarSinirDisi = "Tutar 0 ile 5.000.000 TL arasında olmalı.";
-        public const string SifreKuraliUymuyor = "Şifre en az 6 karakter olmalı.";
+        public const string SifreKuraliUymuyor = "Şifre en az 8 karakter olmalı ve harf ile rakam içermeli.";
         public const string SirketAdiEslesmedi = "Şirket adı eşleşmedi, hesap silinmedi.";
         public const string BelgeBaglandi = "Belge kayda bağlandı.";
         public const string OnizlemeDesteklenmiyor = "Bu dosya türü tarayıcıda önizlenemez; indirin.";

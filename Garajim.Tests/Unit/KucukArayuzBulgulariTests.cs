@@ -67,7 +67,7 @@ namespace Garajim.Tests.Unit
             var html = Oku("index.html");
             var bas = html.IndexOf("id=\"sifre-yeni\"", StringComparison.Ordinal);
 
-            Assert.Contains("En az 6 karakter", html.Substring(bas, 260));
+            Assert.Contains("En az 8 karakter", html.Substring(bas, 300));
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Garajim.Tests.Unit
             var html = Oku("index.html");
             var bas = html.IndexOf("id=\"register-password\"", StringComparison.Ordinal);
 
-            Assert.Contains("minlength=\"6\"", html.Substring(bas - 60, 160));
+            Assert.Contains("minlength=\"8\"", html.Substring(bas - 60, 160));
         }
 
         [Fact]

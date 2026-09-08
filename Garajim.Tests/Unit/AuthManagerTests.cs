@@ -38,7 +38,10 @@ namespace Garajim.Tests.Unit
         [InlineData("abc")]
         [InlineData("")]
         [InlineData(null)]
-        public async Task RegisterAsync_SifreAltiKarakterdenKisaysaHataDoner(string password)
+        [InlineData("gizli12")]
+        [InlineData("gizlidir")]
+        [InlineData("12345678")]
+        public async Task RegisterAsync_SifreKuralaUymuyorsaHataDoner(string password)
         {
             var result = await CreateManager().RegisterAsync(new RegisterDto
             {
@@ -53,7 +56,7 @@ namespace Garajim.Tests.Unit
         }
 
         [Fact]
-        public async Task RegisterAsync_AltiKarakterlikSifreKabulEdilir()
+        public async Task RegisterAsync_SekizKarakterlikSifreKabulEdilir()
         {
             _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(false);
             _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
@@ -63,7 +66,7 @@ namespace Garajim.Tests.Unit
             {
                 Email = "kullanici@garajim.local",
                 FullName = "Test Kullanıcı",
-                Password = "123456"
+                Password = "gizli123"
             });
 
             Assert.True(result.Success);
@@ -189,6 +192,83 @@ namespace Garajim.Tests.Unit
             Assert.Equal(0, _eposta.SayiOf("kullanici@garajim.local"));
         }
 
+        private AppUser GirisKullanicisi(string sifre = "gizli123")
+        {
+            HashingHelper.CreatePasswordHash(sifre, out var hash, out var salt);
+
+            return new AppUser
+            {
+                Id = 7,
+                CompanyId = 2,
+                Email = "kilit@garajim.local",
+                FullName = "Kilit Kullanıcı",
+                IsActive = true,
+                EmailDogrulandi = true,
+                PasswordHash = hash,
+                PasswordSalt = salt
+            };
+        }
+
+        [Fact]
+        public async Task LoginAsync_ArtArdaYanlisSifreHesabiKilitler()
+        {
+            var user = GirisKullanicisi();
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+
+            var yonetici = CreateManager();
+
+            for (var i = 0; i < GirisKilidi.MaxDeneme; i++)
+            {
+                await yonetici.LoginAsync(new LoginDto { Email = user.Email, Password = "yanlissifre1" });
+            }
+
+            Assert.NotNull(user.GirisKilitBitis);
+
+            var dogruDeneme = await yonetici.LoginAsync(new LoginDto { Email = user.Email, Password = "gizli123" });
+
+            Assert.False(dogruDeneme.Success);
+            Assert.Equal(Messages.InvalidCredentials, dogruDeneme.Message);
+        }
+
+        [Fact]
+        public async Task LoginAsync_KilitSuresiDolunca_DogruSifreGecer()
+        {
+            var user = GirisKullanicisi();
+            user.GirisKilitBitis = DateTime.UtcNow.AddMinutes(-1);
+            user.GirisDenemeSayisi = 0;
+
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+            _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
+                .ReturnsAsync(new Company { Id = 2, Name = "Kilit" });
+
+            var sonuc = await CreateManager().LoginAsync(new LoginDto { Email = user.Email, Password = "gizli123" });
+
+            Assert.True(sonuc.Success);
+            Assert.Null(user.GirisKilitBitis);
+        }
+
+        [Fact]
+        public async Task LoginAsync_BasariliGirisSayaciSifirlar()
+        {
+            var user = GirisKullanicisi();
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+            _companyDal.Setup(d => d.GetAsync(It.IsAny<Expression<Func<Company, bool>>>()))
+                .ReturnsAsync(new Company { Id = 2, Name = "Kilit" });
+
+            var yonetici = CreateManager();
+
+            await yonetici.LoginAsync(new LoginDto { Email = user.Email, Password = "yanlissifre1" });
+            Assert.Equal(1, user.GirisDenemeSayisi);
+
+            var sonuc = await yonetici.LoginAsync(new LoginDto { Email = user.Email, Password = "gizli123" });
+
+            Assert.True(sonuc.Success);
+            Assert.Equal(0, user.GirisDenemeSayisi);
+        }
+
         [Fact]
         public async Task LoginAsync_EpostaNormalizeEdilerekAranirVeDogruSifreTokenDoner()
         {
@@ -226,6 +306,7 @@ namespace Garajim.Tests.Unit
             HashingHelper.CreatePasswordHash("gizli123", out var hash, out var salt);
             _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AppUser { Id = 5, IsActive = true, Email = "kullanici@garajim.local", PasswordHash = hash, PasswordSalt = salt });
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
 
             var result = await CreateManager().LoginAsync(new LoginDto
             {
