@@ -15,6 +15,8 @@ namespace Garajim.Tests.Unit
     {
         private readonly Mock<IUserDal> _userDal = new Mock<IUserDal>(MockBehavior.Strict);
         private readonly Mock<ICompanyDal> _companyDal = new Mock<ICompanyDal>();
+        private readonly SahteEpostaGonderici _eposta = new SahteEpostaGonderici();
+        private readonly BellekKodGonderimSayaci _sayac = new BellekKodGonderimSayaci();
 
         private AuthManager CreateManager()
         {
@@ -28,7 +30,7 @@ namespace Garajim.Tests.Unit
                 })
                 .Build();
 
-            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, new SahteEpostaGonderici(), new BellekKodGonderimSayaci(), new SahteUnitOfWork());
+            return new AuthManager(_userDal.Object, _companyDal.Object, configuration, _eposta, _sayac, new SahteUnitOfWork());
         }
 
         [Theory]
@@ -105,6 +107,8 @@ namespace Garajim.Tests.Unit
         public async Task RegisterAsync_AyniEpostaIkinciKezKaydedilemez()
         {
             _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AppUser { Id = 3, Email = "kullanici@garajim.local", FullName = "Test Kullanıcı" });
 
             var result = await CreateManager().RegisterAsync(new RegisterDto
             {
@@ -113,9 +117,76 @@ namespace Garajim.Tests.Unit
                 Password = "gizli123"
             });
 
-            Assert.False(result.Success);
-            Assert.Equal(Messages.EmailAlreadyExists, result.Message);
+            Assert.True(result.Success);
             _userDal.Verify(d => d.AddAsync(It.IsAny<AppUser>()), Times.Never);
+            _companyDal.Verify(d => d.AddAsync(It.IsAny<Company>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_KayitliAdresteDeAyniYanitDoner()
+        {
+            RegisterDto Istek() => new RegisterDto
+            {
+                Email = "Kullanici@Garajim.local",
+                FullName = "Test Kullanıcı",
+                Password = "gizli123"
+            };
+
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(false);
+            _userDal.Setup(d => d.AddAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+            _userDal.Setup(d => d.UpdateAsync(It.IsAny<AppUser>())).Returns(Task.CompletedTask);
+            var yeni = await CreateManager().RegisterAsync(Istek());
+
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AppUser { Id = 3, Email = "kullanici@garajim.local", FullName = "Test Kullanıcı" });
+            var mevcut = await CreateManager().RegisterAsync(Istek());
+
+            Assert.Equal(yeni.Success, mevcut.Success);
+            Assert.Equal(yeni.Message, mevcut.Message);
+            Assert.Equal(yeni.Data.DogrulamaGerekli, mevcut.Data.DogrulamaGerekli);
+            Assert.Equal(yeni.Data.Email, mevcut.Data.Email);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_KayitliAdreseBilgilendirmeGider()
+        {
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AppUser { Id = 3, Email = "kullanici@garajim.local", FullName = "Test Kullanıcı" });
+
+            await CreateManager().RegisterAsync(new RegisterDto
+            {
+                Email = "Kullanici@Garajim.local",
+                FullName = "Test Kullanıcı",
+                Password = "gizli123"
+            });
+
+            Assert.Equal(1, _eposta.SayiOf("kullanici@garajim.local"));
+            Assert.Null(_eposta.SonKod("kullanici@garajim.local"));
+        }
+
+        [Fact]
+        public async Task RegisterAsync_KayitliAdreseSaatlikSinirdanSonraSusar()
+        {
+            _userDal.Setup(d => d.ExistsForRegistrationAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _userDal.Setup(d => d.GetForAuthenticationAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AppUser { Id = 3, Email = "kullanici@garajim.local", FullName = "Test Kullanıcı" });
+
+            for (var i = 0; i < DogrulamaKodu.SaatlikGonderimSiniri; i++)
+            {
+                _sayac.Say("kullanici@garajim.local");
+            }
+
+            var result = await CreateManager().RegisterAsync(new RegisterDto
+            {
+                Email = "Kullanici@Garajim.local",
+                FullName = "Test Kullanıcı",
+                Password = "gizli123"
+            });
+
+            Assert.True(result.Success);
+            Assert.Equal(0, _eposta.SayiOf("kullanici@garajim.local"));
         }
 
         [Fact]

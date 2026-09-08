@@ -56,7 +56,7 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
-        public async Task BasarisizKayitSirketOlusturmaz()
+        public async Task KayitliAdresleIkinciKayitSirketOlusturmaz()
         {
             var client = _factory.CreateClient();
             var eposta = Eposta("cakisan");
@@ -72,8 +72,9 @@ namespace Garajim.Tests.Integration
 
             var sonrakiSirket = await VeritabaniAsync(db => db.Companies.IgnoreQueryFilters().CountAsync());
 
-            Assert.Equal(HttpStatusCode.BadRequest, ikinci.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, ikinci.StatusCode);
             Assert.Equal(oncekiSirket, sonrakiSirket);
+            Assert.Equal(1, await VeritabaniAsync(db => db.Users.IgnoreQueryFilters().CountAsync(u => u.Email == eposta.ToLowerInvariant())));
         }
 
         [Fact]

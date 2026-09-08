@@ -52,7 +52,13 @@ namespace Garajim.Business.Concrete
                 return new ErrorDataResult<KayitSonucuDto>(Messages.SifreKuraliUymuyor);
             var email = dto.Email.Trim().ToLowerInvariant();
             if (await _userDal.ExistsForRegistrationAsync(email))
-                return new ErrorDataResult<KayitSonucuDto>(Messages.EmailAlreadyExists);
+            {
+                await KayitliAdresiBilgilendirAsync(email);
+
+                return new SuccessDataResult<KayitSonucuDto>(
+                    new KayitSonucuDto { DogrulamaGerekli = true, Email = email },
+                    Messages.DogrulamaKoduGonderildi);
+            }
             Company davetEden = null;
             var davetKodu = DavetKoduUretici.Normalize(dto.DavetKodu);
             if (davetKodu != null)
@@ -199,6 +205,32 @@ namespace Garajim.Business.Concrete
             catch (Exception hata)
             {
                 _logger.LogError(hata, "Doğrulama kodu e-postası gönderilemedi: {Alici}", user.Email);
+            }
+        }
+
+        private async Task KayitliAdresiBilgilendirAsync(string email)
+        {
+            if (!_gonderimSayaci.IzinVer(email))
+            {
+                return;
+            }
+
+            var user = await _userDal.GetForAuthenticationAsync(email);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            _gonderimSayaci.Say(email);
+
+            try
+            {
+                await _emailSender.SendAsync(email, KayitDenemesi.EpostaKonusu, KayitDenemesi.EpostaGovdesi);
+            }
+            catch (Exception hata)
+            {
+                _logger.LogError(hata, "Kayıt denemesi bilgilendirmesi gönderilemedi: {Alici}", email);
             }
         }
 
