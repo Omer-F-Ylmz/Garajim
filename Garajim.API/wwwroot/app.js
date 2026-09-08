@@ -3697,6 +3697,11 @@
         }
     }
 
+    function katalogSiraAl(select) {
+        select.katalogSira = (select.katalogSira || 0) + 1;
+        return select.katalogSira;
+    }
+
     function katalogAramaKutusu(select) {
         return document.getElementById(select.id + "-ara");
     }
@@ -3788,7 +3793,13 @@
             }
         }
 
+        var sira = katalogSiraAl(select);
+
         return katalogMarkalari(q, sayfa).then(function (sonuc) {
+            if (select.katalogSira !== sira) {
+                return select.value;
+            }
+
             katalogSecenekleri(select, sonuc.kayitlar, "Marka seçin", !!ekle);
             katalogDurumuYaz(select, sonuc, q, sayfa);
             katalogSeciliyiKoru(select, secili);
@@ -3806,7 +3817,13 @@
             }
         }
 
+        var sira = katalogSiraAl(seriSelect);
+
         return katalogSerileri(markaSelect.value, q, sayfa).then(function (sonuc) {
+            if (seriSelect.katalogSira !== sira) {
+                return seriSelect.value;
+            }
+
             var bos = markaSelect.value ? "Seri seçin" : "Önce marka seçin";
 
             katalogSecenekleri(seriSelect, sonuc.kayitlar, bos, !!ekle);
@@ -3823,6 +3840,12 @@
 
         el("vehicle-model").classList.toggle("hidden", acik);
         el("vehicle-model").required = !acik;
+        el("vehicle-model-ara").classList.toggle("hidden", acik);
+
+        if (acik) {
+            el("vehicle-model-daha").classList.add("hidden");
+        }
+
         el("vehicle-model-serbest").classList.toggle("hidden", !acik);
         el("vehicle-model-serbest").required = acik;
         el("vehicle-model-ipucu").classList.toggle("hidden", !acik);
@@ -3856,8 +3879,9 @@
             return;
         }
 
-        markaSecenekleriniDoldur(el("price-marka"), arac.brand);
-        seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), arac.model);
+        markaSecenekleriniDoldur(el("price-marka"), arac.brand).then(function () {
+            return seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), arac.model);
+        }).catch(function (error) { handleError(el("app-message"), error); });
 
         el("price-yil").value = arac.year || new Date().getFullYear();
         el("price-km").value = arac.currentKm || "";
@@ -3879,6 +3903,10 @@
         }
 
         yillariDoldur(el("price-yil"), null);
+
+        if (seciliArac()) {
+            return;
+        }
 
         markaSecenekleriniDoldur(el("price-marka"), "").then(function () {
             return seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), "");
