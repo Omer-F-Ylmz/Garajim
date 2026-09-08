@@ -62,7 +62,7 @@ namespace Garajim.API.Controllers
 
             var zarfIster = !string.IsNullOrWhiteSpace(q) || sayfa != null;
 
-            if (Degismedi("seriler:" + marka + ":" + Kapsam(q, sayfa)))
+            if (Degismedi("seriler:" + Uri.EscapeDataString(marka) + ":" + Kapsam(q, sayfa)))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -97,7 +97,7 @@ namespace Garajim.API.Controllers
 
         private static string Kapsam(string q, int? sayfa)
         {
-            return (q ?? string.Empty).Trim().ToLowerInvariant() + "|" + GecerliSayfa(sayfa);
+            return Uri.EscapeDataString((q ?? string.Empty).Trim().ToLowerInvariant()) + "|" + GecerliSayfa(sayfa);
         }
 
         private bool Degismedi(string kapsam)

@@ -204,6 +204,30 @@ namespace Garajim.Tests.Integration
         }
 
         [Fact]
+        public async Task TurkceHarfliAramaEtiketiBozmaz()
+        {
+            var client = await GirisliAsync("turkce-etiket");
+
+            var cevap = await client.GetAsync("/api/Katalog/markalar?q=" + Uri.EscapeDataString("şko"));
+
+            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
+            Assert.NotNull(cevap.Headers.ETag);
+            Assert.Contains("Skoda", Adlar(JsonDocument.Parse(await cevap.Content.ReadAsStringAsync()).RootElement.GetProperty("data")));
+        }
+
+        [Fact]
+        public async Task TurkceHarfliSeriAramasiEtiketiBozmaz()
+        {
+            var client = await GirisliAsync("turkce-seri");
+
+            var cevap = await client.GetAsync("/api/Katalog/seriler?marka=" + Uri.EscapeDataString("Tofaş")
+                + "&q=" + Uri.EscapeDataString("şa"));
+
+            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
+            Assert.NotNull(cevap.Headers.ETag);
+        }
+
+        [Fact]
         public async Task AramaliMarkaEtiketiAyriOnbelleklenir()
         {
             var client = await GirisliAsync("marka-etiket");
