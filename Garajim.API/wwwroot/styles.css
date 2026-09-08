@@ -196,6 +196,15 @@ button {
     color: var(--accent);
 }
 
+.katalog-ara {
+    margin-bottom: 6px;
+}
+
+.katalog-daha {
+    margin-top: 4px;
+    align-self: flex-start;
+}
+
 .link-btn {
     background: transparent;
     border: 0;

@@ -3580,48 +3580,191 @@
 
     var EN_ESKI_YIL = 1950;
 
-    var katalog = { markalar: [], seriler: {} };
+    var KATALOG_TR_GRUBU = "Türkiye'de satılan";
+    var KATALOG_DIGER_GRUBU = "Diğer";
 
-    function katalogMarkalari() {
-        if (katalog.markalar.length) {
-            return Promise.resolve(katalog.markalar);
-        }
+    function katalogSayfasi(yol) {
+        return api(yol).then(function (result) {
+            var veri = (result && result.data) || {};
 
-        return api("/api/Katalog/markalar").then(function (result) {
-            katalog.markalar = (result && result.data) || [];
-            return katalog.markalar;
+            return {
+                kayitlar: veri.kayitlar || [],
+                dahaVar: !!veri.dahaVar,
+                toplam: veri.toplam || 0
+            };
         });
     }
 
-    function katalogSerileri(marka) {
+    function katalogSorguEki(q, sayfa) {
+        var ek = "sayfa=" + (sayfa || 1);
+
+        if (q) {
+            ek += "&q=" + encodeURIComponent(q);
+        }
+
+        return ek;
+    }
+
+    function katalogMarkalari(q, sayfa) {
+        return katalogSayfasi("/api/Katalog/markalar?" + katalogSorguEki(q, sayfa));
+    }
+
+    function katalogSerileri(marka, q, sayfa) {
         if (!marka) {
-            return Promise.resolve([]);
+            return Promise.resolve({ kayitlar: [], dahaVar: false, toplam: 0 });
         }
 
-        if (katalog.seriler[marka]) {
-            return Promise.resolve(katalog.seriler[marka]);
+        return katalogSayfasi("/api/Katalog/seriler?marka=" + encodeURIComponent(marka)
+            + "&" + katalogSorguEki(q, sayfa));
+    }
+
+    function katalogGrubu(select, ad) {
+        var cocuklar = select.children;
+
+        for (var i = 0; i < cocuklar.length; i++) {
+            if (cocuklar[i].nodeName === "OPTGROUP" && cocuklar[i].label === ad) {
+                return cocuklar[i];
+            }
         }
 
-        return api("/api/Katalog/seriler?marka=" + encodeURIComponent(marka)).then(function (result) {
-            katalog.seriler[marka] = (result && result.data) || [];
-            return katalog.seriler[marka];
+        var kutu = document.createElement("optgroup");
+        kutu.label = ad;
+        select.appendChild(kutu);
+        return kutu;
+    }
+
+    function katalogSecenekEkle(hedef, ad) {
+        var secenek = document.createElement("option");
+        secenek.value = ad;
+        secenek.textContent = ad;
+        hedef.appendChild(secenek);
+    }
+
+    function katalogSecenekleri(select, kayitlar, bosMetin, ekle) {
+        if (!ekle) {
+            clear(select);
+
+            var bos = document.createElement("option");
+            bos.value = "";
+            bos.textContent = bosMetin;
+            select.appendChild(bos);
+
+            select.katalogGruplu = kayitlar.some(function (kayit) { return !kayit.tr; });
+        }
+
+        kayitlar.forEach(function (kayit) {
+            if (!select.katalogGruplu) {
+                katalogSecenekEkle(select, kayit.ad);
+                return;
+            }
+
+            katalogSecenekEkle(katalogGrubu(select, kayit.tr ? KATALOG_TR_GRUBU : KATALOG_DIGER_GRUBU), kayit.ad);
         });
     }
 
-    function katalogSecenekleri(select, degerler, bosMetin) {
-        clear(select);
+    function katalogSecenekVar(select, deger) {
+        var secenekler = select.querySelectorAll("option");
 
-        var bos = document.createElement("option");
-        bos.value = "";
-        bos.textContent = bosMetin;
-        select.appendChild(bos);
+        for (var i = 0; i < secenekler.length; i++) {
+            if (secenekler[i].value === deger) {
+                return true;
+            }
+        }
 
-        degerler.forEach(function (deger) {
-            var secenek = document.createElement("option");
-            secenek.value = deger;
-            secenek.textContent = deger;
-            select.appendChild(secenek);
-        });
+        return false;
+    }
+
+    function katalogSeciliyiKoru(select, secili) {
+        if (!secili || katalogSecenekVar(select, secili)) {
+            return;
+        }
+
+        var secenek = document.createElement("option");
+        secenek.value = secili;
+        secenek.textContent = secili;
+        secenek.dataset.korunan = "1";
+        select.insertBefore(secenek, select.children[1] || null);
+    }
+
+    function katalogDurumuYaz(select, sonuc, q, sayfa) {
+        select.katalogSorgu = q || "";
+        select.katalogSayfa = sayfa || 1;
+
+        var daha = document.getElementById(select.id + "-daha");
+
+        if (daha) {
+            daha.classList.toggle("hidden", !sonuc.dahaVar);
+        }
+    }
+
+    function katalogAramaKutusu(select) {
+        return document.getElementById(select.id + "-ara");
+    }
+
+    function katalogIlkSecenegiSec(select) {
+        var secenekler = select.querySelectorAll("option");
+        var yedek = "";
+
+        for (var i = 0; i < secenekler.length; i++) {
+            if (!secenekler[i].value) {
+                continue;
+            }
+
+            if (secenekler[i].dataset.korunan === "1") {
+                if (!yedek) {
+                    yedek = secenekler[i].value;
+                }
+
+                continue;
+            }
+
+            select.value = secenekler[i].value;
+            select.dispatchEvent(new Event("change"));
+            return;
+        }
+
+        if (yedek) {
+            select.value = yedek;
+            select.dispatchEvent(new Event("change"));
+        }
+    }
+
+    function katalogSeciciKur(select, doldur) {
+        var ara = katalogAramaKutusu(select);
+        var daha = document.getElementById(select.id + "-daha");
+        var zaman = null;
+
+        function calistir(q, sayfa, ekle) {
+            doldur(select.value, q, sayfa, ekle)
+                .catch(function (error) { handleError(el("app-message"), error); });
+        }
+
+        if (ara) {
+            ara.addEventListener("input", function () {
+                if (zaman) {
+                    window.clearTimeout(zaman);
+                }
+
+                zaman = window.setTimeout(function () { calistir(ara.value.trim(), 1, false); }, 250);
+            });
+
+            ara.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    katalogIlkSecenegiSec(select);
+                    select.focus();
+                } else if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    select.focus();
+                }
+            });
+        }
+
+        if (daha) {
+            daha.addEventListener("click", function () {
+                calistir(select.katalogSorgu, (select.katalogSayfa || 1) + 1, true);
+            });
+        }
     }
 
     function yillariDoldur(select, secili) {
@@ -3636,19 +3779,41 @@
         select.value = String(secili || new Date().getFullYear());
     }
 
-    function markaSecenekleriniDoldur(select, secili) {
-        return katalogMarkalari().then(function (markalar) {
-            katalogSecenekleri(select, markalar, "Marka seçin");
-            select.value = secili && markalar.indexOf(secili) >= 0 ? secili : "";
+    function markaSecenekleriniDoldur(select, secili, q, sayfa, ekle) {
+        if (!ekle && q === undefined) {
+            var ara = katalogAramaKutusu(select);
+
+            if (ara) {
+                ara.value = "";
+            }
+        }
+
+        return katalogMarkalari(q, sayfa).then(function (sonuc) {
+            katalogSecenekleri(select, sonuc.kayitlar, "Marka seçin", !!ekle);
+            katalogDurumuYaz(select, sonuc, q, sayfa);
+            katalogSeciliyiKoru(select, secili);
+            select.value = secili && katalogSecenekVar(select, secili) ? secili : "";
             return select.value;
         });
     }
 
-    function seriSecenekleriniDoldur(markaSelect, seriSelect, secili) {
-        return katalogSerileri(markaSelect.value).then(function (seriler) {
-            katalogSecenekleri(seriSelect, seriler, seriler.length ? "Seri seçin" : "Önce marka seçin");
-            seriSelect.disabled = seriler.length === 0;
-            seriSelect.value = secili && seriler.indexOf(secili) >= 0 ? secili : "";
+    function seriSecenekleriniDoldur(markaSelect, seriSelect, secili, q, sayfa, ekle) {
+        if (!ekle && q === undefined) {
+            var ara = katalogAramaKutusu(seriSelect);
+
+            if (ara) {
+                ara.value = "";
+            }
+        }
+
+        return katalogSerileri(markaSelect.value, q, sayfa).then(function (sonuc) {
+            var bos = markaSelect.value ? "Seri seçin" : "Önce marka seçin";
+
+            katalogSecenekleri(seriSelect, sonuc.kayitlar, bos, !!ekle);
+            katalogDurumuYaz(seriSelect, sonuc, q, sayfa);
+            katalogSeciliyiKoru(seriSelect, secili);
+            seriSelect.disabled = !markaSelect.value;
+            seriSelect.value = secili && katalogSecenekVar(seriSelect, secili) ? secili : "";
             return seriSelect.value;
         });
     }
@@ -7288,6 +7453,22 @@
         });
 
         el("vehicle-model-listede-yok").addEventListener("change", listedeYokDurumu);
+
+        katalogSeciciKur(el("vehicle-brand"), function (secili, q, sayfa, ekle) {
+            return markaSecenekleriniDoldur(el("vehicle-brand"), secili, q, sayfa, ekle);
+        });
+
+        katalogSeciciKur(el("vehicle-model"), function (secili, q, sayfa, ekle) {
+            return seriSecenekleriniDoldur(el("vehicle-brand"), el("vehicle-model"), secili, q, sayfa, ekle);
+        });
+
+        katalogSeciciKur(el("price-marka"), function (secili, q, sayfa, ekle) {
+            return markaSecenekleriniDoldur(el("price-marka"), secili, q, sayfa, ekle);
+        });
+
+        katalogSeciciKur(el("price-seri"), function (secili, q, sayfa, ekle) {
+            return seriSecenekleriniDoldur(el("price-marka"), el("price-seri"), secili, q, sayfa, ekle);
+        });
 
         el("katalog-duzenle").addEventListener("click", function () {
             var arac = seciliArac();
