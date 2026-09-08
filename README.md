@@ -337,12 +337,30 @@ Kaza, cam, dolu, hırsızlık ve diğer hasarlar araç bazlı dosyalarda toplan�
 
 Araç markası ve serisi serbest metin değildir; `Garajim.Business/Katalog/arac-katalogu.json` dosyasındaki **56 marka ve 391 seri** arasından seçilir. Katalog, fiyat modelinin kendi sözlüğünden (`price-model.zip` içindeki `MarkaEncoded` / `SeriEncoded` slot adları) üretildi; marka→seri eşlemesi eğitim verisindeki ilanların çoğunluğuna göre çıkarıldı.
 
-- `GET /api/Katalog/markalar` marka adlarını, `GET /api/Katalog/seriler?marka=Fiat` o markanın serilerini verir. İkisi de girişli kullanıcıya açıktır ve bir saat önbelleklenir.
+- `GET /api/Katalog/markalar` marka adlarını, `GET /api/Katalog/seriler?marka=Fiat` o markanın serilerini verir. İkisi de girişli kullanıcıya açıktır ve bir gün önbelleklenir. `q` ya da `sayfa` verilirse `{toplam, sayfa, boyut, dahaVar, kayitlar:[{ad, tr}]}` zarfı döner; arama Türkçe karakter ayırmaz, önek eşleşmelerini ve Türkiye'de satılan grubu öne alır, sayfa 50'dir. Yanıt `X-Katalog-Surum` başlığı taşır.
 - Araç eklerken marka katalogda olmalıdır (yoksa **400**). Model ya o markanın serisidir ya da `listedeYok=true` ile serbest metindir: 2-40 karakter, yalnız harf, rakam, boşluk, nokta ve tire, en az bir harf, aynı karakterin dört kez tekrarı yasak. Serbest metin girildiğinde `ModelEslesmedi` açılır.
 - `ModelEslesmedi` açık araçta değer tahmini **422** döner ve arayüz üst şeritte katalogdan seçmeye çağırır; model kapsamı katalogla birebir olduğu için katalog dışı bir modelin tahmini zaten anlamsızdır.
 - Yükseltmede `KatalogEslemeJob` bir kez çalışır ve mevcut araçları katalog yazımına çeker: `VW` → `Volkswagen`, `Mercedes` → `Mercedes - Benz`, `Clio 1.5 dCi` → `Clio` + motor `1.5 dCi`. Eşleşmeyene bayrak yazılır, hiçbir satır silinmez.
 
 Katalog yeni araç modelleriyle genişletilecekse tek doğru yol **modeli yeniden eğitip kataloğu sözlükten yeniden üretmektir**; `AracKataloguTests` katalog ile sözlüğün birebir aynı adları taşıdığını, her serinin tek markada geçtiğini ve şema hatasında yüklemenin durduğunu sabitler. Elle satır eklemek bu testi kırar.
+
+### Global katman
+
+Türkiye kataloğunun yanına opsiyonel bir ikinci katman konabilir: `Garajim.Business/Katalog/arac-katalogu-global.json`. Dosya varsa `AracKatalogu.Yukle` onu TR kataloğunun üstüne birleştirir — yeni marka ve seriler eklenir, TR girdilerinin yazımı ve `tr` bayrağı ezilmez. Dosya yoksa uygulama yalnız TR ile çalışır; bugün repoda **yoktur**.
+
+Amaç, yurt dışından getirilen ya da Türkiye'de satılmayan araçların kataloğa "listede yok" serbest metniyle değil, gerçek adıyla girebilmesidir. Ayrım `tr` bayrağıyla taşınır:
+
+- Arayüzdeki marka ve seri seçicileri iki grup gösterir: **Türkiye'de satılan** ve **Diğer**.
+- **Fiyat tahmini yalnız `tr = true` serilerde çalışır**; global bir seri seçilmişse uç **422** ve "fiyat tahmini yalnız Türkiye pazarı serileri için" döner. Fiyat modeline dokunulmaz, sözlüğü değişmez.
+- `KatalogEslemeJob` global katman geldiğinde daha önce eşleşmemiş araçları yeniden dener; iş fikir sabiti olduğu için ikinci koşu hiçbir şeyi değiştirmez.
+
+Dosyayı `tools/Garajim.KatalogUretici` üretir:
+
+```
+dotnet run --project tools/Garajim.KatalogUretici
+```
+
+Kaynak NHTSA vPIC'tir ve **dış ağ çağrısı yalnız bu araçtadır** — uygulama çalışırken hiçbir dış çağrı yapılmaz. Üretici TR kataloğunu kanonik alır: TR'deki 56 marka ve 391 serinin tamamı çıktıda yoksa ya da dosya 4 MB'ı aşarsa yazmaz, sıfırdan farklı çıkış koduyla durur. İndirilen sayfalar `.katalog-onbellek` altında tutulur, koşu kesilirse oradan devam eder. Kataloğun **altı ayda bir** yeniden üretilmesi beklenir.
 
 ## Araç değeri
 

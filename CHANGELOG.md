@@ -2,6 +2,18 @@
 
 Garajım'ın sürüm geçmişi. En yeni sürüm en üstte.
 
+## Katalog ve güvenlik turu — 8 Eylül 2026
+
+- Marka ve model seçicileri artık aranabiliyor: yazmaya başlayınca liste daralıyor, Enter ilk sonucu seçiyor, uzun listelerde "Daha fazla" ile devamı geliyor.
+- Arama Türkçe karakter ayırmıyor: "sko" da "şko" da Skoda'yı buluyor.
+- Aynı arama kutusu hem araç düzenleme hem fiyat tahmini formunda çalışıyor.
+- Katalog artık iki katmanlı: Türkiye'de satılan araçların yanına dünya kataloğu eklenebiliyor, seçicide "Türkiye'de satılan" ve "Diğer" diye ayrılıyor. Fiyat tahmini yalnız Türkiye pazarı serilerinde çalışıyor.
+- Listede süzdüğün aramayı artık CSV olarak da aynı süzgeçle indirebiliyorsun.
+- Şifre kuralı sertleşti: en az 8 karakter, harf ve rakam. Mevcut şifreler etkilenmiyor.
+- Art arda yanlış şifre girilirse hesap 15 dakika kilitleniyor.
+- Kayıt ekranı artık bir adresin kayıtlı olup olmadığını ele vermiyor; kayıtlı adrese "hesabınız zaten var" bilgilendirmesi gidiyor.
+- Fiyat tahmini formunda seri listesinin boş açılmasına yol açan hata giderildi.
+
 ## Kullanım turu 1 — 6 Eylül 2026
 
 - Bakım, yakıt, masraf, hatırlatma, evrak ve yolculuk listelerinde arama, tarih aralığı, sıralanabilir başlık ve sayfalama var.

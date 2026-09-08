@@ -53,7 +53,7 @@ Yayından **önce** sunucudaki geçmişi oku ve repodaki sayıyla karşılaştı
 SELECT COUNT(*) FROM __EFMigrationsHistory;
 ```
 
-Repoda bugün **49** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **27 migration** uygulanacak:
+Repoda bugün **52** migration var. Canlı Sprint 2 şemasındaysa (son uygulanan `KarnePaylasimi`, yani 12 satır) bu yayında **40 migration** uygulanacak:
 
 | Tur | Adet |
 |---|---|
@@ -65,6 +65,11 @@ Repoda bugün **49** migration var. Canlı Sprint 2 şemasındaysa (son uygulana
 | Sprint Şifre (`SifreSifirlama`, `GeciciSifreBayragi`) | 2 |
 | İnce ayar 1 (plaka, tam dolum, km düzeltme, arşiv, hesap silme, AI token, km tazeliği) | 7 |
 | Marka/model (`AracModelEslesmedi`) | 1 |
+| Onboarding (`KurulumGizlendi`, `TurTamamlandi`, `OrnekArac`) | 3 |
+| Geri bildirim ve profil (`GeriBildirim`, `ProfilVeBildirimTercihleri`, `YonetimKotaHatasi`) | 3 |
+| Rehber ve kayıt kaynağı (`KayitKaynagi`) | 1 |
+| Kullanım turu 1 (`ListeIndeksleri`, `HatirlatmaTekrari`) | 2 |
+| Katalog-global + ertelenenler (`DavetEdenIndeksi`, `GirisKilidi`, `UstaOzetiTekilIndeks`, `HasarFotoSiraTekil`) | 4 |
 
 Ölçülen süre (LocalDB, 3 Eylül 2026, `dotnet ef database update --no-build`, boş veritabanı): sıfırdan 38 migration **4,0 sn**; 39'uncu migration tek kolon eklediği için bu süreyi ölçülebilir biçimde değiştirmez. Uzak MSSQL'de ağ gecikmesi ve dolu tablolar eklendiğinde bu sürenin birkaç katına çıkmasını bekle, yine de **bir dakikanın altında** kalmalı. `ApplyMigrationsAtStartup` açıksa ilk istek bu kadar gecikir; tercihen kapalı tutulup migration ayrı çalıştırılır.
 
@@ -158,15 +163,43 @@ Yayın sonrası bakılacaklar: bakım listesinde arama kutusu ve sayfa numarası
 
 ### KATALOG-GLOBAL + ERTELENENLER turu ile gelen değişiklik
 
-**Yeni panel değişkeni yok.** Bu turda tek eklemeli migration var:
+**Yeni panel değişkeni yok.** Bu turda üç eklemeli migration var:
 
 | Migration | İçerik |
 |---|---|
 | `DavetEdenIndeksi` | `Companies(DavetEdenCompanyId)` indeksi |
+| `GirisKilidi` | `Users(GirisDenemeSayisi)` ve `Users(GirisKilitBitis)` kolonları |
+| `UstaOzetiTekilIndeks` | `UstaCozumOzetleri` doğal anahtarında tekil indeks (`Motor IS NOT NULL` süzgeçli) |
+| `HasarFotoSiraTekil` | `HasarFotograflari(HasarDosyasiId, Sira)` tekil indeksi |
 
-Yalnız `CreateIndex` içerir, veri taşımaz.
+Dördü de yalnız `AddColumn` / `CreateIndex` içerir, veri taşımaz.
 
-**Uygulanmadan bırakılan iki şema işi (canlı veri ön kontrolü istiyor, migration'a girmedi):**
+**`UstaOzetiTekilIndeks` uygulanmadan önce zorunlu ön kontrol.** Yinelenen satır varsa migration **başarısız olur ve yayın yarıda kalır**:
+
+```sql
+SELECT Marka, Model, Motor, BelirtiKategori, ParcaTuru, COUNT(*)
+FROM UstaCozumOzetleri
+WHERE Motor IS NOT NULL
+GROUP BY Marka, Model, Motor, BelirtiKategori, ParcaTuru
+HAVING COUNT(*) > 1;
+```
+
+Satır dönerse önce birleştirme (sayıları toplayıp tek satıra indirme) gerekir. İndeks `Motor IS NOT NULL` süzgeçli olduğu için geçmişteki `Motor = NULL` satırları kapsam dışıdır; iş bundan sonra `Motor` alanını boş dizgeye normalleştirdiği için yeni satırlar süzgecin içine düşer.
+
+**`HasarFotoSiraTekil` uygulanmadan önce zorunlu ön kontrol:**
+
+```sql
+SELECT HasarDosyasiId, Sira, COUNT(*)
+FROM HasarFotograflari
+GROUP BY HasarDosyasiId, Sira
+HAVING COUNT(*) > 1;
+```
+
+Satır dönerse çakışan fotoğrafların `Sira` değerleri elle ayrıştırılmalı. Bu migration eski `IX_HasarFotograflari_HasarDosyasiId_Sira` indeksini **düşürmez** (kural yalnız eklemeli); canlıda aynı kolonlar üzerinde artık iki indeks kalır, bu bilinçlidir.
+
+**Araç kataloğu iki katmanlıdır.** `Garajim.Business/Katalog/arac-katalogu.json` (Türkiye, 56 marka / 391 seri) zorunludur; `arac-katalogu-global.json` **opsiyoneldir** ve bugün repoda yoktur. Global dosya yayına girdiğinde: boyutu 4 MB'ı aşmamalı, `Katalog\*.json` globuyla kendiliğinden yayına gider, katalog `Lazy<>` ile ilk istekte yüklenir. Katalog uçları 1 gün `private` önbellek ve `X-Katalog-Surum` başlığı döner; sürüm değişince ETag da değişir, istemci kendiliğinden tazeler.
+
+**Uygulanmadan bırakılan bir şema işi (canlı veri ön kontrolü istiyor, migration'a girmedi):**
 
 1. `Companies.DavetEdenCompanyId` üzerinde **yabancı anahtar**. Eklemeden önce öksüz satır olmadığı doğrulanmalı:
    ```sql
@@ -175,14 +208,12 @@ Yalnız `CreateIndex` içerir, veri taşımaz.
      AND NOT EXISTS (SELECT 1 FROM Companies p WHERE p.Id = c.DavetEdenCompanyId);
    ```
    Sonuç 0 değilse FK migration'ı **başarısız olur ve yayın yarıda kalır**; önce o satırlar `NULL`'a çekilmeli.
-2. `UstaCozumOzetleri` doğal anahtarında **tekil indeks** (`Marka, Model, Motor, BelirtiKategori, ParcaTuru`). Bugün tekil indeks yok ve job iki kez koşarsa çift satır oluşabiliyor. Tekil indeks eklemeden önce yinelenen satır olmadığı doğrulanmalı:
-   ```sql
-   SELECT Marka, Model, Motor, BelirtiKategori, ParcaTuru, COUNT(*)
-   FROM UstaCozumOzetleri
-   GROUP BY Marka, Model, Motor, BelirtiKategori, ParcaTuru
-   HAVING COUNT(*) > 1;
-   ```
-   Satır dönerse önce birleştirme (sayıları toplayıp tek satıra indirme) gerekir; bu veri işlemi olduğu için `Up()` içine girmez, ayrı bir bakım adımıdır.
+
+**Kullanıcıya dokunan iki davranış değişikliği:**
+
+- **Şifre kuralı sertleşti**: en az 8 karakter, harf ve rakam zorunlu. Mevcut şifreler etkilenmez; yalnız kayıt, sıfırlama ve şifre değiştirme uçları bu kuralı uygular.
+- **Kayıt ucu artık kayıtlı adresi ele vermiyor**: kayıtlı bir adresle kayıt denenirse uç, yeni kayıtla **aynı 201 ve aynı metni** döner, hesap açmaz ve adrese "hesabınız zaten var" bilgilendirmesi gider (saatlik gönderim sınırına tabi). Yayın sonrası kontrol: kayıtlı bir adresle kayıt dene, 201 dönmeli ve **yeni şirket satırı oluşmamalı**.
+- **Giriş kilidi**: art arda 8 yanlış şifreden sonra hesap 15 dakika kilitlenir; kilitliyken doğru şifre de `InvalidCredentials` alır (hesabın var olduğunu ele vermemek için ayrı mesaj yok).
 
 ## 3. Publish (IISProfile)
 

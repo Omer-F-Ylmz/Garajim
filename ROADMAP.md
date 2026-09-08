@@ -299,9 +299,17 @@ Sıradaki: Search Console kaydı ve sitemap gönderimi (Ömer'in listesinde), il
 
 AI Usta değişken maliyetli tek özellik. Ücretsiz katmanda kota model başına günde 20 istek, yani tanıtım dışında taşımıyor. Sıra: önce ödeme akışı, sonra `Usta__Enabled` açılır ve `Ai__AylikTokenTavani` gelire göre ayarlanır. Bayrak bugün kapatılabilir durumda, kapatınca uygulamanın geri kalanı etkilenmiyor.
 
-## KATALOG-GLOBAL — beklemede
+## KATALOG-GLOBAL — TR-only modda tamamlandı
 
-Yurt dışı plakalı ve katalog dışı araçlar için marka/model kataloğunun genişletilmesi bekliyor; fiyat modeli Türkiye ilan verisiyle eğitildiği için katalog da onunla sınırlı. Model yeniden eğitilmeden katalog büyütülmez.
+Katalog iki katmanlı hâle getirildi: TR katmanı kanonik kaldı, opsiyonel global katman `tr = false` bayrağıyla üstüne biniyor, fiyat tahmini yalnız `tr = true` serilerde çalışıyor (`fab8268`). Yükleme, uçlar, arama, SPA seçicisi ve eşleme işi global dosya varmış gibi test edildi.
+
+**Global dosya bu turda üretilemedi.** `tools/Garajim.KatalogUretici` yazıldı ve ağsız testleriyle sabitlendi (`de1c9d5`) ama vPIC bu makineden erişilemiyor: üç denemede de `The SSL connection could not be established`, `curl` ile `curl: (35) Recv failure: Connection was reset`, denenen adres `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json`; aynı anda `api.github.com` 200 dönüyor, yani ağ katmanında engelleniyor. Uygulama TR-only modda çalışıyor, `arac-katalogu-global.json` repoda yok. Üreticiyi başka bir ağdan (VPN kapalı ya da telefon hotspot) koşturmak yeterli:
+
+```
+dotnet run --project tools/Garajim.KatalogUretici
+```
+
+Beklenen çıktı: `Yazildi: ... arac-katalogu-global.json` satırı ve 4 MB altı bir dosya. Kesilirse `.katalog-onbellek` üzerinden devam eder. Dosya repoya girdiğinde başka kod değişikliği gerekmez.
 
 ## Sıradaki
 
@@ -323,7 +331,7 @@ Yayın sonrası ilk iki ölçüm, ikisi de Kill Criteria tablosundaki kaynaklard
 
 Sprint KULLANIM-1'de bilinçli olarak açılmadan bırakılanlar; sebebiyle birlikte duruyor ki yeniden keşfedilmesin.
 
-- [ ] **Dışa aktarım uçlarına `q` parametresi** — liste uçları arama alıyor, `ExportController` almıyor. Kullanıcı listede süzdüğünü aynı süzgeçle indiremiyor; `ExportManager` sorgularının `TurkceArama` ile beslenmesi gerekiyor.
+- [x] **Dışa aktarım uçlarına `q` parametresi** — **kapandı c9e0252**. Eski metin: — liste uçları arama alıyor, `ExportController` almıyor. Kullanıcı listede süzdüğünü aynı süzgeçle indiremiyor; `ExportManager` sorgularının `TurkceArama` ile beslenmesi gerekiyor.
 - [x] **`app.js` içindeki çift `seciliArac` tanımı** — aynı işi yapan iki tanım var (bugün ikisi de aynı sonucu döndürüyor, davranış etkilenmiyor). JS'te son tanım kazandığı için sessiz; biri silinmeli. — **kapandı `b35216c`**
 - [ ] **Hasar, belge kutusu ve fiş taslağı listelerinde zarf arayüzü** — API zarfı üçünde de hazır, SPA düz yolu kullanmaya devam ediyor. Bu listeler bugün kısa olduğu için ertelendi; hasar tarafı ayrıca `/api/Vehicles/{id}/hasar` ucunu kullanıyor, zarf `/api/Hasar`'da.
 - [ ] **PDF'in tarayıcı içinde önizlenmesi** — `object-src 'none'` ve `X-Frame-Options: DENY` gömmeyi kapatıyor, `img-src 'self' data:` de `blob:`e izin vermiyor. CSP gevşetilmeden çözmek için karne/takvim gibi imzalı anonim önizleme ucu tasarlanmalı.
@@ -385,6 +393,13 @@ ROADMAP'teki bütün ertelenen/birikim/düşük maddeleri (62 madde) tek tek bug
 | Kısmen açık | 13 | Bir kısmı çözülmüş, kalanı işaretsiz duruyor |
 | Yapılamaz | 1 | Şifre sıfırlama hız sınırı testinin `ISaat` ile determinize edilmesi — sabit pencere çerçeve tarafında, sahte saat ulaşmıyor; bunun yerine `2*limit+1` değişmezi kullanıldı (`d057bd0`) |
 
+### Turun ikinci yarısında (M2/M3/M5) çıkanlar
+
+- [x] **Türkçe harfli arama terimi katalog ucunu 500'e düşürüyordu** — `Degismedi` ETag başlığına terimi ham koyuyordu, Kestrel ASCII olmayan başlık değerinde `InvalidOperationException` atıyor. Tarayıcıda gerçek istekle yakalandı, `Uri.EscapeDataString` ile kapatıldı (`3178c8c`).
+- [x] **Fiyat tahmini formunda marka ve seri doldurma yarışıyordu** — `fiyatFormunuHazirla` ile `tahminFormunuAractanDoldur` aynı iki seçiciyi paralel dolduruyor, geç dönen boş yanıt seri listesini siliyordu. Sıralı çağrı + seçici başına sıra numarasıyla eski yanıtın yok sayılması (`b5e7691`).
+- [ ] **Belge kotası kontrol-sonra-yaz** — `DocumentManager` bugün `IUnitOfWork` almıyor; kotayı yazma ile aynı işleme almak yapıcı değişikliği ister ve READ COMMITTED altında yine tam serileştirmez. İki gerçek çözüm var: (a) kota okumasını `SERIALIZABLE` işleme almak, (b) `Company` üzerine işlemle bakımlı bir `BelgeToplamBayt` sayacı koyup satır kilidiyle serileştirmek. İkisi de tasarım kararı, bu turda alınmadı.
+- [ ] **`price-vites` ile araç formundaki vites değerleri ayrı kümelerden gelebiliyor** — araç kaydı API'den `Manuel` gibi bir değerle açılırsa fiyat formundaki seçenekler (`Düz`, `Otomatik`, `Yarı Otomatik`) arasında karşılığı yok ve tahmin "vites tipi zorunludur" ile düşüyor. Arayüzden açılan araçlarda görülmez; `Vehicle.Vites` serbest metin olduğu için uç tarafında da bir beyaz liste gerekiyor.
+
 Triyajda çıkan, ROADMAP'te olmayan iki yeni bulgu:
 
 - [ ] **Test takımı varsayılan paralellikte kırılgan** — yüklü makinede tam koşuda her seferinde farklı 1-12 test düşüyor, hepsi tek başına ve `xUnit.MaxParallelThreads=2` ile geçiyor. `WebApplicationFactory` tabanlı bütünleşme sınıfları eşzamanlı koştuğu için kaynak çekişmesi oluyor. Kırmızı-önce disiplinini bozduğu için altyapı borcu sayılmalı: ya paylaşılan bir koleksiyon tanımlanmalı ya da `xunit.runner.json` ile eşzamanlılık sınırlanmalı.
@@ -398,33 +413,33 @@ Yayın öncesi dört bağımsız ajan (güvenlik, veri bütünlüğü, mobil/UX,
 
 - [ ] **Fiş taslağı dosyaları şirket kotasına sayılmıyor** (`ReceiptManager.cs:104-123`) — `Document` satırı ancak onayda açılıyor, `Bekliyor` taslakların dosyası kotanın dışında diskte duruyor. Aylık 100 fiş × 5 MB kotaya yansımadan yazılabilir. Reddedilen taslaklar siliniyor ama bekleyenleri temizleyen job yok.
 - [ ] **`/api/Evrak` listesinde N+1 ve üst sınır yok** (`EvrakManager.cs:43,221-227,250-251`) — `vehicleId` verilmezse şirketin tüm evrakı çekiliyor, `MapAsync` kayıt başına iki sorgu atıyor, Driver rolünde üç sorgu daha ekleniyor. 200 evraklı şirkette tek istekte ~1000 sorgu.
-- [ ] **`/api/Hasar` listesinde fotoğraf sayısı dosya başına ayrı sorgu** (`HasarManager.cs`) — liste kendisi sınırlı ama sayım N+1.
+- [x] **`/api/Hasar` listesinde fotoğraf sayısı dosya başına ayrı sorgu** — **zaten kapalı**. Eski metin: (`HasarManager.cs`) — liste kendisi sınırlı ama sayım N+1.
 - [ ] **AI Usta kota kapısı ile yazma arasında model çağrısı var** (`UstaManager.cs:181-187` → `:222`) — sayacı artıran kullanıcı mesajı model yanıtından sonra yazılıyor; paralel istekler aynı sayaçla geçip hepsi Gemini'ye gidiyor. Pencere saniyeler sürüyor.
 - [ ] **Gemini çağrısında toplam süre sınırı yok** (`UstaIstemci.cs:28,111-114`) — 40 sn timeout iki denemeyle 80 sn'ye çıkıyor, yanıt boyutu sınırsız tamponlanıyor. Aynı sınırsız tamponlama fiş çıkarımının yanıt okumasında da var (`ReceiptExtractorBase.cs:56`).
-- [ ] **Usta araç bağlamı "hepsini yükle sonra Take"** — kayıtlar belleğe alındıktan sonra kırpılıyor, SQL'e inmiyor.
-- [ ] **Fiş istatistikleri tüm taslakları belleğe alıyor** (`ReceiptManager.GetStatsAsync`) — sayım ve ortalama SQL'de yapılabilir.
-- [ ] **20 fotoğraf sınırı ve `Sira` üretimi yarışa açık** (`HasarManager.cs:190-215`) — sayım ile insert arasında tam bir dosya yükleme var; `(HasarDosyasiId, Sira)` indeksi tekil değil.
+- [x] **Usta araç bağlamı "hepsini yükle sonra Take"** — **kapandı 21e662f**. Eski metin: — kayıtlar belleğe alındıktan sonra kırpılıyor, SQL'e inmiyor.
+- [x] **Fiş istatistikleri tüm taslakları belleğe alıyor** — **kapandı e3e4b11**. Eski metin: (`ReceiptManager.GetStatsAsync`) — sayım ve ortalama SQL'de yapılabilir.
+- [x] **20 fotoğraf sınırı ve `Sira` üretimi yarışa açık** — **kapandı e41ad94**. Eski metin: (`HasarManager.cs:190-215`) — sayım ile insert arasında tam bir dosya yükleme var; `(HasarDosyasiId, Sira)` indeksi tekil değil.
 - [ ] **Belge kotası kontrol-sonra-yaz** (`DocumentManager.cs:57-82`) — eşzamanlı yüklemeler aynı toplamı okuyup kotayı aşabilir; veritabanı tarafında kısıt yok.
-- [ ] **`UstaCozumOzeti` doğal anahtarında tekil indeks yok** (`GarajimDbContext.cs:213`) — `BulAsync` beş alanla arıyor, indeks dört alanlı ve tekil değil; job iki kez koşarsa çift satır oluşup sayım bölünür.
+- [x] **`UstaCozumOzeti` doğal anahtarında tekil indeks yok** — **kapandı ffd8b03**. Eski metin: (`GarajimDbContext.cs:213`) — `BulAsync` beş alanla arıyor, indeks dört alanlı ve tekil değil; job iki kez koşarsa çift satır oluşup sayım bölünür.
 - [x] **Okuma sorguları izlemeli** (`EfEntityRepositoryBase.GetAsync`, `EfVehicleAssignmentDal.GetActiveByVehicleAsync`) — `AsNoTracking` yok; yalnız okunan kayıtlar da değişiklik izleyicisinde birikiyor. — **kısmen kapandı `4ee35ff` — aktif zimmet okuması takipsiz; genel depo okuması bilinçli olarak izlemeli kaldı (12 test düşüyor)**
-- [ ] **`capture="environment"` galeriden seçimi engelliyor** (`index.html:143,1003,1152`) — kullanıcı e-postayla gelen PDF fişi ya da daha önce çektiği fotoğrafları yükleyemiyor, `multiple` etkisiz kalıyor.
+- [x] **`capture="environment"` galeriden seçimi engelliyor** — **zaten kapalı**. Eski metin: (`index.html:143,1003,1152`) — kullanıcı e-postayla gelen PDF fişi ya da daha önce çektiği fotoğrafları yükleyemiyor, `multiple` etkisiz kalıyor.
 - [ ] **Ağ hatası mesajları Türkçeleştirilmemiş** — iOS Safari'nin "Load failed" metni kullanıcıya olduğu gibi çıkıyor, doğrulama hatalarında alan adları PascalCase geliyor.
-- [ ] **Acil durum kartının kullanıcıya ulaşan bağlantısı yok** (`KarneManager.cs:98`) — karne kapsamında kutu var ama üretilen URL yalnız `karne.html`; `acil.html`'e hiçbir yerden gidilemiyor.
-- [ ] **Anonim karne ucunda bakım/yakıt/belge listeleri sınırsız** (`KarneManager.cs:141,163,175`) — hasar dalı sınırlı, diğer üçü değil.
+- [x] **Acil durum kartının kullanıcıya ulaşan bağlantısı yok** — **zaten kapalı**. Eski metin: (`KarneManager.cs:98`) — karne kapsamında kutu var ama üretilen URL yalnız `karne.html`; `acil.html`'e hiçbir yerden gidilemiyor.
+- [x] **Anonim karne ucunda bakım/yakıt/belge listeleri sınırsız** — **kapandı 4ac8c60**. Eski metin: (`KarneManager.cs:141,163,175`) — hasar dalı sınırlı, diğer üçü değil.
 - [x] **ICS takviminde araç kısıtı SQL'e inmiyor** (`TakvimManager.cs:96-97`) — tek araçlı Driver için bile şirketin tüm evrak ve hatırlatması belleğe alınıyor. — **kapandı `928be8c`**
 - [ ] **Modal odak yönetimi ve tab rolleri eksik** (`index.html:1138`, `app.js:1729`) — Kaza modalı açıkken arka plana sekme yapılabiliyor, Escape kapatmıyor, `role="tablist"` altındaki düğmelerde `role="tab"`/`aria-selected` yok, doğrulama kutularının 2-6'sının erişilebilir adı yok.
 - [x] **`sw.js` kabuk listesi eksik** — `/garajim-icon-32.png` ve `/vendor/qr.js` önbelleğe alınmıyor, çevrimdışı ilk açılışta QR üretilemiyor. — **kapandı `c39adf2`**
-- [ ] **Kayıt ucu kullanıcı numaralandırmasına izin veriyor** (`AuthManager.cs:47-48`) — kayıtlı e-posta 400, kayıtsız 201 dönüyor; `kod-gonder` deseni doğru uygulanmış, register'a uygulanmamış.
-- [ ] **Parola politikası 6 karakter, hesap kilitleme yok** (`AuthManager.cs:43-44`) — başarısız deneme sayacı yalnız e-posta kodunda var, parolada yok.
-- [ ] **Güvenlik yanıt başlıkları yok** (`Program.cs:337-365`) — CSP, X-Frame-Options, nosniff, Referrer-Policy hiçbiri ayarlı değil; JWT `localStorage`'da.
-- [ ] **CSV dışa aktarımında formül enjeksiyonu** (`ExportManager.cs:183-197`) — baştaki `= + - @` nötrleştirilmiyor.
+- [x] **Kayıt ucu kullanıcı numaralandırmasına izin veriyor** — **kapandı 5dc4570**. Eski metin: (`AuthManager.cs:47-48`) — kayıtlı e-posta 400, kayıtsız 201 dönüyor; `kod-gonder` deseni doğru uygulanmış, register'a uygulanmamış.
+- [x] **Parola politikası 6 karakter, hesap kilitleme yok** — **kapandı 307a3f5**. Eski metin: (`AuthManager.cs:43-44`) — başarısız deneme sayacı yalnız e-posta kodunda var, parolada yok.
+- [x] **Güvenlik yanıt başlıkları yok** — **zaten kapalı** (`GuvenlikBasliklari`, `Denetim*Tests`). Eski metin: (`Program.cs:337-365`) — CSP, X-Frame-Options, nosniff, Referrer-Policy hiçbiri ayarlı değil; JWT `localStorage`'da.
+- [x] **CSV dışa aktarımında formül enjeksiyonu** — **zaten kapalı** (`ExportManager` formül önekini nötrleştiriyor). Eski metin: (`ExportManager.cs:183-197`) — baştaki `= + - @` nötrleştirilmiyor.
 - [x] **Usta geri bildirimi sohbet sahipliğini denetlemiyor** (`UstaManager.cs:323-364`) — okuma ucunda olan `sohbet.UserId` kontrolü geri bildirim ve çözüm uçlarında yok. — **kapandı `1567aff`**
 - [ ] **Paylaşım token'ları URL yolunda** (`KarneController.cs:24,33,42`) — erişim loglarında düz metin duruyor; takvim aboneliğinin son kullanma tarihi hiç yok.
 - [x] **Hatırlatma job'ında iki boş `catch {}`** (`ReminderNotificationJob.cs:112-114`, `:199-201`) — e-posta gönderimi sessizce yutuluyor, hangi bildirimin düştüğü hiçbir yere yazılmıyor. — **kapandı `0266c2b`**
 - [ ] **`SwaggerHttpTests` sınıf temizliğinde ara sıra NullReferenceException** — bir koşuda görüldü, tekrarında yok; test altyapısı kaynaklı, ürünü etkilemiyor.
 - [x] **Türkçe metin tutarsızlıkları** — `Messages.cs:138` "lastigi" (ğ eksik), "Owner" ile "Sahip" karışık, "kütüphane"/"kitaplık", "jpg, png" ile "jpg, jpeg, png" farkı. — **kapandı `56888d7`**
 - [ ] **Üç eski migration `Up()` içinde `AlterColumn`/`DropIndex` taşıyor** (`AddCompanyTenancy`, `AddPerformanceIndexes`, `PlakaSirketBazindaTekil`) — üçü de canlıya uygulanmış, risk yok; kuralı doğrulayan test yok.
-- [ ] **`Companies.DavetEdenCompanyId` üzerinde indeks ve FK yok** (`DavetProgrami.cs:13-17`) — her araç ekleme isteğinde tam tablo taraması.
+- [x] **`Companies.DavetEdenCompanyId` üzerinde indeks yok** — **kapandı 22f3c7c** (FK hâlâ açık, öksüz satır ön kontrolü `DEPLOY.md`'de). Eski metin: (`DavetProgrami.cs:13-17`) — her araç ekleme isteğinde tam tablo taraması.
 
 ### İncelenip bulgu sayılmayanlar
 
@@ -475,9 +490,9 @@ Bilinçli davranış sayılıp değiştirilmeyenler: bir sürücünün aynı and
 - [x] Araç limiti mesajı yalnız "silin" diyor, veri kaybettirmeyen arşivlemeyi önermiyor — **kapandı `44a7b39`**
 - [x] `DegerSinirlari.EnYeniYil()` UTC yılını kullanıyor; yıl dönümünde TR ile üç saat ayrışıyor — **kapandı `dc4dd13`**
 - [ ] Ekip formundan ikinci Owner eklemek sürücü eklemekle aynı sürtünmede; ek onay yok
-- [ ] Ayarlardaki hesap silme metni sürücüye şirket silmeyi de anlatıyor
+- [x] Ayarlardaki hesap silme metni sürücüye şirket silmeyi de anlatıyor — **zaten kapalı**
 - [x] Zimmetsiz sürücüde "Fiş Yükle" düğmesi boş durum mesajıyla çelişiyor — **kapandı `5ae34f5`**
-- [ ] Hesap silmede şirket adı onayı yalnız istemcide denetleniyor, uç yalnız kodu istiyor
+- [x] Hesap silmede şirket adı onayı yalnız istemcide denetleniyor — **kapandı e7b28a7**
 - [x] ICS `DTSTAMP` alanı üretim anı yerine olayın tarihini taşıyor (RFC 5545) — **kapandı `c3b5785`**
 
 ## Birikim (planlanmamış)
@@ -500,7 +515,7 @@ Ayrıntısı [#2 numaralı issue](https://github.com/Omer-F-Ylmz/Garajim/issues/
 
 - [ ] Kayıt tarihlerinde üst sınır yok (gelecek tarih kabul ediliyor)
 - [ ] Token localStorage'da, süre yönetimi istemcide yok
-- [ ] Araç güncelleme ve silme arayüzde yok
+- [x] Araç güncelleme ve silme arayüzde yok — **zaten kapalı**
 - [ ] Hangfire paneli için üretimde bilinçli yetkilendirme filtresi kararı
 - [ ] Google Search Console kaydı ve `sitemap.xml` gönderimi (Ömer)
 - [ ] Rehber sayfalarının arama performansına göre `anahtarlar` genişletmesi

@@ -50,9 +50,17 @@ Mevzuat ve ticari değerler kod içinde tek yerde durur; başka dosyada tekrar e
 
 Yeni bir mevzuat ya da paket değeri geldiğinde ilgili sınıfa ve test dosyasına eklenir; Manager içine gömülmez.
 
-### Araç kataloğu fiyat modelinin sözlüğüdür
+### Araç kataloğu iki katmanlıdır
 
-`Business/Katalog/arac-katalogu.json` (56 marka, 391 seri) elle yazılmış bir liste değil, `price-model.zip` içindeki `MarkaEncoded` / `SeriEncoded` slot adlarının aynısıdır. `AracKataloguTests` iki yönlü eşitliği, her serinin tek markada geçtiğini ve bozuk şemada `Yukle`'nin `InvalidOperationException` attığını sabitler; kataloğa elle marka ya da seri eklenmez, model yeniden eğitilince katalog sözlükten yeniden üretilir.
+**TR katmanı kanoniktir.** `Business/Katalog/arac-katalogu.json` (56 marka, 391 seri) elle yazılmış bir liste değil, `price-model.zip` içindeki `MarkaEncoded` / `SeriEncoded` slot adlarının aynısıdır. `AracKataloguTests` iki yönlü eşitliği ve her serinin tek markada geçtiğini **yalnız `tr = true` alt kümesinde** sabitler; kataloğa elle marka ya da seri eklenmez, model yeniden eğitilince katalog sözlükten yeniden üretilir.
+
+**Global katman opsiyoneldir.** `Business/Katalog/arac-katalogu-global.json` varsa `AracKatalogu.Yukle` onu TR katmanının **üstüne** birleştirir: yeni marka ve seriler eklenir, TR girdilerinin yazımı ve `tr` bayrağı **ezilmez**. Dosya yoksa uygulama yalnız TR ile çalışır, `GlobalSurum` boş kalır ve her şey `tr = true` sayılır. Şema `{surum, kaynak, uretimTarihi, markalar:[{ad, tr, seriler:[{ad, tr}]}]}`; sürümü ya da marka listesi olmayan dosya `InvalidOperationException` attırır. Global katmanda aynı seri adı farklı markalarda geçebilir, TR katmanında geçemez.
+
+Dosyayı `tools/Garajim.KatalogUretici` üretir (kaynak: NHTSA vPIC). **Dış ağ çağrısı yalnız bu araçtadır; uygulama çalışırken hiçbir dış çağrı yapılmaz.** Üretici TR kataloğunu kanonik alır: TR'deki 56 marka ve 391 serinin tamamı çıktıda yoksa ya da dosya 4 MB'ı aşarsa yazmaz, sıfırdan farklı çıkış koduyla durur. Kataloğun altı ayda bir yeniden üretilmesi beklenir.
+
+**Fiyat tahmini yalnız TR serilerinde çalışır.** `DegerManager.TahminAsync` markanın ve serinin `tr = true` olmasını arar; global bir girdi seçilmişse `Messages.DegerGlobalSeri` ile **422** döner. Model dosyasına dokunulmaz.
+
+`GET /api/Katalog/markalar` ve `/seriler` parametresizken eski düz listeyi döndürür; `q` ya da `sayfa` geldiğinde `{toplam, sayfa, boyut, dahaVar, kayitlar:[{ad, tr}]}` zarfı döner. Arama Türkçe karakter ayırmaz, önek eşleşmelerini ve TR grubunu öne alır, sayfa 50'dir. Yanıt 1 gün `private` önbelleklenir, `X-Katalog-Surum` başlığı taşır ve ETag sürüm + kapsamdan üretilir — **kapsamdaki arama terimi `Uri.EscapeDataString` ile kaçışlanır**, yoksa Türkçe harf taşıyan `q` başlığı ASCII olmadığı için Kestrel isteği 500'e düşürür.
 
 Araç eklemede marka katalogda olmalıdır; model ya markanın serisidir ya da `ListedeYok` ile serbest metindir (`SerbestModelKurali`) ve o zaman `Vehicle.ModelEslesmedi` açılır. Bayrak açıkken değer tahmini 422 döner — model kapsamı katalogla aynı olduğu için katalog dışı tahmin anlamsızdır.
 
@@ -111,6 +119,8 @@ Sıralama alanı her manager'ın `SiralamaAlanlari` dizisinden doğrulanır; lis
 Arama `TurkceArama.Iceren` ile kurulur: hem aranan terim hem kolon 19 harf çifti üzerinden sadeleştirilip küçültülür, böylece SQL Server ve SQLite'ta aynı sonucu verir ve ifade EF tarafından çevrilebilir kalır. Yeni bir liste ucu eklenirken sayfalama `Sayfalayici.UygulaAsync` üzerinden geçer; sıralama switch'i çağıran DAL'da kalır çünkü kolon tipleri farklıdır.
 
 Sürücü rolünün gördüğü alt küme (evrak, fiş taslağı) **SQL tarafında** süzülür; bellekte süzülürse `toplam` yanlış çıkar.
+
+Dışa aktarım aynı süzgeci tekrarlar: `GET /api/Export/{tur}.csv` `q` parametresi alır ve listedeki arama alanlarının aynısında arar (bakım: servis + not, masraf: not, evrak: sağlayıcı + poliçe + not, hasar: açıklama + konum + dosya no + karşı plaka). Süzgeç `TurkceArama.Ve` ile mevcut yükleme koşuluna eklenir, yani `Take(MaxListSize)` **öncesinde** SQL tarafında uygulanır. Yakıt kaydında aranacak metin alanı olmadığı için `q` yok sayılır. SPA indirme bağlantısı ilgili listenin `sessionStorage`'daki arama terimini kendisi ekler.
 
 ### Yakıt düzenlemede kilometre komşuluğu
 
@@ -174,7 +184,11 @@ Kayıt e-posta doğrulamasından geçer: `RegisterAsync` token değil `Dogrulama
 
 Şifre sıfırlama aynı altyapıyı paylaşır ama **kendi kolonlarında** durur (`SifirlamaKodHash`, `SifirlamaKodSonTarih`, `SifirlamaDenemeSayisi`, `SonSifirlamaGonderim`); iki akış birbirinin kodunu ezmez ve saatlik sayaç ayrı anahtarla sayılır. Sıfırlama ucu JWT dönmez, kullanıcı yeniden giriş yapar.
 
-Şifre kuralı tek yerdedir: `AuthManager.SifreKuraliUyuyorMu`. Kayıt, sıfırlama ve değiştirme uçlarının üçü de bunu çağırır; yeni bir şifre alanı eklenirse aynı yerden geçer.
+Şifre kuralı tek yerdedir: `AuthManager.SifreKuraliUyuyorMu` — en az 8 karakter, en az bir harf ve bir rakam. Kayıt, sıfırlama ve değiştirme uçlarının üçü de bunu çağırır; yeni bir şifre alanı eklenirse aynı yerden geçer. Mevcut şifreler yeniden denetlenmez.
+
+**Kayıt ucu kayıtlı adresi ele vermez.** `RegisterAsync` kayıtlı bir adres için de yeni kayıtla **aynı 201 ve aynı metni** döner; hesap açmaz, adrese "hesabınız zaten var" bilgilendirmesi gider ve bu gönderim `IKodGonderimSayaci` saatlik sınırına tabidir. `kod-gonder` ve `sifre-sifirla-kod` ile aynı desendir; ayrı bir "bu e-posta kayıtlı" hatası **geri eklenmez**.
+
+**Giriş kilidi**: art arda `GirisKilidi.MaxDeneme` (8) yanlış şifreden sonra hesap `GirisKilidi.KilitDakika` (15) dakika kilitlenir. Kilit denetimi şifre doğrulamasından **önce** çalışır ve kilitliyken de `Messages.InvalidCredentials` döner — ayrı bir "kilitli" mesajı hesabın var olduğunu ele verirdi. Başarılı giriş sayacı ve kilidi sıfırlar.
 
 Şifre değişince `AppUser.SifreDegisimTarihi` yazılır. JWT `iat` iddiası taşır ve `TokenGecerlilikDenetimi` `iat` bu tarihten eskiyse 401 verir — mevcut bütün oturumlar düşer. Aynı denetim her istekte hesabın açık, doğrulanmış ve rolünün değişmemiş olduğunu da okur; bu üçü tenant bağlamı kurulmadan önce çalışır.
 
