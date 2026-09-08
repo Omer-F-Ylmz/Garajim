@@ -15,12 +15,15 @@ namespace Garajim.Business.Concrete
         private readonly IAracDegerDal _degerDal;
         private readonly IVehicleAccessService _vehicleAccess;
         private readonly IDegerTahminEdici _tahminEdici;
+        private readonly Katalog.AracKatalogu _katalog;
 
-        public DegerManager(IAracDegerDal degerDal, IVehicleAccessService vehicleAccess, IDegerTahminEdici tahminEdici)
+        public DegerManager(IAracDegerDal degerDal, IVehicleAccessService vehicleAccess, IDegerTahminEdici tahminEdici,
+            Katalog.AracKatalogu katalog)
         {
             _degerDal = degerDal;
             _vehicleAccess = vehicleAccess;
             _tahminEdici = tahminEdici;
+            _katalog = katalog;
         }
 
         public async Task<IDataResult<DegerSerisiDto>> GetSeriAsync(int userId, int vehicleId)
@@ -77,6 +80,9 @@ namespace Garajim.Business.Concrete
 
             if (vehicle.ModelEslesmedi)
                 return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerModelKatalogDisi);
+
+            if (!_katalog.TrMarkaMi(vehicle.Brand) || !_katalog.TrSeriMi(vehicle.Brand, vehicle.Model))
+                return new ErrorDataResult<DegerTahminSonucuDto>(Messages.DegerGlobalSeri);
 
             var bugun = Saat.BugunTr();
             var alinan = await _degerDal.GunlukTahminSayisiAsync(vehicleId, Saat.GunBasiUtc());

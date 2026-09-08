@@ -63,7 +63,7 @@ namespace Garajim.Tests.Integration
             EvrakKurallari = new EvrakKurallari(new ConfigurationBuilder().Build());
             UnitOfWork = new EfUnitOfWork(Context);
             VehicleAccess = new VehicleAccessManager(UserDal, VehicleDal, AssignmentDal);
-            DegerService = new DegerManager(AracDegerDal, VehicleAccess, new SahteDegerTahminEdici());
+            DegerService = new DegerManager(AracDegerDal, VehicleAccess, new SahteDegerTahminEdici(), TestKatalog.Yukle());
         }
 
         public GarajimDbContext Context { get; }

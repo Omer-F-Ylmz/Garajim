@@ -128,6 +128,7 @@ namespace Garajim.API.Controllers
                 if (result.Message == Messages.VehicleNotFound)
                     return NotFound(result);
                 if (result.Message == Messages.DegerModelKapsamDisi || result.Message == Messages.DegerModelKatalogDisi
+                    || result.Message == Messages.DegerGlobalSeri
                     || result.Message == Messages.DegerKasaTipiGerekli
                     || result.Message == Messages.DegerVitesGerekli)
                     return StatusCode(StatusCodes.Status422UnprocessableEntity, result);
