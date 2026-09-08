@@ -182,7 +182,7 @@ namespace Garajim.Tests.Unit
 
             var sonuc = katalog.MarkaAra("sko", 50);
 
-            Assert.Contains("Skoda", sonuc.Kayitlar);
+            Assert.Contains("Skoda", sonuc.Adlar);
         }
 
         [Fact]
@@ -192,10 +192,10 @@ namespace Garajim.Tests.Unit
 
             var sonuc = katalog.MarkaAra("re", 50);
 
-            Assert.Contains("Renault", sonuc.Kayitlar);
+            Assert.Contains("Renault", sonuc.Adlar);
 
-            var sonOnek = sonuc.Kayitlar.FindLastIndex(a => a.StartsWith("Re", StringComparison.OrdinalIgnoreCase));
-            var ilkIceren = sonuc.Kayitlar.FindIndex(a => !a.StartsWith("Re", StringComparison.OrdinalIgnoreCase));
+            var sonOnek = sonuc.Adlar.FindLastIndex(a => a.StartsWith("Re", StringComparison.OrdinalIgnoreCase));
+            var ilkIceren = sonuc.Adlar.FindIndex(a => !a.StartsWith("Re", StringComparison.OrdinalIgnoreCase));
 
             Assert.True(ilkIceren < 0 || sonOnek < ilkIceren, "onek eslesmeleri basta olmali");
         }
@@ -208,8 +208,8 @@ namespace Garajim.Tests.Unit
             var katalog = AracKatalogu.Yukle(_klasor);
             var sonuc = katalog.MarkaAra("la", 50);
 
-            var trIlk = sonuc.Kayitlar.FindIndex(a => katalog.TrMarkaMi(a));
-            var globalIlk = sonuc.Kayitlar.FindIndex(a => !katalog.TrMarkaMi(a));
+            var trIlk = sonuc.Adlar.FindIndex(a => katalog.TrMarkaMi(a));
+            var globalIlk = sonuc.Adlar.FindIndex(a => !katalog.TrMarkaMi(a));
 
             Assert.True(globalIlk < 0 || trIlk < globalIlk, "TR grubu başta olmalı");
         }
@@ -233,8 +233,8 @@ namespace Garajim.Tests.Unit
 
             var sonuc = katalog.SeriAra("Fiat", "eg", 50);
 
-            Assert.Contains("Egea", sonuc.Kayitlar);
-            Assert.DoesNotContain("Egea", katalog.SeriAra("Renault", "eg", 50).Kayitlar);
+            Assert.Contains("Egea", sonuc.Adlar);
+            Assert.DoesNotContain("Egea", katalog.SeriAra("Renault", "eg", 50).Adlar);
         }
 
         [Fact]
@@ -245,8 +245,8 @@ namespace Garajim.Tests.Unit
             var katalog = AracKatalogu.Yukle(_klasor);
             var sonuc = katalog.SeriAra("Tesla", null, 50);
 
-            Assert.Equal("Model 3", sonuc.Kayitlar.First());
-            Assert.Contains("Cybertruck", sonuc.Kayitlar);
+            Assert.Equal("Model 3", sonuc.Adlar.First());
+            Assert.Contains("Cybertruck", sonuc.Adlar);
         }
 
         [Fact]

@@ -61,16 +61,31 @@ namespace Garajim.Business.Katalog
         public List<GlobalKatalogMarkasi> Markalar { get; set; } = new List<GlobalKatalogMarkasi>();
     }
 
+    public class KatalogGirdisi
+    {
+        public KatalogGirdisi(string ad, bool tr)
+        {
+            Ad = ad;
+            Tr = tr;
+        }
+
+        public string Ad { get; }
+
+        public bool Tr { get; }
+    }
+
     public class KatalogAramaSonucu
     {
-        public KatalogAramaSonucu(List<string> kayitlar, int toplam, int atlanan = 0)
+        public KatalogAramaSonucu(List<KatalogGirdisi> kayitlar, int toplam, int atlanan = 0)
         {
             Kayitlar = kayitlar;
             Toplam = toplam;
             Atlanan = atlanan;
         }
 
-        public List<string> Kayitlar { get; }
+        public List<KatalogGirdisi> Kayitlar { get; }
+
+        public List<string> Adlar => Kayitlar.Select(k => k.Ad).ToList();
 
         public int Toplam { get; }
 
@@ -299,7 +314,7 @@ namespace Garajim.Business.Katalog
 
             if (kanonik == null)
             {
-                return new KatalogAramaSonucu(new List<string>(), 0);
+                return new KatalogAramaSonucu(new List<KatalogGirdisi>(), 0);
             }
 
             return Ara(Seriler(kanonik), terim, sayfaBoyutu, sayfa, ad => TrSeriMi(kanonik, ad));
@@ -316,6 +331,7 @@ namespace Garajim.Business.Katalog
                 .Select(k => new
                 {
                     k.Ad,
+                    TrMi = trMi(k.Ad),
                     Tr = trMi(k.Ad) ? 0 : 1,
                     Onek = sade.Length > 0 && k.Sade.StartsWith(sade, StringComparison.Ordinal) ? 0 : 1,
                 })
@@ -327,7 +343,7 @@ namespace Garajim.Business.Katalog
             var atlanacak = (sayfa > 0 ? sayfa - 1 : 0) * boyut;
 
             return new KatalogAramaSonucu(
-                eslesenler.Skip(atlanacak).Take(boyut).Select(k => k.Ad).ToList(),
+                eslesenler.Skip(atlanacak).Take(boyut).Select(k => new KatalogGirdisi(k.Ad, k.TrMi)).ToList(),
                 eslesenler.Count,
                 atlanacak);
         }

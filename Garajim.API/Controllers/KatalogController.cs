@@ -1,6 +1,5 @@
 using Garajim.Business.Katalog;
 using Garajim.Core.Utilities.Results;
-using Garajim.Entity.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Garajim.API.Controllers
@@ -11,6 +10,19 @@ namespace Garajim.API.Controllers
         public const int OnbellekSaniye = 86400;
         public const int SayfaBoyutu = 50;
         public const string SurumBasligi = "X-Katalog-Surum";
+
+        public class KatalogSayfasi
+        {
+            public int Toplam { get; set; }
+
+            public int Sayfa { get; set; }
+
+            public int Boyut { get; set; }
+
+            public bool DahaVar { get; set; }
+
+            public List<KatalogGirdisi> Kayitlar { get; set; } = new List<KatalogGirdisi>();
+        }
 
         private readonly AracKatalogu _katalog;
 
@@ -35,10 +47,9 @@ namespace Garajim.API.Controllers
             }
 
             var istenen = GecerliSayfa(sayfa);
-            var sonuc = _katalog.MarkaAra(q, SayfaBoyutu, istenen);
 
-            return Ok(new SuccessDataResult<SayfaliSonuc<string>>(
-                new SayfaliSonuc<string>(sonuc.Kayitlar, sonuc.Toplam, istenen, SayfaBoyutu), _katalog.EtiketSurumu));
+            return Ok(new SuccessDataResult<KatalogSayfasi>(
+                Sayfala(_katalog.MarkaAra(q, SayfaBoyutu, istenen), istenen), _katalog.EtiketSurumu));
         }
 
         [HttpGet("seriler")]
@@ -62,10 +73,21 @@ namespace Garajim.API.Controllers
             }
 
             var istenen = GecerliSayfa(sayfa);
-            var sonuc = _katalog.SeriAra(marka, q, SayfaBoyutu, istenen);
 
-            return Ok(new SuccessDataResult<SayfaliSonuc<string>>(
-                new SayfaliSonuc<string>(sonuc.Kayitlar, sonuc.Toplam, istenen, SayfaBoyutu), _katalog.EtiketSurumu));
+            return Ok(new SuccessDataResult<KatalogSayfasi>(
+                Sayfala(_katalog.SeriAra(marka, q, SayfaBoyutu, istenen), istenen), _katalog.EtiketSurumu));
+        }
+
+        private static KatalogSayfasi Sayfala(KatalogAramaSonucu sonuc, int sayfa)
+        {
+            return new KatalogSayfasi
+            {
+                Toplam = sonuc.Toplam,
+                Sayfa = sayfa,
+                Boyut = SayfaBoyutu,
+                DahaVar = sonuc.DahaVar,
+                Kayitlar = sonuc.Kayitlar
+            };
         }
 
         private static int GecerliSayfa(int? sayfa)

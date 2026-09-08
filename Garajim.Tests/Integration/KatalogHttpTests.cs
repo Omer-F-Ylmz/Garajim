@@ -108,8 +108,11 @@ namespace Garajim.Tests.Integration
             Assert.True(zarf.GetProperty("toplam").GetInt32() > 0);
             Assert.Equal(1, zarf.GetProperty("sayfa").GetInt32());
             Assert.Equal(50, zarf.GetProperty("boyut").GetInt32());
-            Assert.Contains("Fiat", zarf.GetProperty("kayitlar").EnumerateArray().Select(x => x.GetString()));
+            Assert.Contains("Fiat", Adlar(zarf));
         }
+
+        private static List<string> Adlar(JsonElement zarf) =>
+            zarf.GetProperty("kayitlar").EnumerateArray().Select(x => x.GetProperty("ad").GetString()).ToList();
 
         [Fact]
         public async Task MarkaAramasiTurkceDuyarsizdir()
@@ -119,8 +122,7 @@ namespace Garajim.Tests.Integration
             var cevap = await client.GetAsync("/api/Katalog/markalar?q=SKO");
             using var belge = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync());
 
-            Assert.Contains("Skoda",
-                belge.RootElement.GetProperty("data").GetProperty("kayitlar").EnumerateArray().Select(x => x.GetString()));
+            Assert.Contains("Skoda", Adlar(belge.RootElement.GetProperty("data")));
         }
 
         [Fact]
@@ -158,8 +160,36 @@ namespace Garajim.Tests.Integration
             var zarf = belge.RootElement.GetProperty("data");
 
             Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
-            Assert.Contains("Egea", zarf.GetProperty("kayitlar").EnumerateArray().Select(x => x.GetString()));
-            Assert.DoesNotContain("Corolla", zarf.GetProperty("kayitlar").EnumerateArray().Select(x => x.GetString()));
+            Assert.Contains("Egea", Adlar(zarf));
+            Assert.DoesNotContain("Corolla", Adlar(zarf));
+        }
+
+        [Fact]
+        public async Task ZarfKayitlariTrBayragiTasir()
+        {
+            var client = await GirisliAsync("tr-bayragi");
+
+            var cevap = await client.GetAsync("/api/Katalog/markalar?q=fi");
+            using var belge = JsonDocument.Parse(await cevap.Content.ReadAsStringAsync());
+            var ilk = belge.RootElement.GetProperty("data").GetProperty("kayitlar").EnumerateArray().First();
+
+            Assert.False(string.IsNullOrWhiteSpace(ilk.GetProperty("ad").GetString()));
+            Assert.True(ilk.GetProperty("tr").GetBoolean());
+        }
+
+        [Fact]
+        public async Task ZarfDahaVarBayragiTasir()
+        {
+            var client = await GirisliAsync("daha-var");
+
+            var ilkSayfa = await client.GetAsync("/api/Katalog/markalar?sayfa=1");
+            var sonSayfa = await client.GetAsync("/api/Katalog/markalar?sayfa=2");
+
+            using var ilk = JsonDocument.Parse(await ilkSayfa.Content.ReadAsStringAsync());
+            using var son = JsonDocument.Parse(await sonSayfa.Content.ReadAsStringAsync());
+
+            Assert.True(ilk.RootElement.GetProperty("data").GetProperty("dahaVar").GetBoolean());
+            Assert.False(son.RootElement.GetProperty("data").GetProperty("dahaVar").GetBoolean());
         }
 
         [Fact]
