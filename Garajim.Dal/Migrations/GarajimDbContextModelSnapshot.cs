@@ -1218,8 +1218,7 @@ namespace Garajim.Dal.Migrations
 
                     b.HasIndex("Marka", "Model", "Motor", "BelirtiKategori", "ParcaTuru")
                         .IsUnique()
-                        .HasDatabaseName("UX_UstaCozumOzeti_DogalAnahtar")
-                        .HasFilter("[Motor] IS NOT NULL");
+                        .HasDatabaseName("UX_UstaCozumOzeti_DogalAnahtar");
 
                     b.ToTable("UstaCozumOzetleri", t =>
                         {

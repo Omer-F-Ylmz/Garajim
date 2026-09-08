@@ -174,28 +174,18 @@ Yayın sonrası bakılacaklar: bakım listesinde arama kutusu ve sayfa numarası
 
 Dördü de yalnız `AddColumn` / `CreateIndex` içerir, veri taşımaz.
 
-**`UstaOzetiTekilIndeks` uygulanmadan önce zorunlu ön kontrol.** Yinelenen satır varsa migration **başarısız olur ve yayın yarıda kalır**:
+**İki tekil indeks migration'ı ön kontrol istemez, yinelenen veriyi kendisi çözer.** SQL'ler `Garajim.Dal/Sorgular/YinelenenTemizligi.cs` içinde tek kaynakta durur; migration ve test aynı metni çalıştırır.
 
-```sql
-SELECT Marka, Model, Motor, BelirtiKategori, ParcaTuru, COUNT(*)
-FROM UstaCozumOzetleri
-WHERE Motor IS NOT NULL
-GROUP BY Marka, Model, Motor, BelirtiKategori, ParcaTuru
-HAVING COUNT(*) > 1;
+- `UstaOzetiTekilIndeks`: aynı doğal anahtarı (`Marka, Model, Motor, BelirtiKategori, ParcaTuru`) taşıyan satırların `Sayi` değerlerini en küçük `Id`'li satırda toplar, `GuncellemeTarihi` olarak grubun en yenisini yazar, sonra **yalnız yinelenen kopyaları** siler. `Motor = NULL` satırları da kapsanır; indeks süzgeçsizdir, çünkü SQL Server tekil indekste `NULL`'ları eşit sayar.
+- `HasarFotoSiraTekil`: aynı `HasarDosyasiId` içinde çakışan `Sira` değerlerini `(Sira, Id)` sırasına göre 1..n olarak yeniden numaralandırır. **Hiçbir satır silinmez.** Hesap geçici bir `HasarFotoSiraGecici` tablosunda kurulur ve migration bitmeden düşürülür; doğrudan `UPDATE` yapılsaydı alt sorgu kendi yazdığı satırları görüp yeni çakışma üretirdi (SQLite'ta gerçekten üretti).
+
+İkisi de `DELETE`'i yalnız yinelenen kopyalara uygular; şema tarafında hâlâ yalnız `CreateIndex` vardır. Yinelenen veriyle iki yerde test edilir: `YinelenenTemizligiTests` (SQLite, 9 test) ve `YinelenenTemizligiLocalDbTests` (LocalDB'de sıfırdan 52 migration + yinelenen satır + son iki migration). LocalDB testi varsayılan koşuda **atlanır** — açmak için `GARAJIM_LOCALDB_TEST=1` gerekir; açıkken diğer bütünleşme testleriyle aynı anda koşarsa kaynak çekişmesinden onlarcası düşüyor, bu yüzden tek başına çalıştırılır:
+
+```
+GARAJIM_LOCALDB_TEST=1 dotnet test Garajim.Tests --filter "FullyQualifiedName~YinelenenTemizligiLocalDbTests"
 ```
 
-Satır dönerse önce birleştirme (sayıları toplayıp tek satıra indirme) gerekir. İndeks `Motor IS NOT NULL` süzgeçli olduğu için geçmişteki `Motor = NULL` satırları kapsam dışıdır; iş bundan sonra `Motor` alanını boş dizgeye normalleştirdiği için yeni satırlar süzgecin içine düşer.
-
-**`HasarFotoSiraTekil` uygulanmadan önce zorunlu ön kontrol:**
-
-```sql
-SELECT HasarDosyasiId, Sira, COUNT(*)
-FROM HasarFotograflari
-GROUP BY HasarDosyasiId, Sira
-HAVING COUNT(*) > 1;
-```
-
-Satır dönerse çakışan fotoğrafların `Sira` değerleri elle ayrıştırılmalı. Bu migration eski `IX_HasarFotograflari_HasarDosyasiId_Sira` indeksini **düşürmez** (kural yalnız eklemeli); canlıda aynı kolonlar üzerinde artık iki indeks kalır, bu bilinçlidir.
+`HasarFotoSiraTekil` eski `IX_HasarFotograflari_HasarDosyasiId_Sira` indeksini **düşürmez** (kural yalnız eklemeli); canlıda aynı kolonlar üzerinde artık iki indeks kalır, bu bilinçlidir.
 
 **Araç kataloğu iki katmanlıdır.** `Garajim.Business/Katalog/arac-katalogu.json` (Türkiye, 56 marka / 391 seri) zorunludur; `arac-katalogu-global.json` **opsiyoneldir** ve bugün repoda yoktur. Global dosya yayına girdiğinde: boyutu 4 MB'ı aşmamalı, `Katalog\*.json` globuyla kendiliğinden yayına gider, katalog `Lazy<>` ile ilk istekte yüklenir. Katalog uçları 1 gün `private` önbellek ve `X-Katalog-Surum` başlığı döner; sürüm değişince ETag da değişir, istemci kendiliğinden tazeler.
 

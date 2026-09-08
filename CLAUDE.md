@@ -38,6 +38,10 @@ Bu dört dosyadaki on kullanımın tamamı `Denetim2FiltreIstisnaTests` ile sabi
 
 ### Migration yalnız eklemelidir
 
+Şema tarafında yalnız `AddColumn`, `CreateTable`, `CreateIndex` bulunur. Veri tarafında `migrationBuilder.Sql` kullanılabilir ama `DELETE` yalnız **yinelenen kopyaları** kaldırabilir; kullanıcı verisi silinmez. Tekil indeks ekleyen migration, indeksten önce yinelenenleri kendisi çözer ki yayın canlı veriye takılmasın — SQL'ler `Garajim.Dal/Sorgular/YinelenenTemizligi.cs` içinde tek kaynakta durur, migration ve test aynı metni çalıştırır (`YinelenenTemizligiTests` SQLite'ta, `YinelenenTemizligiLocalDbTests` LocalDB'de yinelenen veriyle).
+
+Kendi yazdığı satırı okuyan `UPDATE`'ten kaçın: SQLite alt sorguyu satır satır güncel tablo üzerinde çalıştırır, sıralama üreten bir güncelleme yeni çakışma doğurur. Hesap önce geçici bir tabloya kurulur, sonra tek `UPDATE` ile uygulanır.
+
 Canlı veritabanı doludur. `Up()` içinde yalnız `AddColumn`, `CreateTable`, `CreateIndex` bulunur; `DropColumn`, `DropTable`, `AlterColumn` ve `RenameColumn` kullanılmaz. Kolon daraltma ya da tip değiştirme gerekiyorsa yeni kolon açılır, veri taşınır, eski kolon bir sonraki sürümde ele alınır. Migration ekledikten sonra `Up()` içeriğini doğrula.
 
 ### Tek kaynak sınıfları

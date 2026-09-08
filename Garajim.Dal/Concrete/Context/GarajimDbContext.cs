@@ -246,6 +246,7 @@ namespace Garajim.Dal.Concrete.Context
                 entity.HasIndex(o => new { o.Marka, o.Model, o.BelirtiKategori, o.ParcaTuru });
                 entity.HasIndex(o => new { o.Marka, o.Model, o.Motor, o.BelirtiKategori, o.ParcaTuru })
                     .IsUnique()
+                    .HasFilter(null)
                     .HasDatabaseName("UX_UstaCozumOzeti_DogalAnahtar");
                 entity.ToTable(t => t.HasCheckConstraint("CK_UstaCozumOzeti_Sayi", "[Sayi] > 0"));
             });

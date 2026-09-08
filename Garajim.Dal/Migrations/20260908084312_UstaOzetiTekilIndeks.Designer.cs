@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garajim.Dal.Migrations
 {
     [DbContext(typeof(GarajimDbContext))]
-    [Migration("20260908080644_HasarFotoSiraTekil")]
-    partial class HasarFotoSiraTekil
+    [Migration("20260908084312_UstaOzetiTekilIndeks")]
+    partial class UstaOzetiTekilIndeks
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1221,8 +1221,7 @@ namespace Garajim.Dal.Migrations
 
                     b.HasIndex("Marka", "Model", "Motor", "BelirtiKategori", "ParcaTuru")
                         .IsUnique()
-                        .HasDatabaseName("UX_UstaCozumOzeti_DogalAnahtar")
-                        .HasFilter("[Motor] IS NOT NULL");
+                        .HasDatabaseName("UX_UstaCozumOzeti_DogalAnahtar");
 
                     b.ToTable("UstaCozumOzetleri", t =>
                         {

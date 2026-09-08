@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Garajim.Dal.Sorgular;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,6 +11,11 @@ namespace Garajim.Dal.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(YinelenenTemizligi.HasarFotoSiraGeciciOlustur);
+            migrationBuilder.Sql(YinelenenTemizligi.HasarFotoSiraGeciciDoldur);
+            migrationBuilder.Sql(YinelenenTemizligi.HasarFotoSiraUygula);
+            migrationBuilder.Sql(YinelenenTemizligi.HasarFotoSiraGeciciSil);
+
             migrationBuilder.CreateIndex(
                 name: "UX_HasarFoto_DosyaSira",
                 table: "HasarFotograflari",

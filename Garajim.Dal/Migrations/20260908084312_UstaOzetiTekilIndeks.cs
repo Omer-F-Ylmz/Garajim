@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Garajim.Dal.Sorgular;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,12 +11,14 @@ namespace Garajim.Dal.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(YinelenenTemizligi.UstaOzetiTopla);
+            migrationBuilder.Sql(YinelenenTemizligi.UstaOzetiKopyalariSil);
+
             migrationBuilder.CreateIndex(
                 name: "UX_UstaCozumOzeti_DogalAnahtar",
                 table: "UstaCozumOzetleri",
                 columns: new[] { "Marka", "Model", "Motor", "BelirtiKategori", "ParcaTuru" },
-                unique: true,
-                filter: "[Motor] IS NOT NULL");
+                unique: true);
         }
 
         /// <inheritdoc />
