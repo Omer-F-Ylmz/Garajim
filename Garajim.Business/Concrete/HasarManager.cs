@@ -266,18 +266,29 @@ namespace Garajim.Business.Concrete
             if (!yukleme.Success)
                 return new ErrorDataResult<HasarFotoDto>(yukleme.Message);
 
-            var sira = await _fotoDal.SonSiraAsync(id) + 1;
-            var foto = new HasarFoto
-            {
-                CompanyId = erisim.Dosya.CompanyId,
-                HasarDosyasiId = id,
-                DocumentId = yukleme.Data.Id,
-                Etiket = etiket,
-                Sira = sira,
-                OlusturmaTarihi = DateTime.UtcNow
-            };
+            HasarFoto foto;
 
-            await _fotoDal.AddAsync(foto);
+            await using (var islem = await _unitOfWork.BeginTransactionAsync())
+            {
+                if (await _fotoDal.SayiAsync(id) >= MaxFoto)
+                {
+                    await YuklemeyiGeriAlAsync(userId, yukleme.Data.Id);
+                    return new ErrorDataResult<HasarFotoDto>(Messages.HasarFotoSiniri);
+                }
+
+                foto = new HasarFoto
+                {
+                    CompanyId = erisim.Dosya.CompanyId,
+                    HasarDosyasiId = id,
+                    DocumentId = yukleme.Data.Id,
+                    Etiket = etiket,
+                    Sira = await _fotoDal.SonSiraAsync(id) + 1,
+                    OlusturmaTarihi = DateTime.UtcNow
+                };
+
+                await _fotoDal.AddAsync(foto);
+                await _unitOfWork.CommitAsync();
+            }
 
             return new SuccessDataResult<HasarFotoDto>(new HasarFotoDto
             {
@@ -288,6 +299,19 @@ namespace Garajim.Business.Concrete
                 Sira = foto.Sira,
                 DosyaAdi = yukleme.Data.OriginalName
             }, Messages.HasarFotoEklendi);
+        }
+
+        private async Task YuklemeyiGeriAlAsync(int userId, int documentId)
+        {
+            var satir = await _documentService.SatirSilAsync(userId, documentId);
+
+            if (!satir.Success)
+            {
+                return;
+            }
+
+            await _unitOfWork.CommitAsync();
+            _documentService.DosyaSil(satir.Data);
         }
 
         public async Task<IResult> FotoSilAsync(int userId, int id, int fotoId)

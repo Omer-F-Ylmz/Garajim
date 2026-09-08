@@ -270,7 +270,9 @@ namespace Garajim.Dal.Concrete.Context
             modelBuilder.Entity<HasarFoto>(entity =>
             {
                 entity.HasIndex(f => f.CompanyId);
-                entity.HasIndex(f => new { f.HasarDosyasiId, f.Sira });
+                entity.HasIndex(f => new { f.HasarDosyasiId, f.Sira })
+                    .IsUnique()
+                    .HasDatabaseName("UX_HasarFoto_DosyaSira");
                 entity.HasIndex(f => f.DocumentId).IsUnique();
                 entity.HasOne<Company>().WithMany().HasForeignKey(f => f.CompanyId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne<HasarDosyasi>().WithMany().HasForeignKey(f => f.HasarDosyasiId).OnDelete(DeleteBehavior.Cascade);
