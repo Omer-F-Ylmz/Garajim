@@ -63,17 +63,20 @@ namespace Garajim.Business.Katalog
 
     public class KatalogAramaSonucu
     {
-        public KatalogAramaSonucu(List<string> kayitlar, int toplam)
+        public KatalogAramaSonucu(List<string> kayitlar, int toplam, int atlanan = 0)
         {
             Kayitlar = kayitlar;
             Toplam = toplam;
+            Atlanan = atlanan;
         }
 
         public List<string> Kayitlar { get; }
 
         public int Toplam { get; }
 
-        public bool DahaVar => Kayitlar.Count < Toplam;
+        public int Atlanan { get; }
+
+        public bool DahaVar => Atlanan + Kayitlar.Count < Toplam;
     }
 
     public class AracKatalogu
@@ -285,12 +288,12 @@ namespace Garajim.Business.Katalog
                 : Array.Empty<string>();
         }
 
-        public KatalogAramaSonucu MarkaAra(string terim, int sayfaBoyutu)
+        public KatalogAramaSonucu MarkaAra(string terim, int sayfaBoyutu, int sayfa = 1)
         {
-            return Ara(Markalar.Select(m => m.Ad), terim, sayfaBoyutu, ad => TrMarkaMi(ad));
+            return Ara(Markalar.Select(m => m.Ad), terim, sayfaBoyutu, sayfa, ad => TrMarkaMi(ad));
         }
 
-        public KatalogAramaSonucu SeriAra(string marka, string terim, int sayfaBoyutu)
+        public KatalogAramaSonucu SeriAra(string marka, string terim, int sayfaBoyutu, int sayfa = 1)
         {
             var kanonik = MarkaYazimi(marka);
 
@@ -299,10 +302,10 @@ namespace Garajim.Business.Katalog
                 return new KatalogAramaSonucu(new List<string>(), 0);
             }
 
-            return Ara(Seriler(kanonik), terim, sayfaBoyutu, ad => TrSeriMi(kanonik, ad));
+            return Ara(Seriler(kanonik), terim, sayfaBoyutu, sayfa, ad => TrSeriMi(kanonik, ad));
         }
 
-        private static KatalogAramaSonucu Ara(IEnumerable<string> kaynak, string terim, int sayfaBoyutu, Func<string, bool> trMi)
+        private static KatalogAramaSonucu Ara(IEnumerable<string> kaynak, string terim, int sayfaBoyutu, int sayfa, Func<string, bool> trMi)
         {
             var sade = Sadelestir(terim);
             var boyut = sayfaBoyutu > 0 ? sayfaBoyutu : VarsayilanSayfa;
@@ -321,7 +324,12 @@ namespace Garajim.Business.Katalog
                 .ThenBy(k => k.Ad, StringComparer.Ordinal)
                 .ToList();
 
-            return new KatalogAramaSonucu(eslesenler.Take(boyut).Select(k => k.Ad).ToList(), eslesenler.Count);
+            var atlanacak = (sayfa > 0 ? sayfa - 1 : 0) * boyut;
+
+            return new KatalogAramaSonucu(
+                eslesenler.Skip(atlanacak).Take(boyut).Select(k => k.Ad).ToList(),
+                eslesenler.Count,
+                atlanacak);
         }
 
         public static string Sadelestir(string metin)
