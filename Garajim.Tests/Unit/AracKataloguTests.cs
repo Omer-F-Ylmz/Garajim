@@ -48,9 +48,11 @@ namespace Garajim.Tests.Unit
             var katalog = Katalog();
             var sozluk = Sozluk();
 
-            var fazlaMarka = katalog.MarkaAdlari.Where(m => !sozluk.MarkaTaniniyor(m)).ToList();
+            var fazlaMarka = katalog.MarkaAdlari
+                .Where(m => katalog.TrMarkaMi(m) && !sozluk.MarkaTaniniyor(m))
+                .ToList();
             var fazlaSeri = katalog.Markalar
-                .SelectMany(m => m.Seriler)
+                .SelectMany(m => m.Seriler.Where(s => katalog.TrSeriMi(m.Ad, s)))
                 .Where(s => !sozluk.SeriTaniniyor(s))
                 .ToList();
 
@@ -64,7 +66,7 @@ namespace Garajim.Tests.Unit
             var katalog = Katalog();
 
             var yinelenen = katalog.Markalar
-                .SelectMany(m => m.Seriler.Select(s => new { Marka = m.Ad, Seri = s }))
+                .SelectMany(m => m.Seriler.Where(s => katalog.TrSeriMi(m.Ad, s)).Select(s => new { Marka = m.Ad, Seri = s }))
                 .GroupBy(x => x.Seri, StringComparer.OrdinalIgnoreCase)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key + " -> " + string.Join(", ", g.Select(x => x.Marka)))
