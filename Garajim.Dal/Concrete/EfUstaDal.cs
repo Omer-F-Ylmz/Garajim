@@ -160,8 +160,10 @@ namespace Garajim.Dal.Concrete
 
         public async Task<UstaCozumOzeti> BulAsync(string marka, string model, string motor, string kategori, string parca)
         {
+            var motorAnahtari = motor ?? string.Empty;
+
             return await Context.UstaCozumOzetleri.FirstOrDefaultAsync(o =>
-                o.Marka == marka && o.Model == model && o.Motor == motor &&
+                o.Marka == marka && o.Model == model && (o.Motor ?? string.Empty) == motorAnahtari &&
                 o.BelirtiKategori == kategori && o.ParcaTuru == parca);
         }
     }

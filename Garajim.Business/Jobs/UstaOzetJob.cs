@@ -107,7 +107,7 @@ namespace Garajim.Business.Jobs
                     {
                         Marka = kayit.Key.Marka,
                         Model = kayit.Key.Model,
-                        Motor = kayit.Key.Motor,
+                        Motor = kayit.Key.Motor ?? string.Empty,
                         BelirtiKategori = kayit.Key.Kategori,
                         ParcaTuru = kayit.Key.Parca,
                         Sayi = kayit.Value,
