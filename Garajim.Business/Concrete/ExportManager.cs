@@ -5,6 +5,7 @@ using Garajim.Business.Concrete.Evraklar;
 using Garajim.Business.Constants;
 using Garajim.Core.Utilities.Results;
 using Garajim.Dal.Abstract;
+using Garajim.Dal.Sorgular;
 using Garajim.Entity.Concrete;
 using Garajim.Entity.Dtos;
 
@@ -38,8 +39,10 @@ namespace Garajim.Business.Concrete
             _hasarDosyasiDal = hasarDosyasiDal;
         }
 
-        public async Task<IDataResult<ExportSonucDto>> CsvAsync(int userId, string tur, int? vehicleId, DateTime? baslangic, DateTime? bitis)
+        public async Task<IDataResult<ExportSonucDto>> CsvAsync(int userId, string tur, int? vehicleId, DateTime? baslangic, DateTime? bitis, string q = null)
         {
+            var terim = new ListeSorgusu { Q = q }.GecerliQ();
+
             var secilen = Turler.FirstOrDefault(t => string.Equals(t, tur, StringComparison.OrdinalIgnoreCase));
             if (secilen == null)
                 return new ErrorDataResult<ExportSonucDto>(Messages.ExportTuruBulunamadi);
@@ -95,7 +98,9 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Plaka;Tarih;Kilometre;Tur;Servis;Tutar;Not");
                 var kayitlar = idler.Count == 0
                     ? new List<MaintenanceRecord>()
-                    : (await _maintenanceDal.GetListAsync(m => idler.Contains(m.VehicleId) && m.Date >= bas && m.Date <= son))
+                    : (await _maintenanceDal.GetListAsync(TurkceArama.Ve<MaintenanceRecord>(
+                            m => idler.Contains(m.VehicleId) && m.Date >= bas && m.Date <= son,
+                            TurkceArama.Iceren<MaintenanceRecord>(terim, m => m.ServiceName, m => m.Note))))
                         .OrderByDescending(m => m.Date).ThenByDescending(m => m.Id).Take(QueryLimits.MaxListSize).ToList();
 
                 foreach (var kayit in kayitlar.OrderBy(k => k.Date).ThenBy(k => k.Id))
@@ -110,7 +115,9 @@ namespace Garajim.Business.Concrete
                 sb.AppendLine("Plaka;Tarih;Kategori;Tutar;Not");
                 var kayitlar = idler.Count == 0
                     ? new List<ExpenseRecord>()
-                    : (await _expenseDal.GetListAsync(e => idler.Contains(e.VehicleId) && e.Date >= bas && e.Date <= son))
+                    : (await _expenseDal.GetListAsync(TurkceArama.Ve<ExpenseRecord>(
+                            e => idler.Contains(e.VehicleId) && e.Date >= bas && e.Date <= son,
+                            TurkceArama.Iceren<ExpenseRecord>(terim, e => e.Note))))
                         .OrderByDescending(e => e.Date).ThenByDescending(e => e.Id).Take(QueryLimits.MaxListSize).ToList();
 
                 foreach (var kayit in kayitlar.OrderBy(k => k.Date).ThenBy(k => k.Id))
@@ -124,8 +131,11 @@ namespace Garajim.Business.Concrete
             {
                 sb.AppendLine("Plaka;OlayTarihi;Tur;Durum;Konum;Kilometre;Tutanak;KarsiTarafPlaka;SigortaDosyaNo;HasarBedeli;Aciklama");
                 var kayitlar = await _hasarDosyasiDal.GetListeAsync(idler, QueryLimits.MaxListSize);
+                var hasarSuzgeci = TurkceArama.Iceren<HasarDosyasi>(terim, h => h.Aciklama, h => h.Konum, h => h.SigortaDosyaNo, h => h.KarsiTarafPlaka);
+                var hasarKosul = hasarSuzgeci?.Compile();
 
-                foreach (var kayit in kayitlar.Where(k => k.OlayTarihi >= bas && k.OlayTarihi <= son))
+                foreach (var kayit in kayitlar.Where(k => k.OlayTarihi >= bas && k.OlayTarihi <= son
+                    && (hasarKosul == null || hasarKosul(k))))
                 {
                     sb.AppendLine(Satir(Plaka(plakalar, kayit.VehicleId), Tarih(kayit.OlayTarihi),
                         HasarAdlari.Tur(kayit.Tur), HasarAdlari.Durum(kayit.Durum), kayit.Konum,
@@ -139,8 +149,9 @@ namespace Garajim.Business.Concrete
             {
                 sb.AppendLine("Plaka;Tur;Baslangic;Bitis;Saglayici;PoliceNo;Durum");
                 var bugun = Saat.BugunTr();
-                var kayitlar = await _evrakDal.GetListAsync(e => e.Aktif &&
-                    ((e.VehicleId != null && idler.Contains(e.VehicleId.Value)) || e.UserId == userId));
+                var kayitlar = await _evrakDal.GetListAsync(TurkceArama.Ve<EvrakKaydi>(
+                    e => e.Aktif && ((e.VehicleId != null && idler.Contains(e.VehicleId.Value)) || e.UserId == userId),
+                    TurkceArama.Iceren<EvrakKaydi>(terim, e => e.Saglayici, e => e.PoliceNo, e => e.Not)));
 
                 foreach (var kayit in kayitlar.Where(k => k.BitisTarihi >= bas && k.BitisTarihi <= son).OrderBy(k => k.BitisTarihi).ThenBy(k => k.Id).Take(QueryLimits.MaxListSize))
                 {

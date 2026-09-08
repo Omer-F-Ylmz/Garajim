@@ -18,9 +18,9 @@ namespace Garajim.API.Controllers
         }
 
         [HttpGet("{tur}.csv")]
-        public async Task<IActionResult> Csv(string tur, [FromQuery] int? vehicleId, [FromQuery] DateTime? baslangic, [FromQuery] DateTime? bitis)
+        public async Task<IActionResult> Csv(string tur, [FromQuery] int? vehicleId, [FromQuery] DateTime? baslangic, [FromQuery] DateTime? bitis, [FromQuery] string q)
         {
-            var result = await _exportService.CsvAsync(CurrentUserId, tur, vehicleId, baslangic, bitis);
+            var result = await _exportService.CsvAsync(CurrentUserId, tur, vehicleId, baslangic, bitis, q);
             if (!result.Success)
             {
                 if (result.Message == Messages.ExportTuruBulunamadi || result.Message == Messages.VehicleNotFound)

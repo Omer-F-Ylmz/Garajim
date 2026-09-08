@@ -69,6 +69,25 @@ namespace Garajim.Dal.Sorgular
             return Expression.Lambda<Func<T, bool>>(birlesik, parametre);
         }
 
+        public static Expression<Func<T, bool>> Ve<T>(Expression<Func<T, bool>> sol, Expression<Func<T, bool>> sag)
+        {
+            if (sol == null)
+            {
+                return sag;
+            }
+
+            if (sag == null)
+            {
+                return sol;
+            }
+
+            var parametre = Expression.Parameter(typeof(T), "k");
+            var solGovde = new ParametreDegistirici(sol.Parameters[0], parametre).Visit(sol.Body);
+            var sagGovde = new ParametreDegistirici(sag.Parameters[0], parametre).Visit(sag.Body);
+
+            return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(solGovde, sagGovde), parametre);
+        }
+
         private static Expression Sadelestirilmis(Expression govde)
         {
             var sonuc = govde;

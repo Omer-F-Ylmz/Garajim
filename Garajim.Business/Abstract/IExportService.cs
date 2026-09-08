@@ -5,6 +5,6 @@ namespace Garajim.Business.Abstract
 {
     public interface IExportService
     {
-        Task<IDataResult<ExportSonucDto>> CsvAsync(int userId, string tur, int? vehicleId, DateTime? baslangic, DateTime? bitis);
+        Task<IDataResult<ExportSonucDto>> CsvAsync(int userId, string tur, int? vehicleId, DateTime? baslangic, DateTime? bitis, string q = null);
     }
 }

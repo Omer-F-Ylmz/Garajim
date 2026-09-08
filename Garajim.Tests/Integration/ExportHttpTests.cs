@@ -55,6 +55,97 @@ namespace Garajim.Tests.Integration
 
         private static string Plaka() => TestPlaka.Uret();
 
+        private static async Task<string> MetinAsync(HttpResponseMessage cevap)
+        {
+            return Encoding.UTF8.GetString(await cevap.Content.ReadAsByteArrayAsync()).TrimStart('\uFEFF');
+        }
+
+        [Fact]
+        public async Task BakimDisaAktariminda_q_ListedekiSuzgeciTekrarlar()
+        {
+            var client = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(client, Plaka());
+
+            await client.PostAsJsonAsync("/api/Maintenance", new
+            {
+                vehicleId = aracId, date = "2026-02-01", km = 101000,
+                type = "PeriyodikBakim", serviceName = "Şişli Oto Servis", cost = 4200, note = "yağ"
+            });
+            await client.PostAsJsonAsync("/api/Maintenance", new
+            {
+                vehicleId = aracId, date = "2026-03-01", km = 102000,
+                type = "PeriyodikBakim", serviceName = "Kartal Lastikçi", cost = 3100, note = "balans"
+            });
+
+            var tumu = await MetinAsync(await client.GetAsync("/api/Export/bakim.csv?vehicleId=" + aracId));
+            var suzulmus = await MetinAsync(await client.GetAsync("/api/Export/bakim.csv?vehicleId=" + aracId + "&q=sisli"));
+
+            Assert.Contains("Şişli Oto Servis", tumu);
+            Assert.Contains("Kartal Lastikçi", tumu);
+
+            Assert.Contains("Şişli Oto Servis", suzulmus);
+            Assert.DoesNotContain("Kartal Lastikçi", suzulmus);
+        }
+
+        [Fact]
+        public async Task MasrafDisaAktariminda_q_NotAlanindaArar()
+        {
+            var client = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(client, Plaka());
+
+            await client.PostAsJsonAsync("/api/Expenses", new
+            {
+                vehicleId = aracId, date = "2026-02-01", category = "Otopark", amount = 250, note = "Havalimanı otoparkı"
+            });
+            await client.PostAsJsonAsync("/api/Expenses", new
+            {
+                vehicleId = aracId, date = "2026-02-02", category = "Yikama", amount = 300, note = "Detaylı yıkama"
+            });
+
+            var suzulmus = await MetinAsync(await client.GetAsync("/api/Export/masraf.csv?vehicleId=" + aracId + "&q=havalimani"));
+
+            Assert.Contains("Havalimanı otoparkı", suzulmus);
+            Assert.DoesNotContain("Detaylı yıkama", suzulmus);
+        }
+
+        [Fact]
+        public async Task EvrakDisaAktariminda_q_SaglayicidaArar()
+        {
+            var client = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(client, Plaka());
+
+            await client.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId, evrakTuru = "Kasko", bitisTarihi = "2027-01-01", saglayici = "Anadolu Sigorta"
+            });
+            await client.PostAsJsonAsync("/api/Evrak", new
+            {
+                vehicleId = aracId, evrakTuru = "TrafikSigortasi", bitisTarihi = "2027-02-01", saglayici = "Güneş Sigorta"
+            });
+
+            var suzulmus = await MetinAsync(await client.GetAsync("/api/Export/evrak.csv?vehicleId=" + aracId + "&q=gunes"));
+
+            Assert.Contains("Güneş Sigorta", suzulmus);
+            Assert.DoesNotContain("Anadolu Sigorta", suzulmus);
+        }
+
+        [Fact]
+        public async Task YakitDisaAktariminda_q_YoksayilirVeHataVermez()
+        {
+            var client = await SahipOlusturAsync();
+            var aracId = await AracEkleAsync(client, Plaka());
+
+            await client.PostAsJsonAsync("/api/Fuel", new
+            {
+                vehicleId = aracId, date = "2026-02-01", km = 101000, liters = 40, totalCost = 1600, tamDolum = true
+            });
+
+            var cevap = await client.GetAsync("/api/Export/yakit.csv?vehicleId=" + aracId + "&q=bulunmayan");
+
+            Assert.Equal(HttpStatusCode.OK, cevap.StatusCode);
+            Assert.Contains("101000", await MetinAsync(cevap));
+        }
+
         [Fact]
         public async Task YakitDisaAktarimiBomluCsvDoner()
         {

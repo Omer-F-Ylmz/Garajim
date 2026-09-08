@@ -3318,6 +3318,11 @@
             parcalar.push(aralik);
         }
 
+        var listeQ = (listeDurumuOku(tur) || {}).q;
+        if (listeQ) {
+            parcalar.push("q=" + encodeURIComponent(listeQ));
+        }
+
         var yol = "/api/Export/" + tur + ".csv" + (parcalar.length > 0 ? "?" + parcalar.join("&") : "");
 
         fetch(yol, { headers: { Authorization: "Bearer " + state.token } }).then(function (response) {
